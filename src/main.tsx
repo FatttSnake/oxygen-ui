@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
-import '@/assets/css/base.css'
-import '@/assets/css/common.css'
+import '@/assets/css/base.scss'
+import '@/assets/css/common.scss'
 import zh_CN from 'antd/locale/zh_CN'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

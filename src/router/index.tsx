@@ -12,15 +12,8 @@ const routes: RouteObject[] = [
             },
             {
                 path: '',
-                id: 'manager',
+                id: 'home',
                 Component: React.lazy(() => import('@/pages/Home')),
-                children: [
-                    {
-                        id: 'manager-sub',
-                        path: 'sub',
-                        Component: React.lazy(() => import('@/pages/Home'))
-                    }
-                ],
                 handle: {
                     auth: false
                 }
