@@ -26,6 +26,7 @@ export default defineConfig({
                 'react-router',
                 'react-router-dom',
                 {
+                    react: ['Suspense'],
                     'react-router': ['useMatches', 'RouterProvider'],
                     'react-router-dom': ['createBrowserRouter'],
                     antd: ['message']
@@ -33,6 +34,11 @@ export default defineConfig({
                 {
                     from: 'react-router',
                     imports: ['RouteObject'],
+                    type: true
+                },
+                {
+                    from: 'react',
+                    imports: ['PropsWithChildren'],
                     type: true
                 }
             ],

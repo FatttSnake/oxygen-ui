@@ -1,3 +1,5 @@
+@use "mixins" as mixins;
+
 .nav {
   display: flex;
   position: fixed;
@@ -13,6 +15,16 @@
       color: rgba(204, 204, 204, .33);
     }
   }
+  animation: .5s ease both;
+
+  @include mixins.unique-keyframes {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
 
   .logo {
     padding: 0 40px;
@@ -20,6 +32,62 @@
     .title {
       font-size: 2.8em;
       font-family: century gothic, texgyreadventor, stheiti, sans-serif;
+    }
+  }
+
+  nav {
+    display: flex;
+    justify-content: end;
+    flex: 1;
+    transition: {
+      property: all;
+      duration: .5s;
+    };
+
+    .menu {
+      padding: 0 30px;
+
+      .item {
+        display: inline-block;
+        font-size: 1.5em;
+        transition: {
+          property: all;
+          duration: .3s;
+        };
+
+        a {
+          padding: 5px 20px;
+          color: rgba(102, 102, 102, .8);
+        }
+      }
+
+      .active {
+        border: {
+          bottom: {
+            width: 2px;
+            style: solid;
+            color: #CCC;
+          };
+        };
+      }
+
+      :hover {
+        transform: translateY(-5px);
+      }
+    }
+  }
+}
+
+.nav.hide {
+  animation: .5s ease both;
+
+  @include mixins.unique-keyframes {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      display: none;
+      transform: translateY(-100%);
     }
   }
 }
