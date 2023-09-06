@@ -3,20 +3,24 @@ import '@/assets/css/header.scss'
 import LoadingMask from '@/components/LoadingMask.tsx'
 
 export const MainFrameworkContext = createContext<{
-    hideNavbar: boolean
-    setHideNavbar: (newValue: boolean) => void
+    navbarHiddenState: {
+        navbarHidden: boolean
+        setNavbarHidden: (newValue: boolean) => void
+    }
 }>({
-    hideNavbar: false,
-    setHideNavbar: () => undefined
+    navbarHiddenState: {
+        navbarHidden: false,
+        setNavbarHidden: () => undefined
+    }
 })
 
 const MainFramework: React.FC = () => {
-    const [hideNavbar, setHideNavbar] = useState(false)
+    const [navbarHidden, setNavbarHidden] = useState(false)
 
     return (
         <>
             <div className={'body'}>
-                <header className={'nav ' + (hideNavbar ? 'hide' : '')}>
+                <header className={'nav ' + (navbarHidden ? 'hide' : '')}>
                     <a className={'logo'} href={'https://fatweb.top'}>
                         <span className={'title'}>FatWeb</span>
                     </a>
@@ -56,7 +60,9 @@ const MainFramework: React.FC = () => {
                     </nav>
                 </header>
 
-                <MainFrameworkContext.Provider value={{ hideNavbar, setHideNavbar }}>
+                <MainFrameworkContext.Provider
+                    value={{ navbarHiddenState: { navbarHidden, setNavbarHidden } }}
+                >
                     <Suspense
                         fallback={
                             <>
