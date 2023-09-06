@@ -6,7 +6,7 @@ $font-secondary-color: #9E9E9E;
 .body {
   color: $font-main-color;
   user-select: none;
-  min-width: 1800px;
+  min-width: 900px;
   min-height: 400px;
 }
 
@@ -102,4 +102,20 @@ $font-secondary-color: #9E9E9E;
     width: 23px;
     height: 23px;
   }
+}
+
+#loading-mask {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  background-color: rgba(200, 200, 200, 0.2);
+}
+
+#fit-fullscreen {
+  width: 100vw;
+  height: 100vh;
 }

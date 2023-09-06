@@ -11,12 +11,32 @@ const routes: RouteObject[] = [
                 Component: React.lazy(() => import('@/pages/Login'))
             },
             {
+                path: '/loading',
+                id: 'loading',
+                Component: React.lazy(() => import('@/components/LoadingMask'))
+            },
+            {
                 path: '',
-                id: 'home',
-                Component: React.lazy(() => import('@/pages/Home')),
-                handle: {
-                    auth: false
-                }
+                id: 'mainFramework',
+                Component: React.lazy(() => import('@/pages/MainFramework')),
+                children: [
+                    {
+                        path: '',
+                        id: 'home',
+                        Component: React.lazy(() => import('@/components/Home')),
+                        handle: {
+                            auth: false
+                        }
+                    },
+                    {
+                        path: 'project',
+                        id: 'project',
+                        Component: React.lazy(() => import('@/components/Project')),
+                        handle: {
+                            auth: false
+                        }
+                    }
+                ]
             },
             {
                 path: '*',
