@@ -1,22 +1,49 @@
 import React from 'react'
 import '@/assets/css/home.scss'
-import { MainFrameworkContext } from '@/pages/MainFramework'
+import FitFullScreen from '@/components/FitFullScreen.tsx'
+import FitCenter from '@/components/FitCenter.tsx'
+import Icon from '@ant-design/icons'
 
 const Home: React.FC = () => {
-    const {
-        navbarHiddenState: { navbarHidden, setNavbarHidden }
-    } = useContext(MainFrameworkContext)
-    const handleButtonClick = () => {
-        setNavbarHidden(!navbarHidden)
+    const [slogan, setSlogan] = useState('')
+    const [sloganType, setSloganType] = useState(true)
+    const typeText = '/* 因为热爱 所以折腾 */'
+    if (sloganType) {
+        setTimeout(() => {
+            if (slogan.length < typeText.length) {
+                setSlogan(typeText.substring(0, slogan.length + 1))
+            } else {
+                setSloganType(false)
+            }
+        }, 150)
+    } else {
+        setTimeout(() => {
+            if (slogan.length > 0) {
+                setSlogan(typeText.substring(0, slogan.length - 1))
+            } else {
+                setSloganType(true)
+            }
+        }, 50)
     }
+
     return (
         <>
-            <h1>Home</h1>
-            <div style={{ marginTop: '100px' }}>
-                <AntdButton onClick={handleButtonClick}>
-                    {navbarHidden ? '显示' : '隐藏'}
-                </AntdButton>
-            </div>
+            <FitFullScreen zIndex={100} backgroundColor={'#FBFBFB'}>
+                <FitCenter>
+                    <div className={'center-box'}>
+                        <div className={'big-logo'}>FatWeb</div>
+                        <span id={'slogan'} className={'slogan'}>
+                            {slogan || <>&nbsp;</>}
+                        </span>
+                    </div>
+                    <div className={'scroll-to-down'}>
+                        <Icon
+                            component={IconFatwebDown}
+                            style={{ fontSize: '1.8em', color: '#666' }}
+                        />
+                    </div>
+                </FitCenter>
+            </FitFullScreen>
         </>
     )
 }

@@ -1,9 +1,17 @@
 import React from 'react'
 
-const FitFullScreen: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
+const FitFullScreen: React.FC<FitFullscreenProps> = (props: FitFullscreenProps) => {
     return (
         <>
-            <div id={'fit-fullscreen'}>{props.children}</div>
+            <div
+                id={'fit-fullscreen'}
+                style={{
+                    zIndex: props.zIndex,
+                    backgroundColor: props.backgroundColor
+                }}
+            >
+                {props.children}
+            </div>
         </>
     )
 }

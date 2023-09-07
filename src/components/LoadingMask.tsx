@@ -7,7 +7,7 @@ const LoadingMask: React.FC = () => {
     const loadingIcon = (
         <>
             <Icon
-                component={IconFatwebLoading as React.ComponentType}
+                component={IconFatwebLoading}
                 style={{ fontSize: 24, color: COLOR_FONT_MAIN }}
                 spin
             />
