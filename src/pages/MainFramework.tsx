@@ -33,7 +33,7 @@ const MainFramework: React.FC = () => {
                             <ul className={'menu'}>
                                 {routeChildren?.map((route) => {
                                     return (
-                                        <li className={'item'}>
+                                        <li className={'item'} key={route.id}>
                                             <NavLink
                                                 to={route.path ?? ''}
                                                 className={({ isActive, isPending }) =>
