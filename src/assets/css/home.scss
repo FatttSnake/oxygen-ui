@@ -1,0 +1,44 @@
+@use "mixins" as mixins;
+
+.center-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.big-logo {
+  font: {
+    size: 5em;
+    weight: bold;
+  };
+  color: #666;
+}
+
+.slogan {
+  font: {
+    size: 1.3em;
+    style: italic;
+  };
+  color: #666;
+}
+
+.scroll-to-down {
+  position: absolute;
+  bottom: 20px;
+  animation: 1.5s infinite;
+  @include mixins.unique-keyframes {
+    0%,
+    100% {
+      -ms-filter: none;
+      filter: none;
+      opacity: 1;
+      transform: translateY(10px);
+    }
+
+    50% {
+      -ms-filter: alpha(opacity=40);
+      filter: alpha(opacity=40);
+      opacity: .4;
+      transform: translateY(-10px);
+    }
+  }
+}
