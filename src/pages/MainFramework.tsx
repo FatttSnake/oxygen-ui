@@ -2,6 +2,7 @@ import React, { createContext } from 'react'
 import '@/assets/css/header.scss'
 import LoadingMask from '@/components/LoadingMask.tsx'
 import router from '@/router'
+import HideScrollbar from '@/components/HideScrollbar.tsx'
 
 export const MainFrameworkContext = createContext<{
     navbarHiddenState: {
@@ -22,45 +23,47 @@ const MainFramework: React.FC = () => {
 
     return (
         <>
-            <div className={'body'}>
-                <header className={'nav ' + (navbarHidden ? 'hide' : '')}>
-                    <a className={'logo'} href={'https://fatweb.top'}>
-                        <span className={'title'}>FatWeb</span>
-                    </a>
-                    <nav>
-                        <ul className={'menu'}>
-                            {routeChildren?.map((route) => {
-                                return (
-                                    <li className={'item'}>
-                                        <NavLink
-                                            to={route.path ?? ''}
-                                            className={({ isActive, isPending }) =>
-                                                isPending ? 'pending' : isActive ? 'active' : ''
-                                            }
-                                        >
-                                            {(route.handle as RouteHandle).name}
-                                        </NavLink>
-                                    </li>
-                                )
-                            })}
-                        </ul>
-                    </nav>
-                </header>
+            <HideScrollbar>
+                <div className={'body'}>
+                    <header className={'nav ' + (navbarHidden ? 'hide' : '')}>
+                        <a className={'logo'} href={'https://fatweb.top'}>
+                            <span className={'title'}>FatWeb</span>
+                        </a>
+                        <nav>
+                            <ul className={'menu'}>
+                                {routeChildren?.map((route) => {
+                                    return (
+                                        <li className={'item'}>
+                                            <NavLink
+                                                to={route.path ?? ''}
+                                                className={({ isActive, isPending }) =>
+                                                    isPending ? 'pending' : isActive ? 'active' : ''
+                                                }
+                                            >
+                                                {(route.handle as RouteHandle).name}
+                                            </NavLink>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
+                        </nav>
+                    </header>
 
-                <MainFrameworkContext.Provider
-                    value={{ navbarHiddenState: { navbarHidden, setNavbarHidden } }}
-                >
-                    <Suspense
-                        fallback={
-                            <>
-                                <LoadingMask />
-                            </>
-                        }
+                    <MainFrameworkContext.Provider
+                        value={{ navbarHiddenState: { navbarHidden, setNavbarHidden } }}
                     >
-                        <Outlet />
-                    </Suspense>
-                </MainFrameworkContext.Provider>
-            </div>
+                        <Suspense
+                            fallback={
+                                <>
+                                    <LoadingMask />
+                                </>
+                            }
+                        >
+                            <Outlet />
+                        </Suspense>
+                    </MainFrameworkContext.Provider>
+                </div>
+            </HideScrollbar>
         </>
     )
 }

@@ -44,6 +44,7 @@ const Home: React.FC = () => {
                     </div>
                 </FitCenter>
             </FitFullScreen>
+            <FitFullScreen />
         </>
     )
 }
