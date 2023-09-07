@@ -1,18 +1,25 @@
 /// <reference types="vite/client" />
 
-type Captcha = {
-    value: string
-    base64Src: string
+type RouteHandle = {
+    name?: string
+    menu?: boolean
+    auth?: boolean
 }
 
-type RouteHandle = {
-    auth: boolean
+interface FitFullscreenProps extends PropsWithChildren {
+    zIndex?: number
+    backgroundColor?: string
 }
 
 type _Response<T> = {
     code: number
     msg: string
     data: T | null
+}
+
+type Captcha = {
+    value: string
+    base64Src: string
 }
 
 type Token = {

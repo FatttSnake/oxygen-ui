@@ -1,6 +1,7 @@
 import React, { createContext } from 'react'
 import '@/assets/css/header.scss'
 import LoadingMask from '@/components/LoadingMask.tsx'
+import router from '@/router'
 
 export const MainFrameworkContext = createContext<{
     navbarHiddenState: {
@@ -16,6 +17,8 @@ export const MainFrameworkContext = createContext<{
 
 const MainFramework: React.FC = () => {
     const [navbarHidden, setNavbarHidden] = useState(false)
+    const routeId = useMatches()[1].id
+    const routeChildren = router.routes[0].children?.find((value) => value.id === routeId)?.children
 
     return (
         <>
@@ -26,36 +29,20 @@ const MainFramework: React.FC = () => {
                     </a>
                     <nav>
                         <ul className={'menu'}>
-                            <li className={'item'}>
-                                <NavLink
-                                    to={''}
-                                    className={({ isActive, isPending }) =>
-                                        isPending ? 'pending' : isActive ? 'active' : ''
-                                    }
-                                >
-                                    主页
-                                </NavLink>
-                            </li>
-                            <li className={'item'}>
-                                <NavLink
-                                    to={'https://blog.fatweb.top'}
-                                    className={({ isActive, isPending }) =>
-                                        isPending ? 'pending' : isActive ? 'active' : ''
-                                    }
-                                >
-                                    博客
-                                </NavLink>
-                            </li>
-                            <li className={'item'}>
-                                <NavLink
-                                    to={'project'}
-                                    className={({ isActive, isPending }) =>
-                                        isPending ? 'pending' : isActive ? 'active' : ''
-                                    }
-                                >
-                                    App
-                                </NavLink>
-                            </li>
+                            {routeChildren?.map((route) => {
+                                return (
+                                    <li className={'item'}>
+                                        <NavLink
+                                            to={route.path ?? ''}
+                                            className={({ isActive, isPending }) =>
+                                                isPending ? 'pending' : isActive ? 'active' : ''
+                                            }
+                                        >
+                                            {(route.handle as RouteHandle).name}
+                                        </NavLink>
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </nav>
                 </header>

@@ -25,6 +25,17 @@ const routes: RouteObject[] = [
                         id: 'home',
                         Component: React.lazy(() => import('@/components/Home')),
                         handle: {
+                            name: '主页',
+                            menu: true,
+                            auth: false
+                        }
+                    },
+                    {
+                        path: 'https://blog.fatweb.top',
+                        id: 'blog',
+                        handle: {
+                            name: '博客',
+                            menu: true,
                             auth: false
                         }
                     },
@@ -33,6 +44,8 @@ const routes: RouteObject[] = [
                         id: 'project',
                         Component: React.lazy(() => import('@/components/Project')),
                         handle: {
+                            name: '项目',
+                            menu: true,
                             auth: false
                         }
                     }
