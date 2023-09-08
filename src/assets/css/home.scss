@@ -21,9 +21,10 @@
   color: #666;
 }
 
-.scroll-to-down {
+.scroll-down {
   position: absolute;
-  bottom: 20px;
+  bottom: 10px;
+  padding: 20px;
   animation: 1.5s infinite;
   @include mixins.unique-keyframes {
     0%,

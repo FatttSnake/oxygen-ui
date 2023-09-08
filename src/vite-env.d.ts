@@ -6,11 +6,6 @@ type RouteHandle = {
     auth?: boolean
 }
 
-interface FitFullscreenProps extends PropsWithChildren {
-    zIndex?: number
-    backgroundColor?: string
-}
-
 type _Response<T> = {
     code: number
     msg: string
