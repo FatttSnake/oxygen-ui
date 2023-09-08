@@ -1,10 +1,16 @@
-import React, { PropsWithChildren } from 'react'
+import React from 'react'
 import '@/assets/css/hide-scrollbar.scss'
 
-const HideScrollbar: React.FC<PropsWithChildren> = (prop: PropsWithChildren) => {
+interface HideScrollbarProps extends PropsWithChildren {
+    getHideScrollbarRef: (hideScrollbarRef: RefObject<HTMLElement>) => void
+}
+
+const HideScrollbar: React.FC<HideScrollbarProps> = (props) => {
     const hideScrollbarRef = useRef<HTMLDivElement>(null)
     const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0)
     const [horizontalScrollbarWidth, setHorizontalScrollbarWidth] = useState(0)
+
+    props.getHideScrollbarRef(hideScrollbarRef)
 
     useEffect(() => {
         const hideScrollbarElement = hideScrollbarRef.current
@@ -21,10 +27,14 @@ const HideScrollbar: React.FC<PropsWithChildren> = (prop: PropsWithChildren) => 
             return windowResizeListener
         }
 
+        setTimeout(() => {
+            windowResizeListener()
+        }, 1000)
+
         window.addEventListener('resize', windowResizeListener())
 
         return () => {
-            window.removeEventListener('resize', windowResizeListener())
+            window.removeEventListener('resize', windowResizeListener)
         }
     }, [])
 
@@ -38,7 +48,7 @@ const HideScrollbar: React.FC<PropsWithChildren> = (prop: PropsWithChildren) => 
                     height: `calc(100vh + ${horizontalScrollbarWidth}px`
                 }}
             >
-                {prop.children}
+                {props.children}
             </div>
         </>
     )

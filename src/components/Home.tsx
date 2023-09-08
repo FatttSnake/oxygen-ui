@@ -3,8 +3,14 @@ import '@/assets/css/home.scss'
 import FitFullScreen from '@/components/FitFullScreen.tsx'
 import FitCenter from '@/components/FitCenter.tsx'
 import Icon from '@ant-design/icons'
+import { MainFrameworkContext } from '@/pages/MainFramework.tsx'
 
 const Home: React.FC = () => {
+    const {
+        controllers: { scrollY }
+    } = useContext(MainFrameworkContext)
+    const fitFullScreenRef = useRef<HTMLDivElement>(null)
+
     const [slogan, setSlogan] = useState('')
     const [sloganType, setSloganType] = useState(true)
     const typeText = '/* 因为热爱 所以折腾 */'
@@ -26,9 +32,13 @@ const Home: React.FC = () => {
         }, 50)
     }
 
+    const handleScrollDown = () => {
+        scrollY(1000)
+    }
+
     return (
         <>
-            <FitFullScreen zIndex={100} backgroundColor={'#FBFBFB'}>
+            <FitFullScreen zIndex={100} backgroundColor={'#FBFBFB'} ref={fitFullScreenRef}>
                 <FitCenter>
                     <div className={'center-box'}>
                         <div className={'big-logo'}>FatWeb</div>
@@ -36,7 +46,7 @@ const Home: React.FC = () => {
                             {slogan || <>&nbsp;</>}
                         </span>
                     </div>
-                    <div className={'scroll-to-down'}>
+                    <div className={'scroll-down'} onClick={handleScrollDown}>
                         <Icon
                             component={IconFatwebDown}
                             style={{ fontSize: '1.8em', color: '#666' }}
