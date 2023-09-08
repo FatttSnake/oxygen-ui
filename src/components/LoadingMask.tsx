@@ -16,7 +16,7 @@ const LoadingMask: React.FC = () => {
     return (
         <>
             <FitFullScreen>
-                <div id={'loading-mask'}>
+                <div className={'loading-mask'}>
                     <AntdSpin indicator={loadingIcon} />
                 </div>
             </FitFullScreen>

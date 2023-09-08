@@ -4,7 +4,7 @@ const FitFullScreen: React.FC<FitFullscreenProps> = (props: FitFullscreenProps) 
     return (
         <>
             <div
-                id={'fit-fullscreen'}
+                className={'fit-fullscreen'}
                 style={{
                     zIndex: props.zIndex,
                     backgroundColor: props.backgroundColor
