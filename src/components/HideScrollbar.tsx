@@ -21,10 +21,14 @@ const HideScrollbar: React.FC<PropsWithChildren> = (prop: PropsWithChildren) => 
             return windowResizeListener
         }
 
+        setTimeout(() => {
+            windowResizeListener()
+        }, 1000)
+
         window.addEventListener('resize', windowResizeListener())
 
         return () => {
-            window.removeEventListener('resize', windowResizeListener())
+            window.removeEventListener('resize', windowResizeListener)
         }
     }, [])
 
