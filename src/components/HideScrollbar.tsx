@@ -1,19 +1,130 @@
-import React from 'react'
 import '@/assets/css/hide-scrollbar.scss'
 
-interface HideScrollbarProps extends PropsWithChildren {
-    getHideScrollbarRef: (hideScrollbarRef: RefObject<HTMLElement>) => void
+export interface HideScrollbarElement {
+    scrollTo(x: number, y: number): void
+    scrollX(x: number): void
+    scrollY(y: number): void
+    scrollLeft(length: number): void
+    scrollRight(length: number): void
+    scrollUp(length: number): void
+    scrollDown(length: number): void
+    getX(): number
+    getY(): number
+    addEventListenerWithType<K extends keyof HTMLElementEventMap>(
+        type: K,
+        listener: (this: HTMLDivElement, ev: HTMLElementEventMap[K]) => never,
+        options?: boolean | AddEventListenerOptions
+    ): void
+    addEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: boolean | AddEventListenerOptions
+    ): void
+    removeEventListenerWithType<K extends keyof HTMLElementEventMap>(
+        type: K,
+        listener: (this: HTMLDivElement, ev: HTMLElementEventMap[K]) => never,
+        options?: boolean | EventListenerOptions
+    ): void
+    removeEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: boolean | EventListenerOptions
+    ): void
 }
 
-const HideScrollbar: React.FC<HideScrollbarProps> = (props) => {
-    const hideScrollbarRef = useRef<HTMLDivElement>(null)
+const HideScrollbar = forwardRef<HideScrollbarElement, PropsWithChildren>((props, ref) => {
+    const rootRef = useRef<HTMLDivElement>(null)
     const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0)
     const [horizontalScrollbarWidth, setHorizontalScrollbarWidth] = useState(0)
 
-    props.getHideScrollbarRef(hideScrollbarRef)
+    useImperativeHandle<HideScrollbarElement, HideScrollbarElement>(
+        ref,
+        () => {
+            return {
+                scrollTo(x, y) {
+                    rootRef.current?.scrollTo({
+                        left: x,
+                        top: y,
+                        behavior: 'smooth'
+                    })
+                },
+                scrollX(x) {
+                    rootRef.current?.scrollTo({
+                        left: x,
+                        behavior: 'smooth'
+                    })
+                },
+                scrollY(y) {
+                    rootRef.current?.scrollTo({
+                        top: y,
+                        behavior: 'smooth'
+                    })
+                },
+                scrollLeft(length) {
+                    rootRef.current?.scrollTo({
+                        left: rootRef.current?.scrollLeft - length,
+                        behavior: 'smooth'
+                    })
+                },
+                scrollRight(length) {
+                    rootRef.current?.scrollTo({
+                        left: rootRef.current?.scrollLeft + length,
+                        behavior: 'smooth'
+                    })
+                },
+                scrollUp(length) {
+                    rootRef.current?.scrollTo({
+                        top: rootRef.current?.scrollTop - length,
+                        behavior: 'smooth'
+                    })
+                },
+                scrollDown(length) {
+                    rootRef.current?.scrollTo({
+                        top: rootRef.current?.scrollTop + length,
+                        behavior: 'smooth'
+                    })
+                },
+                getX() {
+                    return rootRef.current?.scrollLeft ?? 0
+                },
+                getY() {
+                    return rootRef.current?.scrollTop ?? 0
+                },
+                addEventListenerWithType<K extends keyof HTMLElementEventMap>(
+                    type: K,
+                    listener: (this: HTMLDivElement, ev: HTMLElementEventMap[K]) => never,
+                    options?: boolean | AddEventListenerOptions
+                ): void {
+                    rootRef.current?.addEventListener<K>(type, listener, options)
+                },
+                addEventListener(
+                    type: string,
+                    listener: EventListenerOrEventListenerObject,
+                    options?: boolean | AddEventListenerOptions
+                ): void {
+                    rootRef.current?.addEventListener(type, listener, options)
+                },
+                removeEventListenerWithType<K extends keyof HTMLElementEventMap>(
+                    type: K,
+                    listener: (this: HTMLDivElement, ev: HTMLElementEventMap[K]) => never,
+                    options?: boolean | EventListenerOptions
+                ): void {
+                    rootRef.current?.removeEventListener<K>(type, listener, options)
+                },
+                removeEventListener(
+                    type: string,
+                    listener: EventListenerOrEventListenerObject,
+                    options?: boolean | EventListenerOptions
+                ): void {
+                    rootRef.current?.removeEventListener(type, listener, options)
+                }
+            }
+        },
+        []
+    )
 
     useEffect(() => {
-        const hideScrollbarElement = hideScrollbarRef.current
+        const hideScrollbarElement = rootRef.current
 
         const windowResizeListener = () => {
             setVerticalScrollbarWidth(
@@ -41,7 +152,7 @@ const HideScrollbar: React.FC<HideScrollbarProps> = (props) => {
     return (
         <>
             <div
-                ref={hideScrollbarRef}
+                ref={rootRef}
                 id={'hide-scrollbar'}
                 style={{
                     width: `calc(100vw + ${verticalScrollbarWidth}px)`,
@@ -52,6 +163,6 @@ const HideScrollbar: React.FC<HideScrollbarProps> = (props) => {
             </div>
         </>
     )
-}
+})
 
 export default HideScrollbar
