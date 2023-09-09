@@ -7,7 +7,8 @@ import { MainFrameworkContext } from '@/pages/MainFramework.tsx'
 
 const Home: React.FC = () => {
     const {
-        controllers: { scrollY }
+        hideScrollbarRef,
+        navbarHiddenState: { navbarHidden, setNavbarHidden }
     } = useContext(MainFrameworkContext)
     const fitFullScreenRef = useRef<HTMLDivElement>(null)
 
@@ -33,8 +34,31 @@ const Home: React.FC = () => {
     }
 
     const handleScrollDown = () => {
-        scrollY(1000)
+        hideScrollbarRef.current?.scrollY(fitFullScreenRef.current?.offsetHeight ?? 0)
     }
+
+    useEffect(() => {
+        const hideScrollbarDOM = hideScrollbarRef.current
+        const scrollListener = () => {
+            if (
+                hideScrollbarDOM &&
+                fitFullScreenRef.current &&
+                hideScrollbarDOM.getY() < fitFullScreenRef.current?.offsetHeight
+            ) {
+                if (!navbarHidden) {
+                    setNavbarHidden(true)
+                }
+            } else {
+                if (navbarHidden) {
+                    setNavbarHidden(false)
+                }
+            }
+        }
+        hideScrollbarDOM?.addEventListener('scroll', scrollListener)
+        return () => {
+            hideScrollbarDOM?.removeEventListener('scroll', scrollListener)
+        }
+    }, [hideScrollbarRef, navbarHidden, setNavbarHidden])
 
     return (
         <>
@@ -54,6 +78,7 @@ const Home: React.FC = () => {
                     </div>
                 </FitCenter>
             </FitFullScreen>
+            <FitFullScreen />
             <FitFullScreen />
         </>
     )

@@ -1,12 +1,9 @@
-import React from 'react'
-
 interface FitFullscreenProps extends PropsWithChildren {
     zIndex?: number
     backgroundColor?: string
-    ref?: RefObject<HTMLDivElement>
 }
 
-const FitFullScreen: React.FC<FitFullscreenProps> = (props) => {
+const FitFullScreen = forwardRef<HTMLDivElement, FitFullscreenProps>((props, ref) => {
     return (
         <>
             <div
@@ -15,11 +12,12 @@ const FitFullScreen: React.FC<FitFullscreenProps> = (props) => {
                     zIndex: props.zIndex,
                     backgroundColor: props.backgroundColor
                 }}
+                ref={ref}
             >
                 {props.children}
             </div>
         </>
     )
-}
+})
 
 export default FitFullScreen
