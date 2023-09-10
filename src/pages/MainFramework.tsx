@@ -25,11 +25,16 @@ const MainFramework: React.FC = () => {
     const routeId = useMatches()[1].id
     const routeChildren = router.routes[0].children?.find((value) => value.id === routeId)?.children
 
+    const pathname = useLocation().pathname
+    useEffect(() => {
+        setNavbarHidden(false)
+    }, [pathname])
+
     return (
         <>
             <HideScrollbar ref={hideScrollbarRef}>
                 <div className={'body'}>
-                    <header className={'nav ' + (navbarHidden ? 'hide' : '')}>
+                    <header className={'nav' + (navbarHidden ? ' hide' : '')}>
                         <a className={'logo'} href={'https://fatweb.top'}>
                             <span className={'title'}>FatWeb</span>
                         </a>
