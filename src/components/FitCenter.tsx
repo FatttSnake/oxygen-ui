@@ -1,4 +1,5 @@
 import React from 'react'
+import '@/assets/css/fit-center.scss'
 
 const FitCenter: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
     return (
