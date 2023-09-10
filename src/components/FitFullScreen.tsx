@@ -1,3 +1,5 @@
+import '@/assets/css/fit-fullscreen.scss'
+
 interface FitFullscreenProps extends PropsWithChildren {
     zIndex?: number
     backgroundColor?: string

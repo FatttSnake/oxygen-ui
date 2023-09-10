@@ -103,28 +103,3 @@ $font-secondary-color: #9E9E9E;
     height: 23px;
   }
 }
-
-.loading-mask {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  z-index: 100;
-  background-color: rgba(200, 200, 200, 0.2);
-}
-
-.fit-fullscreen {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-}
-
-.fit-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
