@@ -11,9 +11,11 @@ const Home: React.FC = () => {
         navbarHiddenState: { navbarHidden, setNavbarHidden }
     } = useContext(MainFrameworkContext)
     const fitFullScreenRef = useRef<HTMLDivElement>(null)
+    const pathname = useLocation().pathname
 
     const [slogan, setSlogan] = useState('')
     const [sloganType, setSloganType] = useState(true)
+
     const typeText = '/* 因为热爱 所以折腾 */'
     if (sloganType) {
         setTimeout(() => {
@@ -33,36 +35,42 @@ const Home: React.FC = () => {
         }, 50)
     }
 
-    const handleScrollDown = () => {
-        hideScrollbarRef.current?.scrollY(fitFullScreenRef.current?.offsetHeight ?? 0)
-    }
-
-    useEffect(() => {
-        const hideScrollbarDOM = hideScrollbarRef.current
-        const scrollListener = () => {
-            if (
-                hideScrollbarDOM &&
-                fitFullScreenRef.current &&
-                hideScrollbarDOM.getY() < fitFullScreenRef.current?.offsetHeight
-            ) {
-                if (!navbarHidden) {
-                    setNavbarHidden(true)
-                }
-            } else {
-                if (navbarHidden) {
-                    setNavbarHidden(false)
-                }
+    const hideScrollbarDOM = hideScrollbarRef.current
+    const scrollListener = useCallback(() => {
+        if (
+            hideScrollbarDOM &&
+            fitFullScreenRef.current &&
+            hideScrollbarDOM.getY() < fitFullScreenRef.current?.offsetHeight
+        ) {
+            if (!navbarHidden) {
+                setNavbarHidden(true)
+            }
+        } else {
+            if (navbarHidden) {
+                setNavbarHidden(false)
             }
         }
+    }, [hideScrollbarDOM, navbarHidden, setNavbarHidden])
+
+    useEffect(() => {
+        hideScrollbarDOM?.removeEventListener('scroll', scrollListener)
         hideScrollbarDOM?.addEventListener('scroll', scrollListener)
         return () => {
             hideScrollbarDOM?.removeEventListener('scroll', scrollListener)
         }
-    }, [hideScrollbarRef, navbarHidden, setNavbarHidden])
+    }, [hideScrollbarDOM, scrollListener])
+
+    useEffect(() => {
+        scrollListener()
+    }, [pathname, scrollListener])
+
+    const handleScrollDown = () => {
+        hideScrollbarRef.current?.scrollY(fitFullScreenRef.current?.offsetHeight ?? 0)
+    }
 
     return (
         <>
-            <FitFullScreen zIndex={100} backgroundColor={'#FBFBFB'} ref={fitFullScreenRef}>
+            <FitFullScreen backgroundColor={'#FBFBFB'} ref={fitFullScreenRef}>
                 <FitCenter>
                     <div className={'center-box'}>
                         <div className={'big-logo'}>FatWeb</div>
