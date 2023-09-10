@@ -151,15 +151,17 @@ const HideScrollbar = forwardRef<HideScrollbarElement, PropsWithChildren>((props
 
     return (
         <>
-            <div
-                ref={rootRef}
-                id={'hide-scrollbar'}
-                style={{
-                    width: `calc(100vw + ${verticalScrollbarWidth}px)`,
-                    height: `calc(100vh + ${horizontalScrollbarWidth}px`
-                }}
-            >
-                {props.children}
+            <div className={'hide-scrollbar-mask'}>
+                <div
+                    ref={rootRef}
+                    className={'hide-scrollbar-selection'}
+                    style={{
+                        width: `calc(100vw + ${verticalScrollbarWidth}px)`,
+                        height: `calc(100vh + ${horizontalScrollbarWidth}px`
+                    }}
+                >
+                    {props.children}
+                </div>
             </div>
         </>
     )
