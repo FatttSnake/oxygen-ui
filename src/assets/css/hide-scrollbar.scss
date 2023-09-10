@@ -7,4 +7,10 @@
 .hide-scrollbar-selection {
   position: relative;
   overflow: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar-selection::-webkit-scrollbar {
+  display: none;
 }
