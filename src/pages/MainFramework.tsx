@@ -35,7 +35,7 @@ const MainFramework: React.FC = () => {
     const hideScrollbarRef = useRef<HideScrollbarElement>(null)
 
     const [navbarHidden, setNavbarHidden] = useState(true)
-    const [preventScroll, setPreventScroll] = useState(true)
+    const [preventScroll, setPreventScroll] = useState(false)
 
     useEffect(() => {
         setNavbarHidden(false)

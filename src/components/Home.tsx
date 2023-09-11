@@ -12,11 +12,9 @@ const Home: React.FC = () => {
         preventScrollState: { setPreventScroll }
     } = useContext(MainFrameworkContext)
     const fitFullScreenRef = useRef<HTMLDivElement>(null)
-    const pathname = useLocation().pathname
 
     const [slogan, setSlogan] = useState('')
     const [sloganType, setSloganType] = useState(true)
-    const [showSlogan, setShowSlogan] = useState(true)
 
     const typeText = '/* 因为热爱 所以折腾 */'
     if (sloganType) {
@@ -40,44 +38,27 @@ const Home: React.FC = () => {
     useEffect(() => {
         setTimeout(() => {
             setNavbarHidden(true)
+            setPreventScroll(true)
         })
-    }, [setNavbarHidden])
-
-    useEffect(() => {
-        setNavbarHidden(true)
-    }, [pathname, setNavbarHidden])
+    }, [setNavbarHidden, setPreventScroll])
 
     const handleScrollToDown = () => {
         hideScrollbarRef.current?.scrollY(fitFullScreenRef.current?.offsetHeight ?? 0)
+        setNavbarHidden(false)
     }
 
     const handleScrollToTop = () => {
         hideScrollbarRef.current?.scrollY(0)
+        setNavbarHidden(true)
     }
 
     const handleWheel = (event: React.WheelEvent) => {
-        if (showSlogan) {
-            if (event.deltaY > 0) {
-                handleScrollToDown()
-                setPreventScroll(false)
-                setShowSlogan(false)
-                setNavbarHidden(false)
-            }
+        if (event.deltaY > 0) {
+            handleScrollToDown()
+            setNavbarHidden(false)
         } else {
-            console.log(
-                hideScrollbarRef.current?.getY() + ' ' + fitFullScreenRef.current?.offsetHeight
-            )
-            if (
-                hideScrollbarRef.current &&
-                fitFullScreenRef.current &&
-                hideScrollbarRef.current.getY() < fitFullScreenRef.current.offsetHeight
-            ) {
-                console.log('上翻')
-                setPreventScroll(true)
-                setShowSlogan(true)
-                setNavbarHidden(true)
-                handleScrollToTop()
-            }
+            handleScrollToTop()
+            setNavbarHidden(true)
         }
     }
 
