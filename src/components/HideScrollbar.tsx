@@ -1,4 +1,10 @@
+import React from 'react'
 import '@/assets/css/hide-scrollbar.scss'
+
+interface HideScrollbarProps
+    extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+    isPreventScroll?: boolean
+}
 
 export interface HideScrollbarElement {
     scrollTo(x: number, y: number): void
@@ -32,10 +38,45 @@ export interface HideScrollbarElement {
     ): void
 }
 
-const HideScrollbar = forwardRef<HideScrollbarElement, PropsWithChildren>((props, ref) => {
+const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((props, ref) => {
     const rootRef = useRef<HTMLDivElement>(null)
     const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0)
     const [horizontalScrollbarWidth, setHorizontalScrollbarWidth] = useState(0)
+
+    const { isPreventScroll, ..._props } = props
+
+    const handleDefaultWheel = (event: WheelEvent) => {
+        event.preventDefault()
+    }
+
+    const handleDefaultTouchmove = (event: TouchEvent) => {
+        event.preventDefault()
+    }
+
+    const handleDefaultClickMiddleMouseButton = (event: MouseEvent) => {
+        if (event.button === 1) {
+            event.preventDefault()
+        }
+    }
+
+    const handleDefaultKeyDown = (event: KeyboardEvent) => {
+        if (
+            [
+                'ArrowUp',
+                'ArrowDown',
+                'ArrowLeft',
+                'ArrowRight',
+                ' ',
+                '',
+                'PageUp',
+                'PageDown',
+                'Home',
+                'End'
+            ].find((value) => value === event.key)
+        ) {
+            event.preventDefault()
+        }
+    }
 
     useImperativeHandle<HideScrollbarElement, HideScrollbarElement>(
         ref,
@@ -143,11 +184,24 @@ const HideScrollbar = forwardRef<HideScrollbarElement, PropsWithChildren>((props
         }, 1000)
 
         window.addEventListener('resize', windowResizeListener())
+        if (isPreventScroll) {
+            rootRef.current?.addEventListener('wheel', handleDefaultWheel, { passive: false })
+            rootRef.current?.addEventListener('touchmove', handleDefaultTouchmove, {
+                passive: false
+            })
+            rootRef.current?.addEventListener('mousedown', handleDefaultClickMiddleMouseButton)
+            rootRef.current?.addEventListener('keydown', handleDefaultKeyDown)
+        } else {
+            rootRef.current?.removeEventListener('wheel', handleDefaultWheel)
+            rootRef.current?.removeEventListener('touchmove', handleDefaultTouchmove)
+            rootRef.current?.removeEventListener('mousedown', handleDefaultClickMiddleMouseButton)
+            rootRef.current?.removeEventListener('keydown', handleDefaultKeyDown)
+        }
 
         return () => {
             window.removeEventListener('resize', windowResizeListener)
         }
-    }, [])
+    }, [isPreventScroll])
 
     return (
         <>
@@ -155,10 +209,12 @@ const HideScrollbar = forwardRef<HideScrollbarElement, PropsWithChildren>((props
                 <div
                     ref={rootRef}
                     className={'hide-scrollbar-selection'}
+                    tabIndex={0}
                     style={{
                         width: `calc(100vw + ${verticalScrollbarWidth}px)`,
                         height: `calc(100vh + ${horizontalScrollbarWidth}px`
                     }}
+                    {..._props}
                 >
                     {props.children}
                 </div>

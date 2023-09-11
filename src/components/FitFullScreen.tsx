@@ -1,6 +1,7 @@
+import React from 'react'
 import '@/assets/css/fit-fullscreen.scss'
 
-interface FitFullscreenProps extends PropsWithChildren {
+interface FitFullscreenProps extends React.PropsWithChildren {
     zIndex?: number
     backgroundColor?: string
 }
