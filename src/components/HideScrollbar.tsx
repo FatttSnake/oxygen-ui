@@ -44,20 +44,19 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
     const [horizontalScrollbarWidth, setHorizontalScrollbarWidth] = useState(0)
 
     const { isPreventScroll, ..._props } = props
-
-    const handleDefaultWheel = (event: WheelEvent) => {
+    const handleDefaultWheel = useCallback((event: WheelEvent) => {
         event.preventDefault()
-    }
+    }, [])
 
-    const handleDefaultTouchmove = (event: TouchEvent) => {
+    const handleDefaultTouchmove = useCallback((event: TouchEvent) => {
         event.preventDefault()
-    }
+    }, [])
 
-    const handleDefaultClickMiddleMouseButton = (event: MouseEvent) => {
+    const handleDefaultClickMiddleMouseButton = useCallback((event: MouseEvent) => {
         if (event.button === 1) {
             event.preventDefault()
         }
-    }
+    }, [])
 
     const handleDefaultKeyDown = (event: KeyboardEvent) => {
         if (
