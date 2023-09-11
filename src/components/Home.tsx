@@ -8,13 +8,15 @@ import { MainFrameworkContext } from '@/pages/MainFramework.tsx'
 const Home: React.FC = () => {
     const {
         hideScrollbarRef,
-        navbarHiddenState: { navbarHidden, setNavbarHidden }
+        navbarHiddenState: { setNavbarHidden },
+        preventScrollState: { setPreventScroll }
     } = useContext(MainFrameworkContext)
     const fitFullScreenRef = useRef<HTMLDivElement>(null)
     const pathname = useLocation().pathname
 
     const [slogan, setSlogan] = useState('')
     const [sloganType, setSloganType] = useState(true)
+    const [showSlogan, setShowSlogan] = useState(true)
 
     const typeText = '/* 因为热爱 所以折腾 */'
     if (sloganType) {
@@ -35,59 +37,72 @@ const Home: React.FC = () => {
         }, 50)
     }
 
-    const hideScrollbarDOM = hideScrollbarRef.current
-    const scrollListener = useCallback(() => {
-        if (
-            hideScrollbarDOM &&
-            fitFullScreenRef.current &&
-            hideScrollbarDOM.getY() < fitFullScreenRef.current?.offsetHeight
-        ) {
-            if (!navbarHidden) {
-                setNavbarHidden(true)
-            }
-        } else {
-            if (navbarHidden) {
+    useEffect(() => {
+        setTimeout(() => {
+            setNavbarHidden(true)
+        })
+    }, [setNavbarHidden])
+
+    useEffect(() => {
+        setNavbarHidden(true)
+    }, [pathname, setNavbarHidden])
+
+    const handleScrollToDown = () => {
+        hideScrollbarRef.current?.scrollY(fitFullScreenRef.current?.offsetHeight ?? 0)
+    }
+
+    const handleScrollToTop = () => {
+        hideScrollbarRef.current?.scrollY(0)
+    }
+
+    const handleWheel = (event: React.WheelEvent) => {
+        if (showSlogan) {
+            if (event.deltaY > 0) {
+                handleScrollToDown()
+                setPreventScroll(false)
+                setShowSlogan(false)
                 setNavbarHidden(false)
             }
+        } else {
+            console.log(
+                hideScrollbarRef.current?.getY() + ' ' + fitFullScreenRef.current?.offsetHeight
+            )
+            if (
+                hideScrollbarRef.current &&
+                fitFullScreenRef.current &&
+                hideScrollbarRef.current.getY() < fitFullScreenRef.current.offsetHeight
+            ) {
+                console.log('上翻')
+                setPreventScroll(true)
+                setShowSlogan(true)
+                setNavbarHidden(true)
+                handleScrollToTop()
+            }
         }
-    }, [hideScrollbarDOM, navbarHidden, setNavbarHidden])
-
-    useEffect(() => {
-        hideScrollbarDOM?.removeEventListener('scroll', scrollListener)
-        hideScrollbarDOM?.addEventListener('scroll', scrollListener)
-        return () => {
-            hideScrollbarDOM?.removeEventListener('scroll', scrollListener)
-        }
-    }, [hideScrollbarDOM, scrollListener])
-
-    useEffect(() => {
-        scrollListener()
-    }, [pathname, scrollListener])
-
-    const handleScrollDown = () => {
-        hideScrollbarRef.current?.scrollY(fitFullScreenRef.current?.offsetHeight ?? 0)
     }
 
     return (
         <>
-            <FitFullScreen backgroundColor={'#FBFBFB'} ref={fitFullScreenRef}>
-                <FitCenter>
-                    <div className={'center-box'}>
-                        <div className={'big-logo'}>FatWeb</div>
-                        <span id={'slogan'} className={'slogan'}>
-                            {slogan || <>&nbsp;</>}
-                        </span>
-                    </div>
-                    <div className={'scroll-down'} onClick={handleScrollDown}>
-                        <Icon
-                            component={IconFatwebDown}
-                            style={{ fontSize: '1.8em', color: '#666' }}
-                        />
-                    </div>
-                </FitCenter>
-            </FitFullScreen>
-            <FitFullScreen />
-            <FitFullScreen />
+            <div onWheel={handleWheel}>
+                <FitFullScreen backgroundColor={'#FBFBFB'} ref={fitFullScreenRef}>
+                    <FitCenter>
+                        <div className={'center-box'}>
+                            <div className={'big-logo'}>FatWeb</div>
+                            <span id={'slogan'} className={'slogan'}>
+                                {slogan || <>&nbsp;</>}
+                            </span>
+                        </div>
+                        <div className={'scroll-down'} onClick={handleScrollToDown}>
+                            <Icon
+                                component={IconFatwebDown}
+                                style={{ fontSize: '1.8em', color: '#666' }}
+                            />
+                        </div>
+                    </FitCenter>
+                </FitFullScreen>
+                <FitFullScreen />
+                <FitFullScreen />
+            </div>
         </>
     )
 }

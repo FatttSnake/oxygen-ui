@@ -35,28 +35,15 @@ const MainFramework: React.FC = () => {
     const hideScrollbarRef = useRef<HideScrollbarElement>(null)
 
     const [navbarHidden, setNavbarHidden] = useState(true)
-    const [preventScroll, setPreventScroll] = useState(false)
+    const [preventScroll, setPreventScroll] = useState(true)
 
     useEffect(() => {
         setNavbarHidden(false)
     }, [pathname])
 
-    const handleOnWheel = useCallback((event: React.WheelEvent) => {
-        console.log(event)
-    }, [])
-
-    const handleOnScroll = useCallback((event: React.UIEvent) => {
-        console.log(event)
-    }, [])
-
     return (
         <>
-            <HideScrollbar
-                ref={hideScrollbarRef}
-                onWheel={handleOnWheel}
-                onScroll={handleOnScroll}
-                isPreventScroll={preventScroll}
-            >
+            <HideScrollbar ref={hideScrollbarRef} isPreventScroll={preventScroll}>
                 <div className={'body'}>
                     <header className={'nav' + (navbarHidden ? ' hide' : '')}>
                         <a className={'logo'} href={'https://fatweb.top'}>
