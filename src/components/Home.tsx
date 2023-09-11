@@ -53,6 +53,10 @@ const Home: React.FC = () => {
     }
 
     const handleWheel = (event: React.WheelEvent) => {
+        if (event.altKey || event.ctrlKey) {
+            return
+        }
+
         if (event.deltaY > 0) {
             handleScrollToDown()
             setNavbarHidden(false)
