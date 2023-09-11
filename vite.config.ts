@@ -35,11 +35,6 @@ export default defineConfig({
                     from: 'react-router',
                     imports: ['RouteObject'],
                     type: true
-                },
-                {
-                    from: 'react',
-                    imports: ['PropsWithChildren', 'RefObject'],
-                    type: true
                 }
             ],
 

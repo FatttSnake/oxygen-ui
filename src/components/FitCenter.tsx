@@ -1,10 +1,13 @@
 import React from 'react'
 import '@/assets/css/fit-center.scss'
 
-const FitCenter: React.FC<PropsWithChildren> = (props: PropsWithChildren) => {
+const FitCenter: React.FC<
+    React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+> = (props) => {
+    const { className, ..._props } = props
     return (
         <>
-            <div className={'fit-center'}>{props.children}</div>
+            <div className={`fit-center${className ? ' ' + className : ''}`} {..._props}></div>
         </>
     )
 }

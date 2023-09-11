@@ -9,30 +9,41 @@ export const MainFrameworkContext = createContext<{
         navbarHidden: boolean
         setNavbarHidden: (newValue: boolean) => void
     }
-    hideScrollbarRef: RefObject<HideScrollbarElement>
+    preventScrollState: {
+        preventScroll: boolean
+        setPreventScroll: (newValue: boolean) => void
+    }
+    hideScrollbarRef: React.RefObject<HideScrollbarElement>
 }>({
     navbarHiddenState: {
         navbarHidden: false,
         setNavbarHidden: () => undefined
     },
-    hideScrollbarRef: createRef()
+    hideScrollbarRef: createRef(),
+    preventScrollState: {
+        preventScroll: false,
+        setPreventScroll: () => undefined
+    }
 })
 
 const MainFramework: React.FC = () => {
-    const [navbarHidden, setNavbarHidden] = useState(true)
-
-    const hideScrollbarRef = useRef<HideScrollbarElement>(null)
     const routeId = useMatches()[1].id
     const routeChildren = router.routes[0].children?.find((value) => value.id === routeId)?.children
 
     const pathname = useLocation().pathname
+
+    const hideScrollbarRef = useRef<HideScrollbarElement>(null)
+
+    const [navbarHidden, setNavbarHidden] = useState(true)
+    const [preventScroll, setPreventScroll] = useState(false)
+
     useEffect(() => {
         setNavbarHidden(false)
     }, [pathname])
 
     return (
         <>
-            <HideScrollbar ref={hideScrollbarRef}>
+            <HideScrollbar ref={hideScrollbarRef} isPreventScroll={preventScroll}>
                 <div className={'body'}>
                     <header className={'nav' + (navbarHidden ? ' hide' : '')}>
                         <a className={'logo'} href={'https://fatweb.top'}>
@@ -61,6 +72,7 @@ const MainFramework: React.FC = () => {
                     <MainFrameworkContext.Provider
                         value={{
                             navbarHiddenState: { navbarHidden, setNavbarHidden },
+                            preventScrollState: { preventScroll, setPreventScroll },
                             hideScrollbarRef
                         }}
                     >

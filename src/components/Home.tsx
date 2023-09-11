@@ -8,10 +8,10 @@ import { MainFrameworkContext } from '@/pages/MainFramework.tsx'
 const Home: React.FC = () => {
     const {
         hideScrollbarRef,
-        navbarHiddenState: { navbarHidden, setNavbarHidden }
+        navbarHiddenState: { setNavbarHidden },
+        preventScrollState: { setPreventScroll }
     } = useContext(MainFrameworkContext)
     const fitFullScreenRef = useRef<HTMLDivElement>(null)
-    const pathname = useLocation().pathname
 
     const [slogan, setSlogan] = useState('')
     const [sloganType, setSloganType] = useState(true)
@@ -35,59 +35,55 @@ const Home: React.FC = () => {
         }, 50)
     }
 
-    const hideScrollbarDOM = hideScrollbarRef.current
-    const scrollListener = useCallback(() => {
-        if (
-            hideScrollbarDOM &&
-            fitFullScreenRef.current &&
-            hideScrollbarDOM.getY() < fitFullScreenRef.current?.offsetHeight
-        ) {
-            if (!navbarHidden) {
-                setNavbarHidden(true)
-            }
-        } else {
-            if (navbarHidden) {
-                setNavbarHidden(false)
-            }
-        }
-    }, [hideScrollbarDOM, navbarHidden, setNavbarHidden])
-
     useEffect(() => {
-        hideScrollbarDOM?.removeEventListener('scroll', scrollListener)
-        hideScrollbarDOM?.addEventListener('scroll', scrollListener)
-        return () => {
-            hideScrollbarDOM?.removeEventListener('scroll', scrollListener)
-        }
-    }, [hideScrollbarDOM, scrollListener])
+        setTimeout(() => {
+            setNavbarHidden(true)
+            setPreventScroll(true)
+        })
+    }, [setNavbarHidden, setPreventScroll])
 
-    useEffect(() => {
-        scrollListener()
-    }, [pathname, scrollListener])
-
-    const handleScrollDown = () => {
+    const handleScrollToDown = () => {
         hideScrollbarRef.current?.scrollY(fitFullScreenRef.current?.offsetHeight ?? 0)
+        setNavbarHidden(false)
+    }
+
+    const handleScrollToTop = () => {
+        hideScrollbarRef.current?.scrollY(0)
+        setNavbarHidden(true)
+    }
+
+    const handleWheel = (event: React.WheelEvent) => {
+        if (event.deltaY > 0) {
+            handleScrollToDown()
+            setNavbarHidden(false)
+        } else {
+            handleScrollToTop()
+            setNavbarHidden(true)
+        }
     }
 
     return (
         <>
-            <FitFullScreen backgroundColor={'#FBFBFB'} ref={fitFullScreenRef}>
-                <FitCenter>
-                    <div className={'center-box'}>
-                        <div className={'big-logo'}>FatWeb</div>
-                        <span id={'slogan'} className={'slogan'}>
-                            {slogan || <>&nbsp;</>}
-                        </span>
-                    </div>
-                    <div className={'scroll-down'} onClick={handleScrollDown}>
-                        <Icon
-                            component={IconFatwebDown}
-                            style={{ fontSize: '1.8em', color: '#666' }}
-                        />
-                    </div>
-                </FitCenter>
-            </FitFullScreen>
-            <FitFullScreen />
-            <FitFullScreen />
+            <div onWheel={handleWheel}>
+                <FitFullScreen backgroundColor={'#FBFBFB'} ref={fitFullScreenRef}>
+                    <FitCenter>
+                        <div className={'center-box'}>
+                            <div className={'big-logo'}>FatWeb</div>
+                            <span id={'slogan'} className={'slogan'}>
+                                {slogan || <>&nbsp;</>}
+                            </span>
+                        </div>
+                        <div className={'scroll-down'} onClick={handleScrollToDown}>
+                            <Icon
+                                component={IconFatwebDown}
+                                style={{ fontSize: '1.8em', color: '#666' }}
+                            />
+                        </div>
+                    </FitCenter>
+                </FitFullScreen>
+                <FitFullScreen />
+                <FitFullScreen />
+            </div>
         </>
     )
 }
