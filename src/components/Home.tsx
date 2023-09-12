@@ -61,6 +61,9 @@ const Home: React.FC = () => {
     }
 
     const handleScrollUp = () => {
+        if (currentContent <= 0) {
+            return
+        }
         handleScrollToContent(currentContent - 1)()
         clearTimeout(scrollTimeout.current)
         scrollTimeout.current = setTimeout(() => {
@@ -69,6 +72,9 @@ const Home: React.FC = () => {
     }
 
     const handleScrollDown = () => {
+        if (currentContent >= content.length) {
+            return
+        }
         handleScrollToContent(currentContent + 1)()
         clearTimeout(scrollTimeout.current)
         scrollTimeout.current = setTimeout(() => {
@@ -82,14 +88,8 @@ const Home: React.FC = () => {
         }
 
         if (event.deltaY > 0) {
-            if (currentContent >= content.length) {
-                return
-            }
             handleScrollDown()
         } else {
-            if (currentContent <= 0) {
-                return
-            }
             handleScrollUp()
         }
     }
