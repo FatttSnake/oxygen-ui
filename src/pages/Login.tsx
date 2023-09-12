@@ -2,7 +2,7 @@ import React from 'react'
 import { login } from '@/utils/auth.ts'
 import { LOGIN_SUCCESS, LOGIN_USERNAME_PASSWORD_ERROR } from '@/constants/Common.constants.ts'
 import { setToken } from '@/utils/common.ts'
-import '@/assets/css/login.scss'
+import '@/assets/css/pages/login.scss'
 
 const Login: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage()

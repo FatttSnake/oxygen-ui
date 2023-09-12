@@ -1,4 +1,4 @@
-@use "mixins" as mixins;
+@use "../../mixins" as mixins;
 
 .center-box {
   display: flex;
@@ -19,12 +19,30 @@
     style: italic;
   };
   color: #666;
+
+  .cursor {
+    font-style: normal;
+    animation: 1s infinite;
+
+    @include mixins.unique-keyframes {
+      0% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+  }
 }
 
 .scroll-down {
   position: absolute;
   bottom: 10px;
   padding: 20px;
+  cursor: pointer;
   animation: 1.5s infinite;
   @include mixins.unique-keyframes {
     0%,
