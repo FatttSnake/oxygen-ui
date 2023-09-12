@@ -1,8 +1,8 @@
 import React from 'react'
-import '@/assets/css/header.scss'
-import LoadingMask from '@/components/LoadingMask.tsx'
+import '@/assets/css/pages/header.scss'
 import router from '@/router'
-import HideScrollbar, { HideScrollbarElement } from '@/components/HideScrollbar.tsx'
+import LoadingMask from '@/components/common/LoadingMask'
+import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 
 export const MainFrameworkContext = createContext<{
     navbarHiddenState: {

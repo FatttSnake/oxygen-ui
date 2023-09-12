@@ -1,5 +1,5 @@
 import React from 'react'
-import '@/assets/css/hide-scrollbar.scss'
+import '@/assets/css/components/common/hide-scrollbar.scss'
 
 interface HideScrollbarProps
     extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {

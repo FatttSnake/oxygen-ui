@@ -1,5 +1,5 @@
 import React from 'react'
-import '@/assets/css/fit-center.scss'
+import '@/assets/css/components/common/fit-center.scss'
 
 const FitCenter: React.FC<
     React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>

@@ -13,7 +13,7 @@ const routes: RouteObject[] = [
             {
                 path: '/loading',
                 id: 'loading',
-                Component: React.lazy(() => import('@/components/LoadingMask'))
+                Component: React.lazy(() => import('@/components/common/LoadingMask'))
             },
             {
                 path: '',
@@ -23,7 +23,7 @@ const routes: RouteObject[] = [
                     {
                         path: '',
                         id: 'home',
-                        Component: React.lazy(() => import('@/components/Home')),
+                        Component: React.lazy(() => import('@/components/home')),
                         handle: {
                             name: '主页',
                             menu: true,
