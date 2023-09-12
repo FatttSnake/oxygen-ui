@@ -13,7 +13,8 @@ const Home: React.FC = () => {
     } = useContext(MainFrameworkContext)
     const fitFullScreenRef = useRef<HTMLDivElement>(null)
 
-    const scrollTimeout = useRef<number>()
+    const scrollTimeout = useRef(0)
+    const touchStart = useRef(0)
 
     const [slogan, setSlogan] = useState('')
     const [sloganType, setSloganType] = useState(true)
@@ -59,6 +60,22 @@ const Home: React.FC = () => {
         }
     }
 
+    const handleScrollUp = () => {
+        handleScrollToContent(currentContent - 1)()
+        clearTimeout(scrollTimeout.current)
+        scrollTimeout.current = setTimeout(() => {
+            setCurrentContent(currentContent - 1)
+        }, 500)
+    }
+
+    const handleScrollDown = () => {
+        handleScrollToContent(currentContent + 1)()
+        clearTimeout(scrollTimeout.current)
+        scrollTimeout.current = setTimeout(() => {
+            setCurrentContent(currentContent + 1)
+        }, 500)
+    }
+
     const handleWheel = (event: React.WheelEvent) => {
         if (event.altKey || event.ctrlKey) {
             return
@@ -68,22 +85,29 @@ const Home: React.FC = () => {
             if (currentContent >= content.length) {
                 return
             }
-            handleScrollToContent(currentContent + 1)()
-            clearTimeout(scrollTimeout.current ?? 0)
-            scrollTimeout.current = setTimeout(() => {
-                setCurrentContent(currentContent + 1)
-                console.log(`up ${currentContent + 1}`)
-            }, 500)
+            handleScrollDown()
         } else {
             if (currentContent <= 0) {
                 return
             }
-            handleScrollToContent(currentContent - 1)()
-            clearTimeout(scrollTimeout.current ?? 0)
-            scrollTimeout.current = setTimeout(() => {
-                setCurrentContent(currentContent - 1)
-                console.log(`down ${currentContent - 1}`)
-            }, 500)
+            handleScrollUp()
+        }
+    }
+
+    const handleTouchStart = (event: React.TouchEvent) => {
+        touchStart.current = event.touches[0].clientY
+    }
+
+    const handleTouchEnd = (event: React.TouchEvent) => {
+        const moveLength = touchStart.current - event.changedTouches[0].clientY
+        if (Math.abs(moveLength) < 100) {
+            return
+        }
+
+        if (moveLength > 0) {
+            handleScrollDown()
+        } else {
+            handleScrollUp()
         }
     }
 
@@ -114,7 +138,7 @@ const Home: React.FC = () => {
 
     return (
         <>
-            <div onWheel={handleWheel}>
+            <div onWheel={handleWheel} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
                 {content.map((element, index) => {
                     return <FitFullScreen key={index} {...element} />
                 })}
