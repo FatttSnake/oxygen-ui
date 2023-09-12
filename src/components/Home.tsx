@@ -123,7 +123,7 @@ const Home: React.FC = () => {
                             {slogan || <>&nbsp;</>}
                         </span>
                     </div>
-                    <div className={'scroll-down'} onClick={handleScrollToContent(1)}>
+                    <div className={'scroll-down'} onClick={handleScrollDown}>
                         <Icon
                             component={IconFatwebDown}
                             style={{ fontSize: '1.8em', color: '#666' }}
