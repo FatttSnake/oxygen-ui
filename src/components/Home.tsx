@@ -13,8 +13,11 @@ const Home: React.FC = () => {
     } = useContext(MainFrameworkContext)
     const fitFullScreenRef = useRef<HTMLDivElement>(null)
 
+    const scrollTimeout = useRef<number>()
+
     const [slogan, setSlogan] = useState('')
     const [sloganType, setSloganType] = useState(true)
+    const [currentContent, setCurrentContent] = useState(0)
 
     const typeText = '/* 因为热爱 所以折腾 */'
     if (sloganType) {
@@ -42,47 +45,79 @@ const Home: React.FC = () => {
         })
     }, [setNavbarHidden, setPreventScroll])
 
-    const handleScrollToDown = () => {
-        hideScrollbarRef.current?.scrollY(fitFullScreenRef.current?.offsetHeight ?? 0)
-        setNavbarHidden(false)
-    }
-
-    const handleScrollToTop = () => {
-        hideScrollbarRef.current?.scrollY(0)
-        setNavbarHidden(true)
+    const handleScrollToContent = (index: number) => {
+        return () => {
+            if (!index) {
+                setNavbarHidden(true)
+                hideScrollbarRef.current?.scrollY(0)
+            } else {
+                hideScrollbarRef.current?.scrollY(
+                    (fitFullScreenRef.current?.offsetHeight ?? 0) * index
+                )
+                setNavbarHidden(false)
+            }
+        }
     }
 
     const handleWheel = (event: React.WheelEvent) => {
+        if (event.altKey || event.ctrlKey) {
+            return
+        }
+
         if (event.deltaY > 0) {
-            handleScrollToDown()
-            setNavbarHidden(false)
+            if (currentContent >= content.length) {
+                return
+            }
+            handleScrollToContent(currentContent + 1)()
+            clearTimeout(scrollTimeout.current ?? 0)
+            scrollTimeout.current = setTimeout(() => {
+                setCurrentContent(currentContent + 1)
+                console.log(`up ${currentContent + 1}`)
+            }, 500)
         } else {
-            handleScrollToTop()
-            setNavbarHidden(true)
+            if (currentContent <= 0) {
+                return
+            }
+            handleScrollToContent(currentContent - 1)()
+            clearTimeout(scrollTimeout.current ?? 0)
+            scrollTimeout.current = setTimeout(() => {
+                setCurrentContent(currentContent - 1)
+                console.log(`down ${currentContent - 1}`)
+            }, 500)
         }
     }
+
+    const content = [
+        {
+            backgroundColor: '#FBFBFB',
+            ref: fitFullScreenRef,
+            children: (
+                <FitCenter>
+                    <div className={'center-box'}>
+                        <div className={'big-logo'}>FatWeb</div>
+                        <span id={'slogan'} className={'slogan'}>
+                            {slogan || <>&nbsp;</>}
+                        </span>
+                    </div>
+                    <div className={'scroll-down'} onClick={handleScrollToContent(1)}>
+                        <Icon
+                            component={IconFatwebDown}
+                            style={{ fontSize: '1.8em', color: '#666' }}
+                        />
+                    </div>
+                </FitCenter>
+            )
+        },
+        { children: <FitCenter>2</FitCenter> },
+        { children: <FitCenter>3</FitCenter> }
+    ]
 
     return (
         <>
             <div onWheel={handleWheel}>
-                <FitFullScreen backgroundColor={'#FBFBFB'} ref={fitFullScreenRef}>
-                    <FitCenter>
-                        <div className={'center-box'}>
-                            <div className={'big-logo'}>FatWeb</div>
-                            <span id={'slogan'} className={'slogan'}>
-                                {slogan || <>&nbsp;</>}
-                            </span>
-                        </div>
-                        <div className={'scroll-down'} onClick={handleScrollToDown}>
-                            <Icon
-                                component={IconFatwebDown}
-                                style={{ fontSize: '1.8em', color: '#666' }}
-                            />
-                        </div>
-                    </FitCenter>
-                </FitFullScreen>
-                <FitFullScreen />
-                <FitFullScreen />
+                {content.map((element, index) => {
+                    return <FitFullScreen key={index} {...element} />
+                })}
             </div>
         </>
     )
