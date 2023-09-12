@@ -202,7 +202,12 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         return () => {
             window.removeEventListener('resize', windowResizeListener)
         }
-    }, [isPreventScroll])
+    }, [
+        handleDefaultClickMiddleMouseButton,
+        handleDefaultTouchmove,
+        handleDefaultWheel,
+        isPreventScroll
+    ])
 
     return (
         <>
