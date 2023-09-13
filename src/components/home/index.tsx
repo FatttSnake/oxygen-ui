@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import FitCenter from '@/components/common/FitCenter'
 import { MainFrameworkContext } from '@/pages/MainFramework'
@@ -23,6 +23,14 @@ const Home: React.FC = () => {
             setPreventScroll(true)
         })
     }, [setNavbarHidden, setPreventScroll])
+
+    useLayoutEffect(() => {
+        const handleWindowResize = () => {
+            handleScrollToContent(currentContent)()
+        }
+        window.addEventListener('resize', handleWindowResize)
+        return () => window.removeEventListener('resize', handleWindowResize)
+    })
 
     const handleScrollToContent = (index: number) => {
         return () => {
