@@ -13,7 +13,7 @@ const Home: React.FC = () => {
 
     const fitFullScreenRef = useRef<HTMLDivElement>(null)
     const scrollTimeout = useRef(0)
-    const touchStart = useRef(0)
+    const clickStart = useRef(0)
 
     const [currentContent, setCurrentContent] = useState(0)
 
@@ -73,11 +73,11 @@ const Home: React.FC = () => {
     }
 
     const handleTouchStart = (event: React.TouchEvent) => {
-        touchStart.current = event.touches[0].clientY
+        clickStart.current = event.touches[0].clientY
     }
 
     const handleTouchEnd = (event: React.TouchEvent) => {
-        const moveLength = touchStart.current - event.changedTouches[0].clientY
+        const moveLength = clickStart.current - event.changedTouches[0].clientY
         if (Math.abs(moveLength) < 100) {
             return
         }
@@ -86,6 +86,32 @@ const Home: React.FC = () => {
             handleScrollDown()
         } else {
             handleScrollUp()
+        }
+    }
+
+    const handleMouseDown = (event: React.MouseEvent) => {
+        clickStart.current = event.clientY
+    }
+
+    const handleMouseUp = (event: React.MouseEvent) => {
+        const moveLength = clickStart.current - event.clientY
+        if (Math.abs(moveLength) < 100) {
+            return
+        }
+
+        if (moveLength > 0) {
+            handleScrollDown()
+        } else {
+            handleScrollUp()
+        }
+    }
+
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === 'ArrowUp') {
+            handleScrollUp()
+        }
+        if (event.key === 'ArrowDown') {
+            handleScrollDown()
         }
     }
 
@@ -101,7 +127,15 @@ const Home: React.FC = () => {
 
     return (
         <>
-            <div onWheel={handleWheel} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+            <div
+                tabIndex={0}
+                onWheel={handleWheel}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+                onKeyDown={handleKeyDown}
+            >
                 {content.map((element, index) => {
                     return <FitFullScreen key={index} {...element} />
                 })}
