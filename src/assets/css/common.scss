@@ -1,7 +1,4 @@
-$main-color: #00D4FF;
-$background-color: #F5F5F5;
-$font-main-color: #4D4D4D;
-$font-secondary-color: #9E9E9E;
+@use '@/assets/css/constants.scss' as constants;
 
 #root {
   height: 100vh;
@@ -9,7 +6,7 @@ $font-secondary-color: #9E9E9E;
 }
 
 .body {
-  color: $font-main-color;
+  color: constants.$font-main-color;
   user-select: none;
   min-width: 900px;
   min-height: 400px;
@@ -107,4 +104,12 @@ $font-secondary-color: #9E9E9E;
     width: 23px;
     height: 23px;
   }
+}
+
+.flex-horizontal {
+  flex-direction: row;
+}
+
+.flex-vertical {
+  flex-direction: column;
 }

@@ -10,7 +10,7 @@ import Indicator from '@/components/common/Indicator.tsx'
 const Home: React.FC = () => {
     const {
         hideScrollbarRef,
-        navbarHiddenState: { setNavbarHidden },
+        navbarHiddenState: { navbarHidden, setNavbarHidden },
         preventScrollState: { setPreventScroll }
     } = useContext(MainFrameworkContext)
 
@@ -124,6 +124,7 @@ const Home: React.FC = () => {
         if (event.key === 'ArrowDown') {
             handleScrollDown()
         }
+        console.log(content.length)
     }
 
     const content = [
@@ -152,8 +153,8 @@ const Home: React.FC = () => {
                 })}
             </div>
 
-            <div className={'indicator'}>
-                <Indicator />
+            <div hidden={navbarHidden} className={'indicator'}>
+                <Indicator total={content.length} current={currentContent} />
             </div>
         </>
     )

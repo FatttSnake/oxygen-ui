@@ -12,7 +12,7 @@ const FitCenter: React.FC<FitCenterProps> = (props) => {
         <>
             <div
                 className={`fit-center${className ? ' ' + className : ''}${
-                    vertical ? ' direction-vertical' : ' direction-horizontal'
+                    vertical ? ' flex-vertical' : ' flex-horizontal'
                 }`}
                 {..._props}
             ></div>

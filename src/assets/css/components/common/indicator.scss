@@ -1,0 +1,28 @@
+@use '@/assets/css/constants.scss' as constants;
+
+.dot-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+
+  .item {
+    flex: auto;
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: {
+        width: 2px;
+        color: constants.$font-secondary-color;
+        style: solid;
+      };
+    }
+  }
+
+  .active>* {
+    background-color: constants.$font-secondary-color;
+  }
+}
