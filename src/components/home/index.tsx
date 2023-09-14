@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react'
+import '@/assets/css/components/home/home.scss'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import FitCenter from '@/components/common/FitCenter'
 import { MainFrameworkContext } from '@/pages/MainFramework'
 import Slogan from '@/components/home/Slogan'
 import OxygenToolbox from '@/components/home/OxygenToolbox'
+import Indicator from '@/components/common/Indicator.tsx'
 
 const Home: React.FC = () => {
     const {
@@ -148,6 +150,10 @@ const Home: React.FC = () => {
                 {content.map((element, index) => {
                     return <FitFullScreen key={index} {...element} />
                 })}
+            </div>
+
+            <div className={'indicator'}>
+                <Indicator />
             </div>
         </>
     )
