@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react'
+import '@/assets/css/components/home/home.scss'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import FitCenter from '@/components/common/FitCenter'
 import { MainFrameworkContext } from '@/pages/MainFramework'
 import Slogan from '@/components/home/Slogan'
+import OxygenToolbox from '@/components/home/OxygenToolbox'
+import Indicator from '@/components/common/Indicator.tsx'
 
 const Home: React.FC = () => {
     const {
         hideScrollbarRef,
-        navbarHiddenState: { setNavbarHidden },
+        navbarHiddenState: { navbarHidden, setNavbarHidden },
         preventScrollState: { setPreventScroll }
     } = useContext(MainFrameworkContext)
 
@@ -121,6 +124,7 @@ const Home: React.FC = () => {
         if (event.key === 'ArrowDown') {
             handleScrollDown()
         }
+        console.log(content.length)
     }
 
     const content = [
@@ -129,7 +133,7 @@ const Home: React.FC = () => {
             ref: fitFullScreenRef,
             children: <Slogan onClickScrollDown={handleScrollDown} />
         },
-        { children: <FitCenter>2</FitCenter> },
+        { children: <OxygenToolbox /> },
         { children: <FitCenter>3</FitCenter> }
     ]
 
@@ -147,6 +151,10 @@ const Home: React.FC = () => {
                 {content.map((element, index) => {
                     return <FitFullScreen key={index} {...element} />
                 })}
+            </div>
+
+            <div hidden={navbarHidden} className={'indicator'}>
+                <Indicator total={content.length} current={currentContent} />
             </div>
         </>
     )
