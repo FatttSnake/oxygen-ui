@@ -38,16 +38,6 @@ const routes: RouteObject[] = [
                             menu: true,
                             auth: false
                         }
-                    },
-                    {
-                        path: 'project',
-                        id: 'project',
-                        Component: React.lazy(() => import('@/components/Project')),
-                        handle: {
-                            name: '项目',
-                            menu: true,
-                            auth: false
-                        }
                     }
                 ]
             },

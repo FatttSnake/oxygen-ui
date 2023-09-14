@@ -3,6 +3,7 @@ import FitFullScreen from '@/components/common/FitFullScreen'
 import FitCenter from '@/components/common/FitCenter'
 import { MainFrameworkContext } from '@/pages/MainFramework'
 import Slogan from '@/components/home/Slogan'
+import OxygenToolbox from '@/components/home/OxygenToolbox'
 
 const Home: React.FC = () => {
     const {
@@ -129,7 +130,7 @@ const Home: React.FC = () => {
             ref: fitFullScreenRef,
             children: <Slogan onClickScrollDown={handleScrollDown} />
         },
-        { children: <FitCenter>2</FitCenter> },
+        { children: <OxygenToolbox /> },
         { children: <FitCenter>3</FitCenter> }
     ]
 
