@@ -4,16 +4,20 @@ import '@/assets/css/components/common/hide-scrollbar.scss'
 interface HideScrollbarProps
     extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     isPreventScroll?: boolean
+    isPreventVerticalScroll?: boolean
+    isPreventHorizontalScroll?: boolean
+    isShowVerticalScrollbar?: boolean
+    isShowHorizontalScrollbar?: boolean
 }
 
 export interface HideScrollbarElement {
-    scrollTo(x: number, y: number): void
-    scrollX(x: number): void
-    scrollY(y: number): void
-    scrollLeft(length: number): void
-    scrollRight(length: number): void
-    scrollUp(length: number): void
-    scrollDown(length: number): void
+    scrollTo(x: number, y: number, smooth?: boolean): void
+    scrollX(x: number, smooth?: boolean): void
+    scrollY(y: number, smooth?: boolean): void
+    scrollLeft(length: number, smooth?: boolean): void
+    scrollRight(length: number, smooth?: boolean): void
+    scrollUp(length: number, smooth?: boolean): void
+    scrollDown(length: number, smooth?: boolean): void
     getX(): number
     getY(): number
     addEventListenerWithType<K extends keyof HTMLElementEventMap>(
@@ -40,19 +44,79 @@ export interface HideScrollbarElement {
 
 const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((props, ref) => {
     const rootRef = useRef<HTMLDivElement>(null)
+    const lastTouchPosition = useRef<{ x: number; y: number }>({ x: -1, y: -1 })
     const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0)
     const [horizontalScrollbarWidth, setHorizontalScrollbarWidth] = useState(0)
 
-    const { isPreventScroll, ..._props } = props
-    const handleDefaultWheel = useCallback((event: WheelEvent) => {
-        if (!event.altKey && !event.ctrlKey) {
-            event.preventDefault()
-        }
-    }, [])
+    const {
+        isPreventScroll,
+        isPreventVerticalScroll,
+        isPreventHorizontalScroll,
+        isShowVerticalScrollbar,
+        isShowHorizontalScrollbar,
+        ..._props
+    } = props
 
-    const handleDefaultTouchmove = useCallback((event: TouchEvent) => {
-        event.preventDefault()
-    }, [])
+    const handleDefaultWheel = useCallback(
+        (event: WheelEvent) => {
+            if (!event.altKey && !event.ctrlKey) {
+                if (isPreventScroll) {
+                    event.preventDefault()
+                    return
+                }
+                if (isPreventVerticalScroll && !event.shiftKey && !event.deltaX) {
+                    event.preventDefault()
+                    return
+                }
+                if (isPreventHorizontalScroll && (event.shiftKey || !event.deltaY)) {
+                    event.preventDefault()
+                    return
+                }
+            }
+        },
+        [isPreventScroll, isPreventHorizontalScroll, isPreventVerticalScroll]
+    )
+
+    const handleDefaultTouchStart = useCallback(
+        (event: TouchEvent) => {
+            if (event.touches.length !== 1 || isPreventScroll) {
+                lastTouchPosition.current = { x: -1, y: -1 }
+                return
+            }
+
+            const { clientX, clientY } = event.touches[0]
+            lastTouchPosition.current = { x: clientX, y: clientY }
+        },
+        [isPreventScroll]
+    )
+
+    const handleDefaultTouchmove = useCallback(
+        (event: TouchEvent) => {
+            event.preventDefault()
+            if (event.touches.length !== 1 || isPreventScroll) {
+                lastTouchPosition.current = { x: -1, y: -1 }
+                return
+            }
+            const { clientX, clientY } = event.touches[0]
+
+            if (!isPreventVerticalScroll) {
+                rootRef.current?.scrollTo({
+                    top: rootRef.current?.scrollTop + (lastTouchPosition.current.y - clientY),
+                    behavior: 'instant'
+                })
+            }
+
+            if (!isPreventHorizontalScroll) {
+                rootRef.current?.scrollTo({
+                    left: rootRef.current?.scrollLeft + (lastTouchPosition.current.x - clientX),
+                    behavior: 'instant'
+                })
+            }
+
+            lastTouchPosition.current = { x: clientX, y: clientY }
+        },
+        [isPreventScroll, isPreventHorizontalScroll, isPreventVerticalScroll]
+    )
 
     const handleDefaultClickMiddleMouseButton = useCallback((event: MouseEvent) => {
         if (event.button === 1) {
@@ -60,70 +124,88 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         }
     }, [])
 
-    const handleDefaultKeyDown = (event: KeyboardEvent) => {
-        if (
-            [
-                'ArrowUp',
-                'ArrowDown',
-                'ArrowLeft',
-                'ArrowRight',
-                ' ',
-                '',
-                'PageUp',
-                'PageDown',
-                'Home',
-                'End'
-            ].find((value) => value === event.key)
-        ) {
-            event.preventDefault()
-        }
-    }
+    const handleDefaultKeyDown = useCallback(
+        (event: KeyboardEvent) => {
+            if (
+                isPreventScroll &&
+                [
+                    'ArrowUp',
+                    'ArrowDown',
+                    'ArrowLeft',
+                    'ArrowRight',
+                    ' ',
+                    '',
+                    'PageUp',
+                    'PageDown',
+                    'Home',
+                    'End'
+                ].find((value) => value === event.key)
+            ) {
+                event.preventDefault()
+            }
+            if (
+                isPreventVerticalScroll &&
+                ['ArrowUp', 'ArrowDown', ' ', '', 'PageUp', 'PageDown', 'Home', 'End'].find(
+                    (value) => value === event.key
+                )
+            ) {
+                event.preventDefault()
+            }
+            if (
+                isPreventHorizontalScroll &&
+                ['ArrowLeft', 'ArrowRight'].find((value) => value === event.key)
+            ) {
+                event.preventDefault()
+            }
+        },
+        [isPreventScroll, isPreventHorizontalScroll, isPreventVerticalScroll]
+    )
 
     useImperativeHandle<HideScrollbarElement, HideScrollbarElement>(
         ref,
         () => {
             return {
-                scrollTo(x, y) {
+                scrollTo(x, y, smooth?: boolean) {
                     rootRef.current?.scrollTo({
                         left: x,
                         top: y,
-                        behavior: 'smooth'
+                        behavior: smooth === false ? 'instant' : 'smooth'
                     })
                 },
-                scrollX(x) {
+                scrollX(x, smooth?: boolean) {
                     rootRef.current?.scrollTo({
                         left: x,
-                        behavior: 'smooth'
+                        behavior: smooth === false ? 'instant' : 'smooth'
                     })
                 },
-                scrollY(y) {
+                scrollY(y, smooth?: boolean) {
                     rootRef.current?.scrollTo({
                         top: y,
-                        behavior: 'smooth'
+                        behavior: smooth === false ? 'instant' : 'smooth'
                     })
                 },
-                scrollLeft(length) {
+                scrollLeft(length, smooth?: boolean) {
                     rootRef.current?.scrollTo({
                         left: rootRef.current?.scrollLeft - length,
-                        behavior: 'smooth'
+                        behavior: smooth === false ? 'instant' : 'smooth'
                     })
                 },
-                scrollRight(length) {
+                scrollRight(length, smooth?: boolean) {
                     rootRef.current?.scrollTo({
                         left: rootRef.current?.scrollLeft + length,
-                        behavior: 'smooth'
+                        behavior: smooth === false ? 'instant' : 'smooth'
                     })
                 },
-                scrollUp(length) {
+                scrollUp(length, smooth?: boolean) {
                     rootRef.current?.scrollTo({
                         top: rootRef.current?.scrollTop - length,
-                        behavior: 'smooth'
+                        behavior: smooth === false ? 'instant' : 'smooth'
                     })
                 },
-                scrollDown(length) {
+                scrollDown(length, smooth?: boolean) {
                     rootRef.current?.scrollTo({
                         top: rootRef.current?.scrollTop + length,
-                        behavior: 'smooth'
+                        behavior: smooth === false ? 'instant' : 'smooth'
                     })
                 },
                 getX() {
@@ -185,8 +267,11 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         }, 1000)
 
         window.addEventListener('resize', windowResizeListener())
-        if (isPreventScroll) {
+        if (isPreventScroll || isPreventVerticalScroll || isPreventHorizontalScroll) {
             rootRef.current?.addEventListener('wheel', handleDefaultWheel, { passive: false })
+            rootRef.current?.addEventListener('touchstart', handleDefaultTouchStart, {
+                passive: false
+            })
             rootRef.current?.addEventListener('touchmove', handleDefaultTouchmove, {
                 passive: false
             })
@@ -194,6 +279,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
             rootRef.current?.addEventListener('keydown', handleDefaultKeyDown)
         } else {
             rootRef.current?.removeEventListener('wheel', handleDefaultWheel)
+            rootRef.current?.removeEventListener('touchstart', handleDefaultTouchStart)
             rootRef.current?.removeEventListener('touchmove', handleDefaultTouchmove)
             rootRef.current?.removeEventListener('mousedown', handleDefaultClickMiddleMouseButton)
             rootRef.current?.removeEventListener('keydown', handleDefaultKeyDown)
@@ -204,9 +290,13 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         }
     }, [
         handleDefaultClickMiddleMouseButton,
+        handleDefaultKeyDown,
+        handleDefaultTouchStart,
         handleDefaultTouchmove,
         handleDefaultWheel,
-        isPreventScroll
+        isPreventHorizontalScroll,
+        isPreventScroll,
+        isPreventVerticalScroll
     ])
 
     return (

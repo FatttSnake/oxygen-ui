@@ -61,7 +61,7 @@ const Home: React.FC = () => {
     }
 
     const handleScrollDown = () => {
-        if (currentContent >= content.length) {
+        if (currentContent >= content.length - 1) {
             return
         }
         handleScrollToContent(currentContent + 1)()
@@ -72,7 +72,7 @@ const Home: React.FC = () => {
     }
 
     const handleWheel = (event: React.WheelEvent) => {
-        if (event.altKey || event.ctrlKey) {
+        if (event.altKey || event.ctrlKey || event.shiftKey) {
             return
         }
 
@@ -124,7 +124,6 @@ const Home: React.FC = () => {
         if (event.key === 'ArrowDown') {
             handleScrollDown()
         }
-        console.log(content.length)
     }
 
     const content = [
