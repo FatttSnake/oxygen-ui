@@ -47,6 +47,8 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
     const lastTouchPosition = useRef<{ x: number; y: number }>({ x: -1, y: -1 })
     const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0)
     const [horizontalScrollbarWidth, setHorizontalScrollbarWidth] = useState(0)
+    const [verticalScrollbarLength, setVerticalScrollbarLength] = useState(100)
+    const [horizontalScrollbarLength, setHorizontalScrollbarLength] = useState(100)
 
     const {
         isPreventScroll,
@@ -308,11 +310,30 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     tabIndex={0}
                     style={{
                         width: `calc(100vw + ${verticalScrollbarWidth}px)`,
-                        height: `calc(100vh + ${horizontalScrollbarWidth}px`
+                        height: `calc(100vh + ${horizontalScrollbarWidth}px)`
                     }}
                     {..._props}
                 >
                     {props.children}
+                </div>
+                <div hidden={!isShowVerticalScrollbar} className={'scrollbar vertical-scrollbar'}>
+                    <div className={'box'}>
+                        <div
+                            className={'block'}
+                            style={{ height: `${verticalScrollbarLength}%` }}
+                        />
+                    </div>
+                </div>
+                <div
+                    hidden={!isShowHorizontalScrollbar}
+                    className={'scrollbar horizontal-scrollbar'}
+                >
+                    <div className={'box'}>
+                        <div
+                            className={'block'}
+                            style={{ width: `${horizontalScrollbarLength}%` }}
+                        />
+                    </div>
                 </div>
             </div>
         </>

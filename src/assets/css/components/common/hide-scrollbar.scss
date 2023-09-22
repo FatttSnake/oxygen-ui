@@ -1,16 +1,61 @@
+@use '@/assets/css/constants' as constants;
+
 .hide-scrollbar-mask {
   width: 100%;
   height: 100%;
   overflow: hidden;
-}
 
-.hide-scrollbar-selection {
-  position: relative;
-  overflow: scroll;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
+  .hide-scrollbar-selection {
+    position: relative;
+    overflow: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
 
-.hide-scrollbar-selection::-webkit-scrollbar {
-  display: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar {
+    position: absolute;
+    z-index: 1000;
+    opacity: .5;
+
+    .box {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+
+
+      .block {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        background-color: constants.$font-secondary-color;
+        transition: all .2s;
+      }
+      :hover {
+        background-color: constants.$font-main-color;
+      }
+    }
+  }
+
+  .vertical-scrollbar {
+    padding: 12px 4px;
+    width: 16px;
+    height: 100%;
+    right: 0;
+    top: 0;
+  }
+
+  .horizontal-scrollbar {
+    padding: 4px 12px;
+    width: 100%;
+    height: 16px;
+    left: 0;
+    bottom: 0;
+  }
 }
