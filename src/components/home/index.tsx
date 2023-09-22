@@ -126,6 +126,11 @@ const Home: React.FC = () => {
         }
     }
 
+    const handleIndicatorSwitch = (index: number) => {
+        setCurrentContent(index)
+        handleScrollToContent(index)()
+    }
+
     const content = [
         {
             backgroundColor: '#FBFBFB',
@@ -153,7 +158,11 @@ const Home: React.FC = () => {
             </div>
 
             <div hidden={navbarHidden} className={'indicator'}>
-                <Indicator total={content.length} current={currentContent} />
+                <Indicator
+                    total={content.length}
+                    current={currentContent}
+                    onSwitch={handleIndicatorSwitch}
+                />
             </div>
         </>
     )
