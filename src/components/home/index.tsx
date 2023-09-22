@@ -124,7 +124,6 @@ const Home: React.FC = () => {
         if (event.key === 'ArrowDown') {
             handleScrollDown()
         }
-        console.log(content.length)
     }
 
     const content = [
