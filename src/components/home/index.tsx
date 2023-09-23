@@ -72,7 +72,7 @@ const Home: React.FC = () => {
     }
 
     const handleWheel = (event: React.WheelEvent) => {
-        if (event.altKey || event.ctrlKey || event.shiftKey) {
+        if (event.altKey || event.ctrlKey || event.shiftKey || event.deltaY === 0) {
             return
         }
 
