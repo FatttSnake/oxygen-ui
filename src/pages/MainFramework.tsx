@@ -61,7 +61,12 @@ const MainFramework: React.FC = () => {
 
     return (
         <>
-            <HideScrollbar ref={hideScrollbarRef} isPreventVerticalScroll={preventScroll}>
+            <HideScrollbar
+                ref={hideScrollbarRef}
+                isPreventVerticalScroll={preventScroll}
+                isShowHorizontalScrollbar={true}
+                isShowVerticalScrollbar={true}
+            >
                 <div className={'body'}>
                     <header className={'nav' + (navbarHidden ? ' hide' : '')}>
                         <a className={'logo'} href={'https://fatweb.top'}>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import '@/assets/css/components/home/home.scss'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import FitCenter from '@/components/common/FitCenter'
