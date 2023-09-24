@@ -65,7 +65,6 @@ const MainFramework: React.FC = () => {
                 ref={hideScrollbarRef}
                 isPreventVerticalScroll={preventScroll}
                 isShowHorizontalScrollbar={true}
-                isShowVerticalScrollbar={true}
             >
                 <div className={'body'}>
                     <header className={'nav' + (navbarHidden ? ' hide' : '')}>

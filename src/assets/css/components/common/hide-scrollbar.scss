@@ -24,6 +24,7 @@
     position: absolute;
     z-index: 1000;
     opacity: .5;
+    touch-action: none;
 
     .box {
       position: relative;

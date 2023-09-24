@@ -133,16 +133,19 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
     const rootRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const wheelListenerRef = useRef<(event: WheelEvent) => void>(() => undefined)
-    const lastClickPositionRef = useRef({ x: -1, y: -1 })
+    const lastScrollbarClickPositionRef = useRef({ x: -1, y: -1 })
+    const lastScrollbarTouchPositionRef = useRef({ x: -1, y: -1 })
     const lastTouchPositionRef = useRef({ x: -1, y: -1 })
     const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0)
     const [verticalScrollbarLength, setVerticalScrollbarLength] = useState(100)
     const [verticalScrollbarPosition, setVerticalScrollbarPosition] = useState(0)
     const [verticalScrollbarOnClick, setVerticalScrollbarOnClick] = useState(false)
+    const [verticalScrollbarOnTouch, setVerticalScrollbarOnTouch] = useState(false)
     const [horizontalScrollbarWidth, setHorizontalScrollbarWidth] = useState(0)
     const [horizontalScrollbarLength, setHorizontalScrollbarLength] = useState(100)
     const [horizontalScrollbarPosition, setHorizontalScrollbarPosition] = useState(0)
     const [horizontalScrollbarOnClick, setHorizontalScrollbarOnClick] = useState(false)
+    const [horizontalScrollbarOnTouch, setHorizontalScrollbarOnTouch] = useState(false)
 
     const {
         isPreventScroll,
@@ -244,7 +247,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         return (event: React.MouseEvent) => {
             switch (eventFlag) {
                 case 'down':
-                    lastClickPositionRef.current = { x: event.clientX, y: event.clientY }
+                    lastScrollbarClickPositionRef.current = { x: event.clientX, y: event.clientY }
                     switch (scrollbarFlag) {
                         case 'vertical':
                             setVerticalScrollbarOnClick(true)
@@ -264,7 +267,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                         rootRef.current?.scrollTo({
                             top:
                                 rootRef.current?.scrollTop +
-                                ((event.clientY - lastClickPositionRef.current.y) /
+                                ((event.clientY - lastScrollbarClickPositionRef.current.y) /
                                     (rootRef.current?.clientHeight ?? 1)) *
                                     (contentRef.current?.clientHeight ?? 0),
                             behavior: 'instant'
@@ -274,15 +277,74 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                         rootRef.current?.scrollTo({
                             left:
                                 rootRef.current?.scrollLeft +
-                                ((event.clientX - lastClickPositionRef.current.x) /
+                                ((event.clientX - lastScrollbarClickPositionRef.current.x) /
                                     (rootRef.current?.clientWidth ?? 1)) *
                                     (contentRef.current?.clientWidth ?? 0),
                             behavior: 'instant'
                         })
                     }
-                    lastClickPositionRef.current = {
+                    lastScrollbarClickPositionRef.current = {
                         x: event.clientX,
                         y: event.clientY
+                    }
+            }
+        }
+    }
+
+    const handleScrollbarTouchEvent = (eventFlag: string, scrollbarFlag: string) => {
+        return (event: React.TouchEvent) => {
+            switch (eventFlag) {
+                case 'start':
+                    if (event.touches.length !== 1) {
+                        return
+                    }
+                    lastScrollbarTouchPositionRef.current = {
+                        x: event.touches[0].clientX,
+                        y: event.touches[0].clientY
+                    }
+                    switch (scrollbarFlag) {
+                        case 'vertical':
+                            setVerticalScrollbarOnTouch(true)
+                            break
+                        case 'horizontal':
+                            setHorizontalScrollbarOnTouch(true)
+                            break
+                    }
+                    break
+                case 'end':
+                case 'cancel':
+                    setVerticalScrollbarOnTouch(false)
+                    setHorizontalScrollbarOnTouch(false)
+                    break
+                case 'move':
+                    if (event.touches.length !== 1) {
+                        return
+                    }
+                    if (verticalScrollbarOnTouch) {
+                        rootRef.current?.scrollTo({
+                            top:
+                                rootRef.current?.scrollTop +
+                                ((event.touches[0].clientY -
+                                    lastScrollbarClickPositionRef.current.y) /
+                                    (rootRef.current?.clientHeight ?? 1)) *
+                                    (contentRef.current?.clientHeight ?? 0),
+                            behavior: 'instant'
+                        })
+                    }
+                    if (horizontalScrollbarOnTouch) {
+                        rootRef.current?.scrollTo({
+                            left:
+                                rootRef.current?.scrollLeft +
+                                ((event.touches[0].clientX -
+                                    lastScrollbarClickPositionRef.current.x) /
+                                    (rootRef.current?.clientWidth ?? 1)) *
+                                    (contentRef.current?.clientWidth ?? 0),
+                            behavior: 'instant'
+                        })
+                    }
+                    lastScrollbarClickPositionRef.current = {
+                        x: event.touches[0].clientX,
+                        y: event.touches[0].clientY
                     }
             }
         }
@@ -358,9 +420,16 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                 onMouseMove={
                     !isPreventScroll ? handleScrollbarMouseEvent('move', 'all') : undefined
                 }
+                onTouchMove={
+                    !isPreventScroll ? handleScrollbarTouchEvent('move', 'all') : undefined
+                }
                 onMouseUp={!isPreventScroll ? handleScrollbarMouseEvent('up', 'all') : undefined}
+                onTouchEnd={!isPreventScroll ? handleScrollbarTouchEvent('end', 'all') : undefined}
                 onMouseLeave={
                     !isPreventScroll ? handleScrollbarMouseEvent('leave', 'all') : undefined
+                }
+                onTouchCancel={
+                    !isPreventScroll ? handleScrollbarTouchEvent('cancel', 'all') : undefined
                 }
             >
                 <div
@@ -399,6 +468,11 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                                     ? handleScrollbarMouseEvent('down', 'vertical')
                                     : undefined
                             }
+                            onTouchStart={
+                                !isPreventScroll && !isPreventVerticalScroll
+                                    ? handleScrollbarTouchEvent('start', 'vertical')
+                                    : undefined
+                            }
                         />
                     </div>
                 </div>
@@ -418,6 +492,11 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                             onMouseDown={
                                 !isPreventScroll && !isPreventHorizontalScroll
                                     ? handleScrollbarMouseEvent('down', 'horizontal')
+                                    : undefined
+                            }
+                            onTouchStart={
+                                !isPreventScroll && !isPreventHorizontalScroll
+                                    ? handleScrollbarTouchEvent('start', 'horizontal')
                                     : undefined
                             }
                         />
