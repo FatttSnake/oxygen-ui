@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import '@/assets/css/components/home/home.scss'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import FitCenter from '@/components/common/FitCenter'
@@ -72,7 +72,7 @@ const Home: React.FC = () => {
     }
 
     const handleWheel = (event: React.WheelEvent) => {
-        if (event.altKey || event.ctrlKey || event.shiftKey) {
+        if (event.altKey || event.ctrlKey || event.shiftKey || event.deltaY === 0) {
             return
         }
 
@@ -126,6 +126,11 @@ const Home: React.FC = () => {
         }
     }
 
+    const handleIndicatorSwitch = (index: number) => {
+        setCurrentContent(index)
+        handleScrollToContent(index)()
+    }
+
     const content = [
         {
             backgroundColor: '#FBFBFB',
@@ -153,7 +158,11 @@ const Home: React.FC = () => {
             </div>
 
             <div hidden={navbarHidden} className={'indicator'}>
-                <Indicator total={content.length} current={currentContent} />
+                <Indicator
+                    total={content.length}
+                    current={currentContent}
+                    onSwitch={handleIndicatorSwitch}
+                />
             </div>
         </>
     )
