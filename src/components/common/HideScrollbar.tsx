@@ -7,7 +7,9 @@ interface HideScrollbarProps
     isPreventVerticalScroll?: boolean
     isPreventHorizontalScroll?: boolean
     isShowVerticalScrollbar?: boolean
+    isHiddenVerticalScrollbarWhenFull?: boolean
     isShowHorizontalScrollbar?: boolean
+    isHiddenHorizontalScrollbarWhenFull?: boolean
 }
 
 export interface HideScrollbarElement {
@@ -152,7 +154,9 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         isPreventVerticalScroll,
         isPreventHorizontalScroll,
         isShowVerticalScrollbar,
+        isHiddenVerticalScrollbarWhenFull,
         isShowHorizontalScrollbar,
+        isHiddenHorizontalScrollbarWhenFull,
         ..._props
     } = props
 
@@ -368,6 +372,17 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                 (rootRef.current?.offsetHeight ?? 0) - (rootRef.current?.clientHeight ?? 0)
             )
 
+            rootRef.current &&
+                setVerticalScrollbarLength(
+                    (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) * 100
+                )
+            console.log(horizontalScrollbarLength)
+
+            rootRef.current &&
+                setHorizontalScrollbarLength(
+                    (rootRef.current.clientWidth / (contentRef.current?.clientWidth ?? 0)) * 100
+                )
+
             return windowResizeListener
         }
         setTimeout(() => {
@@ -410,7 +425,13 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         return () => {
             window.removeEventListener('resize', windowResizeListener)
         }
-    }, [isPreventAnyScroll, isPreventHorizontalScroll, isPreventScroll, isPreventVerticalScroll])
+    }, [
+        horizontalScrollbarLength,
+        isPreventAnyScroll,
+        isPreventHorizontalScroll,
+        isPreventScroll,
+        isPreventVerticalScroll
+    ])
 
     return (
         <>
@@ -453,7 +474,14 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                         {props.children}
                     </div>
                 </div>
-                <div hidden={!isShowVerticalScrollbar} className={'scrollbar vertical-scrollbar'}>
+                <div
+                    hidden={
+                        !isShowVerticalScrollbar ||
+                        ((isHiddenVerticalScrollbarWhenFull ?? true) &&
+                            verticalScrollbarLength === 100)
+                    }
+                    className={'scrollbar vertical-scrollbar'}
+                >
                     <div className={'box'}>
                         <div
                             className={'block'}
@@ -477,7 +505,11 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     </div>
                 </div>
                 <div
-                    hidden={!isShowHorizontalScrollbar}
+                    hidden={
+                        !isShowHorizontalScrollbar ||
+                        ((isHiddenHorizontalScrollbarWhenFull ?? true) &&
+                            horizontalScrollbarLength === 100)
+                    }
                     className={'scrollbar horizontal-scrollbar'}
                 >
                     <div className={'box'}>
