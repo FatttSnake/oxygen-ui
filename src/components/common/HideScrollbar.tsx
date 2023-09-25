@@ -376,7 +376,6 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                 setVerticalScrollbarLength(
                     (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) * 100
                 )
-            console.log(horizontalScrollbarLength)
 
             rootRef.current &&
                 setHorizontalScrollbarLength(
