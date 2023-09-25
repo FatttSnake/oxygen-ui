@@ -1,17 +1,17 @@
 import React from 'react'
 import '@/assets/css/components/home/home.scss'
 import FitFullScreen from '@/components/common/FitFullScreen'
-import FitCenter from '@/components/common/FitCenter'
 import { MainFrameworkContext } from '@/pages/MainFramework'
 import Slogan from '@/components/home/Slogan'
 import OxygenToolbox from '@/components/home/OxygenToolbox'
 import Indicator from '@/components/common/Indicator.tsx'
+import Footer from '@/components/home/Footer'
 
 const Home: React.FC = () => {
     const {
         hideScrollbarRef,
         navbarHiddenState: { navbarHidden, setNavbarHidden },
-        showDropdownMenuState: {setShowDropdownMenu},
+        showDropdownMenuState: { setShowDropdownMenu },
         preventScrollState: { setPreventScroll }
     } = useContext(MainFrameworkContext)
 
@@ -140,7 +140,7 @@ const Home: React.FC = () => {
             children: <Slogan onClickScrollDown={handleScrollDown} />
         },
         { children: <OxygenToolbox /> },
-        { children: <FitCenter>3</FitCenter> }
+        { children: <Footer /> }
     ]
 
     return (
