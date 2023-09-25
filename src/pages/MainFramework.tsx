@@ -3,6 +3,8 @@ import '@/assets/css/pages/header.scss'
 import router from '@/router'
 import LoadingMask from '@/components/common/LoadingMask'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
+import Icon from '@ant-design/icons'
+import { COLOR_FONT_SECONDARY } from '@/constants/Common.constants.ts'
 
 export const MainFrameworkContext = createContext<{
     navbarHiddenState: {
@@ -20,6 +22,10 @@ export const MainFrameworkContext = createContext<{
     showHorizontalScrollbarState: {
         showHorizontalScrollbar: boolean
         setShowHorizontalScrollbar: (newValue: boolean) => void
+    }
+    showDropdownMenuState: {
+        showDropdownMenu: boolean
+        setShowDropdownMenu: (newValue: boolean) => void
     }
     hideScrollbarRef: React.RefObject<HideScrollbarElement>
 }>({
@@ -39,6 +45,10 @@ export const MainFrameworkContext = createContext<{
         showHorizontalScrollbar: false,
         setShowHorizontalScrollbar: () => undefined
     },
+    showDropdownMenuState: {
+        showDropdownMenu: false,
+        setShowDropdownMenu: () => undefined
+    },
     hideScrollbarRef: createRef()
 })
 
@@ -54,10 +64,15 @@ const MainFramework: React.FC = () => {
     const [preventScroll, setPreventScroll] = useState(false)
     const [showVerticalScrollbar, setShowVerticalScrollbar] = useState(false)
     const [showHorizontalScrollbar, setShowHorizontalScrollbar] = useState(false)
+    const [showDropdownMenu, setShowDropdownMenu] = useState(false)
 
     useEffect(() => {
         setNavbarHidden(false)
     }, [pathname])
+
+    const handleMenuDropdownButtonClick = () => {
+        setShowDropdownMenu(!showDropdownMenu)
+    }
 
     return (
         <>
@@ -67,12 +82,49 @@ const MainFramework: React.FC = () => {
                 isShowHorizontalScrollbar={true}
             >
                 <div className={'body'}>
-                    <header className={'nav' + (navbarHidden ? ' hide' : '')}>
-                        <a className={'logo'} href={'https://fatweb.top'}>
-                            <span className={'title'}>FatWeb</span>
-                        </a>
-                        <nav>
-                            <ul className={'menu'}>
+                    <div>
+                        <header className={'nav' + (navbarHidden ? ' hide' : '')}>
+                            <a className={'logo'} href={'https://fatweb.top'}>
+                                <span className={'title'}>FatWeb</span>
+                            </a>
+                            <nav>
+                                <ul className={'menu'}>
+                                    {routeChildren?.map((route) => {
+                                        return (
+                                            <li className={'item'} key={route.id}>
+                                                <NavLink
+                                                    to={route.path ?? ''}
+                                                    className={({ isActive, isPending }) =>
+                                                        isPending
+                                                            ? 'pending'
+                                                            : isActive
+                                                            ? 'active'
+                                                            : ''
+                                                    }
+                                                >
+                                                    {(route.handle as RouteHandle).name}
+                                                </NavLink>
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
+                                <div
+                                    className={
+                                        'dropdown-menu-button' + (showDropdownMenu ? ' active' : '')
+                                    }
+                                >
+                                    <Icon
+                                        component={IconFatwebMenu}
+                                        style={{ fontSize: '2.6em', color: COLOR_FONT_SECONDARY }}
+                                        onClick={handleMenuDropdownButtonClick}
+                                    />
+                                </div>
+                            </nav>
+                        </header>
+                        <div
+                            className={'dropdown-menu-content' + (showDropdownMenu ? ' show' : '')}
+                        >
+                            <ul>
                                 {routeChildren?.map((route) => {
                                     return (
                                         <li className={'item'} key={route.id}>
@@ -88,8 +140,8 @@ const MainFramework: React.FC = () => {
                                     )
                                 })}
                             </ul>
-                        </nav>
-                    </header>
+                        </div>
+                    </div>
 
                     <MainFrameworkContext.Provider
                         value={{
@@ -102,6 +154,10 @@ const MainFramework: React.FC = () => {
                             showHorizontalScrollbarState: {
                                 showHorizontalScrollbar,
                                 setShowHorizontalScrollbar
+                            },
+                            showDropdownMenuState: {
+                                showDropdownMenu,
+                                setShowDropdownMenu
                             },
                             hideScrollbarRef
                         }}

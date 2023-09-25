@@ -11,6 +11,7 @@ const Home: React.FC = () => {
     const {
         hideScrollbarRef,
         navbarHiddenState: { navbarHidden, setNavbarHidden },
+        showDropdownMenuState: {setShowDropdownMenu},
         preventScrollState: { setPreventScroll }
     } = useContext(MainFrameworkContext)
 
@@ -37,6 +38,7 @@ const Home: React.FC = () => {
 
     const handleScrollToContent = (index: number) => {
         return () => {
+            setShowDropdownMenu(false)
             if (!index) {
                 setNavbarHidden(true)
                 hideScrollbarRef.current?.scrollY(0)

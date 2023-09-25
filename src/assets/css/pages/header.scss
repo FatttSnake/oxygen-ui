@@ -1,4 +1,5 @@
 @use "@/assets/css/mixins" as mixins;
+@use "@/assets/css/constants" as constants;
 
 .nav {
   display: flex;
@@ -13,7 +14,7 @@
     bottom: {
       width: 1px;
       style: solid;
-      color: rgba(204, 204, 204, .33);
+      color: constants.$border-color;
     }
   }
   animation: .5s ease both;
@@ -58,7 +59,7 @@
 
         a {
           padding: 5px 20px;
-          color: rgba(102, 102, 102, .8);
+          color: constants.$url-color;
         }
       }
 
@@ -67,7 +68,7 @@
           bottom: {
             width: 2px;
             style: solid;
-            color: #CCC;
+            color: constants.$url-active-color;
           };
         };
       }
@@ -76,6 +77,77 @@
         transform: translateY(-5px);
       }
     }
+
+    .dropdown-menu-button {
+      display: none;
+      margin: 0 20px;
+      width: 45px;
+      height: 45px;
+      justify-content: center;
+      align-items: center;
+      border-radius: 6px;
+    }
+
+    .dropdown-menu-button.active {
+      background-color: transparentize(constants.$focus-color, 0.8);
+      border: {
+        width: 1px;
+        color: constants.$focus-color;
+        style: solid;
+      };
+    }
+
+    @media screen and (max-width: 900px) {
+      .menu {
+        display: none;
+      }
+
+      .dropdown-menu-button {
+        display: flex;
+      }
+    }
+  }
+}
+
+.dropdown-menu-content {
+  display: none;
+
+  @media screen and (max-width: 900px) {
+    display: none;
+    position: fixed;
+    width: 100%;
+    top: 70px;
+    border: {
+      width: 1px;
+      color: constants.$border-color;
+      style: solid;
+    };
+    background-color: white;
+    z-index: 1;
+
+    ul {
+      li {
+        font-size: 1.2em;
+        text-align: center;
+
+        a {
+          display: block;
+          width: 100%;
+          height: 100%;
+          padding: 10px;
+        }
+
+        :hover {
+          background-color: constants.$focus-color;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 900px){
+  .dropdown-menu-content.show {
+    display: block;
   }
 }
 
