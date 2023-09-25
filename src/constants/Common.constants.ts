@@ -1,4 +1,4 @@
-const PRODUCTION_NAME = 'Pinnacle OA'
+const PRODUCTION_NAME = 'FatWeb'
 const TOKEN_NAME = 'JWT_TOKEN'
 const COLOR_PRODUCTION = '#00D4FF'
 const COLOR_BACKGROUND = '#F5F5F5'
