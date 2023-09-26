@@ -79,6 +79,22 @@
 
       .item:hover .submenu {
         display: block;
+        border: {
+          width: 1px;
+          color: constants.$border-color;
+          style: solid;
+        };
+        animation: 0.3s;
+
+        @include mixins.unique-keyframes {
+          0% {
+            transform: translateY(-10px);
+            opacity: 0;
+          }
+          100% {
+            transform: translateY(4px);
+          }
+        }
       }
 
       .submenu {
@@ -88,20 +104,29 @@
         text-align: center;
         background-color: white;
         transform: translateY(4px);
-        border: {
-          width: 1px;
-          color: constants.$border-color;
-          style: solid;
-        };
+        overflow: hidden;
 
         .item {
           display: block;
-          padding: 10px;
           font-size: 0.8em;
+          transition: all 0s;
+
+          a {
+            display: block;
+            padding: 8px 0;
+          }
         }
 
         .item:hover {
           transform: none;
+          a {
+            background-color: constants.$focus-color !important;
+          }
+        }
+
+        .active {
+          font-weight: bold;
+          border: none;
         }
       }
     }

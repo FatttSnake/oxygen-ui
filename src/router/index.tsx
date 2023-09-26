@@ -53,16 +53,6 @@ const routes: RouteObject[] = [
                                     menu: true,
                                     auth: false
                                 }
-                            },
-                            {
-                                path: 'translation',
-                                id: 'tools-translationa',
-                                Component: React.lazy(() => import('@/pages/tools/Translation')),
-                                handle: {
-                                    name: '翻译',
-                                    menu: true,
-                                    auth: false
-                                }
                             }
                         ],
                         handle: {

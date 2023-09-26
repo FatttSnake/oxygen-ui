@@ -5,6 +5,7 @@ import LoadingMask from '@/components/common/LoadingMask'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 import Icon from '@ant-design/icons'
 import { COLOR_FONT_SECONDARY } from '@/constants/Common.constants.ts'
+import { NavLink } from 'react-router-dom'
 
 export const MainFrameworkContext = createContext<{
     navbarHiddenState: {
@@ -113,11 +114,29 @@ const MainFramework: React.FC = () => {
                                                                     className={'item'}
                                                                     key={subRoute.id}
                                                                 >
-                                                                    {
-                                                                        (
-                                                                            subRoute.handle as RouteHandle
-                                                                        ).name
-                                                                    }
+                                                                    <NavLink
+                                                                        to={
+                                                                            (route.path ?? '') +
+                                                                            '/' +
+                                                                            (subRoute.path ?? '')
+                                                                        }
+                                                                        className={({
+                                                                            isActive,
+                                                                            isPending
+                                                                        }) =>
+                                                                            isPending
+                                                                                ? 'pending'
+                                                                                : isActive
+                                                                                ? 'active'
+                                                                                : ''
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            (
+                                                                                subRoute.handle as RouteHandle
+                                                                            ).name
+                                                                        }
+                                                                    </NavLink>
                                                                 </li>
                                                             ) : (
                                                                 <></>
