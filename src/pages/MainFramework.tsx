@@ -90,7 +90,7 @@ const MainFramework: React.FC = () => {
                             <nav>
                                 <ul className={'menu'}>
                                     {routeChildren?.map((route) => {
-                                        return (
+                                        return (route.handle as RouteHandle).menu ? (
                                             <li className={'item'} key={route.id}>
                                                 <NavLink
                                                     to={route.path ?? ''}
@@ -104,7 +104,32 @@ const MainFramework: React.FC = () => {
                                                 >
                                                     {(route.handle as RouteHandle).name}
                                                 </NavLink>
+                                                {route.children ? (
+                                                    <ul className={'submenu'}>
+                                                        {route.children.map((subRoute) => {
+                                                            return (subRoute.handle as RouteHandle)
+                                                                .menu ? (
+                                                                <li
+                                                                    className={'item'}
+                                                                    key={subRoute.id}
+                                                                >
+                                                                    {
+                                                                        (
+                                                                            subRoute.handle as RouteHandle
+                                                                        ).name
+                                                                    }
+                                                                </li>
+                                                            ) : (
+                                                                <></>
+                                                            )
+                                                        })}
+                                                    </ul>
+                                                ) : (
+                                                    <></>
+                                                )}
                                             </li>
+                                        ) : (
+                                            <></>
                                         )
                                     })}
                                 </ul>

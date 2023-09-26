@@ -50,6 +50,7 @@
 
       .item {
         display: inline-block;
+        position: relative;
         font-size: 1.5em;
         transition: {
           property: all;
@@ -72,8 +73,36 @@
         };
       }
 
-      :hover {
+      .item:hover {
         transform: translateY(-5px);
+      }
+
+      .item:hover .submenu {
+        display: block;
+      }
+
+      .submenu {
+        display: none;
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        background-color: white;
+        transform: translateY(4px);
+        border: {
+          width: 1px;
+          color: constants.$border-color;
+          style: solid;
+        };
+
+        .item {
+          display: block;
+          padding: 10px;
+          font-size: 0.8em;
+        }
+
+        .item:hover {
+          transform: none;
+        }
       }
     }
 
@@ -144,7 +173,7 @@
   }
 }
 
-@media screen and (max-width: 900px){
+@media screen and (max-width: 900px) {
   .dropdown-menu-content.show {
     display: block;
   }

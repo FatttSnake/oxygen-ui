@@ -4,7 +4,7 @@ import FitFullScreen from '@/components/common/FitFullScreen'
 import { MainFrameworkContext } from '@/pages/MainFramework'
 import Slogan from '@/components/home/Slogan'
 import OxygenToolbox from '@/components/home/OxygenToolbox'
-import Indicator from '@/components/common/Indicator.tsx'
+import Indicator from '@/components/common/Indicator'
 import Footer from '@/components/home/Footer'
 
 const Home: React.FC = () => {
