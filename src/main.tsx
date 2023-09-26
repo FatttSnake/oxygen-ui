@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import '@/assets/css/base.css'
-import '@/assets/css/common.css'
 import zh_CN from 'antd/locale/zh_CN'
+import '@/assets/css/base.scss'
+import '@/assets/css/common.scss'
+import App from './App.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>

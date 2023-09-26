@@ -1,0 +1,164 @@
+@use "@/assets/css/mixins" as mixins;
+@use "@/assets/css/constants" as constants;
+
+.nav {
+  display: flex;
+  position: fixed;
+  align-items: center;
+  z-index: 1;
+  width: 100%;
+  height: 70px;
+  background-color: white;
+  border: {
+    bottom: {
+      width: 1px;
+      style: solid;
+      color: constants.$border-color;
+    }
+  }
+  animation: .5s ease both;
+
+  @include mixins.unique-keyframes {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  .logo {
+    padding: 0 40px;
+
+    .title {
+      font-size: 2.8em;
+      font-family: century gothic, texgyreadventor, stheiti, sans-serif;
+    }
+  }
+
+  nav {
+    display: flex;
+    justify-content: end;
+    flex: 1;
+    transition: {
+      property: all;
+      duration: .5s;
+    };
+
+    .menu {
+      padding: 0 30px;
+
+      .item {
+        display: inline-block;
+        font-size: 1.5em;
+        transition: {
+          property: all;
+          duration: .3s;
+        };
+
+        a {
+          padding: 5px 20px;
+          color: constants.$url-color;
+        }
+      }
+
+      .active {
+        border: {
+          bottom: {
+            width: 2px;
+            style: solid;
+            color: constants.$url-active-color;
+          };
+        };
+      }
+
+      :hover {
+        transform: translateY(-5px);
+      }
+    }
+
+    .dropdown-menu-button {
+      display: none;
+      margin: 0 20px;
+      width: 45px;
+      height: 45px;
+      justify-content: center;
+      align-items: center;
+      border-radius: 6px;
+    }
+
+    .dropdown-menu-button.active {
+      background-color: transparentize(constants.$focus-color, 0.8);
+      border: {
+        width: 1px;
+        color: constants.$focus-color;
+        style: solid;
+      };
+    }
+
+    @media screen and (max-width: 900px) {
+      .menu {
+        display: none;
+      }
+
+      .dropdown-menu-button {
+        display: flex;
+      }
+    }
+  }
+}
+
+.dropdown-menu-content {
+  display: none;
+
+  @media screen and (max-width: 900px) {
+    display: none;
+    position: fixed;
+    width: 100%;
+    top: 70px;
+    border: {
+      width: 1px;
+      color: constants.$border-color;
+      style: solid;
+    };
+    background-color: white;
+    z-index: 1;
+
+    ul {
+      li {
+        font-size: 1.2em;
+        text-align: center;
+
+        a {
+          display: block;
+          width: 100%;
+          height: 100%;
+          padding: 10px;
+        }
+
+        :hover {
+          background-color: constants.$focus-color;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 900px){
+  .dropdown-menu-content.show {
+    display: block;
+  }
+}
+
+.nav.hide {
+  animation: .5s ease both;
+
+  @include mixins.unique-keyframes {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+}

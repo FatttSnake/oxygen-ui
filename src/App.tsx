@@ -1,10 +1,13 @@
 import React from 'react'
 import router from '@/router'
+import LoadingMask from '@/components/common/LoadingMask.tsx'
 
 const App: React.FC = () => {
     return (
         <>
-            <RouterProvider router={router} />
+            <Suspense fallback={<LoadingMask />}>
+                <RouterProvider router={router} />
+            </Suspense>
         </>
     )
 }

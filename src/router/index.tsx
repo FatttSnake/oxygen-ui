@@ -11,19 +11,35 @@ const routes: RouteObject[] = [
                 Component: React.lazy(() => import('@/pages/Login'))
             },
             {
+                path: '/loading',
+                id: 'loading',
+                Component: React.lazy(() => import('@/components/common/LoadingMask'))
+            },
+            {
                 path: '',
-                id: 'manager',
-                Component: React.lazy(() => import('@/pages/Home')),
+                id: 'mainFramework',
+                Component: React.lazy(() => import('@/pages/MainFramework')),
                 children: [
                     {
-                        id: 'manager-sub',
-                        path: 'sub',
-                        Component: React.lazy(() => import('@/pages/Home'))
+                        path: '',
+                        id: 'home',
+                        Component: React.lazy(() => import('@/components/home')),
+                        handle: {
+                            name: '主页',
+                            menu: true,
+                            auth: false
+                        }
+                    },
+                    {
+                        path: 'https://blog.fatweb.top',
+                        id: 'blog',
+                        handle: {
+                            name: '博客',
+                            menu: true,
+                            auth: false
+                        }
                     }
-                ],
-                handle: {
-                    auth: false
-                }
+                ]
             },
             {
                 path: '*',

@@ -1,0 +1,19 @@
+.icons {
+  display: flex;
+  gap: 20px;
+
+  .icon {
+    font-size: 8em;
+    color: white;
+  }
+}
+
+.links {
+  font-size: 2em;
+  text-decoration: underline;
+  color: white;
+
+  > * {
+    color: white;
+  }
+}

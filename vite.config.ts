@@ -26,6 +26,7 @@ export default defineConfig({
                 'react-router',
                 'react-router-dom',
                 {
+                    react: ['Suspense', 'createContext'],
                     'react-router': ['useMatches', 'RouterProvider'],
                     'react-router-dom': ['createBrowserRouter'],
                     antd: ['message']
