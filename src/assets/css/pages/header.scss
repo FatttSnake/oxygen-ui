@@ -91,9 +91,6 @@
             transform: translateY(-10px);
             opacity: 0;
           }
-          100% {
-            transform: translateY(4px);
-          }
         }
       }
 
@@ -103,7 +100,6 @@
         width: 100%;
         text-align: center;
         background-color: white;
-        transform: translateY(4px);
         overflow: hidden;
 
         .item {
