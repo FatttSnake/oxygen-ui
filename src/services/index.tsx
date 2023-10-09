@@ -14,7 +14,7 @@ import {
 import { message } from 'antd'
 
 const service: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8181',
+    baseURL: import.meta.env.VITE_API_URL,
     timeout: 10000,
     withCredentials: false
 })
@@ -44,7 +44,7 @@ service.interceptors.request.use(
                 jwt.exp * 1000 - new Date().getTime() > 0
             ) {
                 await axios
-                    .get('http://localhost:8181/token', {
+                    .get(import.meta.env.VITE_API_TOKEN_URL, {
                         headers: { token }
                     })
                     .then((value: AxiosResponse<_Response<Token>>) => {

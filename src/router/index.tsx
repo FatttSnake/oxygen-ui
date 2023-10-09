@@ -23,7 +23,7 @@ const routes: RouteObject[] = [
                     {
                         path: '',
                         id: 'home',
-                        Component: React.lazy(() => import('@/components/home')),
+                        Component: React.lazy(() => import('@/pages/Home')),
                         handle: {
                             name: '主页',
                             menu: true,
@@ -35,6 +35,28 @@ const routes: RouteObject[] = [
                         id: 'blog',
                         handle: {
                             name: '博客',
+                            menu: true,
+                            auth: false
+                        }
+                    },
+                    {
+                        path: 'tools',
+                        id: 'tools',
+                        Component: React.lazy(() => import('@/pages/Tools')),
+                        children: [
+                            {
+                                path: 'translation',
+                                id: 'tools-translation',
+                                Component: React.lazy(() => import('@/pages/tools/Translation')),
+                                handle: {
+                                    name: '翻译',
+                                    menu: true,
+                                    auth: false
+                                }
+                            }
+                        ],
+                        handle: {
+                            name: '工具',
                             menu: true,
                             auth: false
                         }

@@ -5,6 +5,7 @@ import LoadingMask from '@/components/common/LoadingMask'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 import Icon from '@ant-design/icons'
 import { COLOR_FONT_SECONDARY } from '@/constants/Common.constants.ts'
+import { NavLink } from 'react-router-dom'
 
 export const MainFrameworkContext = createContext<{
     navbarHiddenState: {
@@ -90,7 +91,7 @@ const MainFramework: React.FC = () => {
                             <nav>
                                 <ul className={'menu'}>
                                     {routeChildren?.map((route) => {
-                                        return (
+                                        return (route.handle as RouteHandle).menu ? (
                                             <li className={'item'} key={route.id}>
                                                 <NavLink
                                                     to={route.path ?? ''}
@@ -104,7 +105,50 @@ const MainFramework: React.FC = () => {
                                                 >
                                                     {(route.handle as RouteHandle).name}
                                                 </NavLink>
+                                                {route.children ? (
+                                                    <ul className={'submenu'}>
+                                                        {route.children.map((subRoute) => {
+                                                            return (subRoute.handle as RouteHandle)
+                                                                .menu ? (
+                                                                <li
+                                                                    className={'item'}
+                                                                    key={subRoute.id}
+                                                                >
+                                                                    <NavLink
+                                                                        to={
+                                                                            (route.path ?? '') +
+                                                                            '/' +
+                                                                            (subRoute.path ?? '')
+                                                                        }
+                                                                        className={({
+                                                                            isActive,
+                                                                            isPending
+                                                                        }) =>
+                                                                            isPending
+                                                                                ? 'pending'
+                                                                                : isActive
+                                                                                ? 'active'
+                                                                                : ''
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            (
+                                                                                subRoute.handle as RouteHandle
+                                                                            ).name
+                                                                        }
+                                                                    </NavLink>
+                                                                </li>
+                                                            ) : (
+                                                                <></>
+                                                            )
+                                                        })}
+                                                    </ul>
+                                                ) : (
+                                                    <></>
+                                                )}
                                             </li>
+                                        ) : (
+                                            <></>
                                         )
                                     })}
                                 </ul>

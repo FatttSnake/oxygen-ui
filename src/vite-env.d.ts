@@ -1,5 +1,14 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+    readonly VITE_API_URL: string
+    readonly VITE_API_TOKEN_URL: string
+}
+
+interface ImportMeta {
+    readonly env: ImportMetaEnv
+}
+
 type RouteHandle = {
     name?: string
     menu?: boolean
