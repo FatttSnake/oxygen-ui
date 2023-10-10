@@ -2,14 +2,11 @@ import axios, { type AxiosError, AxiosInstance, AxiosRequestConfig, AxiosRespons
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { clearLocalStorage, getToken, setToken } from '@/utils/common'
 import {
-    ACCESS_DENIED,
-    DATABASE_DATA_TO_LONG,
-    DATABASE_DATA_VALIDATION_FAILED,
-    DATABASE_EXECUTE_ERROR,
-    TOKEN_HAS_EXPIRED,
-    TOKEN_IS_ILLEGAL,
-    TOKEN_RENEW_SUCCESS,
-    UNAUTHORIZED
+    SYSTEM_ACCESS_DENIED,
+    SYSTEM_TOKEN_HAS_EXPIRED,
+    SYSTEM_TOKEN_ILLEGAL,
+    SYSTEM_TOKEN_RENEW_SUCCESS,
+    SYSTEM_UNAUTHORIZED
 } from '@/constants/Common.constants'
 import { message } from 'antd'
 
@@ -49,7 +46,7 @@ service.interceptors.request.use(
                     })
                     .then((value: AxiosResponse<_Response<Token>>) => {
                         const response = value.data
-                        if (response.code === TOKEN_RENEW_SUCCESS) {
+                        if (response.code === SYSTEM_TOKEN_RENEW_SUCCESS) {
                             setToken(response.data?.token ?? '')
                         }
                     })
@@ -68,9 +65,9 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     (response: AxiosResponse<_Response<never>>) => {
         switch (response.data.code) {
-            case UNAUTHORIZED:
-            case TOKEN_IS_ILLEGAL:
-            case TOKEN_HAS_EXPIRED:
+            case SYSTEM_UNAUTHORIZED:
+            case SYSTEM_TOKEN_ILLEGAL:
+            case SYSTEM_TOKEN_HAS_EXPIRED:
                 clearLocalStorage()
                 void message.error(
                     <>
@@ -81,31 +78,10 @@ service.interceptors.response.use(
                     location.reload()
                 }, 1500)
                 throw response?.data
-            case ACCESS_DENIED:
+            case SYSTEM_ACCESS_DENIED:
                 void message.error(
                     <>
                         <strong>暂无权限操作</strong>
-                    </>
-                )
-                throw response?.data
-            case DATABASE_DATA_TO_LONG:
-                void message.error(
-                    <>
-                        <strong>数据过长</strong>
-                    </>
-                )
-                throw response?.data
-            case DATABASE_DATA_VALIDATION_FAILED:
-                void message.error(
-                    <>
-                        <strong>数据验证失败</strong>
-                    </>
-                )
-                throw response?.data
-            case DATABASE_EXECUTE_ERROR:
-                void message.error(
-                    <>
-                        <strong>数据库执行出错</strong>
                     </>
                 )
                 throw response?.data

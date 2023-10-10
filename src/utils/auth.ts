@@ -1,5 +1,5 @@
 import { clearLocalStorage, getCaptcha, getLocalStorage, setLocalStorage } from './common'
-import { DATABASE_SELECT_OK, TOKEN_NAME } from '@/constants/Common.constants'
+import { SYSTEM_OK, TOKEN_NAME } from '@/constants/Common.constants'
 import request from '@/services'
 
 let captcha: Captcha
@@ -35,7 +35,7 @@ export async function requestUser(): Promise<User> {
 
     await request.get<User>('/user/info').then((value) => {
         const response = value.data
-        if (response.code === DATABASE_SELECT_OK) {
+        if (response.code === SYSTEM_OK) {
             user = response.data
             setLocalStorage('userInfo', JSON.stringify(user))
         }
