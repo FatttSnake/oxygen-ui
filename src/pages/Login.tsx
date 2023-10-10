@@ -1,6 +1,11 @@
 import React from 'react'
 import { login } from '@/utils/auth.ts'
-import { LOGIN_SUCCESS, LOGIN_USERNAME_PASSWORD_ERROR } from '@/constants/Common.constants.ts'
+import {
+    SYSTEM_LOGIN_SUCCESS,
+    SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR,
+    SYSTEM_USER_DISABLE,
+    SYSTEM_USERNAME_NOT_FOUND
+} from '@/constants/Common.constants.ts'
 import { setToken } from '@/utils/common.ts'
 import '@/assets/css/pages/login.scss'
 
@@ -15,17 +20,26 @@ const Login: React.FC = () => {
             const res = value.data
             const { code, data } = res
             switch (code) {
-                case LOGIN_SUCCESS:
+                case SYSTEM_LOGIN_SUCCESS:
                     setToken(data?.token ?? '')
                     void messageApi.success('登录成功')
                     setTimeout(() => {
                         navigate('/')
                     }, 1500)
                     break
-                case LOGIN_USERNAME_PASSWORD_ERROR:
+                case SYSTEM_USERNAME_NOT_FOUND:
+                case SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR:
                     void messageApi.error(
                         <>
                             <strong>用户名</strong>或<strong>密码</strong>错误，请重试
+                        </>
+                    )
+                    setIsLoggingIn(false)
+                    break
+                case SYSTEM_USER_DISABLE:
+                    void messageApi.error(
+                        <>
+                            该用户已被<strong>禁用</strong>
                         </>
                     )
                     setIsLoggingIn(false)

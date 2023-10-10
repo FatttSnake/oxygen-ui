@@ -17,6 +17,7 @@ type RouteHandle = {
 
 type _Response<T> = {
     code: number
+    success: boolean
     msg: string
     data: T | null
 }
