@@ -16,43 +16,47 @@ const Login: React.FC = () => {
 
     const onFinish = (values: LoginForm) => {
         setIsLoggingIn(true)
-        void login(values.username, values.password).then((value) => {
-            const res = value.data
-            const { code, data } = res
-            switch (code) {
-                case SYSTEM_LOGIN_SUCCESS:
-                    setToken(data?.token ?? '')
-                    void messageApi.success('登录成功')
-                    setTimeout(() => {
-                        navigate('/')
-                    }, 1500)
-                    break
-                case SYSTEM_USERNAME_NOT_FOUND:
-                case SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR:
-                    void messageApi.error(
-                        <>
-                            <strong>用户名</strong>或<strong>密码</strong>错误，请重试
-                        </>
-                    )
-                    setIsLoggingIn(false)
-                    break
-                case SYSTEM_USER_DISABLE:
-                    void messageApi.error(
-                        <>
-                            该用户已被<strong>禁用</strong>
-                        </>
-                    )
-                    setIsLoggingIn(false)
-                    break
-                default:
-                    void messageApi.error(
-                        <>
-                            <strong>服务器出错了</strong>
-                        </>
-                    )
-                    setIsLoggingIn(false)
-            }
-        })
+        void login(values.username, values.password)
+            .then((value) => {
+                const res = value.data
+                const { code, data } = res
+                switch (code) {
+                    case SYSTEM_LOGIN_SUCCESS:
+                        setToken(data?.token ?? '')
+                        void messageApi.success('登录成功')
+                        setTimeout(() => {
+                            navigate('/')
+                        }, 1500)
+                        break
+                    case SYSTEM_USERNAME_NOT_FOUND:
+                    case SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR:
+                        void messageApi.error(
+                            <>
+                                <strong>用户名</strong>或<strong>密码</strong>错误，请重试
+                            </>
+                        )
+                        setIsLoggingIn(false)
+                        break
+                    case SYSTEM_USER_DISABLE:
+                        void messageApi.error(
+                            <>
+                                该用户已被<strong>禁用</strong>
+                            </>
+                        )
+                        setIsLoggingIn(false)
+                        break
+                    default:
+                        void messageApi.error(
+                            <>
+                                <strong>服务器出错了</strong>
+                            </>
+                        )
+                        setIsLoggingIn(false)
+                }
+            })
+            .catch(() => {
+                setIsLoggingIn(false)
+            })
     }
 
     return (
