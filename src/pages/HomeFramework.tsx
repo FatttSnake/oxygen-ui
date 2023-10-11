@@ -1,5 +1,5 @@
 import React from 'react'
-import '@/assets/css/pages/header.scss'
+import '@/assets/css/pages/home-framework.scss'
 import router from '@/router'
 import LoadingMask from '@/components/common/LoadingMask'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
