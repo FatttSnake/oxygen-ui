@@ -13,6 +13,9 @@ type RouteHandle = {
     name?: string
     menu?: boolean
     auth?: boolean
+    titlePrefix?: string
+    title?: string
+    titlePostfix?: string
 }
 
 type _Response<T> = {
