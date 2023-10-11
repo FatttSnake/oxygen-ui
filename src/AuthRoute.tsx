@@ -5,6 +5,7 @@ const AuthRoute = () => {
     const matches = useMatches()
     const lastMatch = matches.reduce((_, second) => second)
     const handle = lastMatch.handle as RouteHandle
+    const location = useLocation()
     const outlet = useOutlet()
     const isLogin = getLoginStatus()
 
@@ -13,7 +14,13 @@ const AuthRoute = () => {
             handle?.title ? handle?.title : PRODUCTION_NAME
         }${handle?.titlePostfix ?? ''}`
         if (handle?.auth && !isLogin) {
-            return <Navigate to="/login" />
+            return (
+                <Navigate
+                    to={`/login${
+                        '?redirect=' + encodeURIComponent(lastMatch.pathname + location.search)
+                    }`}
+                />
+            )
         }
         if (isLogin && lastMatch.pathname === '/login') {
             return <Navigate to="/" />
@@ -26,6 +33,7 @@ const AuthRoute = () => {
         handle?.titlePrefix,
         isLogin,
         lastMatch.pathname,
+        location.search,
         outlet
     ])
 }
