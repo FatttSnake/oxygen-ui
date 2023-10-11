@@ -17,9 +17,19 @@ const routes: RouteObject[] = [
             },
             {
                 path: '/tools',
-                id: 'tools',
-                Component: React.lazy(() => import('@/pages/Tools')),
+                id: 'toolsFramework',
+                Component: React.lazy(() => import('@/pages/ToolsFramework')),
                 children: [
+                    {
+                        path: '',
+                        id: 'tools',
+                        Component: React.lazy(() => import('@/pages/tools')),
+                        handle: {
+                            name: '全部工具',
+                            menu: true,
+                            auth: false
+                        }
+                    },
                     {
                         path: 'translation',
                         id: 'tools-translation',
@@ -45,7 +55,7 @@ const routes: RouteObject[] = [
                     {
                         path: '',
                         id: 'home',
-                        Component: React.lazy(() => import('@/pages/Home')),
+                        Component: React.lazy(() => import('@/pages/home')),
                         handle: {
                             name: '主页',
                             menu: true,
