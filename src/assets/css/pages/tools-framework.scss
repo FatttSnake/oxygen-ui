@@ -1,0 +1,43 @@
+@use "@/assets/css/constants" as constants;
+
+.left-panel {
+  width: 16%;
+  background-color: constants.$origin-color;
+
+  .title {
+    font-size: 2em;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 0.6em;
+    padding: 10px;
+    color: constants.$main-color;
+  }
+
+  .content {
+    ul{
+      li {
+        //background-color: #4E47BB;
+        margin: 4px 10px;
+        padding: 4px;
+        &.item {
+          background-color: #4E47BB;
+        }
+
+        .separate {
+          height: 0;
+          border: {
+            width: 1px;
+            color: constants.$font-secondary-color;
+            style: solid;
+          };
+          opacity: 0.4;
+        }
+      }
+    }
+  }
+}
+
+.right-panel {
+  flex: 1;
+  background-color: constants.$background-color;
+}

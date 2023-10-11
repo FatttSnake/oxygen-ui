@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="./ant-design" />
 
 interface ImportMetaEnv {
     readonly VITE_API_URL: string
@@ -16,6 +17,7 @@ type RouteHandle = {
     titlePrefix?: string
     title?: string
     titlePostfix?: string
+    icon?: IconComponent
 }
 
 type _Response<T> = {

@@ -26,6 +26,7 @@ const routes: RouteObject[] = [
                         Component: React.lazy(() => import('@/pages/tools')),
                         handle: {
                             name: '全部工具',
+                            icon: React.lazy(() => import('~icons/fatweb/logo.jsx')),
                             menu: true,
                             auth: false
                         }
@@ -34,8 +35,54 @@ const routes: RouteObject[] = [
                         path: 'translation',
                         id: 'tools-translation',
                         Component: React.lazy(() => import('@/pages/tools/Translation')),
+                        children: [
+                            {
+                                path: '1',
+                                id: '1',
+                                handle: {
+                                    name: '翻译1',
+                                    menu: true
+                                }
+                            },
+                            {
+                                path: '2',
+                                id: '2',
+                                handle: {
+                                    name: '翻译2',
+                                    menu: true
+                                }
+                            }
+                        ],
                         handle: {
                             name: '翻译',
+                            menu: true,
+                            auth: true
+                        }
+                    },
+                    {
+                        path: 'translation-',
+                        id: 'tools-translation-',
+                        Component: React.lazy(() => import('@/pages/tools/Translation')),
+                        children: [
+                            {
+                                path: '1-',
+                                id: '1-',
+                                handle: {
+                                    name: '翻译1-',
+                                    menu: true
+                                }
+                            },
+                            {
+                                path: '2-',
+                                id: '2-',
+                                handle: {
+                                    name: '翻译2-',
+                                    menu: true
+                                }
+                            }
+                        ],
+                        handle: {
+                            name: '翻译-',
                             menu: true,
                             auth: true
                         }
