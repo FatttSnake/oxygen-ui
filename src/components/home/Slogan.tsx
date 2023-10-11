@@ -1,7 +1,7 @@
 import React from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/components/home/slogan.scss'
-import FitCenter from '@/components/common/FitCenter.tsx'
+import FitCenter from '@/components/common/FitCenter'
 
 interface SloganProps {
     onClickScrollDown: (event: React.MouseEvent) => void

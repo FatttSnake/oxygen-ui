@@ -1,5 +1,5 @@
 import React from 'react'
-import FitCenter from '@/components/common/FitCenter.tsx'
+import FitCenter from '@/components/common/FitCenter'
 
 const OxygenToolbox: React.FC = () => {
     return (

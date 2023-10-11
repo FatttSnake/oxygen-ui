@@ -1,8 +1,8 @@
 import React from 'react'
-import FitCenter from '@/components/common/FitCenter.tsx'
+import FitCenter from '@/components/common/FitCenter'
 import Icon from '@ant-design/icons'
 import '@/assets/css/components/home/footer.scss'
-import FitFullScreen from '@/components/common/FitFullScreen.tsx'
+import FitFullScreen from '@/components/common/FitFullScreen'
 import { NavLink } from 'react-router-dom'
 
 const Footer: React.FC = () => {
