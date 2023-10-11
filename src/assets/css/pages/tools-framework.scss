@@ -14,13 +14,35 @@
   }
 
   .content {
-    ul{
-      li {
+    > ul {
+      > li {
         //background-color: #4E47BB;
-        margin: 4px 10px;
-        padding: 4px;
+        margin: 4px 14px;
+
         &.item {
-          background-color: #4E47BB;
+          font-size: 1.6em;
+          border-radius: 8px;
+          overflow: hidden;
+
+          :hover {
+            background-color: #4E47BB;
+          }
+        }
+
+        a {
+          display: flex;
+          padding: 8px 16px;
+          height: 100%;
+          width: 100%;
+
+          .icon {
+
+          }
+
+          .text {
+            flex: 1;
+            text-align: center;
+          }
         }
 
         .separate {
