@@ -10,6 +10,17 @@ interface ImportMeta {
     readonly env: ImportMetaEnv
 }
 
+type ToolsJsonObject = {
+    path: string
+    id: string
+    component?: React.ComponentType
+    name?: string
+    icon?: IconComponent
+    menu?: boolean
+    auth?: boolean
+    children?: ToolsJsonObject[]
+}
+
 type RouteHandle = {
     name?: string
     menu?: boolean

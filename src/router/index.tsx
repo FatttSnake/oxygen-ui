@@ -1,4 +1,5 @@
 import React from 'react'
+import tools from '@/router/tools'
 
 const routes: RouteObject[] = [
     {
@@ -19,75 +20,7 @@ const routes: RouteObject[] = [
                 path: '/tools',
                 id: 'toolsFramework',
                 Component: React.lazy(() => import('@/pages/ToolsFramework')),
-                children: [
-                    {
-                        path: '',
-                        id: 'tools',
-                        Component: React.lazy(() => import('@/pages/tools')),
-                        handle: {
-                            name: '全部工具',
-                            icon: React.lazy(() => import('~icons/fatweb/logo.jsx')),
-                            menu: true,
-                            auth: false
-                        }
-                    },
-                    {
-                        path: 'translation',
-                        id: 'tools-translation',
-                        Component: React.lazy(() => import('@/pages/tools/Translation')),
-                        children: [
-                            {
-                                path: '1',
-                                id: '1',
-                                handle: {
-                                    name: '翻译1',
-                                    menu: true
-                                }
-                            },
-                            {
-                                path: '2',
-                                id: '2',
-                                handle: {
-                                    name: '翻译2',
-                                    menu: true
-                                }
-                            }
-                        ],
-                        handle: {
-                            name: '翻译',
-                            menu: true,
-                            auth: true
-                        }
-                    },
-                    {
-                        path: 'translation-',
-                        id: 'tools-translation-',
-                        Component: React.lazy(() => import('@/pages/tools/Translation')),
-                        children: [
-                            {
-                                path: '1-',
-                                id: '1-',
-                                handle: {
-                                    name: '翻译1-',
-                                    menu: true
-                                }
-                            },
-                            {
-                                path: '2-',
-                                id: '2-',
-                                handle: {
-                                    name: '翻译2-',
-                                    menu: true
-                                }
-                            }
-                        ],
-                        handle: {
-                            name: '翻译-',
-                            menu: true,
-                            auth: true
-                        }
-                    }
-                ],
+                children: tools,
                 handle: {
                     name: '工具',
                     title: '工具',

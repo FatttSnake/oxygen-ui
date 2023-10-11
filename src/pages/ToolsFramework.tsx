@@ -2,7 +2,6 @@ import React from 'react'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import '@/assets/css/pages/tools-framework.scss'
 import router from '@/router'
-import { NavLink } from 'react-router-dom'
 import Icon from '@ant-design/icons'
 
 const ToolsFramework: React.FC = () => {
@@ -14,14 +13,18 @@ const ToolsFramework: React.FC = () => {
         <>
             <FitFullScreen className={'flex-horizontal'}>
                 <div className={'left-panel'}>
-                    <div className={'title'}>氦工具</div>
+                    <div className={'title'}>氮工具</div>
                     <div className={'content'}>
                         <ul>
+                            <li>
+                                <div style={{ marginTop: '0' }} className={'separate'} />
+                            </li>
                             <li className={'item'}>
                                 <NavLink
                                     to={''}
+                                    end
                                     className={({ isActive, isPending }) =>
-                                        isPending ? ' pending' : isActive ? ' active' : ''
+                                        isPending ? 'pending' : isActive ? 'active' : ''
                                     }
                                 >
                                     {routeChildren ? (
@@ -37,28 +40,57 @@ const ToolsFramework: React.FC = () => {
                                             </span>
                                         </>
                                     ) : (
+                                        '主页'
+                                    )}
+                                </NavLink>
+                            </li>
+                            <li className={'item'}>
+                                <NavLink
+                                    to={'all'}
+                                    className={({ isActive, isPending }) =>
+                                        isPending ? ' pending' : isActive ? ' active' : ''
+                                    }
+                                >
+                                    {routeChildren ? (
+                                        <>
+                                            <Icon
+                                                className={'icon'}
+                                                component={
+                                                    (routeChildren[1].handle as RouteHandle).icon
+                                                }
+                                            />
+                                            <span className={'text'}>
+                                                {(routeChildren[1].handle as RouteHandle).name}
+                                            </span>
+                                        </>
+                                    ) : (
                                         '全部工具'
                                     )}
                                 </NavLink>
-                                <div className={'home'}></div>
                             </li>
                             <li>
                                 <div className={'separate'} />
                             </li>
                             {routeChildren?.map((route) => {
                                 return (route.handle as RouteHandle).menu &&
-                                    route.id !== 'tools' ? (
-                                    <li className={'item'} key={route.id}>
+                                    route.id !== 'tools' &&
+                                    route.id !== 'tools-all' ? (
+                                    <li
+                                        className={route.children ? 'multiple-item' : 'item'}
+                                        key={route.id}
+                                    >
                                         <NavLink
                                             to={route.path ?? ''}
                                             className={({ isActive, isPending }) =>
                                                 isPending ? 'pending' : isActive ? 'active' : ''
                                             }
                                         >
-                                            <Icon
-                                                className={'icon'}
-                                                component={(route.handle as RouteHandle).icon}
-                                            />
+                                            {(route.handle as RouteHandle).icon ? (
+                                                <Icon
+                                                    className={'icon'}
+                                                    component={(route.handle as RouteHandle).icon}
+                                                />
+                                            ) : undefined}
                                             <span className={'text'}>
                                                 {(route.handle as RouteHandle).name}
                                             </span>
@@ -85,14 +117,17 @@ const ToolsFramework: React.FC = () => {
                                                                         : ''
                                                                 }
                                                             >
-                                                                <Icon
-                                                                    className={'icon'}
-                                                                    component={
-                                                                        (
-                                                                            subRoute.handle as RouteHandle
-                                                                        ).icon
-                                                                    }
-                                                                />
+                                                                {(subRoute.handle as RouteHandle)
+                                                                    .icon ? (
+                                                                    <Icon
+                                                                        className={'icon'}
+                                                                        component={
+                                                                            (
+                                                                                subRoute.handle as RouteHandle
+                                                                            ).icon
+                                                                        }
+                                                                    />
+                                                                ) : undefined}
                                                                 <span className={'text'}>
                                                                     {
                                                                         (
@@ -102,18 +137,12 @@ const ToolsFramework: React.FC = () => {
                                                                 </span>
                                                             </NavLink>
                                                         </li>
-                                                    ) : (
-                                                        <></>
-                                                    )
+                                                    ) : undefined
                                                 })}
                                             </ul>
-                                        ) : (
-                                            <></>
-                                        )}
+                                        ) : undefined}
                                     </li>
-                                ) : (
-                                    <></>
-                                )
+                                ) : undefined
                             })}
                         </ul>
                     </div>

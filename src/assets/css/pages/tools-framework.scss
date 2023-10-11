@@ -3,6 +3,7 @@
 .left-panel {
   width: 16%;
   background-color: constants.$origin-color;
+  user-select: none;
 
   .title {
     font-size: 2em;
@@ -20,12 +21,16 @@
         margin: 4px 14px;
 
         &.item {
-          font-size: 1.6em;
+          font-size: 1.4em;
           border-radius: 8px;
           overflow: hidden;
 
-          :hover {
-            background-color: #4E47BB;
+          a.active {
+            color: constants.$origin-color;
+            background-color: constants.$main-color;
+          }
+          a.pending {
+            background-color: #123213;
           }
         }
 
@@ -41,18 +46,23 @@
 
           .text {
             flex: 1;
-            text-align: center;
+            margin-left: 10px;
           }
         }
 
         .separate {
           height: 0;
+          margin: 10px 0;
           border: {
             width: 1px;
             color: constants.$font-secondary-color;
             style: solid;
           };
           opacity: 0.4;
+        }
+
+        &.item:hover {
+          background-color: constants.$background-color;
         }
       }
     }
