@@ -13,7 +13,7 @@ const AuthRoute = () => {
         document.title = `${handle?.titlePrefix ?? ''}${
             handle?.title ? handle?.title : PRODUCTION_NAME
         }${handle?.titlePostfix ?? ''}`
-        if (handle?.auth && !isLogin) {
+        if (matches.some(({ handle }) => (handle as RouteHandle)?.auth) && !isLogin) {
             return (
                 <Navigate
                     to={`/login${
