@@ -1,3 +1,5 @@
+@use "@/assets/css/constants" as constants;
+
 .login-background {
   display: flex;
   height: 100vh;
@@ -24,7 +26,7 @@
 
 .login-box-left-text {
   font-size: 3rem;
-  color: white;
+  color: constants.$origin-color;
   font-weight: bold;
 
   > div:last-child {
@@ -37,7 +39,7 @@
   position: relative;
   height: 100%;
   flex: 3;
-  background-color: white;
+  background-color: constants.$origin-color;
 }
 
 .login-from-text {
