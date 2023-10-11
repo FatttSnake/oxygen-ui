@@ -1,7 +1,7 @@
 import React from 'react'
 import '@/assets/css/components/home/home.scss'
 import FitFullScreen from '@/components/common/FitFullScreen'
-import { MainFrameworkContext } from '@/pages/MainFramework'
+import { HomeFrameworkContext } from '@/pages/HomeFramework'
 import Slogan from '@/components/home/Slogan'
 import OxygenToolbox from '@/components/home/OxygenToolbox'
 import Indicator from '@/components/common/Indicator'
@@ -13,7 +13,7 @@ const Home: React.FC = () => {
         navbarHiddenState: { navbarHidden, setNavbarHidden },
         showDropdownMenuState: { setShowDropdownMenu },
         preventScrollState: { setPreventScroll }
-    } = useContext(MainFrameworkContext)
+    } = useContext(HomeFrameworkContext)
 
     const fitFullScreenRef = useRef<HTMLDivElement>(null)
     const scrollTimeout = useRef(0)

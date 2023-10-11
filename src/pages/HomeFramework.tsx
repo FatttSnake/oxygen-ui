@@ -7,7 +7,7 @@ import Icon from '@ant-design/icons'
 import { COLOR_FONT_SECONDARY } from '@/constants/Common.constants.ts'
 import { NavLink } from 'react-router-dom'
 
-export const MainFrameworkContext = createContext<{
+export const HomeFrameworkContext = createContext<{
     navbarHiddenState: {
         navbarHidden: boolean
         setNavbarHidden: (newValue: boolean) => void
@@ -53,7 +53,7 @@ export const MainFrameworkContext = createContext<{
     hideScrollbarRef: createRef()
 })
 
-const MainFramework: React.FC = () => {
+const HomeFramework: React.FC = () => {
     const routeId = useMatches()[1].id
     const routeChildren = router.routes[0].children?.find((value) => value.id === routeId)?.children
 
@@ -187,7 +187,7 @@ const MainFramework: React.FC = () => {
                         </div>
                     </div>
 
-                    <MainFrameworkContext.Provider
+                    <HomeFrameworkContext.Provider
                         value={{
                             navbarHiddenState: { navbarHidden, setNavbarHidden },
                             preventScrollState: { preventScroll, setPreventScroll },
@@ -215,11 +215,11 @@ const MainFramework: React.FC = () => {
                         >
                             <Outlet />
                         </Suspense>
-                    </MainFrameworkContext.Provider>
+                    </HomeFrameworkContext.Provider>
                 </div>
             </HideScrollbar>
         </>
     )
 }
 
-export default MainFramework
+export default HomeFramework
