@@ -6,9 +6,15 @@ body {
 }
 
 .left-panel {
+  display: flex;
+  flex-direction: column;
   width: 16%;
   background-color: constants.$origin-color;
   user-select: none;
+
+  .hide-scrollbar-selection {
+    height: 100% !important;
+  }
 
   .title {
     font-size: 2em;
@@ -61,8 +67,8 @@ body {
           }
 
           .submenu {
-            display: none;
-            position: fixed;
+            display: block;
+            position: absolute;
             padding-left: 20px;
             left: 100%;
             top: 0;
@@ -99,7 +105,9 @@ body {
           }
 
           &:hover {
-            background-color: constants.$background-color;
+            a {
+              background-color: constants.$background-color;
+            }
 
             .submenu {
               display: block;
@@ -119,19 +127,18 @@ body {
             }
           }
         }
-
-        .separate {
-          height: 0;
-          margin: 10px 5px;
-          border: {
-            width: 1px;
-            color: constants.$font-secondary-color;
-            style: solid;
-          };
-          opacity: 0.4;
-        }
       }
     }
+  }
+  .separate {
+    height: 0;
+    margin: 10px 5px;
+    border: {
+      width: 1px;
+      color: constants.$font-secondary-color;
+      style: solid;
+    };
+    opacity: 0.4;
   }
 }
 

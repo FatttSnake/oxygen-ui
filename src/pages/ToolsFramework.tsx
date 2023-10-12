@@ -10,13 +10,11 @@ const ToolsFramework: React.FC = () => {
         <>
             <FitFullScreen className={'flex-horizontal'}>
                 <div className={'left-panel'}>
-                    <HideScrollbar>
-                        <div className={'title'}>氮工具</div>
+                    <div className={'title'}>氮工具</div>
+                    <div style={{ marginTop: '0' }} className={'separate'} />
+                    <HideScrollbar isShowVerticalScrollbar={true} isShowHorizontalScrollbar={true}>
                         <div className={'content'}>
                             <ul>
-                                <li>
-                                    <div style={{ marginTop: '0' }} className={'separate'} />
-                                </li>
                                 <li className={'item'}>
                                     <div className={'menu-bt'}>
                                         <NavLink
@@ -126,6 +124,8 @@ const ToolsFramework: React.FC = () => {
                             </ul>
                         </div>
                     </HideScrollbar>
+
+                    <div className={'title'}>氮工具</div>
                 </div>
                 <div className={'right-panel'}></div>
             </FitFullScreen>
