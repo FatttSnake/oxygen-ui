@@ -16,9 +16,9 @@ const AuthRoute = () => {
         if (matches.some(({ handle }) => (handle as RouteHandle)?.auth) && !isLogin) {
             return (
                 <Navigate
-                    to={`/login${
-                        '?redirect=' + encodeURIComponent(lastMatch.pathname + location.search)
-                    }`}
+                    to={`/login?redirect=${encodeURIComponent(
+                        `${lastMatch.pathname}${location.search}`
+                    )}`}
                 />
             )
         }
@@ -27,13 +27,13 @@ const AuthRoute = () => {
         }
         return outlet
     }, [
-        handle?.auth,
         handle?.title,
         handle?.titlePostfix,
         handle?.titlePrefix,
         isLogin,
         lastMatch.pathname,
         location.search,
+        matches,
         outlet
     ])
 }

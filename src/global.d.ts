@@ -15,6 +15,9 @@ type ToolsJsonObject = {
     id: string
     component?: React.ComponentType
     name?: string
+    titlePrefix?: string
+    title?: string
+    titlePostfix?: string
     icon?: IconComponent
     menu?: boolean
     auth?: boolean

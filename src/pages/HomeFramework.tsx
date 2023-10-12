@@ -84,7 +84,7 @@ const HomeFramework: React.FC = () => {
             >
                 <div className={'body'}>
                     <div>
-                        <header className={'nav' + (navbarHidden ? ' hide' : '')}>
+                        <header className={`nav${navbarHidden ? ' hide' : ''}`}>
                             <a className={'logo'} href={'https://fatweb.top'}>
                                 <span className={'title'}>FatWeb</span>
                             </a>
@@ -115,11 +115,9 @@ const HomeFramework: React.FC = () => {
                                                                     key={subRoute.id}
                                                                 >
                                                                     <NavLink
-                                                                        to={
-                                                                            (route.path ?? '') +
-                                                                            '/' +
-                                                                            (subRoute.path ?? '')
-                                                                        }
+                                                                        to={`${route.path ?? ''}/${
+                                                                            subRoute.path ?? ''
+                                                                        }`}
                                                                         className={({
                                                                             isActive,
                                                                             isPending
@@ -153,9 +151,9 @@ const HomeFramework: React.FC = () => {
                                     })}
                                 </ul>
                                 <div
-                                    className={
-                                        'dropdown-menu-button' + (showDropdownMenu ? ' active' : '')
-                                    }
+                                    className={`dropdown-menu-button${
+                                        showDropdownMenu ? ' active' : ''
+                                    }`}
                                 >
                                     <Icon
                                         component={IconFatwebMenu}
@@ -165,9 +163,7 @@ const HomeFramework: React.FC = () => {
                                 </div>
                             </nav>
                         </header>
-                        <div
-                            className={'dropdown-menu-content' + (showDropdownMenu ? ' show' : '')}
-                        >
+                        <div className={`dropdown-menu-content${showDropdownMenu ? ' show' : ''}`}>
                             <ul>
                                 {routeChildren?.map((route) => {
                                     return (

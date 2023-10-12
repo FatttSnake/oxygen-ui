@@ -1,13 +1,38 @@
 import React from 'react'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import '@/assets/css/pages/tools-framework.scss'
-import router from '@/router'
 import Icon from '@ant-design/icons'
+import { toolsJsonObjects } from '@/router/tools.tsx'
+import _ from 'lodash'
 
 const ToolsFramework: React.FC = () => {
-    const frameworkRoute = useMatches()[1]
-    const routeId = frameworkRoute.id
-    const routeChildren = router.routes[0].children?.find((value) => value.id === routeId)?.children
+    const location = useLocation()
+
+    const [multipleMenuShown, setMultipleMenuShown] = useState(
+        toolsJsonObjects.map((value) => ({
+            id: value.id,
+            path: value.path,
+            shown: `${location.pathname}/`.startsWith(`/tools/${value.path}/`)
+        }))
+    )
+
+    useEffect(() => {
+        const temp = _.clone(multipleMenuShown)
+        temp.forEach((value) => {
+            value.shown = `${location.pathname}/`.startsWith(`/tools/${value.path}/`)
+        })
+        setMultipleMenuShown(temp)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location])
+
+    const switchSubmenu = (menuId: string) => {
+        return () => {
+            const temp = _.clone(multipleMenuShown)
+            const menu = temp.find(({ id }) => id === menuId)
+            menu && (menu.shown = !menu.shown)
+            setMultipleMenuShown(temp)
+        }
+    }
 
     return (
         <>
@@ -20,92 +45,93 @@ const ToolsFramework: React.FC = () => {
                                 <div style={{ marginTop: '0' }} className={'separate'} />
                             </li>
                             <li className={'item'}>
-                                <NavLink
-                                    to={''}
-                                    end
-                                    className={({ isActive, isPending }) =>
-                                        isPending ? 'pending' : isActive ? 'active' : ''
-                                    }
-                                >
-                                    {routeChildren ? (
-                                        <>
-                                            <Icon
-                                                className={'icon'}
-                                                component={
-                                                    (routeChildren[0].handle as RouteHandle).icon
-                                                }
-                                            />
-                                            <span className={'text'}>
-                                                {(routeChildren[0].handle as RouteHandle).name}
-                                            </span>
-                                        </>
-                                    ) : (
-                                        '主页'
-                                    )}
-                                </NavLink>
+                                <div className={'menu-bt'}>
+                                    <NavLink
+                                        to={''}
+                                        end
+                                        className={({ isActive, isPending }) =>
+                                            isPending ? 'pending' : isActive ? 'active' : ''
+                                        }
+                                    >
+                                        <Icon
+                                            className={'icon'}
+                                            component={toolsJsonObjects[0].icon}
+                                        />
+                                        <span className={'text'}>{toolsJsonObjects[0].name}</span>
+                                    </NavLink>
+                                </div>
                             </li>
                             <li className={'item'}>
-                                <NavLink
-                                    to={'all'}
-                                    className={({ isActive, isPending }) =>
-                                        isPending ? ' pending' : isActive ? ' active' : ''
-                                    }
-                                >
-                                    {routeChildren ? (
-                                        <>
-                                            <Icon
-                                                className={'icon'}
-                                                component={
-                                                    (routeChildren[1].handle as RouteHandle).icon
-                                                }
-                                            />
-                                            <span className={'text'}>
-                                                {(routeChildren[1].handle as RouteHandle).name}
-                                            </span>
-                                        </>
-                                    ) : (
-                                        '全部工具'
-                                    )}
-                                </NavLink>
+                                <div className={'menu-bt'}>
+                                    <NavLink
+                                        to={'all'}
+                                        className={({ isActive, isPending }) =>
+                                            isPending ? ' pending' : isActive ? ' active' : ''
+                                        }
+                                    >
+                                        <Icon
+                                            className={'icon'}
+                                            component={toolsJsonObjects[1].icon}
+                                        />
+                                        <span className={'text'}>{toolsJsonObjects[1].name}</span>
+                                    </NavLink>
+                                </div>
                             </li>
                             <li>
                                 <div className={'separate'} />
                             </li>
-                            {routeChildren?.map((route) => {
-                                return (route.handle as RouteHandle).menu &&
-                                    route.id !== 'tools' &&
-                                    route.id !== 'tools-all' ? (
+                            {toolsJsonObjects.map((tool) => {
+                                return tool.menu &&
+                                    tool.id !== 'tools' &&
+                                    tool.id !== 'tools-all' ? (
                                     <li
-                                        className={route.children ? 'multiple-item' : 'item'}
-                                        key={route.id}
+                                        className={
+                                            tool.children
+                                                ? `multiple-item${
+                                                      multipleMenuShown.find(
+                                                          ({ id }) => id === tool.id
+                                                      )?.shown ?? false
+                                                          ? ' show'
+                                                          : ''
+                                                  }`
+                                                : 'item'
+                                        }
+                                        key={tool.id}
                                     >
-                                        <NavLink
-                                            to={route.path ?? ''}
-                                            className={({ isActive, isPending }) =>
-                                                isPending ? 'pending' : isActive ? 'active' : ''
-                                            }
-                                        >
-                                            {(route.handle as RouteHandle).icon ? (
-                                                <Icon
-                                                    className={'icon'}
-                                                    component={(route.handle as RouteHandle).icon}
-                                                />
+                                        <div className={'menu-bt'}>
+                                            {tool.children ? (
+                                                <div
+                                                    className={'icon-box'}
+                                                    onClick={switchSubmenu(tool.id)}
+                                                >
+                                                    <Icon
+                                                        className={'icon'}
+                                                        component={IconFatwebDown}
+                                                    />
+                                                </div>
                                             ) : undefined}
-                                            <span className={'text'}>
-                                                {(route.handle as RouteHandle).name}
-                                            </span>
-                                        </NavLink>
-                                        {route.children ? (
+                                            <NavLink
+                                                to={tool.path}
+                                                className={({ isActive, isPending }) =>
+                                                    isPending ? 'pending' : isActive ? 'active' : ''
+                                                }
+                                            >
+                                                {tool.children ? undefined : tool.icon ? (
+                                                    <Icon
+                                                        className={'icon'}
+                                                        component={tool.icon}
+                                                    />
+                                                ) : undefined}
+                                                <span className={'text'}>{tool.name}</span>
+                                            </NavLink>
+                                        </div>
+                                        {tool.children ? (
                                             <ul className={'submenu'}>
-                                                {route.children.map((subRoute) => {
-                                                    return (subRoute.handle as RouteHandle).menu ? (
-                                                        <li className={'item'} key={subRoute.id}>
+                                                {tool.children.map((subTool) => {
+                                                    return subTool.menu ? (
+                                                        <li className={'item'} key={subTool.id}>
                                                             <NavLink
-                                                                to={
-                                                                    (route.path ?? '') +
-                                                                    '/' +
-                                                                    (subRoute.path ?? '')
-                                                                }
+                                                                to={`${tool.path}/${subTool.path}`}
                                                                 className={({
                                                                     isActive,
                                                                     isPending
@@ -117,23 +143,14 @@ const ToolsFramework: React.FC = () => {
                                                                         : ''
                                                                 }
                                                             >
-                                                                {(subRoute.handle as RouteHandle)
-                                                                    .icon ? (
+                                                                {subTool.icon ? (
                                                                     <Icon
                                                                         className={'icon'}
-                                                                        component={
-                                                                            (
-                                                                                subRoute.handle as RouteHandle
-                                                                            ).icon
-                                                                        }
+                                                                        component={subTool.icon}
                                                                     />
                                                                 ) : undefined}
                                                                 <span className={'text'}>
-                                                                    {
-                                                                        (
-                                                                            subRoute.handle as RouteHandle
-                                                                        ).name
-                                                                    }
+                                                                    {subTool.name}
                                                                 </span>
                                                             </NavLink>
                                                         </li>

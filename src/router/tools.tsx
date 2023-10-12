@@ -1,6 +1,8 @@
 import React from 'react'
 
-const toolsJsonObjects: ToolsJsonObject[] = [
+const defaultTitle = '氮工具'
+
+export const toolsJsonObjects: ToolsJsonObject[] = [
     {
         path: '',
         id: 'tools',
@@ -15,6 +17,7 @@ const toolsJsonObjects: ToolsJsonObject[] = [
         id: 'tools-all',
         component: React.lazy(() => import('@/pages/tools')),
         name: '全部工具',
+        titlePostfix: ' - 全部工具',
         icon: React.lazy(() => import('~icons/fatweb/logo.jsx')),
         menu: true,
         auth: false
@@ -86,6 +89,9 @@ const tools: RouteObject[] = toolsJsonObjects.map((value) => ({
     Component: value.component,
     handle: {
         name: value.name,
+        titlePrefix: value.titlePrefix,
+        title: value.title ?? defaultTitle,
+        titlePostfix: value.titlePostfix,
         icon: value.icon,
         menu: value.menu,
         auth: value.auth
@@ -96,6 +102,9 @@ const tools: RouteObject[] = toolsJsonObjects.map((value) => ({
         Component: value.component,
         handle: {
             name: value.name,
+            titlePrefix: value.titlePrefix,
+            title: value.title ?? defaultTitle,
+            titlePostfix: value.titlePostfix,
             icon: value.icon,
             menu: value.menu,
             auth: value.auth

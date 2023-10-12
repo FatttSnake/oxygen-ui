@@ -12,7 +12,7 @@ const FitFullScreen = forwardRef<HTMLDivElement, FitFullscreenProps>((props, ref
     return (
         <>
             <div
-                className={`fit-fullscreen${className ? ' ' + className : ''}`}
+                className={`fit-fullscreen${className ? ` ${className}` : ''}`}
                 style={{
                     zIndex,
                     backgroundColor,

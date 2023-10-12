@@ -1,5 +1,9 @@
 @use "@/assets/css/constants" as constants;
 
+body {
+  background-color: constants.$background-color;
+}
+
 .left-panel {
   width: 16%;
   background-color: constants.$origin-color;
@@ -17,7 +21,6 @@
   .content {
     > ul {
       > li {
-        //background-color: #4E47BB;
         margin: 4px 14px;
 
         &.item {
@@ -25,28 +28,79 @@
           border-radius: 8px;
           overflow: hidden;
 
-          a.active {
-            color: constants.$origin-color;
-            background-color: constants.$main-color;
+          .menu-bt {
+            .icon {
+              margin-right: 16px;
+            }
+
+            a {
+              display: flex;
+              padding: 8px 16px;
+              height: 100%;
+              width: 100%;
+
+              .text {
+                flex: 1;
+              }
+
+              &.active {
+                color: constants.$origin-color;
+                background-color: constants.$main-color;
+              }
+            }
           }
-          a.pending {
-            background-color: #123213;
+
+          &:hover {
+            background-color: constants.$background-color;
           }
         }
 
-        a {
-          display: flex;
-          padding: 8px 16px;
-          height: 100%;
-          width: 100%;
+        &.multiple-item {
+          font-size: 1.4em;
+          border-radius: 8px;
+          overflow: hidden;
 
-          .icon {
+          .menu-bt {
+            display: flex;
+
+            .icon-box {
+              cursor: pointer;
+              padding: 8px 16px;
+
+              .icon {
+                transition: all 0.3s ease;
+                transform: rotate(180deg);
+              }
+            }
+
+            a {
+              display: flex;
+              padding: {
+                top: 8px;
+                bottom: 8px;
+                right: 16px;
+              };
+              height: 100%;
+              width: 100%;
+
+              .text {
+                flex: 1;
+              }
+            }
+          }
+
+          .submenu {
 
           }
 
-          .text {
-            flex: 1;
-            margin-left: 10px;
+          &.show {
+            .menu-bt {
+              .icon-box {
+                .icon {
+                  transform: rotate(360deg);
+                }
+              }
+            }
           }
         }
 
@@ -59,10 +113,6 @@
             style: solid;
           };
           opacity: 0.4;
-        }
-
-        &.item:hover {
-          background-color: constants.$background-color;
         }
       }
     }
