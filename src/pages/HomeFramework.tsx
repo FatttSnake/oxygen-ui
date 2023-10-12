@@ -81,6 +81,7 @@ const HomeFramework: React.FC = () => {
                 ref={hideScrollbarRef}
                 isPreventVerticalScroll={preventScroll}
                 isShowHorizontalScrollbar={true}
+                minWidth={'900px'}
             >
                 <div className={'body'}>
                     <div>

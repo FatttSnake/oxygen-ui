@@ -10,6 +10,7 @@ interface HideScrollbarProps
     isHiddenVerticalScrollbarWhenFull?: boolean
     isShowHorizontalScrollbar?: boolean
     isHiddenHorizontalScrollbarWhenFull?: boolean
+    minWidth?: string | number
 }
 
 export interface HideScrollbarElement {
@@ -138,7 +139,6 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
     const lastScrollbarClickPositionRef = useRef({ x: -1, y: -1 })
     const lastScrollbarTouchPositionRef = useRef({ x: -1, y: -1 })
     const lastTouchPositionRef = useRef({ x: -1, y: -1 })
-    const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0)
     const [verticalScrollbarLength, setVerticalScrollbarLength] = useState(100)
     const [verticalScrollbarPosition, setVerticalScrollbarPosition] = useState(0)
     const [verticalScrollbarOnClick, setVerticalScrollbarOnClick] = useState(false)
@@ -157,6 +157,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         isHiddenVerticalScrollbarWhenFull,
         isShowHorizontalScrollbar,
         isHiddenHorizontalScrollbarWhenFull,
+        minWidth,
         ..._props
     } = props
 
@@ -365,9 +366,6 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
 
     useEffect(() => {
         const windowResizeListener = () => {
-            setVerticalScrollbarWidth(
-                (rootRef.current?.offsetWidth ?? 0) - (rootRef.current?.clientWidth ?? 0)
-            )
             setHorizontalScrollbarWidth(
                 (rootRef.current?.offsetHeight ?? 0) - (rootRef.current?.clientHeight ?? 0)
             )
@@ -457,7 +455,6 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     className={'hide-scrollbar-selection'}
                     tabIndex={0}
                     style={{
-                        width: `calc(100vw + ${verticalScrollbarWidth}px)`,
                         height: `calc(100vh + ${horizontalScrollbarWidth}px)`,
                         touchAction: isPreventAnyScroll ? 'none' : '',
                         msTouchAction: isPreventAnyScroll ? 'none' : ''
@@ -469,7 +466,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     onTouchMove={isPreventAnyScroll ? handleDefaultTouchmove : undefined}
                     onScroll={handleDefaultScroll}
                 >
-                    <div className={'hide-scrollbar-content'} ref={contentRef}>
+                    <div className={'hide-scrollbar-content'} ref={contentRef} style={{ minWidth }}>
                         {props.children}
                     </div>
                 </div>

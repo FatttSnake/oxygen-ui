@@ -8,7 +8,6 @@ export const toolsJsonObjects: ToolsJsonObject[] = [
         id: 'tools',
         component: React.lazy(() => import('@/pages/tools')),
         name: '主页',
-        icon: React.lazy(() => import('~icons/fatweb/logo.jsx')),
         menu: true,
         auth: false
     },
@@ -35,6 +34,7 @@ export const toolsJsonObjects: ToolsJsonObject[] = [
                 path: '1',
                 id: '1',
                 name: '翻译1',
+                icon: React.lazy(() => import('~icons/fatweb/logo.jsx')),
                 menu: true,
                 auth: false
             },
@@ -77,6 +77,186 @@ export const toolsJsonObjects: ToolsJsonObject[] = [
         id: 'tools-translation--',
         component: React.lazy(() => import('@/pages/tools/Translation')),
         name: '翻译--',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--1',
+        id: 'tools-translation--1',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--1',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--2',
+        id: 'tools-translation--2',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--2',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--3',
+        id: 'tools-translation--3',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--3',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--4',
+        id: 'tools-translation--4',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--4',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--5',
+        id: 'tools-translation--5',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--5',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--6',
+        id: 'tools-translation--6',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--6',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--7',
+        id: 'tools-translation--7',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--7',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--8',
+        id: 'tools-translation--8',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--8',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--9',
+        id: 'tools-translation--9',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--9',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--10',
+        id: 'tools-translation--10',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--10',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--1-',
+        id: 'tools-translation--1-',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--1-',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--2-',
+        id: 'tools-translation--2-',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--2-',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--3-',
+        id: 'tools-translation--3-',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--3-',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--4-',
+        id: 'tools-translation--4-',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--4-',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--5-',
+        id: 'tools-translation--5-',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--5-',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--6-',
+        id: 'tools-translation--6-',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--6-',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--7-',
+        id: 'tools-translation--7-',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--7-',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--8-',
+        id: 'tools-translation--8-',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--8-',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--9-',
+        id: 'tools-translation--9-',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--9-',
+        icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
+        menu: true,
+        auth: false
+    },
+    {
+        path: 'translation--10-',
+        id: 'tools-translation--10-',
+        component: React.lazy(() => import('@/pages/tools/Translation')),
+        name: '翻译--10-',
         icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
         menu: true,
         auth: false
