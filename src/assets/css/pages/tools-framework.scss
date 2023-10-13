@@ -8,7 +8,7 @@ body {
 .left-panel {
   display: flex;
   flex-direction: column;
-  width: 16%;
+  width: clamp(180px, 20vw, 240px);
   background-color: constants.$origin-color;
   user-select: none;
 
@@ -25,13 +25,11 @@ body {
     display: flex;
     min-height: 0;
     flex-direction: column;
+    flex: 1;
 
     .toolsMenu {
       min-height: 0;
-
-      .hide-scrollbar-mask {
-        flex: 1;
-      }
+      flex: 1;
     }
 
     ul {
