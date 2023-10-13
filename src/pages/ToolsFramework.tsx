@@ -4,15 +4,17 @@ import '@/assets/css/pages/tools-framework.scss'
 import Icon from '@ant-design/icons'
 import { toolsJsonObjects } from '@/router/tools.tsx'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar.tsx'
+import { getLocalStorage, setLocalStorage } from '@/utils/common.ts'
 
 const ToolsFramework: React.FC = () => {
     const hideScrollbarRef = useRef<HideScrollbarElement>(null)
     const [submenuTop, setSubmenuTop] = useState(0)
     const [submenuLeft, setSubmenuLeft] = useState(0)
-    const [hideSidebar, setHideSidebar] = useState(false)
+    const [hideSidebar, setHideSidebar] = useState(getLocalStorage('hideSidebar') === 'false')
 
     const switchSidebar = () => {
         setHideSidebar(!hideSidebar)
+        setLocalStorage('hideSidebar', hideSidebar ? 'true' : 'false')
         setTimeout(() => {
             hideScrollbarRef.current?.refreshLayout()
         }, 300)
@@ -90,7 +92,7 @@ const ToolsFramework: React.FC = () => {
                                 </div>
                             </li>
                             <li>
-                                <div className={'separate'} />
+                                <div className={'separate'} style={{ marginBottom: 0 }} />
                             </li>
                         </ul>
                         <div className={'toolsMenu'}>
@@ -177,7 +179,13 @@ const ToolsFramework: React.FC = () => {
                             </HideScrollbar>
                         </div>
                     </div>
-                    <div className={'title'}>氮工具</div>
+                    <div className={'separate'} style={{ marginTop: 0, marginBottom: 0 }} />
+                    <div className={'footer'}>
+                        <span className={'icon-box'} onClick={switchSidebar}>
+                            <Icon component={IconFatwebExpand} />
+                        </span>
+                        <span className={'text'}>氮工具</span>
+                    </div>
                 </div>
                 <div className={'right-panel'}></div>
             </FitFullScreen>

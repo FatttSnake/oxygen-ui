@@ -30,6 +30,7 @@ body {
       height: 40px;
       font-size: constants.$SIZE_ICON_SM;
       border-radius: 8px;
+      cursor: pointer;
       span {
         transform: rotateZ(180deg);
         transition: all .3s;
@@ -45,6 +46,7 @@ body {
       font-size: 2em;
       text-align: center;
       letter-spacing: 0.6em;
+      transform: translateX(0.3em);
     }
   }
 
@@ -176,6 +178,40 @@ body {
       style: solid;
     };
     opacity: 0.4;
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    padding: 10px 14px;
+    color: constants.$main-color;
+
+    .icon-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      width: 40px;
+      height: 40px;
+      font-size: constants.$SIZE_ICON_SM;
+      border-radius: 8px;
+      span {
+        transform: rotateZ(180deg);
+        transition: all .3s;
+      }
+
+      &:hover {
+        background-color: constants.$background-color;
+      }
+    }
+
+    .text {
+      flex: 1;
+      font-size: 2em;
+      text-align: center;
+      letter-spacing: 0.6em;
+    }
   }
 
   &.hide {
