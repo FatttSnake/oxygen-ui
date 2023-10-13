@@ -45,6 +45,7 @@ export interface HideScrollbarElement {
         listener: EventListenerOrEventListenerObject,
         options?: boolean | EventListenerOptions
     ): void
+    refreshLayout(): void
 }
 
 const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((props, ref) => {
@@ -128,6 +129,9 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     options?: boolean | EventListenerOptions
                 ): void {
                     rootRef.current?.removeEventListener(type, listener, options)
+                },
+                refreshLayout(): void {
+                    setRefreshTime(Date.now())
                 }
             }
         },
@@ -141,6 +145,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
     const lastScrollbarClickPositionRef = useRef({ x: -1, y: -1 })
     const lastScrollbarTouchPositionRef = useRef({ x: -1, y: -1 })
     const lastTouchPositionRef = useRef({ x: -1, y: -1 })
+    const [refreshTime, setRefreshTime] = useState(0)
     const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0)
     const [verticalScrollbarLength, setVerticalScrollbarLength] = useState(100)
     const [verticalScrollbarPosition, setVerticalScrollbarPosition] = useState(0)
@@ -479,6 +484,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                         className={'hide-scrollbar-content'}
                         ref={contentRef}
                         style={{ minWidth, minHeight }}
+                        data-refresh={refreshTime}
                     >
                         {props.children}
                     </div>
