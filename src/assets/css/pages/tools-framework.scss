@@ -11,14 +11,41 @@ body {
   width: clamp(180px, 20vw, 240px);
   background-color: constants.$origin-color;
   user-select: none;
+  transition: all .3s;
+  white-space: nowrap;
 
   .title {
-    font-size: 2em;
-    text-align: center;
+    display: flex;
+    align-items: center;
     font-weight: bold;
-    letter-spacing: 0.6em;
-    padding: 10px;
+    padding: 10px 14px;
     color: constants.$main-color;
+
+    .icon-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      width: 40px;
+      height: 40px;
+      font-size: constants.$SIZE_ICON_SM;
+      border-radius: 8px;
+      span {
+        transform: rotateZ(180deg);
+        transition: all .3s;
+      }
+
+      &:hover {
+        background-color: constants.$background-color;
+      }
+    }
+
+    .text {
+      flex: 1;
+      font-size: 2em;
+      text-align: center;
+      letter-spacing: 0.6em;
+    }
   }
 
   .content {
@@ -42,26 +69,29 @@ body {
           .menu-bt {
             border-radius: 8px;
             overflow: hidden;
+            height: 40px;
 
             .icon-box {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              padding: 0 10px;
+              width: 40px;
+              height: 40px;
+              font-size: constants.$SIZE_ICON_SM;
               cursor: pointer;
-              width: 26px;
-              height: 26px;
-
-              .icon {
-                margin-right: 16px;
-              }
             }
 
             a {
               display: flex;
-              padding: 8px 16px;
+              align-items: center;
               height: 100%;
               width: 100%;
               transition: all 0.2s;
 
               .text {
                 flex: 1;
+                padding-left: 8px;
               }
 
               &.active {
@@ -146,6 +176,28 @@ body {
       style: solid;
     };
     opacity: 0.4;
+  }
+
+  &.hide {
+    width: 68px;
+
+    .title {
+      .icon-box {
+        span {
+          transform: rotateZ(360deg);
+          transition: all .3s;
+        }
+      }
+      .text {
+        display: none;
+      }
+    }
+
+    .menu-bt {
+      .text {
+        display: none;
+      }
+    }
   }
 }
 

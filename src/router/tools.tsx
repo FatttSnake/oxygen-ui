@@ -7,6 +7,7 @@ export const toolsJsonObjects: ToolsJsonObject[] = [
         path: '',
         id: 'tools',
         component: React.lazy(() => import('@/pages/tools')),
+        icon: React.lazy(() => import('~icons/fatweb/logo.jsx')),
         name: '主页',
         menu: true,
         auth: false

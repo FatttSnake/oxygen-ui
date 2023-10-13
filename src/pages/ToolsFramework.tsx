@@ -3,11 +3,20 @@ import FitFullScreen from '@/components/common/FitFullScreen'
 import '@/assets/css/pages/tools-framework.scss'
 import Icon from '@ant-design/icons'
 import { toolsJsonObjects } from '@/router/tools.tsx'
-import HideScrollbar from '@/components/common/HideScrollbar.tsx'
+import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar.tsx'
 
 const ToolsFramework: React.FC = () => {
+    const hideScrollbarRef = useRef<HideScrollbarElement>(null)
     const [submenuTop, setSubmenuTop] = useState(0)
     const [submenuLeft, setSubmenuLeft] = useState(0)
+    const [hideSidebar, setHideSidebar] = useState(false)
+
+    const switchSidebar = () => {
+        setHideSidebar(!hideSidebar)
+        setTimeout(() => {
+            hideScrollbarRef.current?.refreshLayout()
+        }, 300)
+    }
 
     const showSubmenu = (e: React.MouseEvent) => {
         const parentElement = e.currentTarget.parentElement
@@ -29,8 +38,13 @@ const ToolsFramework: React.FC = () => {
     return (
         <>
             <FitFullScreen className={'flex-horizontal'}>
-                <div className={'left-panel'}>
-                    <div className={'title'}>氮工具</div>
+                <div className={`left-panel${hideSidebar ? ' hide' : ''}`}>
+                    <div className={'title'}>
+                        <span className={'icon-box'} onClick={switchSidebar}>
+                            <Icon component={IconFatwebExpand} />
+                        </span>
+                        <span className={'text'}>氮工具</span>
+                    </div>
                     <div style={{ marginTop: '0' }} className={'separate'} />
                     <div className={'content'}>
                         <ul>
@@ -44,10 +58,12 @@ const ToolsFramework: React.FC = () => {
                                         }
                                     >
                                         <div className={'icon-box'}>
-                                            <Icon
-                                                className={'icon'}
-                                                component={toolsJsonObjects[0].icon}
-                                            />
+                                            {toolsJsonObjects[0].icon ? (
+                                                <Icon
+                                                    className={'icon'}
+                                                    component={toolsJsonObjects[0].icon}
+                                                />
+                                            ) : undefined}
                                         </div>
                                         <span className={'text'}>{toolsJsonObjects[0].name}</span>
                                     </NavLink>
@@ -62,10 +78,12 @@ const ToolsFramework: React.FC = () => {
                                         }
                                     >
                                         <div className={'icon-box'}>
-                                            <Icon
-                                                className={'icon'}
-                                                component={toolsJsonObjects[1].icon}
-                                            />
+                                            {toolsJsonObjects[1].icon ? (
+                                                <Icon
+                                                    className={'icon'}
+                                                    component={toolsJsonObjects[1].icon}
+                                                />
+                                            ) : undefined}
                                         </div>
                                         <span className={'text'}>{toolsJsonObjects[1].name}</span>
                                     </NavLink>
@@ -78,8 +96,8 @@ const ToolsFramework: React.FC = () => {
                         <div className={'toolsMenu'}>
                             <HideScrollbar
                                 isShowVerticalScrollbar={true}
-                                isShowHorizontalScrollbar={true}
                                 scrollbarWidth={2}
+                                ref={hideScrollbarRef}
                             >
                                 <ul>
                                     {toolsJsonObjects.map((tool) => {
