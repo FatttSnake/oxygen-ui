@@ -18,6 +18,10 @@
     }
   }
 
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
   .scrollbar {
     position: absolute;
     z-index: 1000;

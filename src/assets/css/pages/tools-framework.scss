@@ -12,10 +12,6 @@ body {
   background-color: constants.$origin-color;
   user-select: none;
 
-  .hide-scrollbar-selection {
-    height: 100% !important;
-  }
-
   .title {
     font-size: 2em;
     text-align: center;
@@ -26,9 +22,20 @@ body {
   }
 
   .content {
-    > ul {
-      > li {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
 
+    .toolsMenu {
+      min-height: 0;
+
+      .hide-scrollbar-mask {
+        flex: 1;
+      }
+    }
+
+    ul {
+      > li {
         &.item {
           position: relative;
           margin: 4px 14px;
@@ -61,17 +68,16 @@ body {
 
               &.active {
                 color: constants.$origin-color;
-                background-color: constants.$main-color;
+                background-color: constants.$main-color !important;
               }
             }
           }
 
           .submenu {
-            display: block;
-            position: absolute;
+            display: none;
+            position: fixed;
             padding-left: 20px;
-            left: 100%;
-            top: 0;
+            z-index: 10000;
 
             .content {
               display: flex;
@@ -105,8 +111,10 @@ body {
           }
 
           &:hover {
-            a {
-              background-color: constants.$background-color;
+            .menu-bt {
+              a {
+                background-color: constants.$background-color;
+              }
             }
 
             .submenu {
@@ -130,6 +138,7 @@ body {
       }
     }
   }
+
   .separate {
     height: 0;
     margin: 10px 5px;

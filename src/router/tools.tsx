@@ -259,7 +259,23 @@ export const toolsJsonObjects: ToolsJsonObject[] = [
         name: '翻译--10-',
         icon: React.lazy(() => import('~icons/fatweb/jenkins.jsx')),
         menu: true,
-        auth: false
+        auth: false,
+        children: [
+            {
+                path: '1-1',
+                id: '1-1',
+                name: '翻译1-',
+                menu: true,
+                auth: false
+            },
+            {
+                path: '2-1',
+                id: '2-1',
+                name: '翻译2-',
+                menu: true,
+                auth: false
+            }
+        ]
     }
 ]
 
