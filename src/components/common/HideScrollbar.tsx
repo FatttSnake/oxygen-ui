@@ -11,6 +11,8 @@ interface HideScrollbarProps
     isShowHorizontalScrollbar?: boolean
     isHiddenHorizontalScrollbarWhenFull?: boolean
     minWidth?: string | number
+    minHeight?: string | number
+    scrollbarWidth?: string | number
 }
 
 export interface HideScrollbarElement {
@@ -159,6 +161,8 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         isShowHorizontalScrollbar,
         isHiddenHorizontalScrollbarWhenFull,
         minWidth,
+        minHeight,
+        scrollbarWidth,
         ..._props
     } = props
 
@@ -471,7 +475,11 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     onTouchMove={isPreventAnyScroll ? handleDefaultTouchmove : undefined}
                     onScroll={handleDefaultScroll}
                 >
-                    <div className={'hide-scrollbar-content'} ref={contentRef} style={{ minWidth }}>
+                    <div
+                        className={'hide-scrollbar-content'}
+                        ref={contentRef}
+                        style={{ minWidth, minHeight }}
+                    >
                         {props.children}
                     </div>
                 </div>
@@ -490,7 +498,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                             : undefined
                     }}
                 >
-                    <div className={'box'}>
+                    <div className={'box'} style={{ width: scrollbarWidth }}>
                         <div
                             className={'block'}
                             style={{
@@ -527,7 +535,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                             : undefined
                     }}
                 >
-                    <div className={'box'}>
+                    <div className={'box'} style={{ height: scrollbarWidth }}>
                         <div
                             className={'block'}
                             style={{
