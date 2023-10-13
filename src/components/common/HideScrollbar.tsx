@@ -459,8 +459,8 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     className={'hide-scrollbar-selection'}
                     tabIndex={0}
                     style={{
-                        width: `calc(100vw + ${verticalScrollbarWidth}px)`,
-                        height: `calc(100vh + ${horizontalScrollbarWidth}px)`,
+                        width: `calc(${maskRef.current?.clientWidth}px + ${verticalScrollbarWidth}px)`,
+                        height: `calc(${maskRef.current?.clientHeight}px + ${horizontalScrollbarWidth}px)`,
                         touchAction: isPreventAnyScroll ? 'none' : '',
                         msTouchAction: isPreventAnyScroll ? 'none' : ''
                     }}
@@ -482,6 +482,13 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                             verticalScrollbarLength === 100)
                     }
                     className={'scrollbar vertical-scrollbar'}
+                    style={{
+                        height: maskRef.current ? maskRef.current?.clientHeight - 1 : undefined,
+                        top: maskRef.current?.clientTop,
+                        left: maskRef.current
+                            ? maskRef.current?.clientLeft + maskRef.current?.clientWidth - 1
+                            : undefined
+                    }}
                 >
                     <div className={'box'}>
                         <div
@@ -512,6 +519,13 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                             horizontalScrollbarLength === 100)
                     }
                     className={'scrollbar horizontal-scrollbar'}
+                    style={{
+                        width: maskRef.current ? maskRef.current?.clientWidth - 1 : undefined,
+                        left: maskRef.current?.clientLeft,
+                        top: maskRef.current
+                            ? maskRef.current?.clientTop + maskRef.current?.clientHeight - 1
+                            : undefined
+                    }}
                 >
                     <div className={'box'}>
                         <div

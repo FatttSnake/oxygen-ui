@@ -1,6 +1,7 @@
 @use '@/assets/css/constants' as constants;
 
 .hide-scrollbar-mask {
+  position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -49,8 +50,9 @@
     padding: 12px 4px;
     width: 16px;
     height: 100%;
-    right: 0;
+    left: 100%;
     top: 0;
+    transform: translateX(-100%);
   }
 
   .horizontal-scrollbar {
@@ -58,6 +60,7 @@
     width: 100%;
     height: 16px;
     left: 0;
-    bottom: 0;
+    top: 100%;
+    transform: translateY(-100%);
   }
 }
