@@ -13,6 +13,7 @@ body {
   user-select: none;
   transition: all .3s;
   white-space: nowrap;
+  overflow: hidden;
 
   .title {
     display: flex;
@@ -184,33 +185,30 @@ body {
     display: flex;
     align-items: center;
     font-weight: bold;
-    padding: 10px 14px;
+    padding: 8px 14px;
     color: constants.$main-color;
 
     .icon-box {
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-left: 4px;
       padding: 10px;
-      width: 40px;
-      height: 40px;
-      font-size: constants.$SIZE_ICON_SM;
-      border-radius: 8px;
-      span {
-        transform: rotateZ(180deg);
-        transition: all .3s;
-      }
-
-      &:hover {
-        background-color: constants.$background-color;
-      }
+      width: 32px;
+      height: 32px;
+      font-size: constants.$SIZE_ICON_XS;
+      border: 2px constants.$font-secondary-color solid;
+      color: constants.$font-secondary-color;
+      border-radius: 50%;
+      cursor: pointer;
     }
 
     .text {
       flex: 1;
-      font-size: 2em;
-      text-align: center;
-      letter-spacing: 0.6em;
+      padding-left: 8px;
+      font-size: 1.4em;
+      color: constants.$font-main-color;
+      user-select: text;
     }
   }
 
@@ -230,6 +228,12 @@ body {
     }
 
     .menu-bt {
+      .text {
+        display: none;
+      }
+    }
+
+    .footer {
       .text {
         display: none;
       }

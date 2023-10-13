@@ -446,6 +446,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
             window.removeEventListener('resize', windowResizeListener)
         }
     }, [
+        animationTransitionTime,
         horizontalScrollbarLength,
         isPreventAnyScroll,
         isPreventHorizontalScroll,

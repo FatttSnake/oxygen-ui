@@ -99,6 +99,7 @@ const ToolsFramework: React.FC = () => {
                             <HideScrollbar
                                 isShowVerticalScrollbar={true}
                                 scrollbarWidth={2}
+                                animationTransitionTime={300}
                                 ref={hideScrollbarRef}
                             >
                                 <ul>
@@ -181,10 +182,10 @@ const ToolsFramework: React.FC = () => {
                     </div>
                     <div className={'separate'} style={{ marginTop: 0, marginBottom: 0 }} />
                     <div className={'footer'}>
-                        <span className={'icon-box'} onClick={switchSidebar}>
-                            <Icon component={IconFatwebExpand} />
+                        <span className={'icon-box'}>
+                            <Icon component={IconFatwebUser} />
                         </span>
-                        <span className={'text'}>氮工具</span>
+                        <span className={'text'}>未登录</span>
                     </div>
                 </div>
                 <div className={'right-panel'}></div>
