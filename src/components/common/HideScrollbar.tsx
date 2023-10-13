@@ -13,6 +13,7 @@ interface HideScrollbarProps
     minWidth?: string | number
     minHeight?: string | number
     scrollbarWidth?: string | number
+    animationTransitionTime?: number
 }
 
 export interface HideScrollbarElement {
@@ -131,7 +132,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     rootRef.current?.removeEventListener(type, listener, options)
                 },
                 refreshLayout(): void {
-                    setRefreshTime(Date.now())
+                    refreshLayout()
                 }
             }
         },
@@ -168,6 +169,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         minWidth,
         minHeight,
         scrollbarWidth,
+        animationTransitionTime,
         ..._props
     } = props
 
@@ -374,24 +376,32 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         )
     }
 
+    const refreshLayout = () => {
+        setRefreshTime(Date.now())
+    }
+
     useEffect(() => {
         const windowResizeListener = () => {
-            setVerticalScrollbarWidth(
-                (rootRef.current?.offsetWidth ?? 0) - (rootRef.current?.clientWidth ?? 0)
-            )
-            setHorizontalScrollbarWidth(
-                (rootRef.current?.offsetHeight ?? 0) - (rootRef.current?.clientHeight ?? 0)
-            )
-
-            rootRef.current &&
-                setVerticalScrollbarLength(
-                    (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) * 100
+            setTimeout(() => {
+                setVerticalScrollbarWidth(
+                    (rootRef.current?.offsetWidth ?? 0) - (rootRef.current?.clientWidth ?? 0)
+                )
+                setHorizontalScrollbarWidth(
+                    (rootRef.current?.offsetHeight ?? 0) - (rootRef.current?.clientHeight ?? 0)
                 )
 
-            rootRef.current &&
-                setHorizontalScrollbarLength(
-                    (rootRef.current.clientWidth / (contentRef.current?.clientWidth ?? 0)) * 100
-                )
+                rootRef.current &&
+                    setVerticalScrollbarLength(
+                        (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) *
+                            100
+                    )
+
+                rootRef.current &&
+                    setHorizontalScrollbarLength(
+                        (rootRef.current.clientWidth / (contentRef.current?.clientWidth ?? 0)) * 100
+                    )
+                refreshLayout()
+            }, animationTransitionTime)
 
             return windowResizeListener
         }
@@ -493,7 +503,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     hidden={
                         !isShowVerticalScrollbar ||
                         ((isHiddenVerticalScrollbarWhenFull ?? true) &&
-                            verticalScrollbarLength === 100)
+                            verticalScrollbarLength >= 100)
                     }
                     className={'scrollbar vertical-scrollbar'}
                     style={{
@@ -530,7 +540,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     hidden={
                         !isShowHorizontalScrollbar ||
                         ((isHiddenHorizontalScrollbarWhenFull ?? true) &&
-                            horizontalScrollbarLength === 100)
+                            horizontalScrollbarLength >= 100)
                     }
                     className={'scrollbar horizontal-scrollbar'}
                     style={{
