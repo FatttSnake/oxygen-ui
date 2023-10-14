@@ -74,7 +74,7 @@ service.interceptors.response.use(
                         <strong>登录已过期</strong>
                     </>
                 )
-                setTimeout(function () {
+                setTimeout(() => {
                     location.reload()
                 }, 1500)
                 throw response?.data

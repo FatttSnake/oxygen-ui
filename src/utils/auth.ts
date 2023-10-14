@@ -4,25 +4,25 @@ import request from '@/services'
 
 let captcha: Captcha
 
-export async function login(username: string, password: string) {
+export const login = async (username: string, password: string) => {
     return await request.post<Token>('/login', {
         username,
         password
     })
 }
 
-export function logout(): void {
+export const logout = () => {
     void request.post('/logout').finally(() => {
         removeLocalStorage('userInfo')
         removeLocalStorage(TOKEN_NAME)
     })
 }
 
-export function getLoginStatus(): boolean {
+export const getLoginStatus = () => {
     return getLocalStorage(TOKEN_NAME) !== null
 }
 
-export async function getUser(): Promise<User> {
+export const getUser = async (): Promise<User> => {
     if (getLocalStorage('userInfo') !== null) {
         return new Promise((resolve) => {
             resolve(JSON.parse(getLocalStorage('userInfo') as string) as User)
@@ -31,7 +31,7 @@ export async function getUser(): Promise<User> {
     return requestUser()
 }
 
-export async function requestUser(): Promise<User> {
+export const requestUser = async () => {
     let user: User | null
 
     await request.get<User>('/user/info').then((value) => {
@@ -50,17 +50,17 @@ export async function requestUser(): Promise<User> {
     })
 }
 
-export async function getUsername(): Promise<string> {
+export const getUsername = async () => {
     const user = await getUser()
 
     return user.username
 }
 
-export function getCaptchaSrc(): string {
+export const getCaptchaSrc = () => {
     captcha = getCaptcha(300, 150, 4)
     return captcha.base64Src
 }
 
-export function verifyCaptcha(value: string): boolean {
+export const verifyCaptcha = (value: string) => {
     return captcha.value.toLowerCase() === value.replace(/\s*/g, '').toLowerCase()
 }

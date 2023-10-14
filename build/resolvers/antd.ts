@@ -1,4 +1,4 @@
-export function kebabCase(key: string): string {
+export const kebabCase = (key: string) => {
     const result: string = key.replace(/([A-Z])/g, ' $1').trim()
     return result.split(' ').join('-').toLowerCase()
 }
@@ -395,7 +395,7 @@ const isAntd = (compName: string): boolean => {
     return antdNames.has(compName)
 }
 
-export function AntDesignResolver(options: AntDesignResolverOptions = {}): ComponentResolver {
+export const AntDesignResolver = (options: AntDesignResolverOptions = {}): ComponentResolver => {
     return {
         type: 'component',
         resolve: (name: string) => {

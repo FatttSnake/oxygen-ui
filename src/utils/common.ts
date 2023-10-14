@@ -1,6 +1,6 @@
 import { TOKEN_NAME } from '@/constants/Common.constants'
 
-export function getQueryVariable(variable: string): string | null {
+export const getQueryVariable = (variable: string) => {
     const query = window.location.search.substring(1)
     const vars = query.split('&')
     for (const value of vars) {
@@ -12,12 +12,12 @@ export function getQueryVariable(variable: string): string | null {
     return null
 }
 
-export function setCookie(
+export const setCookie = (
     name: string,
     value: string,
     daysToLive: number | null,
     path: string | null
-): void {
+) => {
     let cookie = `${name}=${encodeURIComponent(value)}`
 
     if (typeof daysToLive === 'number') {
@@ -31,15 +31,15 @@ export function setCookie(
     document.cookie = cookie
 }
 
-export function setLocalStorage(name: string, value: string): void {
+export const setLocalStorage = (name: string, value: string) => {
     localStorage.setItem(name, value)
 }
 
-export function setToken(token: string): void {
+export const setToken = (token: string) => {
     setLocalStorage(TOKEN_NAME, token)
 }
 
-export function getCookie(name: string): string | null {
+export const getCookie = (name: string) => {
     const cookieArr = document.cookie.split(';')
 
     for (const cookie of cookieArr) {
@@ -52,31 +52,31 @@ export function getCookie(name: string): string | null {
     return null
 }
 
-export function getLocalStorage(name: string): string | null {
+export const getLocalStorage = (name: string) => {
     return localStorage.getItem(name)
 }
 
-export function getToken(): string | null {
+export const getToken = () => {
     return getLocalStorage(TOKEN_NAME)
 }
 
-export function removeCookie(name: string): void {
+export const removeCookie = (name: string) => {
     document.cookie = `${name}=; max-age=0`
 }
 
-export function removeLocalStorage(name: string): void {
+export const removeLocalStorage = (name: string) => {
     localStorage.removeItem(name)
 }
 
-export function removeToken(): void {
+export const removeToken = () => {
     removeLocalStorage(TOKEN_NAME)
 }
 
-export function clearLocalStorage(): void {
+export const clearLocalStorage = () => {
     localStorage.clear()
 }
 
-export function getCaptcha(width: number, high: number, num: number): Captcha {
+export const getCaptcha = (width: number, high: number, num: number) => {
     const CHARTS = '23456789ABCDEFGHJKLMNPRSTUVWXYZabcdefghijklmnpqrstuvwxyz'.split('')
 
     const canvas = document.createElement('canvas')
@@ -116,7 +116,7 @@ export function getCaptcha(width: number, high: number, num: number): Captcha {
     }
 }
 
-function randomInt(start: number, end: number): number {
+const randomInt = (start: number, end: number) => {
     if (start > end) {
         const t = start
         start = end
@@ -127,11 +127,11 @@ function randomInt(start: number, end: number): number {
     return start + Math.floor(Math.random() * (end - start))
 }
 
-function randomFloat(start: number, end: number): number {
+const randomFloat = (start: number, end: number) => {
     return start + Math.random() * (end - start)
 }
 
-function randomColor(start: number, end: number): string {
+const randomColor = (start: number, end: number) => {
     return `rgb(${randomInt(start, end)},${randomInt(start, end)},${randomInt(start, end)})`
 }
 
