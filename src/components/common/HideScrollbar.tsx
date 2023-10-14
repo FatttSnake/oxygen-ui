@@ -14,6 +14,7 @@ interface HideScrollbarProps
     minHeight?: string | number
     scrollbarWidth?: string | number
     animationTransitionTime?: number
+    autoHideWaitingTime?: number
 }
 
 export interface HideScrollbarElement {
@@ -147,16 +148,20 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
     const lastScrollbarTouchPositionRef = useRef({ x: -1, y: -1 })
     const lastTouchPositionRef = useRef({ x: -1, y: -1 })
     const [refreshTime, setRefreshTime] = useState(0)
+
     const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0)
     const [verticalScrollbarLength, setVerticalScrollbarLength] = useState(100)
     const [verticalScrollbarPosition, setVerticalScrollbarPosition] = useState(0)
     const [verticalScrollbarOnClick, setVerticalScrollbarOnClick] = useState(false)
     const [verticalScrollbarOnTouch, setVerticalScrollbarOnTouch] = useState(false)
+    const [verticalScrollbarAutoHide, setVerticalScrollbarAutoHide] = useState(false)
+
     const [horizontalScrollbarWidth, setHorizontalScrollbarWidth] = useState(0)
     const [horizontalScrollbarLength, setHorizontalScrollbarLength] = useState(100)
     const [horizontalScrollbarPosition, setHorizontalScrollbarPosition] = useState(0)
     const [horizontalScrollbarOnClick, setHorizontalScrollbarOnClick] = useState(false)
     const [horizontalScrollbarOnTouch, setHorizontalScrollbarOnTouch] = useState(false)
+    const [horizontalScrollbarAutoHide, setHorizontalScrollbarAutoHide] = useState(false)
 
     const {
         isPreventScroll,
@@ -170,11 +175,36 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         minHeight,
         scrollbarWidth,
         animationTransitionTime,
+        autoHideWaitingTime,
         ..._props
     } = props
 
     const isPreventAnyScroll =
         isPreventScroll || isPreventVerticalScroll || isPreventHorizontalScroll
+
+    useEffect(() => {
+        if (autoHideWaitingTime === undefined) {
+            return
+        }
+        setVerticalScrollbarAutoHide(false)
+        if (autoHideWaitingTime > 0) {
+            setTimeout(() => {
+                setVerticalScrollbarAutoHide(true)
+            }, autoHideWaitingTime)
+        }
+    }, [autoHideWaitingTime, verticalScrollbarPosition])
+
+    useEffect(() => {
+        if (autoHideWaitingTime === undefined) {
+            return
+        }
+        setHorizontalScrollbarAutoHide(false)
+        if (autoHideWaitingTime > 0) {
+            setTimeout(() => {
+                setHorizontalScrollbarAutoHide(true)
+            }, autoHideWaitingTime)
+        }
+    }, [autoHideWaitingTime, horizontalScrollbarPosition])
 
     const handleDefaultTouchStart = useCallback(
         (event: React.TouchEvent) => {
@@ -506,7 +536,9 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                         ((isHiddenVerticalScrollbarWhenFull ?? true) &&
                             verticalScrollbarLength >= 100)
                     }
-                    className={'scrollbar vertical-scrollbar'}
+                    className={`scrollbar vertical-scrollbar${
+                        verticalScrollbarAutoHide ? ' hide' : ''
+                    }`}
                     style={{
                         height: maskRef.current ? maskRef.current?.clientHeight - 1 : undefined,
                         top: maskRef.current?.clientTop,
@@ -543,7 +575,9 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                         ((isHiddenHorizontalScrollbarWhenFull ?? true) &&
                             horizontalScrollbarLength >= 100)
                     }
-                    className={'scrollbar horizontal-scrollbar'}
+                    className={`scrollbar horizontal-scrollbar${
+                        horizontalScrollbarAutoHide ? ' hide' : ''
+                    }`}
                     style={{
                         width: maskRef.current ? maskRef.current?.clientWidth - 1 : undefined,
                         left: maskRef.current?.clientLeft,

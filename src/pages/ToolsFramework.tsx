@@ -100,6 +100,7 @@ const ToolsFramework: React.FC = () => {
                                 isShowVerticalScrollbar={true}
                                 scrollbarWidth={2}
                                 animationTransitionTime={300}
+                                autoHideWaitingTime={800}
                                 ref={hideScrollbarRef}
                             >
                                 <ul>
