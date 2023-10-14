@@ -7,7 +7,7 @@ export const toolsJsonObjects: ToolsJsonObject[] = [
         path: '',
         id: 'tools',
         component: React.lazy(() => import('@/pages/tools')),
-        icon: React.lazy(() => import('~icons/fatweb/logo.jsx')),
+        icon: React.lazy(() => import('~icons/fatweb/home.jsx')),
         name: '主页',
         menu: true,
         auth: false
@@ -18,7 +18,7 @@ export const toolsJsonObjects: ToolsJsonObject[] = [
         component: React.lazy(() => import('@/pages/tools')),
         name: '全部工具',
         titlePostfix: ' - 全部工具',
-        icon: React.lazy(() => import('~icons/fatweb/logo.jsx')),
+        icon: React.lazy(() => import('~icons/fatweb/tool.jsx')),
         menu: true,
         auth: false
     },
