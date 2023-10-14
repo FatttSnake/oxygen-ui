@@ -10,6 +10,10 @@ interface HideScrollbarProps
     isHiddenVerticalScrollbarWhenFull?: boolean
     isShowHorizontalScrollbar?: boolean
     isHiddenHorizontalScrollbarWhenFull?: boolean
+    minWidth?: string | number
+    minHeight?: string | number
+    scrollbarWidth?: string | number
+    animationTransitionTime?: number
 }
 
 export interface HideScrollbarElement {
@@ -42,6 +46,7 @@ export interface HideScrollbarElement {
         listener: EventListenerOrEventListenerObject,
         options?: boolean | EventListenerOptions
     ): void
+    refreshLayout(): void
 }
 
 const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((props, ref) => {
@@ -125,6 +130,9 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     options?: boolean | EventListenerOptions
                 ): void {
                     rootRef.current?.removeEventListener(type, listener, options)
+                },
+                refreshLayout(): void {
+                    refreshLayout()
                 }
             }
         },
@@ -138,6 +146,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
     const lastScrollbarClickPositionRef = useRef({ x: -1, y: -1 })
     const lastScrollbarTouchPositionRef = useRef({ x: -1, y: -1 })
     const lastTouchPositionRef = useRef({ x: -1, y: -1 })
+    const [refreshTime, setRefreshTime] = useState(0)
     const [verticalScrollbarWidth, setVerticalScrollbarWidth] = useState(0)
     const [verticalScrollbarLength, setVerticalScrollbarLength] = useState(100)
     const [verticalScrollbarPosition, setVerticalScrollbarPosition] = useState(0)
@@ -157,6 +166,10 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         isHiddenVerticalScrollbarWhenFull,
         isShowHorizontalScrollbar,
         isHiddenHorizontalScrollbarWhenFull,
+        minWidth,
+        minHeight,
+        scrollbarWidth,
+        animationTransitionTime,
         ..._props
     } = props
 
@@ -363,24 +376,32 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         )
     }
 
+    const refreshLayout = () => {
+        setRefreshTime(Date.now())
+    }
+
     useEffect(() => {
         const windowResizeListener = () => {
-            setVerticalScrollbarWidth(
-                (rootRef.current?.offsetWidth ?? 0) - (rootRef.current?.clientWidth ?? 0)
-            )
-            setHorizontalScrollbarWidth(
-                (rootRef.current?.offsetHeight ?? 0) - (rootRef.current?.clientHeight ?? 0)
-            )
-
-            rootRef.current &&
-                setVerticalScrollbarLength(
-                    (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) * 100
+            setTimeout(() => {
+                setVerticalScrollbarWidth(
+                    (rootRef.current?.offsetWidth ?? 0) - (rootRef.current?.clientWidth ?? 0)
+                )
+                setHorizontalScrollbarWidth(
+                    (rootRef.current?.offsetHeight ?? 0) - (rootRef.current?.clientHeight ?? 0)
                 )
 
-            rootRef.current &&
-                setHorizontalScrollbarLength(
-                    (rootRef.current.clientWidth / (contentRef.current?.clientWidth ?? 0)) * 100
-                )
+                rootRef.current &&
+                    setVerticalScrollbarLength(
+                        (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) *
+                            100
+                    )
+
+                rootRef.current &&
+                    setHorizontalScrollbarLength(
+                        (rootRef.current.clientWidth / (contentRef.current?.clientWidth ?? 0)) * 100
+                    )
+                refreshLayout()
+            }, animationTransitionTime)
 
             return windowResizeListener
         }
@@ -425,6 +446,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
             window.removeEventListener('resize', windowResizeListener)
         }
     }, [
+        animationTransitionTime,
         horizontalScrollbarLength,
         isPreventAnyScroll,
         isPreventHorizontalScroll,
@@ -457,8 +479,8 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     className={'hide-scrollbar-selection'}
                     tabIndex={0}
                     style={{
-                        width: `calc(100vw + ${verticalScrollbarWidth}px)`,
-                        height: `calc(100vh + ${horizontalScrollbarWidth}px)`,
+                        width: `calc(${maskRef.current?.clientWidth}px + ${verticalScrollbarWidth}px)`,
+                        height: `calc(${maskRef.current?.clientHeight}px + ${horizontalScrollbarWidth}px)`,
                         touchAction: isPreventAnyScroll ? 'none' : '',
                         msTouchAction: isPreventAnyScroll ? 'none' : ''
                     }}
@@ -469,7 +491,12 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     onTouchMove={isPreventAnyScroll ? handleDefaultTouchmove : undefined}
                     onScroll={handleDefaultScroll}
                 >
-                    <div className={'hide-scrollbar-content'} ref={contentRef}>
+                    <div
+                        className={'hide-scrollbar-content'}
+                        ref={contentRef}
+                        style={{ minWidth, minHeight }}
+                        data-refresh={refreshTime}
+                    >
                         {props.children}
                     </div>
                 </div>
@@ -477,11 +504,18 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     hidden={
                         !isShowVerticalScrollbar ||
                         ((isHiddenVerticalScrollbarWhenFull ?? true) &&
-                            verticalScrollbarLength === 100)
+                            verticalScrollbarLength >= 100)
                     }
                     className={'scrollbar vertical-scrollbar'}
+                    style={{
+                        height: maskRef.current ? maskRef.current?.clientHeight - 1 : undefined,
+                        top: maskRef.current?.clientTop,
+                        left: maskRef.current
+                            ? maskRef.current?.clientLeft + maskRef.current?.clientWidth - 1
+                            : undefined
+                    }}
                 >
-                    <div className={'box'}>
+                    <div className={'box'} style={{ width: scrollbarWidth }}>
                         <div
                             className={'block'}
                             style={{
@@ -507,11 +541,18 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                     hidden={
                         !isShowHorizontalScrollbar ||
                         ((isHiddenHorizontalScrollbarWhenFull ?? true) &&
-                            horizontalScrollbarLength === 100)
+                            horizontalScrollbarLength >= 100)
                     }
                     className={'scrollbar horizontal-scrollbar'}
+                    style={{
+                        width: maskRef.current ? maskRef.current?.clientWidth - 1 : undefined,
+                        left: maskRef.current?.clientLeft,
+                        top: maskRef.current
+                            ? maskRef.current?.clientTop + maskRef.current?.clientHeight - 1
+                            : undefined
+                    }}
                 >
-                    <div className={'box'}>
+                    <div className={'box'} style={{ height: scrollbarWidth }}>
                         <div
                             className={'block'}
                             style={{

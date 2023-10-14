@@ -1,5 +1,5 @@
 import React from 'react'
-import '@/assets/css/pages/header.scss'
+import '@/assets/css/pages/home-framework.scss'
 import router from '@/router'
 import LoadingMask from '@/components/common/LoadingMask'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
@@ -7,7 +7,7 @@ import Icon from '@ant-design/icons'
 import { COLOR_FONT_SECONDARY } from '@/constants/Common.constants.ts'
 import { NavLink } from 'react-router-dom'
 
-export const MainFrameworkContext = createContext<{
+export const HomeFrameworkContext = createContext<{
     navbarHiddenState: {
         navbarHidden: boolean
         setNavbarHidden: (newValue: boolean) => void
@@ -53,7 +53,7 @@ export const MainFrameworkContext = createContext<{
     hideScrollbarRef: createRef()
 })
 
-const MainFramework: React.FC = () => {
+const HomeFramework: React.FC = () => {
     const routeId = useMatches()[1].id
     const routeChildren = router.routes[0].children?.find((value) => value.id === routeId)?.children
 
@@ -81,10 +81,11 @@ const MainFramework: React.FC = () => {
                 ref={hideScrollbarRef}
                 isPreventVerticalScroll={preventScroll}
                 isShowHorizontalScrollbar={true}
+                minWidth={'900px'}
             >
                 <div className={'body'}>
                     <div>
-                        <header className={'nav' + (navbarHidden ? ' hide' : '')}>
+                        <header className={`nav${navbarHidden ? ' hide' : ''}`}>
                             <a className={'logo'} href={'https://fatweb.top'}>
                                 <span className={'title'}>FatWeb</span>
                             </a>
@@ -115,11 +116,9 @@ const MainFramework: React.FC = () => {
                                                                     key={subRoute.id}
                                                                 >
                                                                     <NavLink
-                                                                        to={
-                                                                            (route.path ?? '') +
-                                                                            '/' +
-                                                                            (subRoute.path ?? '')
-                                                                        }
+                                                                        to={`${route.path ?? ''}/${
+                                                                            subRoute.path ?? ''
+                                                                        }`}
                                                                         className={({
                                                                             isActive,
                                                                             isPending
@@ -153,9 +152,9 @@ const MainFramework: React.FC = () => {
                                     })}
                                 </ul>
                                 <div
-                                    className={
-                                        'dropdown-menu-button' + (showDropdownMenu ? ' active' : '')
-                                    }
+                                    className={`dropdown-menu-button${
+                                        showDropdownMenu ? ' active' : ''
+                                    }`}
                                 >
                                     <Icon
                                         component={IconFatwebMenu}
@@ -165,9 +164,7 @@ const MainFramework: React.FC = () => {
                                 </div>
                             </nav>
                         </header>
-                        <div
-                            className={'dropdown-menu-content' + (showDropdownMenu ? ' show' : '')}
-                        >
+                        <div className={`dropdown-menu-content${showDropdownMenu ? ' show' : ''}`}>
                             <ul>
                                 {routeChildren?.map((route) => {
                                     return (
@@ -187,7 +184,7 @@ const MainFramework: React.FC = () => {
                         </div>
                     </div>
 
-                    <MainFrameworkContext.Provider
+                    <HomeFrameworkContext.Provider
                         value={{
                             navbarHiddenState: { navbarHidden, setNavbarHidden },
                             preventScrollState: { preventScroll, setPreventScroll },
@@ -215,11 +212,11 @@ const MainFramework: React.FC = () => {
                         >
                             <Outlet />
                         </Suspense>
-                    </MainFrameworkContext.Provider>
+                    </HomeFrameworkContext.Provider>
                 </div>
             </HideScrollbar>
         </>
     )
 }
 
-export default MainFramework
+export default HomeFramework

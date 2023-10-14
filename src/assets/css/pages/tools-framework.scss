@@ -1,0 +1,247 @@
+@use "@/assets/css/constants" as constants;
+@use "@/assets/css/mixins" as mixins;
+
+body {
+  background-color: constants.$background-color;
+}
+
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  width: clamp(180px, 20vw, 240px);
+  background-color: constants.$origin-color;
+  user-select: none;
+  transition: all .3s;
+  white-space: nowrap;
+  overflow: hidden;
+
+  .title {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    padding: 10px 14px;
+    color: constants.$main-color;
+
+    .icon-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      width: 40px;
+      height: 40px;
+      font-size: constants.$SIZE_ICON_SM;
+      border-radius: 8px;
+      cursor: pointer;
+      span {
+        transform: rotateZ(180deg);
+        transition: all .3s;
+      }
+
+      &:hover {
+        background-color: constants.$background-color;
+      }
+    }
+
+    .text {
+      flex: 1;
+      font-size: 2em;
+      text-align: center;
+      letter-spacing: 0.6em;
+      transform: translateX(0.3em);
+    }
+  }
+
+  .content {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+    flex: 1;
+
+    .toolsMenu {
+      min-height: 0;
+      flex: 1;
+    }
+
+    ul {
+      > li {
+        &.item {
+          position: relative;
+          margin: 4px 14px;
+          font-size: 1.4em;
+
+          .menu-bt {
+            border-radius: 8px;
+            overflow: hidden;
+            height: 40px;
+
+            .icon-box {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              padding: 0 10px;
+              width: 40px;
+              height: 40px;
+              font-size: constants.$SIZE_ICON_SM;
+              cursor: pointer;
+            }
+
+            a {
+              display: flex;
+              align-items: center;
+              height: 100%;
+              width: 100%;
+              transition: all 0.2s;
+
+              .text {
+                flex: 1;
+                padding-left: 8px;
+              }
+
+              &.active {
+                color: constants.$origin-color;
+                background-color: constants.$main-color !important;
+              }
+            }
+          }
+
+          .submenu {
+            display: none;
+            position: fixed;
+            padding-left: 20px;
+            z-index: 10000;
+
+            .content {
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+              padding: 10px 10px;
+              background-color: constants.$origin-color;
+              border-radius: 8px;
+
+              .item {
+                border-radius: 8px;
+                white-space: nowrap;
+                overflow: hidden;
+
+                a {
+                  display: block;
+                  padding: 8px 16px;
+                  transition: all 0.2s;
+
+                  &.active {
+                    color: constants.$origin-color;
+                    background-color: constants.$main-color !important;
+                  }
+                }
+
+                &:hover a {
+                  background-color: constants.$background-color;
+                }
+              }
+            }
+          }
+
+          &:hover {
+            .menu-bt {
+              a {
+                background-color: constants.$background-color;
+              }
+            }
+
+            .submenu {
+              display: block;
+              animation: 0.3s ease;
+              @include mixins.unique-keyframes {
+                0% {
+                  display: block;
+                  transform: translateX(-10px);
+                  opacity: 0;
+                }
+                100% {
+                  display: block;
+                  transform: translateX(0);
+                  opacity: 1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .separate {
+    height: 0;
+    margin: 10px 5px;
+    border: {
+      width: 1px;
+      color: constants.$font-secondary-color;
+      style: solid;
+    };
+    opacity: 0.4;
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    padding: 8px 14px;
+    color: constants.$main-color;
+
+    .icon-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 4px;
+      padding: 10px;
+      width: 32px;
+      height: 32px;
+      font-size: constants.$SIZE_ICON_XS;
+      border: 2px constants.$font-secondary-color solid;
+      color: constants.$font-secondary-color;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .text {
+      flex: 1;
+      padding-left: 8px;
+      font-size: 1.4em;
+      color: constants.$font-main-color;
+      user-select: text;
+    }
+  }
+
+  &.hide {
+    width: 68px;
+
+    .title {
+      .icon-box {
+        span {
+          transform: rotateZ(360deg);
+          transition: all .3s;
+        }
+      }
+      .text {
+        display: none;
+      }
+    }
+
+    .menu-bt {
+      .text {
+        display: none;
+      }
+    }
+
+    .footer {
+      .text {
+        display: none;
+      }
+    }
+  }
+}
+
+.right-panel {
+  flex: 1;
+  background-color: constants.$background-color;
+}

@@ -12,6 +12,7 @@ import '@/assets/css/pages/login.scss'
 const Login: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage()
     const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
     const [isLoggingIn, setIsLoggingIn] = useState(false)
 
     const onFinish = (values: LoginForm) => {
@@ -25,7 +26,11 @@ const Login: React.FC = () => {
                         setToken(data?.token ?? '')
                         void messageApi.success('登录成功')
                         setTimeout(() => {
-                            navigate('/')
+                            if (searchParams.has('redirect')) {
+                                navigate(searchParams.get('redirect') ?? '/')
+                            } else {
+                                navigate('/')
+                            }
                         }, 1500)
                         break
                     case SYSTEM_USERNAME_NOT_FOUND:

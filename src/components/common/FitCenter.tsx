@@ -11,7 +11,7 @@ const FitCenter: React.FC<FitCenterProps> = (props) => {
     return (
         <>
             <div
-                className={`fit-center${className ? ' ' + className : ''}${
+                className={`fit-center${className ? ` ${className}` : ''}${
                     vertical ? ' flex-vertical' : ' flex-horizontal'
                 }`}
                 {..._props}

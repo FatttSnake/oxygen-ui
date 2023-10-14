@@ -8,7 +8,7 @@
   z-index: 1;
   width: 100%;
   height: 70px;
-  background-color: white;
+  background-color: constants.$origin-color;
   border: {
     bottom: {
       width: 1px;
@@ -99,7 +99,7 @@
         position: absolute;
         width: 100%;
         text-align: center;
-        background-color: white;
+        background-color: constants.$origin-color;
         overflow: hidden;
 
         .item {
@@ -171,7 +171,7 @@
       color: constants.$border-color;
       style: solid;
     };
-    background-color: white;
+    background-color: constants.$origin-color;
     z-index: 1;
 
     ul {

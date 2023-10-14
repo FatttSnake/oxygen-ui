@@ -18,14 +18,14 @@ export function setCookie(
     daysToLive: number | null,
     path: string | null
 ): void {
-    let cookie = name + '=' + encodeURIComponent(value)
+    let cookie = `${name}=${encodeURIComponent(value)}`
 
     if (typeof daysToLive === 'number') {
         cookie = `${cookie}; max-age=${daysToLive * 24 * 60 * 60}`
     }
 
     if (typeof path === 'string') {
-        cookie += '; path=' + path
+        cookie = `${cookie}; path=${path}`
     }
 
     document.cookie = cookie
@@ -61,7 +61,7 @@ export function getToken(): string | null {
 }
 
 export function removeCookie(name: string): void {
-    document.cookie = name + '=; max-age=0'
+    document.cookie = `${name}=; max-age=0`
 }
 
 export function removeLocalStorage(name: string): void {

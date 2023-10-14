@@ -1,19 +1,21 @@
+@use "@/assets/css/constants" as constants;
+
 .icons {
   display: flex;
   gap: 20px;
 
   .icon {
     font-size: 8em;
-    color: white;
+    color: constants.$origin-color;
   }
 }
 
 .links {
   font-size: 2em;
   text-decoration: underline;
-  color: white;
+  color: constants.$origin-color;
 
   > * {
-    color: white;
+    color: constants.$origin-color;
   }
 }

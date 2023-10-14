@@ -24,7 +24,7 @@ const Indicator: React.FC<IndicatorProps> = (props) => {
                     return (
                         <li
                             key={index}
-                            className={'item center-box' + (index === current ? ' active' : '')}
+                            className={`item center-box${index === current ? ' active' : ''}`}
                             onClick={handleClick(index)}
                         >
                             <div className={'dot'} />
