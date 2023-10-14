@@ -42,7 +42,7 @@ service.interceptors.request.use(
             ) {
                 await axios
                     .get(import.meta.env.VITE_API_TOKEN_URL, {
-                        headers: { token }
+                        headers: { Authorization: `Bearer ${token}` }
                     })
                     .then((value: AxiosResponse<_Response<Token>>) => {
                         const response = value.data
@@ -53,7 +53,7 @@ service.interceptors.request.use(
             }
 
             token = getToken()
-            config.headers.set('token', token)
+            config.headers.set('Authorization', `Bearer ${token}`)
         }
         return config
     },
@@ -74,7 +74,7 @@ service.interceptors.response.use(
                         <strong>登录已过期</strong>
                     </>
                 )
-                setTimeout(function () {
+                setTimeout(() => {
                     location.reload()
                 }, 1500)
                 throw response?.data

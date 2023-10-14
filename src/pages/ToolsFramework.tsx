@@ -4,9 +4,15 @@ import '@/assets/css/pages/tools-framework.scss'
 import Icon from '@ant-design/icons'
 import { toolsJsonObjects } from '@/router/tools.tsx'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar.tsx'
-import { getLocalStorage, setLocalStorage } from '@/utils/common.ts'
+import { getLocalStorage, getRedirectUrl, setLocalStorage } from '@/utils/common.ts'
+import { getLoginStatus, logout } from '@/utils/auth.ts'
+import { NavLink, Outlet } from 'react-router-dom'
 
 const ToolsFramework: React.FC = () => {
+    const matches = useMatches()
+    const lastMatch = matches.reduce((_, second) => second)
+    const location = useLocation()
+    const navigate = useNavigate()
     const hideScrollbarRef = useRef<HideScrollbarElement>(null)
     const [submenuTop, setSubmenuTop] = useState(0)
     const [submenuLeft, setSubmenuLeft] = useState(0)
@@ -35,6 +41,21 @@ const ToolsFramework: React.FC = () => {
             }
             setSubmenuLeft(parentClientRect.right)
         }
+    }
+
+    const handleClickAvatar = () => {
+        if (getLoginStatus()) {
+            navigate(`${lastMatch.pathname}${location.search}`)
+        } else {
+            navigate(getRedirectUrl('/login', `${lastMatch.pathname}${location.search}`))
+        }
+    }
+
+    const handleLogout = () => {
+        logout()
+        setTimeout(() => {
+            window.location.reload()
+        }, 1500)
     }
 
     return (
@@ -183,13 +204,42 @@ const ToolsFramework: React.FC = () => {
                     </div>
                     <div className={'separate'} style={{ marginTop: 0, marginBottom: 0 }} />
                     <div className={'footer'}>
-                        <span className={'icon-box'}>
+                        <span className={'icon-user'} onClick={handleClickAvatar}>
                             <Icon component={IconFatwebUser} />
                         </span>
-                        <span className={'text'}>未登录</span>
+                        <span hidden={getLoginStatus()} className={'text'}>
+                            未
+                            <NavLink
+                                to={getRedirectUrl(
+                                    '/login',
+                                    `${lastMatch.pathname}${location.search}`
+                                )}
+                            >
+                                登录
+                            </NavLink>
+                        </span>
+                        <span hidden={!getLoginStatus()} className={'text'}>
+                            已登录
+                        </span>
+                        <div
+                            hidden={!getLoginStatus()}
+                            className={`submenu-exit${!getLoginStatus() ? ' hide' : ''}`}
+                        >
+                            <div className={'content'}>
+                                <span
+                                    hidden={!getLoginStatus()}
+                                    className={'icon-exit'}
+                                    onClick={handleLogout}
+                                >
+                                    <Icon component={IconFatwebExit} />
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className={'right-panel'}></div>
+                <div className={'right-panel'}>
+                    <Outlet />
+                </div>
             </FitFullScreen>
         </>
     )

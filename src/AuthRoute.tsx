@@ -1,5 +1,6 @@
 import { getLoginStatus } from '@/utils/auth.ts'
 import { PRODUCTION_NAME } from '@/constants/Common.constants.ts'
+import { getRedirectUrl } from '@/utils/common.ts'
 
 const AuthRoute = () => {
     const matches = useMatches()
@@ -16,9 +17,7 @@ const AuthRoute = () => {
         if (matches.some(({ handle }) => (handle as RouteHandle)?.auth) && !isLogin) {
             return (
                 <Navigate
-                    to={`/login?redirect=${encodeURIComponent(
-                        `${lastMatch.pathname}${location.search}`
-                    )}`}
+                    to={getRedirectUrl('/login', `${lastMatch.pathname}${location.search}`)}
                 />
             )
         }
