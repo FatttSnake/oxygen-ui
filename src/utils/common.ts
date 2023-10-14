@@ -134,3 +134,7 @@ function randomFloat(start: number, end: number): number {
 function randomColor(start: number, end: number): string {
     return `rgb(${randomInt(start, end)},${randomInt(start, end)},${randomInt(start, end)})`
 }
+
+export const getRedirectUrl = (path: string, redirectUrl: string): string => {
+    return `${path}?redirect=${encodeURIComponent(redirectUrl)}`
+}

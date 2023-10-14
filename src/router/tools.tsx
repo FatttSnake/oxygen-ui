@@ -309,4 +309,9 @@ const tools: RouteObject[] = toolsJsonObjects.map((value) => ({
     }))
 }))
 
+tools.push({
+    path: '*',
+    element: <Navigate to="/tools" replace />
+})
+
 export default tools

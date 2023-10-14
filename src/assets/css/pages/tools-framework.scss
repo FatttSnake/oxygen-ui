@@ -13,7 +13,6 @@ body {
   user-select: none;
   transition: all .3s;
   white-space: nowrap;
-  overflow: hidden;
 
   .title {
     display: flex;
@@ -21,6 +20,7 @@ body {
     font-weight: bold;
     padding: 10px 14px;
     color: constants.$main-color;
+    overflow: hidden;
 
     .icon-box {
       display: flex;
@@ -153,12 +153,10 @@ body {
               animation: 0.3s ease;
               @include mixins.unique-keyframes {
                 0% {
-                  display: block;
                   transform: translateX(-10px);
                   opacity: 0;
                 }
                 100% {
-                  display: block;
                   transform: translateX(0);
                   opacity: 1;
                 }
@@ -188,7 +186,7 @@ body {
     padding: 8px 14px;
     color: constants.$main-color;
 
-    .icon-box {
+    .icon-user {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -205,10 +203,27 @@ body {
 
     .text {
       flex: 1;
-      padding-left: 8px;
+      padding-left: 10px;
       font-size: 1.4em;
       color: constants.$font-main-color;
       user-select: text;
+
+      a{
+        color: constants.$main-color;
+        text-decoration: underline;
+      }
+    }
+
+    .icon-exit {
+      font-size: constants.$SIZE_ICON_XS;
+      color: constants.$error-color;
+      padding: 6px 10px;
+      cursor: pointer;
+
+      &:hover {
+        border-radius: 8px;
+        background-color: constants.$background-color;
+      }
     }
   }
 
@@ -234,8 +249,49 @@ body {
     }
 
     .footer {
+      position: relative;
       .text {
         display: none;
+      }
+
+      .submenu-exit {
+        display: none;
+        position: absolute;
+        padding-left: 6px;
+        left: 100%;
+
+        .content {
+          padding: 8px;
+          border-radius: 8px;
+          background-color: constants.$origin-color;
+
+          .icon-exit {
+            padding: 4px 8px;
+            &:hover {
+              border-radius: 8px;
+              background-color: constants.$background-color;
+            }
+          }
+        }
+
+        &.hide {
+          display: none!important;
+        }
+      }
+
+      &:hover .submenu-exit {
+        display: block;
+        animation: 0.3s ease;
+        @include mixins.unique-keyframes {
+          0% {
+            transform: translateX(-10px);
+            opacity: 0;
+          }
+          100% {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
       }
     }
   }
