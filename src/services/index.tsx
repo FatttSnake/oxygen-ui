@@ -1,6 +1,6 @@
 import axios, { type AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
-import { clearLocalStorage, getToken, setToken } from '@/utils/common'
+import { getToken, removeToken, setToken } from '@/utils/common'
 import {
     SYSTEM_ACCESS_DENIED,
     SYSTEM_TOKEN_HAS_EXPIRED,
@@ -66,9 +66,19 @@ service.interceptors.response.use(
     (response: AxiosResponse<_Response<never>>) => {
         switch (response.data.code) {
             case SYSTEM_UNAUTHORIZED:
+                removeToken()
+                void message.error(
+                    <>
+                        <strong>未登录</strong>
+                    </>
+                )
+                setTimeout(() => {
+                    location.reload()
+                }, 1500)
+                throw response?.data
             case SYSTEM_TOKEN_ILLEGAL:
             case SYSTEM_TOKEN_HAS_EXPIRED:
-                clearLocalStorage()
+                removeToken()
                 void message.error(
                     <>
                         <strong>登录已过期</strong>

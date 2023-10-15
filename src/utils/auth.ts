@@ -1,4 +1,4 @@
-import { getCaptcha, getLocalStorage, removeLocalStorage, setLocalStorage } from './common'
+import { getCaptcha, getLocalStorage, removeToken, setLocalStorage } from './common'
 import { SYSTEM_OK, TOKEN_NAME } from '@/constants/Common.constants'
 import request from '@/services'
 
@@ -13,8 +13,7 @@ export const login = async (username: string, password: string) => {
 
 export const logout = async () => {
     return request.post('/logout').finally(() => {
-        removeLocalStorage('userInfo')
-        removeLocalStorage(TOKEN_NAME)
+        removeToken()
     })
 }
 

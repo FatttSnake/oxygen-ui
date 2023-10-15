@@ -69,6 +69,7 @@ export const removeLocalStorage = (name: string) => {
 }
 
 export const removeToken = () => {
+    removeLocalStorage('userInfo')
     removeLocalStorage(TOKEN_NAME)
 }
 
