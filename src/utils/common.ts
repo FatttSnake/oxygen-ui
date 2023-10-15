@@ -1,4 +1,4 @@
-import { TOKEN_NAME } from '@/constants/Common.constants'
+import { STORAGE_TOKEN_KEY, STORAGE_USER_INFO_KEY } from '@/constants/common.constants'
 
 export const getQueryVariable = (variable: string) => {
     const query = window.location.search.substring(1)
@@ -36,7 +36,7 @@ export const setLocalStorage = (name: string, value: string) => {
 }
 
 export const setToken = (token: string) => {
-    setLocalStorage(TOKEN_NAME, token)
+    setLocalStorage(STORAGE_TOKEN_KEY, token)
 }
 
 export const getCookie = (name: string) => {
@@ -57,7 +57,7 @@ export const getLocalStorage = (name: string) => {
 }
 
 export const getToken = () => {
-    return getLocalStorage(TOKEN_NAME)
+    return getLocalStorage(STORAGE_TOKEN_KEY)
 }
 
 export const removeCookie = (name: string) => {
@@ -69,8 +69,8 @@ export const removeLocalStorage = (name: string) => {
 }
 
 export const removeToken = () => {
-    removeLocalStorage('userInfo')
-    removeLocalStorage(TOKEN_NAME)
+    removeLocalStorage(STORAGE_USER_INFO_KEY)
+    removeLocalStorage(STORAGE_TOKEN_KEY)
 }
 
 export const clearLocalStorage = () => {

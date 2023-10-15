@@ -1,12 +1,12 @@
 import React from 'react'
-import { login } from '@/utils/auth.ts'
+import { login } from '@/utils/auth'
 import {
     SYSTEM_LOGIN_SUCCESS,
     SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR,
     SYSTEM_USER_DISABLE,
     SYSTEM_USERNAME_NOT_FOUND
-} from '@/constants/Common.constants.ts'
-import { setToken } from '@/utils/common.ts'
+} from '@/constants/common.constants'
+import { setToken } from '@/utils/common'
 import '@/assets/css/pages/login.scss'
 
 const Login: React.FC = () => {

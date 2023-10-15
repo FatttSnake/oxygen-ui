@@ -7,7 +7,7 @@ import {
     SYSTEM_TOKEN_ILLEGAL,
     SYSTEM_TOKEN_RENEW_SUCCESS,
     SYSTEM_UNAUTHORIZED
-} from '@/constants/Common.constants'
+} from '@/constants/common.constants'
 import { message } from 'antd'
 
 const service: AxiosInstance = axios.create({

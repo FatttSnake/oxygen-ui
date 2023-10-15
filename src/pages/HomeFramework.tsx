@@ -4,7 +4,7 @@ import router from '@/router'
 import LoadingMask from '@/components/common/LoadingMask'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 import Icon from '@ant-design/icons'
-import { COLOR_FONT_SECONDARY } from '@/constants/Common.constants.ts'
+import { COLOR_FONT_SECONDARY } from '@/constants/common.constants'
 import { NavLink } from 'react-router-dom'
 
 export const HomeFrameworkContext = createContext<{
