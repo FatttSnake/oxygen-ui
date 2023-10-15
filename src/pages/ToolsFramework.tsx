@@ -52,10 +52,11 @@ const ToolsFramework: React.FC = () => {
     }
 
     const handleLogout = () => {
-        logout()
-        setTimeout(() => {
-            window.location.reload()
-        }, 1500)
+        void logout().finally(() => {
+            setTimeout(() => {
+                window.location.reload()
+            }, 1500)
+        })
     }
 
     return (
