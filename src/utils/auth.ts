@@ -11,8 +11,8 @@ export const login = async (username: string, password: string) => {
     })
 }
 
-export const logout = () => {
-    void request.post('/logout').finally(() => {
+export const logout = async () => {
+    return request.post('/logout').finally(() => {
         removeLocalStorage('userInfo')
         removeLocalStorage(TOKEN_NAME)
     })
