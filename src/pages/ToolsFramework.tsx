@@ -17,6 +17,7 @@ const ToolsFramework: React.FC = () => {
     const [submenuTop, setSubmenuTop] = useState(0)
     const [submenuLeft, setSubmenuLeft] = useState(0)
     const [hideSidebar, setHideSidebar] = useState(getLocalStorage('hideSidebar') === 'false')
+    const [exiting, setExiting] = useState(false)
 
     const switchSidebar = () => {
         setHideSidebar(!hideSidebar)
@@ -52,6 +53,11 @@ const ToolsFramework: React.FC = () => {
     }
 
     const handleLogout = () => {
+        if (exiting) {
+            return
+        }
+
+        setExiting(true)
         void logout().finally(() => {
             setTimeout(() => {
                 window.location.reload()
@@ -232,7 +238,10 @@ const ToolsFramework: React.FC = () => {
                                     className={'icon-exit'}
                                     onClick={handleLogout}
                                 >
-                                    <Icon component={IconFatwebExit} />
+                                    <Icon
+                                        component={exiting ? IconFatwebLoading : IconFatwebExit}
+                                        spin={exiting}
+                                    />
                                 </span>
                             </div>
                         </div>
