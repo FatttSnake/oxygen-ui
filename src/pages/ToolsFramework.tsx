@@ -2,7 +2,7 @@ import React from 'react'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import '@/assets/css/pages/tools-framework.scss'
 import Icon from '@ant-design/icons'
-import { toolsJsonObjects } from '@/router/tools'
+import { tools } from '@/router/tools'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 import { getLocalStorage, getRedirectUrl, setLocalStorage } from '@/utils/common'
 import { getLoginStatus, logout } from '@/utils/auth'
@@ -88,14 +88,14 @@ const ToolsFramework: React.FC = () => {
                                         }
                                     >
                                         <div className={'icon-box'}>
-                                            {toolsJsonObjects[0].icon ? (
+                                            {tools[0].icon ? (
                                                 <Icon
                                                     className={'icon'}
-                                                    component={toolsJsonObjects[0].icon}
+                                                    component={tools[0].icon}
                                                 />
                                             ) : undefined}
                                         </div>
-                                        <span className={'text'}>{toolsJsonObjects[0].name}</span>
+                                        <span className={'text'}>{tools[0].name}</span>
                                     </NavLink>
                                 </div>
                             </li>
@@ -108,14 +108,14 @@ const ToolsFramework: React.FC = () => {
                                         }
                                     >
                                         <div className={'icon-box'}>
-                                            {toolsJsonObjects[1].icon ? (
+                                            {tools[1].icon ? (
                                                 <Icon
                                                     className={'icon'}
-                                                    component={toolsJsonObjects[1].icon}
+                                                    component={tools[1].icon}
                                                 />
                                             ) : undefined}
                                         </div>
-                                        <span className={'text'}>{toolsJsonObjects[1].name}</span>
+                                        <span className={'text'}>{tools[1].name}</span>
                                     </NavLink>
                                 </div>
                             </li>
@@ -132,7 +132,7 @@ const ToolsFramework: React.FC = () => {
                                 ref={hideScrollbarRef}
                             >
                                 <ul>
-                                    {toolsJsonObjects.map((tool) => {
+                                    {tools.map((tool) => {
                                         return tool.menu &&
                                             tool.id !== 'tools' &&
                                             tool.id !== 'tools-all' ? (

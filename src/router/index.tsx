@@ -1,74 +1,36 @@
 import React from 'react'
 import tools from '@/router/tools'
+import home from '@/router/home'
 
-const routes: RouteObject[] = [
+const root: RouteJsonObject[] = [
     {
         path: '/',
-        Component: React.lazy(() => import('@/AuthRoute')),
+        component: React.lazy(() => import('@/AuthRoute')),
         children: [
             {
                 path: '/login',
                 id: 'login',
-                Component: React.lazy(() => import('@/pages/Login'))
+                component: React.lazy(() => import('@/pages/Login'))
             },
             {
                 path: '/loading',
                 id: 'loading',
-                Component: React.lazy(() => import('@/components/common/LoadingMask'))
+                component: React.lazy(() => import('@/components/common/LoadingMask'))
             },
             {
                 path: '/tools',
                 id: 'toolsFramework',
-                Component: React.lazy(() => import('@/pages/ToolsFramework')),
+                component: React.lazy(() => import('@/pages/ToolsFramework')),
                 children: tools,
-                handle: {
-                    name: '工具',
-                    title: '工具',
-                    auth: false
-                }
+                name: '工具',
+                title: '工具',
+                auth: false
             },
             {
                 path: '',
                 id: 'homeFramework',
-                Component: React.lazy(() => import('@/pages/HomeFramework')),
-                children: [
-                    {
-                        path: '',
-                        id: 'home',
-                        Component: React.lazy(() => import('@/pages/home')),
-                        handle: {
-                            name: '主页',
-                            menu: true,
-                            auth: false
-                        }
-                    },
-                    {
-                        path: 'https://blog.fatweb.top',
-                        id: 'url-blog',
-                        handle: {
-                            name: '博客',
-                            menu: true
-                        }
-                    },
-                    {
-                        path: '/tools',
-                        id: 'url-tools',
-                        children: [
-                            {
-                                path: 'translation',
-                                id: 'url-tools-translation',
-                                handle: {
-                                    name: '翻译',
-                                    menu: true
-                                }
-                            }
-                        ],
-                        handle: {
-                            name: '工具',
-                            menu: true
-                        }
-                    }
-                ]
+                component: React.lazy(() => import('@/pages/HomeFramework')),
+                children: home
             },
             {
                 path: '*',
@@ -77,6 +39,35 @@ const routes: RouteObject[] = [
         ]
     }
 ]
+
+const mapJsonToRoute = (jsonObject: RouteJsonObject[]): RouteObject[] => {
+    return jsonObject.map((value) => ({
+        path: value.path,
+        id: value.id,
+        element: value.element,
+        Component: value.component,
+        handle: {
+            name: value.name,
+            titlePrefix: value.titlePrefix,
+            title: value.title,
+            titlePostfix: value.titlePostfix,
+            icon: value.icon,
+            menu: value.menu,
+            auth: value.auth
+        },
+        children:
+            value.children &&
+            mapJsonToRoute(value.children).map((sub) => {
+                const handle = sub.handle as RouteHandle
+                if (!handle.title) {
+                    handle.title = value.title
+                }
+                return sub
+            })
+    }))
+}
+
+const routes = mapJsonToRoute(root)
 
 const router = createBrowserRouter(routes)
 export default router

@@ -1,8 +1,6 @@
 import React from 'react'
 
-const defaultTitle = '氮工具'
-
-export const toolsJsonObjects: ToolsJsonObject[] = [
+export const tools: RouteJsonObject[] = [
     {
         path: '',
         id: 'tools',
@@ -277,41 +275,11 @@ export const toolsJsonObjects: ToolsJsonObject[] = [
                 auth: false
             }
         ]
+    },
+    {
+        path: '*',
+        element: <Navigate to="/tools" replace />
     }
 ]
-
-const tools: RouteObject[] = toolsJsonObjects.map((value) => ({
-    path: value.path,
-    id: value.id,
-    Component: value.component,
-    handle: {
-        name: value.name,
-        titlePrefix: value.titlePrefix,
-        title: value.title ?? defaultTitle,
-        titlePostfix: value.titlePostfix,
-        icon: value.icon,
-        menu: value.menu,
-        auth: value.auth
-    },
-    children: value.children?.map((value) => ({
-        path: value.path,
-        id: value.id,
-        Component: value.component,
-        handle: {
-            name: value.name,
-            titlePrefix: value.titlePrefix,
-            title: value.title ?? defaultTitle,
-            titlePostfix: value.titlePostfix,
-            icon: value.icon,
-            menu: value.menu,
-            auth: value.auth
-        }
-    }))
-}))
-
-tools.push({
-    path: '*',
-    element: <Navigate to="/tools" replace />
-})
 
 export default tools
