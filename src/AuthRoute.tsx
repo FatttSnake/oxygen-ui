@@ -1,5 +1,5 @@
-import { getLoginStatus } from '@/utils/auth'
 import { PRODUCTION_NAME } from '@/constants/common.constants'
+import { getLoginStatus } from '@/utils/auth'
 import { getRedirectUrl } from '@/utils/common'
 
 const AuthRoute = () => {

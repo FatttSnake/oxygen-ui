@@ -1,5 +1,6 @@
 import axios, { type AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
+import { message } from 'antd'
 import { getToken, removeToken, setToken } from '@/utils/common'
 import {
     SYSTEM_ACCESS_DENIED,
@@ -8,7 +9,6 @@ import {
     SYSTEM_TOKEN_RENEW_SUCCESS,
     SYSTEM_UNAUTHORIZED
 } from '@/constants/common.constants'
-import { message } from 'antd'
 
 const service: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
