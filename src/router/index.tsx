@@ -2,6 +2,36 @@ import React from 'react'
 import tools from '@/router/tools'
 import home from '@/router/home'
 
+const mapJsonToRoute = (jsonObject: RouteJsonObject[]): RouteObject[] => {
+    return jsonObject.map((value) => ({
+        path: value.path,
+        id: value.id,
+        element: value.element,
+        Component: value.component,
+        handle: {
+            name: value.name,
+            titlePrefix: value.titlePrefix,
+            title: value.title,
+            titlePostfix: value.titlePostfix,
+            icon: value.icon,
+            menu: value.menu,
+            auth: value.auth
+        },
+        children: value.children && mapJsonToRoute(value.children)
+    }))
+}
+
+const setTitle = (jsonObject: RouteJsonObject[], title: string): RouteJsonObject[] => {
+    return jsonObject.map((value) => {
+        if (!value.title) {
+            value.title = title
+        }
+        value.children && setTitle(value.children, title)
+
+        return value
+    })
+}
+
 const root: RouteJsonObject[] = [
     {
         path: '/',
@@ -21,9 +51,8 @@ const root: RouteJsonObject[] = [
                 path: '/tools',
                 id: 'toolsFramework',
                 component: React.lazy(() => import('@/pages/ToolsFramework')),
-                children: tools,
+                children: setTitle(tools, '氮工具'),
                 name: '工具',
-                title: '工具',
                 auth: false
             },
             {
@@ -39,33 +68,6 @@ const root: RouteJsonObject[] = [
         ]
     }
 ]
-
-const mapJsonToRoute = (jsonObject: RouteJsonObject[]): RouteObject[] => {
-    return jsonObject.map((value) => ({
-        path: value.path,
-        id: value.id,
-        element: value.element,
-        Component: value.component,
-        handle: {
-            name: value.name,
-            titlePrefix: value.titlePrefix,
-            title: value.title,
-            titlePostfix: value.titlePostfix,
-            icon: value.icon,
-            menu: value.menu,
-            auth: value.auth
-        },
-        children:
-            value.children &&
-            mapJsonToRoute(value.children).map((sub) => {
-                const handle = sub.handle as RouteHandle
-                if (!handle.title) {
-                    handle.title = value.title
-                }
-                return sub
-            })
-    }))
-}
 
 const routes = mapJsonToRoute(root)
 
