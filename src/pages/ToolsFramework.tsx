@@ -53,7 +53,7 @@ const ToolsFramework: React.FC = () => {
                                                           <SidebarItem
                                                               path={`${tool.path}/${subTool.path}`}
                                                               text={subTool.name}
-                                                              key={tool.id}
+                                                              key={subTool.id}
                                                           />
                                                       )
                                                   })
