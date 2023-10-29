@@ -7,7 +7,9 @@ import {
 } from '@/constants/common.constants'
 import '@/assets/css/pages/login.scss'
 import { setToken } from '@/utils/common'
-import { login } from '@/utils/auth'
+import { getUserInfo, login } from '@/utils/auth'
+import { notification } from 'antd'
+import moment from 'moment'
 
 const Login: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage()
@@ -31,6 +33,27 @@ const Login: React.FC = () => {
                             } else {
                                 navigate('/')
                             }
+                            void getUserInfo().then((user) => {
+                                notification.success({
+                                    message: '欢迎回来',
+                                    description: (
+                                        <>
+                                            <span>
+                                                你好 <strong>{user.username}</strong>
+                                            </span>
+                                            <br />
+                                            <span>
+                                                上次登录：
+                                                {moment(user.lastLoginTime).format(
+                                                    'yyyy-MM-DD HH:mm:ssZ'
+                                                )}
+                                                【{user.lastLoginIp}】
+                                            </span>
+                                        </>
+                                    ),
+                                    placement: 'topRight'
+                                })
+                            })
                         }, 1500)
                         break
                     case SYSTEM_USERNAME_NOT_FOUND:

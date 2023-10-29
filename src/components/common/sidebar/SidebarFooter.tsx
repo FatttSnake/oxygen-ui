@@ -1,7 +1,9 @@
 import React from 'react'
 import Icon from '@ant-design/icons'
-import { getLoginStatus, logout } from '@/utils/auth'
+import { getLoginStatus, getUsername, logout } from '@/utils/auth'
 import { getRedirectUrl } from '@/utils/common'
+import { notification } from 'antd'
+import { COLOR_ERROR } from '@/constants/common.constants.ts'
 
 const SidebarFooter: React.FC = () => {
     const matches = useMatches()
@@ -9,6 +11,8 @@ const SidebarFooter: React.FC = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const [exiting, setExiting] = useState(false)
+    const [username, setUsername] = useState('')
+
     const handleClickAvatar = () => {
         if (getLoginStatus()) {
             navigate('/user')
@@ -24,11 +28,25 @@ const SidebarFooter: React.FC = () => {
 
         setExiting(true)
         void logout().finally(() => {
+            notification.info({
+                message: '已退出登录',
+                icon: <Icon component={IconFatwebExit} style={{ color: COLOR_ERROR }} />
+            })
             setTimeout(() => {
                 window.location.reload()
             }, 1500)
         })
     }
+
+    const loginStatus = getLoginStatus()
+
+    useEffect(() => {
+        if (getLoginStatus()) {
+            void getUsername().then((username) => {
+                setUsername(username)
+            })
+        }
+    }, [loginStatus])
 
     return (
         <div className={'footer'}>
@@ -42,7 +60,7 @@ const SidebarFooter: React.FC = () => {
                 </NavLink>
             </span>
             <span hidden={!getLoginStatus()} className={'text'}>
-                已登录
+                {username}
             </span>
             <div
                 hidden={!getLoginStatus()}

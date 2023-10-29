@@ -47,14 +47,49 @@ type Captcha = {
     base64Src: string
 }
 
-type Token = {
+type TokenVo = {
     token: string
 }
 
-type User = {
-    id: number
+type UserVo = {
+    id: string
     username: string
+    locking: boolean
+    expiration: Date
+    credentialsExpiration: Date
     enable: number
+    lastLoginTime: Date
+    lastLoginIp: string
+    createTime: Date
+    updateTime: Date
+    menus: MenuVo[]
+    elements: ElementVo[]
+    operations: OperationVo[]
+}
+
+type MenuVo = {
+    id: number
+    name: string
+    url: string
+    powerId: number
+    parentId: number
+}
+
+type ElementVo = {
+    id: number
+    name: string
+    powerId: number
+    parentId: number
+    menuId: number
+}
+
+type OperationVo = {
+    id: number
+    name: string
+    code: string
+    powerId: number
+    parentId: number
+    elementId: number
 }
 
 type LoginForm = {

@@ -44,7 +44,7 @@ service.interceptors.request.use(
                     .get(import.meta.env.VITE_API_TOKEN_URL, {
                         headers: { Authorization: `Bearer ${token}` }
                     })
-                    .then((value: AxiosResponse<_Response<Token>>) => {
+                    .then((value: AxiosResponse<_Response<TokenVo>>) => {
                         const response = value.data
                         if (response.code === SYSTEM_TOKEN_RENEW_SUCCESS) {
                             setToken(response.data?.token ?? '')

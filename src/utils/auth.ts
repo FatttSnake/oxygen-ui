@@ -1,12 +1,16 @@
 import { getCaptcha, getLocalStorage, removeToken, setLocalStorage } from './common'
-import { SYSTEM_OK, STORAGE_TOKEN_KEY, STORAGE_USER_INFO_KEY } from '@/constants/common.constants'
+import {
+    STORAGE_TOKEN_KEY,
+    STORAGE_USER_INFO_KEY,
+    DATABASE_SELECT_SUCCESS
+} from '@/constants/common.constants'
 import request from '@/services'
-import { URL_API_LOGIN, URL_API_LOGOUT } from '@/constants/urls.constants'
+import { URL_API_LOGIN, URL_API_LOGOUT, URL_API_USER_INFO } from '@/constants/urls.constants'
 
 let captcha: Captcha
 
 export const login = async (username: string, password: string) => {
-    return await request.post<Token>(URL_API_LOGIN, {
+    return await request.post<TokenVo>(URL_API_LOGIN, {
         username,
         password
     })
@@ -22,27 +26,27 @@ export const getLoginStatus = () => {
     return getLocalStorage(STORAGE_TOKEN_KEY) !== null
 }
 
-export const getUser = async (): Promise<User> => {
+export const getUserInfo = async (): Promise<UserVo> => {
     if (getLocalStorage(STORAGE_USER_INFO_KEY) !== null) {
         return new Promise((resolve) => {
-            resolve(JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as User)
+            resolve(JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserVo)
         })
     }
-    return requestUser()
+    return requestUserInfo()
 }
 
-export const requestUser = async () => {
-    let user: User | null
+export const requestUserInfo = async () => {
+    let user: UserVo | null
 
-    await request.get<User>('/user/info').then((value) => {
+    await request.get<UserVo>(URL_API_USER_INFO).then((value) => {
         const response = value.data
-        if (response.code === SYSTEM_OK) {
+        if (response.code === DATABASE_SELECT_SUCCESS) {
             user = response.data
             setLocalStorage(STORAGE_USER_INFO_KEY, JSON.stringify(user))
         }
     })
 
-    return new Promise<User>((resolve, reject) => {
+    return new Promise<UserVo>((resolve, reject) => {
         if (user) {
             resolve(user)
         }
@@ -51,7 +55,7 @@ export const requestUser = async () => {
 }
 
 export const getUsername = async () => {
-    const user = await getUser()
+    const user = await getUserInfo()
 
     return user.username
 }
