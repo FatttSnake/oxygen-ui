@@ -51,7 +51,7 @@ type TokenVo = {
     token: string
 }
 
-type UserVo = {
+type UserWithInfoVo = {
     id: string
     username: string
     locking: boolean
@@ -62,9 +62,16 @@ type UserVo = {
     lastLoginIp: string
     createTime: Date
     updateTime: Date
+    modules: ModuleVo[]
     menus: MenuVo[]
     elements: ElementVo[]
     operations: OperationVo[]
+}
+
+type ModuleVo = {
+    id: number
+    name: string
+    powerId: number
 }
 
 type MenuVo = {
@@ -88,7 +95,6 @@ type OperationVo = {
     name: string
     code: string
     powerId: number
-    parentId: number
     elementId: number
 }
 

@@ -26,19 +26,19 @@ export const getLoginStatus = () => {
     return getLocalStorage(STORAGE_TOKEN_KEY) !== null
 }
 
-export const getUserInfo = async (): Promise<UserVo> => {
+export const getUserInfo = async (): Promise<UserWithInfoVo> => {
     if (getLocalStorage(STORAGE_USER_INFO_KEY) !== null) {
         return new Promise((resolve) => {
-            resolve(JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserVo)
+            resolve(JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithInfoVo)
         })
     }
     return requestUserInfo()
 }
 
 export const requestUserInfo = async () => {
-    let user: UserVo | null
+    let user: UserWithInfoVo | null
 
-    await request.get<UserVo>(URL_API_USER_INFO).then((value) => {
+    await request.get<UserWithInfoVo>(URL_API_USER_INFO).then((value) => {
         const response = value.data
         if (response.code === DATABASE_SELECT_SUCCESS) {
             user = response.data
@@ -46,7 +46,7 @@ export const requestUserInfo = async () => {
         }
     })
 
-    return new Promise<UserVo>((resolve, reject) => {
+    return new Promise<UserWithInfoVo>((resolve, reject) => {
         if (user) {
             resolve(user)
         }
