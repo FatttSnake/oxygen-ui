@@ -1,6 +1,6 @@
 import React from 'react'
 import Icon from '@ant-design/icons'
-import { getLoginStatus, getUsername, logout } from '@/utils/auth'
+import { getLoginStatus, getNickName, logout } from '@/utils/auth'
 import { getRedirectUrl } from '@/utils/common'
 import { notification } from 'antd'
 import { COLOR_ERROR } from '@/constants/common.constants.ts'
@@ -11,7 +11,7 @@ const SidebarFooter: React.FC = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const [exiting, setExiting] = useState(false)
-    const [username, setUsername] = useState('')
+    const [nickName, setNickName] = useState('')
 
     const handleClickAvatar = () => {
         if (getLoginStatus()) {
@@ -42,8 +42,8 @@ const SidebarFooter: React.FC = () => {
 
     useEffect(() => {
         if (getLoginStatus()) {
-            void getUsername().then((username) => {
-                setUsername(username)
+            void getNickName().then((nickName) => {
+                setNickName(nickName)
             })
         }
     }, [loginStatus])
@@ -60,7 +60,7 @@ const SidebarFooter: React.FC = () => {
                 </NavLink>
             </span>
             <span hidden={!getLoginStatus()} className={'text'}>
-                {username}
+                {nickName}
             </span>
             <div
                 hidden={!getLoginStatus()}

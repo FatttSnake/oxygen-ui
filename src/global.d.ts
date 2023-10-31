@@ -12,6 +12,7 @@ interface ImportMeta {
 
 type RouteJsonObject = {
     path: string
+    absolutePath?: string
     id?: string
     element?: React.JSX.Element
     component?: React.ComponentType
@@ -26,6 +27,7 @@ type RouteJsonObject = {
 }
 
 type RouteHandle = {
+    absolutePath: string
     name?: string
     menu?: boolean
     auth?: boolean
@@ -62,10 +64,19 @@ type UserWithInfoVo = {
     lastLoginIp: string
     createTime: Date
     updateTime: Date
+    userInfo: UserInfoVo
     modules: ModuleVo[]
     menus: MenuVo[]
     elements: ElementVo[]
     operations: OperationVo[]
+}
+
+type UserInfoVo = {
+    id: string
+    userId: string
+    nickName: string
+    avatar: string
+    email: string
 }
 
 type ModuleVo = {

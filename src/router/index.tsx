@@ -39,17 +39,20 @@ const root: RouteJsonObject[] = [
         component: React.lazy(() => import('@/AuthRoute')),
         children: [
             {
-                path: '/login',
+                path: 'login',
+                absolutePath: '/login',
                 id: 'login',
                 component: React.lazy(() => import('@/pages/Login'))
             },
             {
-                path: '/loading',
+                path: 'loading',
+                absolutePath: '/loading',
                 id: 'loading',
                 component: React.lazy(() => import('@/components/common/LoadingMask'))
             },
             {
-                path: '/tools',
+                path: 'tools',
+                absolutePath: '/tools',
                 id: 'toolsFramework',
                 component: React.lazy(() => import('@/pages/ToolsFramework')),
                 children: setTitle(tools, '氮工具'),
@@ -57,7 +60,8 @@ const root: RouteJsonObject[] = [
                 auth: false
             },
             {
-                path: '/user',
+                path: 'user',
+                absolutePath: '/user',
                 id: 'userFramework',
                 component: React.lazy(() => import('@/pages/UserFramework')),
                 children: setTitle(user, '个人中心'),
@@ -66,6 +70,7 @@ const root: RouteJsonObject[] = [
             },
             {
                 path: '',
+                absolutePath: '/',
                 id: 'homeFramework',
                 component: React.lazy(() => import('@/pages/HomeFramework')),
                 children: home

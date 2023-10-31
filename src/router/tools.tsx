@@ -3,6 +3,7 @@ import React from 'react'
 export const tools: RouteJsonObject[] = [
     {
         path: '',
+        absolutePath: '/tools',
         id: 'tools',
         component: React.lazy(() => import('@/pages/tools')),
         icon: React.lazy(() => import('~icons/fatweb/home.jsx')),
@@ -12,6 +13,7 @@ export const tools: RouteJsonObject[] = [
     },
     {
         path: 'all',
+        absolutePath: '/tools/all',
         id: 'tools-all',
         component: React.lazy(() => import('@/pages/tools')),
         name: '全部工具',
@@ -22,6 +24,7 @@ export const tools: RouteJsonObject[] = [
     },
     {
         path: 'translation',
+        absolutePath: '/tools/translation',
         id: 'tools-translation',
         component: React.lazy(() => import('@/pages/tools/Translation')),
         name: '翻译',

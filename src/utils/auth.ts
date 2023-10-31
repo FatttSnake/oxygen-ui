@@ -54,10 +54,43 @@ export const requestUserInfo = async () => {
     })
 }
 
+export const getNickName = async () => {
+    const user = await getUserInfo()
+
+    return user.userInfo.nickName
+}
+
 export const getUsername = async () => {
     const user = await getUserInfo()
 
     return user.username
+}
+
+export const getPermissionPath = (): string[] => {
+    const s = getLocalStorage(STORAGE_USER_INFO_KEY)
+    if (s === null) {
+        return []
+    }
+
+    const user = JSON.parse(s) as UserWithInfoVo
+    const paths: string[] = []
+    user.menus.forEach((menu) => {
+        paths.join(menu.url)
+    })
+
+    return paths
+}
+
+export const getAuthRoute = (route: RouteJsonObject[]): RouteJsonObject[] => {
+    return route.map((value) => {
+        if (value.auth) {
+            value.path
+        }
+        if (value.children) {
+            value.children = getAuthRoute(value.children)
+        }
+        return value
+    })
 }
 
 export const getCaptchaSrc = () => {

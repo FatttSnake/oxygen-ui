@@ -3,6 +3,7 @@ import React from 'react'
 const home: RouteJsonObject[] = [
     {
         path: '',
+        absolutePath: '/',
         id: 'home',
         component: React.lazy(() => import('@/pages/home')),
         name: '主页',
@@ -17,6 +18,7 @@ const home: RouteJsonObject[] = [
     },
     {
         path: '/tools',
+        absolutePath: '/tools',
         id: 'url-tools',
         children: [
             {
