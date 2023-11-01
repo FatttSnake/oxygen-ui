@@ -23,18 +23,13 @@ const ToolsFramework: React.FC = () => {
                 <div className={'left-panel'}>
                     <Sidebar title={'氮工具'} onSidebarSwitch={handleOnSidebarSwitch}>
                         <SidebarItemList>
-                            <SidebarItem
-                                end
-                                path={''}
-                                icon={tools[0].icon}
-                                text={tools[0].name}
-                            ></SidebarItem>
+                            <SidebarItem end path={''} icon={tools[0].icon} text={tools[0].name} />
                             <SidebarItem
                                 end
                                 path={'all'}
                                 icon={tools[1].icon}
                                 text={tools[1].name}
-                            ></SidebarItem>
+                            />
                         </SidebarItemList>
                         <SidebarSeparate style={{ marginBottom: 0 }} />
                         <SidebarScroll ref={sidebarScrollRef}>

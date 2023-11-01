@@ -1,10 +1,10 @@
 import { getCaptcha, getLocalStorage, removeToken, setLocalStorage } from './common'
+import request from '@/services'
 import {
     STORAGE_TOKEN_KEY,
     STORAGE_USER_INFO_KEY,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
-import request from '@/services'
 import { URL_API_LOGIN, URL_API_LOGOUT, URL_API_USER_INFO } from '@/constants/urls.constants'
 
 let captcha: Captcha

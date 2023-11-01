@@ -1,15 +1,15 @@
 import React from 'react'
+import { notification } from 'antd'
+import moment from 'moment'
+import '@/assets/css/pages/login.scss'
+import { setToken } from '@/utils/common'
+import { getUserInfo, login } from '@/utils/auth'
 import {
     SYSTEM_LOGIN_SUCCESS,
     SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR,
     SYSTEM_USER_DISABLE,
     SYSTEM_USERNAME_NOT_FOUND
 } from '@/constants/common.constants'
-import '@/assets/css/pages/login.scss'
-import { setToken } from '@/utils/common'
-import { getUserInfo, login } from '@/utils/auth'
-import { notification } from 'antd'
-import moment from 'moment'
 
 const Login: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage()

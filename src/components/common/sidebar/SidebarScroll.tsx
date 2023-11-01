@@ -1,4 +1,4 @@
-import React, { useImperativeHandle } from 'react'
+import React from 'react'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 
 export interface SidebarScrollElement {

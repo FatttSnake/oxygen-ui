@@ -1,10 +1,10 @@
 import React from 'react'
 import Icon from '@ant-design/icons'
 import router from '@/router'
-import { COLOR_FONT_SECONDARY } from '@/constants/common.constants'
 import '@/assets/css/pages/home-framework.scss'
 import LoadingMask from '@/components/common/LoadingMask'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
+import { COLOR_FONT_SECONDARY } from '@/constants/common.constants'
 
 export const HomeFrameworkContext = createContext<{
     navbarHiddenState: {

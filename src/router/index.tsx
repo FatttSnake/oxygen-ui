@@ -1,7 +1,8 @@
 import React from 'react'
 import tools from '@/router/tools'
 import home from '@/router/home'
-import user from '@/router/user.tsx'
+import user from '@/router/user'
+import system from '@/router/system'
 
 const mapJsonToRoute = (jsonObject: RouteJsonObject[]): RouteObject[] => {
     return jsonObject.map((value) => ({
@@ -67,6 +68,15 @@ const root: RouteJsonObject[] = [
                 component: React.lazy(() => import('@/pages/UserFramework')),
                 children: setTitle(user, '个人中心'),
                 name: '个人中心',
+                auth: true
+            },
+            {
+                path: 'system',
+                absolutePath: '/system',
+                id: 'systemFramework',
+                component: React.lazy(() => import('@/pages/SystemFramework')),
+                children: setTitle(system, '系统设置'),
+                name: '系统设置',
                 auth: true
             },
             {
