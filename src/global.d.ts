@@ -16,7 +16,6 @@ type RouteJsonObject = {
     id?: string
     element?: React.JSX.Element
     component?: React.ComponentType
-    children?: RouteJsonObject[]
     name?: string
     titlePrefix?: string
     title?: string
@@ -26,6 +25,7 @@ type RouteJsonObject = {
     auth?: boolean
     permission?: boolean
     autoHide?: boolean
+    children?: RouteJsonObject[]
 }
 
 type RouteHandle = {
@@ -57,7 +57,7 @@ type TokenVo = {
     token: string
 }
 
-type UserWithInfoVo = {
+type UserWithPowerInfoVo = {
     id: string
     username: string
     locking: boolean

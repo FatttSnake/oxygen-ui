@@ -1,5 +1,5 @@
 import axios, { type AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import jwtDecode, { JwtPayload } from 'jwt-decode'
+import { jwtDecode, JwtPayload } from 'jwt-decode'
 import { message } from 'antd'
 import { getToken, removeToken, setToken } from '@/utils/common'
 import {

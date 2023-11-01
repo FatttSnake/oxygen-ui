@@ -21,6 +21,8 @@ const home: RouteJsonObject[] = [
         path: '/tools',
         absolutePath: '/tools',
         id: 'url-tools',
+        name: '工具',
+        menu: true,
         children: [
             {
                 path: 'translation',
@@ -29,9 +31,7 @@ const home: RouteJsonObject[] = [
                 name: '翻译',
                 menu: true
             }
-        ],
-        name: '工具',
-        menu: true
+        ]
     }
 ]
 

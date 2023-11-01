@@ -6,8 +6,8 @@ export const tools: RouteJsonObject[] = [
         absolutePath: '/tools',
         id: 'tools',
         component: React.lazy(() => import('@/pages/tools')),
-        icon: React.lazy(() => import('~icons/fatweb/home.jsx')),
         name: '主页',
+        icon: React.lazy(() => import('~icons/fatweb/home.jsx')),
         menu: true,
         auth: false
     },

@@ -5,6 +5,7 @@ import FitFullScreen from '@/components/common/FitFullScreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
 import SidebarItem from '@/components/common/sidebar/SidebarItem'
+import LoadingMask from '@/components/common/LoadingMask'
 
 const SystemFramework: React.FC = () => {
     return (
@@ -16,6 +17,7 @@ const SystemFramework: React.FC = () => {
                             {system.map((value) => {
                                 return value.menu ? (
                                     <SidebarItem
+                                        end={value.id === 'system' ? true : undefined}
                                         path={value.absolutePath}
                                         icon={value.icon}
                                         text={value.name}
@@ -27,7 +29,15 @@ const SystemFramework: React.FC = () => {
                     </Sidebar>
                 </div>
                 <div className={'right-panel'}>
-                    <Outlet />
+                    <Suspense
+                        fallback={
+                            <>
+                                <LoadingMask />
+                            </>
+                        }
+                    >
+                        <Outlet />
+                    </Suspense>
                 </div>
             </FitFullScreen>
         </>

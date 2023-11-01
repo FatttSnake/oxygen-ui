@@ -26,19 +26,21 @@ export const getLoginStatus = () => {
     return getLocalStorage(STORAGE_TOKEN_KEY) !== null
 }
 
-export const getUserInfo = async (): Promise<UserWithInfoVo> => {
+export const getUserInfo = async (): Promise<UserWithPowerInfoVo> => {
     if (getLocalStorage(STORAGE_USER_INFO_KEY) !== null) {
         return new Promise((resolve) => {
-            resolve(JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithInfoVo)
+            resolve(
+                JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo
+            )
         })
     }
     return requestUserInfo()
 }
 
 export const requestUserInfo = async () => {
-    let user: UserWithInfoVo | null
+    let user: UserWithPowerInfoVo | null
 
-    await request.get<UserWithInfoVo>(URL_API_USER_INFO).then((value) => {
+    await request.get<UserWithPowerInfoVo>(URL_API_USER_INFO).then((value) => {
         const response = value.data
         if (response.code === DATABASE_SELECT_SUCCESS) {
             user = response.data
@@ -46,7 +48,7 @@ export const requestUserInfo = async () => {
         }
     })
 
-    return new Promise<UserWithInfoVo>((resolve, reject) => {
+    return new Promise<UserWithPowerInfoVo>((resolve, reject) => {
         if (user) {
             resolve(user)
         }
@@ -72,7 +74,7 @@ export const getPermissionPath = (): string[] => {
         return []
     }
 
-    const user = JSON.parse(s) as UserWithInfoVo
+    const user = JSON.parse(s) as UserWithPowerInfoVo
     const paths: string[] = []
     user.menus.forEach((menu) => {
         paths.push(menu.url)
