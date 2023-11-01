@@ -46,7 +46,7 @@
     }
   }
 
-  .content {
+  .content, .bottom-fixed {
     display: flex;
     min-height: 0;
     flex-direction: column;

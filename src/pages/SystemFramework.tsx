@@ -1,30 +1,19 @@
 import React from 'react'
-import user from '@/router/user'
+import system from '@/router/system'
 import '@/assets/css/pages/tools-framework.scss'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
 import SidebarItem from '@/components/common/sidebar/SidebarItem'
 
-const ToolsFramework: React.FC = () => {
+const SystemFramework: React.FC = () => {
     return (
         <>
             <FitFullScreen className={'flex-horizontal'}>
                 <div className={'left-panel'}>
-                    <Sidebar
-                        title={'个人中心'}
-                        bottomFixed={
-                            <SidebarItemList>
-                                <SidebarItem
-                                    path={'/system'}
-                                    icon={IconFatwebSetting}
-                                    text={'系统设置'}
-                                />
-                            </SidebarItemList>
-                        }
-                    >
+                    <Sidebar title={'系统设置'}>
                         <SidebarItemList>
-                            {user.map((value) => {
+                            {system.map((value) => {
                                 return value.menu ? (
                                     <SidebarItem
                                         path={value.absolutePath}
@@ -45,4 +34,4 @@ const ToolsFramework: React.FC = () => {
     )
 }
 
-export default ToolsFramework
+export default SystemFramework

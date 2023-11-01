@@ -9,6 +9,7 @@ interface SidebarProps extends React.PropsWithChildren {
     title: string
     width?: string
     onSidebarSwitch?: (hidden: boolean) => void
+    bottomFixed?: React.ReactNode
 }
 
 const Sidebar: React.FC<SidebarProps> = (props) => {
@@ -34,6 +35,9 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
                 </div>
                 <SidebarSeparate style={{ marginTop: 0 }} />
                 <div className={'content'}>{props.children}</div>
+                <div className={'bottom-fixed'} style={{ flex: 'none' }}>
+                    {props.bottomFixed}
+                </div>
                 <SidebarSeparate style={{ marginTop: 0, marginBottom: 0 }} />
                 <SidebarFooter />
             </div>
