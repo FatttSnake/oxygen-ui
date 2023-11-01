@@ -7,6 +7,7 @@ import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
 import SidebarItem from '@/components/common/sidebar/SidebarItem'
 import SidebarSeparate from '@/components/common/sidebar/SidebarSeparate'
+import LoadingMask from '@/components/common/LoadingMask'
 
 const ToolsFramework: React.FC = () => {
     const sidebarScrollRef = useRef<SidebarScrollElement>(null)
@@ -63,7 +64,15 @@ const ToolsFramework: React.FC = () => {
                     </Sidebar>
                 </div>
                 <div className={'right-panel'}>
-                    <Outlet />
+                    <Suspense
+                        fallback={
+                            <>
+                                <LoadingMask />
+                            </>
+                        }
+                    >
+                        <Outlet />
+                    </Suspense>
                 </div>
             </FitFullScreen>
         </>

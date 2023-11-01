@@ -1,23 +1,20 @@
 import { getCaptcha, getLocalStorage, removeToken, setLocalStorage } from './common'
-import request from '@/services'
+import { r_login, r_logout } from '@/services/auth'
+import { r_getInfo } from '@/services/user'
 import {
     STORAGE_TOKEN_KEY,
     STORAGE_USER_INFO_KEY,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
-import { URL_API_LOGIN, URL_API_LOGOUT, URL_API_USER_INFO } from '@/constants/urls.constants'
 
 let captcha: Captcha
 
 export const login = async (username: string, password: string) => {
-    return await request.post<TokenVo>(URL_API_LOGIN, {
-        username,
-        password
-    })
+    return await r_login(username, password)
 }
 
 export const logout = async () => {
-    return request.post(URL_API_LOGOUT).finally(() => {
+    return r_logout().finally(() => {
         removeToken()
     })
 }
@@ -40,7 +37,7 @@ export const getUserInfo = async (): Promise<UserWithPowerInfoVo> => {
 export const requestUserInfo = async () => {
     let user: UserWithPowerInfoVo | null
 
-    await request.get<UserWithPowerInfoVo>(URL_API_USER_INFO).then((value) => {
+    await r_getInfo().then((value) => {
         const response = value.data
         if (response.code === DATABASE_SELECT_SUCCESS) {
             user = response.data
@@ -56,10 +53,10 @@ export const requestUserInfo = async () => {
     })
 }
 
-export const getNickName = async () => {
+export const getNickname = async () => {
     const user = await getUserInfo()
 
-    return user.userInfo.nickName
+    return user.userInfo.nickname
 }
 
 export const getUsername = async () => {

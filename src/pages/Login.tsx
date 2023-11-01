@@ -39,7 +39,7 @@ const Login: React.FC = () => {
                                     description: (
                                         <>
                                             <span>
-                                                你好 <strong>{user.userInfo.nickName}</strong>
+                                                你好 <strong>{user.userInfo.nickname}</strong>
                                             </span>
                                             <br />
                                             <span>

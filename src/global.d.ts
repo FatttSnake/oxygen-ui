@@ -75,10 +75,26 @@ type UserWithPowerInfoVo = {
     operations: OperationVo[]
 }
 
+type UserWithRoleInfoVo = {
+    id: string
+    username: string
+    locking: boolean
+    expiration: Date
+    credentialsExpiration: Date
+    enable: number
+    lastLoginTime: Date
+    lastLoginIp: string
+    createTime: Date
+    updateTime: Date
+    userInfo: UserInfoVo
+    roles: RoleVo[]
+    groups: GroupVo[]
+}
+
 type UserInfoVo = {
     id: string
     userId: string
-    nickName: string
+    nickname: string
     avatar: string
     email: string
 }
@@ -111,6 +127,18 @@ type OperationVo = {
     code: string
     powerId: number
     elementId: number
+}
+
+type RoleVo = {
+    id: string
+    name: string
+    enable: boolean
+}
+
+type GroupVo = {
+    id: string
+    name: string
+    enable: boolean
 }
 
 type LoginForm = {

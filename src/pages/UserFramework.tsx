@@ -5,7 +5,8 @@ import FitFullScreen from '@/components/common/FitFullScreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
 import SidebarItem from '@/components/common/sidebar/SidebarItem'
-import { hasPathPermission } from '@/utils/auth.ts'
+import { hasPathPermission } from '@/utils/auth'
+import LoadingMask from '@/components/common/LoadingMask'
 
 const ToolsFramework: React.FC = () => {
     return (
@@ -42,7 +43,15 @@ const ToolsFramework: React.FC = () => {
                     </Sidebar>
                 </div>
                 <div className={'right-panel'}>
-                    <Outlet />
+                    <Suspense
+                        fallback={
+                            <>
+                                <LoadingMask />
+                            </>
+                        }
+                    >
+                        <Outlet />
+                    </Suspense>
                 </div>
             </FitFullScreen>
         </>
