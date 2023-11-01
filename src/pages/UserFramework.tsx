@@ -5,6 +5,7 @@ import FitFullScreen from '@/components/common/FitFullScreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
 import SidebarItem from '@/components/common/sidebar/SidebarItem'
+import { hasPathPermission } from '@/utils/auth.ts'
 
 const ToolsFramework: React.FC = () => {
     return (
@@ -14,13 +15,15 @@ const ToolsFramework: React.FC = () => {
                     <Sidebar
                         title={'个人中心'}
                         bottomFixed={
-                            <SidebarItemList>
-                                <SidebarItem
-                                    path={'/system'}
-                                    icon={IconFatwebSetting}
-                                    text={'系统设置'}
-                                />
-                            </SidebarItemList>
+                            hasPathPermission('/system') ? (
+                                <SidebarItemList>
+                                    <SidebarItem
+                                        path={'/system'}
+                                        icon={IconFatwebSetting}
+                                        text={'系统设置'}
+                                    />
+                                </SidebarItemList>
+                            ) : undefined
                         }
                     >
                         <SidebarItemList>

@@ -75,16 +75,21 @@ export const getPermissionPath = (): string[] => {
     const user = JSON.parse(s) as UserWithInfoVo
     const paths: string[] = []
     user.menus.forEach((menu) => {
-        paths.join(menu.url)
+        paths.push(menu.url)
     })
 
     return paths
 }
 
+export const hasPathPermission = (path: string) => {
+    return getPermissionPath().indexOf(path) !== -1
+}
+
+/*
 export const getAuthRoute = (route: RouteJsonObject[]): RouteJsonObject[] => {
     return route.map((value) => {
-        if (value.auth) {
-            value.path
+        if (value.absolutePath) {
+            value.absolutePath
         }
         if (value.children) {
             value.children = getAuthRoute(value.children)
@@ -92,6 +97,7 @@ export const getAuthRoute = (route: RouteJsonObject[]): RouteJsonObject[] => {
         return value
     })
 }
+*/
 
 export const getCaptchaSrc = () => {
     captcha = getCaptcha(300, 150, 4)

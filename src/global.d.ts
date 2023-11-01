@@ -16,6 +16,7 @@ type RouteJsonObject = {
     id?: string
     element?: React.JSX.Element
     component?: React.ComponentType
+    children?: RouteJsonObject[]
     name?: string
     titlePrefix?: string
     title?: string
@@ -23,18 +24,21 @@ type RouteJsonObject = {
     icon?: IconComponent
     menu?: boolean
     auth?: boolean
-    children?: RouteJsonObject[]
+    permission?: boolean
+    autoHide?: boolean
 }
 
 type RouteHandle = {
     absolutePath: string
     name?: string
-    menu?: boolean
-    auth?: boolean
     titlePrefix?: string
     title?: string
     titlePostfix?: string
     icon?: IconComponent
+    menu?: boolean
+    auth?: boolean
+    permission?: boolean
+    autoHide?: boolean
 }
 
 type _Response<T> = {

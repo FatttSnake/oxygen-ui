@@ -11,13 +11,16 @@ const mapJsonToRoute = (jsonObject: RouteJsonObject[]): RouteObject[] => {
         element: value.element,
         Component: value.component,
         handle: {
+            absolutePath: value.absolutePath,
             name: value.name,
             titlePrefix: value.titlePrefix,
             title: value.title,
             titlePostfix: value.titlePostfix,
             icon: value.icon,
             menu: value.menu,
-            auth: value.auth
+            auth: value.auth,
+            permission: value.permission,
+            autoHide: value.autoHide
         },
         children: value.children && mapJsonToRoute(value.children)
     }))
