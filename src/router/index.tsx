@@ -36,6 +36,7 @@ const setTitle = (jsonObject: RouteJsonObject[], title: string): RouteJsonObject
 const root: RouteJsonObject[] = [
     {
         path: '/',
+        absolutePath: '/',
         component: React.lazy(() => import('@/AuthRoute')),
         children: [
             {
@@ -77,6 +78,7 @@ const root: RouteJsonObject[] = [
             },
             {
                 path: '*',
+                absolutePath: '*',
                 element: <Navigate to="/" replace />
             }
         ]

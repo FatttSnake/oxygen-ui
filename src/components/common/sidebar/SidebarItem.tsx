@@ -7,6 +7,7 @@ type ItemProps = {
     text?: string
     path: string
     children?: React.ReactNode
+    end?: boolean
 }
 
 const SidebarItem: React.FC<ItemProps> = (props) => {
@@ -34,8 +35,8 @@ const SidebarItem: React.FC<ItemProps> = (props) => {
         <li className={'item'}>
             <div className={'menu-bt'} onMouseEnter={showSubmenu}>
                 <NavLink
+                    end={props.end}
                     to={props.path}
-                    end
                     className={({ isActive, isPending }) =>
                         isPending ? 'pending' : isActive ? 'active' : ''
                     }

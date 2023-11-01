@@ -24,11 +24,13 @@ const ToolsFramework: React.FC = () => {
                     <Sidebar title={'氮工具'} onSidebarSwitch={handleOnSidebarSwitch}>
                         <SidebarItemList>
                             <SidebarItem
+                                end
                                 path={''}
                                 icon={tools[0].icon}
                                 text={tools[0].name}
                             ></SidebarItem>
                             <SidebarItem
+                                end
                                 path={'all'}
                                 icon={tools[1].icon}
                                 text={tools[1].name}
@@ -42,7 +44,7 @@ const ToolsFramework: React.FC = () => {
                                         tool.id !== 'tools' &&
                                         tool.id !== 'tools-all' ? (
                                         <SidebarItem
-                                            path={tool.path}
+                                            path={tool.absolutePath}
                                             icon={tool.icon}
                                             text={tool.name}
                                             key={tool.id}
@@ -51,7 +53,7 @@ const ToolsFramework: React.FC = () => {
                                                 ? tool.children.map((subTool) => {
                                                       return (
                                                           <SidebarItem
-                                                              path={`${tool.path}/${subTool.path}`}
+                                                              path={subTool.absolutePath}
                                                               text={subTool.name}
                                                               key={subTool.id}
                                                           />

@@ -12,7 +12,7 @@ interface ImportMeta {
 
 type RouteJsonObject = {
     path: string
-    absolutePath?: string
+    absolutePath: string
     id?: string
     element?: React.JSX.Element
     component?: React.ComponentType

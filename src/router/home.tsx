@@ -12,6 +12,7 @@ const home: RouteJsonObject[] = [
     },
     {
         path: 'https://blog.fatweb.top',
+        absolutePath: 'https://blog.fatweb.top',
         id: 'url-blog',
         name: '博客',
         menu: true
@@ -23,6 +24,7 @@ const home: RouteJsonObject[] = [
         children: [
             {
                 path: 'translation',
+                absolutePath: '/tools/translation',
                 id: 'url-tools-translation',
                 name: '翻译',
                 menu: true

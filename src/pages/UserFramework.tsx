@@ -16,7 +16,7 @@ const ToolsFramework: React.FC = () => {
                             {user.map((value) => {
                                 return value.menu ? (
                                     <SidebarItem
-                                        path={value.path}
+                                        path={value.absolutePath}
                                         icon={value.icon}
                                         text={value.name}
                                         key={value.id}
