@@ -10,7 +10,7 @@ interface ImportMeta {
     readonly env: ImportMetaEnv
 }
 
-type RouteJsonObject = {
+interface RouteJsonObject {
     path: string
     absolutePath: string
     id?: string
@@ -28,7 +28,7 @@ type RouteJsonObject = {
     children?: RouteJsonObject[]
 }
 
-type RouteHandle = {
+interface RouteHandle {
     absolutePath: string
     name?: string
     titlePrefix?: string
@@ -41,23 +41,23 @@ type RouteHandle = {
     autoHide?: boolean
 }
 
-type _Response<T> = {
+interface _Response<T> {
     code: number
     success: boolean
     msg: string
     data: T | null
 }
 
-type Captcha = {
+interface Captcha {
     value: string
     base64Src: string
 }
 
-type TokenVo = {
+interface TokenVo {
     token: string
 }
 
-type UserWithPowerInfoVo = {
+interface UserWithPowerInfoVo {
     id: string
     username: string
     locking: boolean
@@ -75,7 +75,7 @@ type UserWithPowerInfoVo = {
     operations: OperationVo[]
 }
 
-type UserWithRoleInfoVo = {
+interface UserWithRoleInfoVo {
     id: string
     username: string
     locking: boolean
@@ -91,7 +91,7 @@ type UserWithRoleInfoVo = {
     groups: GroupVo[]
 }
 
-type UserInfoVo = {
+interface UserInfoVo {
     id: string
     userId: string
     nickname: string
@@ -99,13 +99,13 @@ type UserInfoVo = {
     email: string
 }
 
-type ModuleVo = {
+interface ModuleVo {
     id: number
     name: string
     powerId: number
 }
 
-type MenuVo = {
+interface MenuVo {
     id: number
     name: string
     url: string
@@ -113,7 +113,7 @@ type MenuVo = {
     parentId: number
 }
 
-type ElementVo = {
+interface ElementVo {
     id: number
     name: string
     powerId: number
@@ -121,7 +121,7 @@ type ElementVo = {
     menuId: number
 }
 
-type OperationVo = {
+interface OperationVo {
     id: number
     name: string
     code: string
@@ -129,19 +129,37 @@ type OperationVo = {
     elementId: number
 }
 
-type RoleVo = {
+interface RoleVo {
     id: string
     name: string
     enable: boolean
 }
 
-type GroupVo = {
+interface GroupVo {
     id: string
     name: string
     enable: boolean
 }
 
-type LoginForm = {
+interface LoginForm {
     username: string
     password: string
+}
+
+interface SysLogGetVo {
+    id: string
+    logType: string
+    operateUserId: string
+    operateTime: Date
+    requestUri: string
+    requestMethod: string
+    requestParams: string
+    requestIp: string
+    requestServerAddress: string
+    isException: boolean
+    exceptionInfo: string
+    startTime: Date
+    endTime: Date
+    executeTime: number
+    userAgent: string
 }

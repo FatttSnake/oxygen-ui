@@ -176,6 +176,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         scrollbarWidth,
         animationTransitionTime,
         autoHideWaitingTime,
+        children,
         ..._props
     } = props
 
@@ -527,7 +528,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
                         style={{ minWidth, minHeight }}
                         data-refresh={refreshTime}
                     >
-                        {props.children}
+                        {children}
                     </div>
                 </div>
                 <div

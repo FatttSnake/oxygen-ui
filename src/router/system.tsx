@@ -44,6 +44,17 @@ const user: RouteJsonObject[] = [
         autoHide: true
     },
     {
+        path: 'log',
+        absolutePath: '/system/log',
+        id: 'system-log',
+        component: React.lazy(() => import('@/pages/system/Log')),
+        name: '系统日志',
+        icon: React.lazy(() => import('~icons/fatweb/log.jsx')),
+        menu: true,
+        permission: true,
+        autoHide: true
+    },
+    {
         path: '*',
         absolutePath: '*',
         element: <Navigate to="/system" replace />
