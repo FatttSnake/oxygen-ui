@@ -411,30 +411,37 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         setRefreshTime(Date.now())
     }
 
+    const reloadScrollbar = () => {
+        setVerticalScrollbarWidth(
+            (rootRef.current?.offsetWidth ?? 0) - (rootRef.current?.clientWidth ?? 0)
+        )
+        setHorizontalScrollbarWidth(
+            (rootRef.current?.offsetHeight ?? 0) - (rootRef.current?.clientHeight ?? 0)
+        )
+
+        rootRef.current &&
+            setVerticalScrollbarLength(
+                (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) * 100
+            )
+
+        rootRef.current &&
+            setHorizontalScrollbarLength(
+                (rootRef.current.clientWidth / (contentRef.current?.clientWidth ?? 0)) * 100
+            )
+
+        refreshLayout()
+    }
+
     useEffect(() => {
         const resizeObserver = new ResizeObserver(() => {
-            setVerticalScrollbarWidth(
-                (rootRef.current?.offsetWidth ?? 0) - (rootRef.current?.clientWidth ?? 0)
-            )
-            setHorizontalScrollbarWidth(
-                (rootRef.current?.offsetHeight ?? 0) - (rootRef.current?.clientHeight ?? 0)
-            )
-
-            rootRef.current &&
-                setVerticalScrollbarLength(
-                    (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) * 100
-                )
-
-            rootRef.current &&
-                setHorizontalScrollbarLength(
-                    (rootRef.current.clientWidth / (contentRef.current?.clientWidth ?? 0)) * 100
-                )
-            refreshLayout()
+            reloadScrollbar()
         })
         maskRef.current && resizeObserver.observe(maskRef.current)
+        contentRef.current && resizeObserver.observe(contentRef.current)
 
         return () => {
             maskRef.current && resizeObserver.unobserve(maskRef.current)
+            contentRef.current && resizeObserver.unobserve(contentRef.current)
         }
     }, [])
 
