@@ -13,7 +13,6 @@ interface HideScrollbarProps
     minWidth?: string | number
     minHeight?: string | number
     scrollbarWidth?: string | number
-    animationTransitionTime?: number
     autoHideWaitingTime?: number
 }
 
@@ -174,9 +173,10 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
         minWidth,
         minHeight,
         scrollbarWidth,
-        animationTransitionTime,
         autoHideWaitingTime,
         children,
+        style,
+        className,
         ..._props
     } = props
 
@@ -412,35 +412,33 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
     }
 
     useEffect(() => {
-        const windowResizeListener = () => {
-            setTimeout(() => {
-                setVerticalScrollbarWidth(
-                    (rootRef.current?.offsetWidth ?? 0) - (rootRef.current?.clientWidth ?? 0)
+        const resizeObserver = new ResizeObserver(() => {
+            setVerticalScrollbarWidth(
+                (rootRef.current?.offsetWidth ?? 0) - (rootRef.current?.clientWidth ?? 0)
+            )
+            setHorizontalScrollbarWidth(
+                (rootRef.current?.offsetHeight ?? 0) - (rootRef.current?.clientHeight ?? 0)
+            )
+
+            rootRef.current &&
+                setVerticalScrollbarLength(
+                    (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) * 100
                 )
-                setHorizontalScrollbarWidth(
-                    (rootRef.current?.offsetHeight ?? 0) - (rootRef.current?.clientHeight ?? 0)
+
+            rootRef.current &&
+                setHorizontalScrollbarLength(
+                    (rootRef.current.clientWidth / (contentRef.current?.clientWidth ?? 0)) * 100
                 )
+            refreshLayout()
+        })
+        maskRef.current && resizeObserver.observe(maskRef.current)
 
-                rootRef.current &&
-                    setVerticalScrollbarLength(
-                        (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) *
-                            100
-                    )
-
-                rootRef.current &&
-                    setHorizontalScrollbarLength(
-                        (rootRef.current.clientWidth / (contentRef.current?.clientWidth ?? 0)) * 100
-                    )
-                refreshLayout()
-            }, animationTransitionTime)
-
-            return windowResizeListener
+        return () => {
+            maskRef.current && resizeObserver.unobserve(maskRef.current)
         }
-        setTimeout(() => {
-            windowResizeListener()
-        }, 1000)
-        window.addEventListener('resize', windowResizeListener())
+    }, [])
 
+    useEffect(() => {
         rootRef.current?.removeEventListener('wheel', wheelListenerRef.current)
         if (isPreventAnyScroll) {
             const handleDefaultWheel = (event: WheelEvent) => {
@@ -462,28 +460,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
             wheelListenerRef.current = handleDefaultWheel
             rootRef.current?.addEventListener('wheel', handleDefaultWheel, { passive: false })
         }
-
-        rootRef.current &&
-            setVerticalScrollbarLength(
-                (rootRef.current.clientHeight / (contentRef.current?.clientHeight ?? 0)) * 100
-            )
-
-        rootRef.current &&
-            setHorizontalScrollbarLength(
-                (rootRef.current.clientWidth / (contentRef.current?.clientWidth ?? 0)) * 100
-            )
-
-        return () => {
-            window.removeEventListener('resize', windowResizeListener)
-        }
-    }, [
-        animationTransitionTime,
-        horizontalScrollbarLength,
-        isPreventAnyScroll,
-        isPreventHorizontalScroll,
-        isPreventScroll,
-        isPreventVerticalScroll
-    ])
+    }, [isPreventAnyScroll, isPreventHorizontalScroll, isPreventScroll, isPreventVerticalScroll])
 
     return (
         <>
@@ -507,13 +484,14 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
             >
                 <div
                     ref={rootRef}
-                    className={'hide-scrollbar-selection'}
+                    className={`hide-scrollbar-selection${className ? ` ${className}` : ''}`}
                     tabIndex={0}
                     style={{
                         width: `calc(${maskRef.current?.clientWidth}px + ${verticalScrollbarWidth}px)`,
                         height: `calc(${maskRef.current?.clientHeight}px + ${horizontalScrollbarWidth}px)`,
                         touchAction: isPreventAnyScroll ? 'none' : '',
-                        msTouchAction: isPreventAnyScroll ? 'none' : ''
+                        msTouchAction: isPreventAnyScroll ? 'none' : '',
+                        ...style
                     }}
                     {..._props}
                     onMouseDown={isPreventAnyScroll ? handleDefaultMouseDown : undefined}

@@ -21,7 +21,6 @@ const SidebarScroll = forwardRef<SidebarScrollElement, React.PropsWithChildren>(
             <HideScrollbar
                 isShowVerticalScrollbar={true}
                 scrollbarWidth={2}
-                animationTransitionTime={300}
                 autoHideWaitingTime={800}
                 ref={hideScrollbarRef}
             >
