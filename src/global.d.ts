@@ -61,13 +61,13 @@ interface UserWithPowerInfoVo {
     id: string
     username: string
     locking: boolean
-    expiration: Date
-    credentialsExpiration: Date
+    expiration: string
+    credentialsExpiration: string
     enable: number
-    lastLoginTime: Date
+    lastLoginTime: string
     lastLoginIp: string
-    createTime: Date
-    updateTime: Date
+    createTime: string
+    updateTime: string
     userInfo: UserInfoVo
     modules: ModuleVo[]
     menus: MenuVo[]
@@ -79,13 +79,13 @@ interface UserWithRoleInfoVo {
     id: string
     username: string
     locking: boolean
-    expiration: Date
-    credentialsExpiration: Date
+    expiration: string
+    credentialsExpiration: string
     enable: number
-    lastLoginTime: Date
+    lastLoginTime: string
     lastLoginIp: string
-    createTime: Date
-    updateTime: Date
+    createTime: string
+    updateTime: string
     userInfo: UserInfoVo
     roles: RoleVo[]
     groups: GroupVo[]
@@ -146,20 +146,40 @@ interface LoginForm {
     password: string
 }
 
+interface PageVo<T> {
+    current: number
+    pages: number
+    size: number
+    total: number
+    records: T[]
+}
+
+interface PageParam {
+    currentPage?: number
+    pageSize?: number
+}
+
+interface TableParams {
+    pagination?: PaginationConfig
+    sortField?: string
+    sortOrder?: string
+    filters?: Record<string, FilterVal | null>
+}
+
 interface SysLogGetVo {
     id: string
     logType: string
     operateUserId: string
-    operateTime: Date
+    operateTime: string
     requestUri: string
     requestMethod: string
     requestParams: string
     requestIp: string
     requestServerAddress: string
-    isException: boolean
+    exception: boolean
     exceptionInfo: string
-    startTime: Date
-    endTime: Date
+    startTime: string
+    endTime: string
     executeTime: number
     userAgent: string
 }

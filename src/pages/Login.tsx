@@ -1,8 +1,7 @@
 import React from 'react'
 import { notification } from 'antd'
-import moment from 'moment'
 import '@/assets/css/pages/login.scss'
-import { setToken } from '@/utils/common'
+import { getLocalTime, setToken } from '@/utils/common'
 import { getUserInfo, login } from '@/utils/auth'
 import {
     SYSTEM_LOGIN_SUCCESS,
@@ -44,10 +43,8 @@ const Login: React.FC = () => {
                                             <br />
                                             <span>
                                                 上次登录：
-                                                {moment(user.lastLoginTime).format(
-                                                    'yyyy-MM-DD HH:mm:ssZ'
-                                                )}
-                                                【{user.lastLoginIp}】
+                                                {getLocalTime(user.lastLoginTime)}【
+                                                {user.lastLoginIp}】
                                             </span>
                                         </>
                                     ),

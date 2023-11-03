@@ -1,4 +1,5 @@
 import { STORAGE_TOKEN_KEY, STORAGE_USER_INFO_KEY } from '@/constants/common.constants'
+import moment from 'moment'
 
 export const getQueryVariable = (variable: string) => {
     const query = window.location.search.substring(1)
@@ -138,4 +139,8 @@ const randomColor = (start: number, end: number) => {
 
 export const getRedirectUrl = (path: string, redirectUrl: string): string => {
     return `${path}?redirect=${encodeURIComponent(redirectUrl)}`
+}
+
+export const getLocalTime = (utcTime: string, format: string = 'yyyy-MM-DD HH:mm:ssZ') => {
+    return moment.utc(utcTime).local().format(format)
 }
