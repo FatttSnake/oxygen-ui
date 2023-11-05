@@ -21,44 +21,68 @@ const Log: React.FC = () => {
     })
 
     const dataColumns: ColumnsType<SysLogGetVo> = [
-        { title: '类型', dataIndex: 'logType' },
+        {
+            title: '类型',
+            dataIndex: 'logType',
+            render: (value) =>
+                value === 'ERROR' ? (
+                    <AntdTag color={'error'}>{value}</AntdTag>
+                ) : (
+                    <AntdTag>{value}</AntdTag>
+                ),
+            align: 'center'
+        },
         {
             title: '操作者',
-            dataIndex: 'operateUserId'
+            dataIndex: 'operateUsername',
+            align: 'center',
+            render: (value, record) =>
+                value ? (
+                    <AntdTag color={'purple'}>{`${value}(${record.operateUserId})`}</AntdTag>
+                ) : (
+                    <AntdTag>Anonymous</AntdTag>
+                )
         },
         {
             title: '操作时间',
             dataIndex: 'operateTime',
-            render: (value) => getLocalTime(value)
-        },
-        {
-            title: '请求 Uri',
-            dataIndex: 'requestUri'
+            render: (value: string) => getLocalTime(value),
+            align: 'center'
         },
         {
             title: '请求方式',
-            dataIndex: 'requestMethod'
+            dataIndex: 'requestMethod',
+            align: 'center'
         },
         {
-            title: '请求参数',
-            dataIndex: 'requestParams'
+            title: '请求 Url',
+            render: (_value, record) =>
+                `${record.requestServerAddress}${record.requestUri}${
+                    record.requestParams ? `?${record.requestParams}` : ''
+                }`
         },
         {
             title: '请求 IP',
-            dataIndex: 'requestIp'
+            dataIndex: 'requestIp',
+            align: 'center'
         },
         {
-            title: '请求服务器地址',
-            dataIndex: 'requestServerAddress'
-        },
-        {
-            title: '异常信息',
-            dataIndex: 'exceptionInfo'
+            title: '异常',
+            dataIndex: 'exception',
+            render: (value: boolean, record) => (value ? record.exceptionInfo : '无'),
+            align: 'center'
         },
         {
             title: '执行时间',
             dataIndex: 'executeTime',
-            render: (value) => `${value}ms`
+            render: (value, record) => (
+                <AntdTooltip
+                    title={`${getLocalTime(record.startTime)} - ${getLocalTime(record.endTime)}`}
+                >
+                    {`${value}ms`}
+                </AntdTooltip>
+            ),
+            align: 'center'
         },
         {
             title: '用户代理',
@@ -83,7 +107,7 @@ const Log: React.FC = () => {
             return
         }
 
-        r_getSysLog({
+        void r_getSysLog({
             currentPage: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize
         })

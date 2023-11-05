@@ -182,4 +182,5 @@ interface SysLogGetVo {
     endTime: string
     executeTime: number
     userAgent: string
+    operateUsername: string
 }
