@@ -157,12 +157,14 @@ interface PageVo<T> {
 interface PageParam {
     currentPage?: number
     pageSize?: number
+    sortField?: string
+    sortOrder?: string
 }
 
 interface TableParams {
-    pagination?: PaginationConfig
-    sortField?: string
-    sortOrder?: string
+    pagination?: _TablePaginationConfig
+    sortField?: React.Key | readonly React.Key[]
+    sortOrder?: _SortOrder
     filters?: Record<string, FilterVal | null>
 }
 

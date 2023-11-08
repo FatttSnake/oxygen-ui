@@ -1,6 +1,4 @@
 import React, { useState } from 'react'
-import { ColumnsType, FilterValue, SorterResult } from 'antd/es/table/interface'
-import { TablePaginationConfig } from 'antd/lib'
 import FitFullScreen from '@/components/common/FitFullScreen.tsx'
 import Card from '@/components/common/Card'
 import { r_getSysLog } from '@/services/system.tsx'
@@ -20,7 +18,7 @@ const Log: React.FC = () => {
         }
     })
 
-    const dataColumns: ColumnsType<SysLogGetVo> = [
+    const dataColumns: _ColumnsType<SysLogGetVo> = [
         {
             title: '类型',
             dataIndex: 'logType',
@@ -30,7 +28,11 @@ const Log: React.FC = () => {
                 ) : (
                     <AntdTag>{value}</AntdTag>
                 ),
-            align: 'center'
+            align: 'center',
+            filters: [
+                { text: 'Info', value: 'INFO' },
+                { text: 'Error', value: 'ERROR' }
+            ]
         },
         {
             title: '操作者',
@@ -44,27 +46,55 @@ const Log: React.FC = () => {
                 )
         },
         {
-            title: '操作时间',
-            dataIndex: 'operateTime',
-            render: (value: string) => getLocalTime(value),
-            align: 'center'
-        },
-        {
             title: '请求方式',
             dataIndex: 'requestMethod',
-            align: 'center'
+            align: 'center',
+            filters: [
+                { text: 'GET', value: 'GET' },
+                { text: 'POST', value: 'POST' },
+                { text: 'PUT', value: 'PUT' },
+                { text: 'PATCH', value: 'PATCH' },
+                { text: 'DELETE', value: 'DELETE' },
+                { text: 'HEAD', value: 'HEAD' },
+                { text: 'OPTIONS', value: 'OPTIONS' }
+            ]
         },
         {
             title: '请求 Url',
             render: (_value, record) =>
                 `${record.requestServerAddress}${record.requestUri}${
                     record.requestParams ? `?${record.requestParams}` : ''
-                }`
+                }`,
+            onCell: () => ({
+                style: {
+                    wordBreak: 'break-word'
+                }
+            })
         },
         {
             title: '请求 IP',
             dataIndex: 'requestIp',
             align: 'center'
+        },
+        {
+            title: '开始时间',
+            dataIndex: 'startTime',
+            render: (value: string) => getLocalTime(value),
+            align: 'center',
+            sorter: true
+        },
+        {
+            title: '执行时间',
+            dataIndex: 'executeTime',
+            render: (value, record) => (
+                <AntdTooltip
+                    title={`${getLocalTime(record.startTime)} ~ ${getLocalTime(record.endTime)}`}
+                >
+                    {`${value}ms`}
+                </AntdTooltip>
+            ),
+            align: 'center',
+            sorter: true
         },
         {
             title: '异常',
@@ -73,29 +103,35 @@ const Log: React.FC = () => {
             align: 'center'
         },
         {
-            title: '执行时间',
-            dataIndex: 'executeTime',
-            render: (value, record) => (
-                <AntdTooltip
-                    title={`${getLocalTime(record.startTime)} - ${getLocalTime(record.endTime)}`}
-                >
-                    {`${value}ms`}
-                </AntdTooltip>
-            ),
-            align: 'center'
-        },
-        {
             title: '用户代理',
-            dataIndex: 'userAgent'
+            dataIndex: 'userAgent',
+            onCell: () => ({
+                style: {
+                    wordBreak: 'break-word'
+                }
+            })
         }
     ]
 
     const handleOnTableChange = (
-        pagination: TablePaginationConfig,
-        filters: Record<string, FilterValue | null>,
-        sorter: SorterResult<SysLogGetVo> | SorterResult<SysLogGetVo>[]
+        pagination: _TablePaginationConfig,
+        filters: Record<string, _FilterValue | null>,
+        sorter: _SorterResult<SysLogGetVo> | _SorterResult<SysLogGetVo>[]
     ) => {
-        setTableParams({ pagination, filters, ...sorter })
+        if (Array.isArray(sorter)) {
+            setTableParams({
+                pagination,
+                filters,
+                sortField: sorter.map((value) => value.field).join(',')
+            })
+        } else {
+            setTableParams({
+                pagination,
+                filters,
+                sortField: sorter.field,
+                sortOrder: sorter.order
+            })
+        }
 
         if (pagination.pageSize !== tableParams.pagination?.pageSize) {
             setLogData([])
@@ -107,10 +143,20 @@ const Log: React.FC = () => {
             return
         }
 
-        void r_getSysLog({
-            currentPage: tableParams.pagination?.current,
-            pageSize: tableParams.pagination?.pageSize
-        })
+        void r_getSysLog(
+            tableParams.sortField && tableParams.sortOrder
+                ? {
+                      currentPage: tableParams.pagination?.current,
+                      pageSize: tableParams.pagination?.pageSize,
+                      sortField: tableParams.sortField as string,
+                      sortOrder: tableParams.sortOrder,
+                      ...tableParams.filters
+                  }
+                : {
+                      currentPage: tableParams.pagination?.current,
+                      pageSize: tableParams.pagination?.pageSize
+                  }
+        )
             .then((res) => {
                 const data = res.data
                 if (data.code === DATABASE_SELECT_SUCCESS) {
