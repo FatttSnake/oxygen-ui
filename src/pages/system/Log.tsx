@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import FitFullScreen from '@/components/common/FitFullScreen.tsx'
 import Card from '@/components/common/Card'
 import { r_getSysLog } from '@/services/system.tsx'
-import { DATABASE_SELECT_SUCCESS } from '@/constants/common.constants.ts'
+import { COLOR_FONT_SECONDARY, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants.ts'
 import HideScrollbar from '@/components/common/HideScrollbar.tsx'
 import { getLocalTime } from '@/utils/common.ts'
+import useMessage from 'antd/es/message/useMessage'
+import FlexBox from '@/components/common/FlexBox.tsx'
 
 const Log: React.FC = () => {
-    const tableCardRef = useRef<HTMLDivElement>(null)
+    const [message, contextHolder] = useMessage()
     const [logData, setLogData] = useState<SysLogGetVo[]>([])
     const [loading, setLoading] = useState(false)
     const [tableParams, setTableParams] = useState<TableParams>({
@@ -143,6 +145,8 @@ const Log: React.FC = () => {
             return
         }
 
+        setLoading(true)
+
         void r_getSysLog(
             tableParams.sortField && tableParams.sortOrder
                 ? {
@@ -154,7 +158,8 @@ const Log: React.FC = () => {
                   }
                 : {
                       currentPage: tableParams.pagination?.current,
-                      pageSize: tableParams.pagination?.pageSize
+                      pageSize: tableParams.pagination?.pageSize,
+                      ...tableParams.filters
                   }
         )
             .then((res) => {
@@ -169,6 +174,10 @@ const Log: React.FC = () => {
                                 total: data.data.total
                             }
                         })
+                } else {
+                    void message.error({
+                        content: '获取失败，请稍后重试'
+                    })
                 }
             })
             .finally(() => {
@@ -189,21 +198,48 @@ const Log: React.FC = () => {
     return (
         <>
             <FitFullScreen>
+                {contextHolder}
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar
                     autoHideWaitingTime={500}
                 >
-                    <Card ref={tableCardRef}>
-                        <AntdTable
-                            dataSource={logData}
-                            columns={dataColumns}
-                            rowKey={(record) => record.id}
-                            pagination={tableParams.pagination}
-                            loading={loading}
-                            onChange={handleOnTableChange}
-                        />
-                    </Card>
+                    <FlexBox gap={20}>
+                        <FlexBox direction={'horizontal'}>
+                            <Card style={{ overflow: 'inherit' }}>
+                                <AntdInput
+                                    addonBefore={
+                                        <span
+                                            style={{
+                                                fontSize: '0.9em',
+                                                color: COLOR_FONT_SECONDARY
+                                            }}
+                                        >
+                                            请求 Url
+                                        </span>
+                                    }
+                                    suffix={
+                                        <AntdTooltip title={'正则表达式'}>
+                                            <AntdCheckbox>.*</AntdCheckbox>
+                                        </AntdTooltip>
+                                    }
+                                />
+                            </Card>
+                            <Card style={{ overflow: 'inherit', flex: 'auto' }}>
+                                <AntdDatePicker.RangePicker showTime />
+                            </Card>
+                        </FlexBox>
+                        <Card>
+                            <AntdTable
+                                dataSource={logData}
+                                columns={dataColumns}
+                                rowKey={(record) => record.id}
+                                pagination={tableParams.pagination}
+                                loading={loading}
+                                onChange={handleOnTableChange}
+                            />
+                        </Card>
+                    </FlexBox>
                 </HideScrollbar>
             </FitFullScreen>
         </>
