@@ -22,7 +22,7 @@ service.defaults.paramsSerializer = (params: Record<string, string>) => {
             return Object.prototype.hasOwnProperty.call(params, it)
         })
         .reduce((pre, curr) => {
-            return params[curr] !== null
+            return params[curr] !== null && params[curr] !== undefined
                 ? (pre !== '' ? pre + '&' : '') + curr + '=' + encodeURIComponent(params[curr])
                 : pre
         }, '')
