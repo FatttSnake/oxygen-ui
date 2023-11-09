@@ -161,11 +161,18 @@ interface PageParam {
     sortOrder?: string
 }
 
+interface GetSysLogParams extends PageParam {
+    searchRequestUrl?: string
+    searchRegex?: boolean
+    searchStartTime?: string
+    searchEndTime?: string
+}
+
 interface TableParams {
     pagination?: _TablePaginationConfig
     sortField?: React.Key | readonly React.Key[]
     sortOrder?: _SortOrder
-    filters?: Record<string, FilterVal | null>
+    filters?: Record<string, _FilterValue | null>
 }
 
 interface SysLogGetVo {

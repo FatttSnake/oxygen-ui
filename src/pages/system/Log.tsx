@@ -1,15 +1,17 @@
-import React, { useState } from 'react'
+import React from 'react'
 import FitFullScreen from '@/components/common/FitFullScreen.tsx'
 import Card from '@/components/common/Card'
 import { r_getSysLog } from '@/services/system.tsx'
-import { COLOR_FONT_SECONDARY, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants.ts'
+import {
+    COLOR_ERROR_SECONDARY,
+    COLOR_FONT_SECONDARY,
+    DATABASE_SELECT_SUCCESS
+} from '@/constants/common.constants.ts'
 import HideScrollbar from '@/components/common/HideScrollbar.tsx'
 import { getLocalTime } from '@/utils/common.ts'
-import useMessage from 'antd/es/message/useMessage'
-import FlexBox from '@/components/common/FlexBox.tsx'
+import FlexBox from '@/components/common/FlexBox'
 
 const Log: React.FC = () => {
-    const [message, contextHolder] = useMessage()
     const [logData, setLogData] = useState<SysLogGetVo[]>([])
     const [loading, setLoading] = useState(false)
     const [tableParams, setTableParams] = useState<TableParams>({
@@ -19,6 +21,10 @@ const Log: React.FC = () => {
             position: ['bottomCenter']
         }
     })
+    const [searchRequestUrl, setSearchRequestUrl] = useState('')
+    const [useRegex, setUseRegex] = useState(false)
+    const [isRegexLegal, setIsRegexLegal] = useState(true)
+    const [timeRange, setTimeRange] = useState<[string, string]>()
 
     const dataColumns: _ColumnsType<SysLogGetVo> = [
         {
@@ -102,7 +108,12 @@ const Log: React.FC = () => {
             title: '异常',
             dataIndex: 'exception',
             render: (value: boolean, record) => (value ? record.exceptionInfo : '无'),
-            align: 'center'
+            align: 'center',
+            onCell: () => ({
+                style: {
+                    wordBreak: 'break-word'
+                }
+            })
         },
         {
             title: '用户代理',
@@ -140,28 +151,87 @@ const Log: React.FC = () => {
         }
     }
 
+    const handleOnSearchUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchRequestUrl(e.target.value)
+
+        if (useRegex) {
+            try {
+                RegExp(e.target.value)
+                setIsRegexLegal(!(e.target.value.includes('{}') || e.target.value.includes('[]')))
+            } catch (e) {
+                setIsRegexLegal(false)
+            }
+        } else {
+            setIsRegexLegal(true)
+        }
+    }
+
+    const handleOnSearchUrlKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            getLog()
+        }
+    }
+
+    const handleOnUseRegexChange = (e: _CheckboxChangeEvent) => {
+        setUseRegex(e.target.checked)
+        if (e.target.checked) {
+            try {
+                RegExp(searchRequestUrl)
+                setIsRegexLegal(
+                    !(searchRequestUrl.includes('{}') || searchRequestUrl.includes('[]'))
+                )
+            } catch (e) {
+                setIsRegexLegal(false)
+            }
+        } else {
+            setIsRegexLegal(true)
+        }
+    }
+
+    const handleOnDateRangeChange = (_dates: unknown, dateStrings: [string, string]) => {
+        if (dateStrings[0] && dateStrings[1]) {
+            setTimeRange([
+                new Date(dateStrings[0]).toISOString(),
+                new Date(dateStrings[1]).toISOString()
+            ])
+        } else {
+            setTimeRange(undefined)
+        }
+    }
+
+    const handleOnQueryBtnClick = () => {
+        getLog()
+    }
+
     const getLog = () => {
         if (loading) {
             return
         }
 
+        if (!isRegexLegal) {
+            void message.error({
+                content: '非法正则表达式'
+            })
+            return
+        }
+
         setLoading(true)
 
-        void r_getSysLog(
-            tableParams.sortField && tableParams.sortOrder
-                ? {
-                      currentPage: tableParams.pagination?.current,
-                      pageSize: tableParams.pagination?.pageSize,
-                      sortField: tableParams.sortField as string,
-                      sortOrder: tableParams.sortOrder,
-                      ...tableParams.filters
-                  }
-                : {
-                      currentPage: tableParams.pagination?.current,
-                      pageSize: tableParams.pagination?.pageSize,
-                      ...tableParams.filters
-                  }
-        )
+        void r_getSysLog({
+            currentPage: tableParams.pagination?.current,
+            pageSize: tableParams.pagination?.pageSize,
+            sortField:
+                tableParams.sortField && tableParams.sortOrder
+                    ? (tableParams.sortField as string)
+                    : undefined,
+            sortOrder:
+                tableParams.sortField && tableParams.sortOrder ? tableParams.sortOrder : undefined,
+            searchRequestUrl: searchRequestUrl.trim().length ? searchRequestUrl : undefined,
+            searchRegex: useRegex ? useRegex : undefined,
+            searchStartTime: timeRange && timeRange[0],
+            searchEndTime: timeRange && timeRange[1],
+            ...tableParams.filters
+        })
             .then((res) => {
                 const data = res.data
                 if (data.code === DATABASE_SELECT_SUCCESS) {
@@ -198,14 +268,13 @@ const Log: React.FC = () => {
     return (
         <>
             <FitFullScreen>
-                {contextHolder}
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar
                     autoHideWaitingTime={500}
                 >
                     <FlexBox gap={20}>
-                        <FlexBox direction={'horizontal'}>
+                        <FlexBox direction={'horizontal'} gap={10}>
                             <Card style={{ overflow: 'inherit' }}>
                                 <AntdInput
                                     addonBefore={
@@ -219,14 +288,39 @@ const Log: React.FC = () => {
                                         </span>
                                     }
                                     suffix={
-                                        <AntdTooltip title={'正则表达式'}>
-                                            <AntdCheckbox>.*</AntdCheckbox>
-                                        </AntdTooltip>
+                                        <>
+                                            {!isRegexLegal ? (
+                                                <span style={{ color: COLOR_ERROR_SECONDARY }}>
+                                                    非法表达式
+                                                </span>
+                                            ) : undefined}
+                                            <AntdCheckbox
+                                                checked={useRegex}
+                                                onChange={handleOnUseRegexChange}
+                                            >
+                                                <AntdTooltip title={'正则表达式'}>.*</AntdTooltip>
+                                            </AntdCheckbox>
+                                        </>
                                     }
+                                    allowClear
+                                    value={searchRequestUrl}
+                                    onChange={handleOnSearchUrlChange}
+                                    onKeyDown={handleOnSearchUrlKeyDown}
+                                    status={isRegexLegal ? undefined : 'error'}
                                 />
                             </Card>
-                            <Card style={{ overflow: 'inherit', flex: 'auto' }}>
-                                <AntdDatePicker.RangePicker showTime />
+                            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                                <AntdDatePicker.RangePicker
+                                    showTime
+                                    allowClear
+                                    changeOnBlur
+                                    onChange={handleOnDateRangeChange}
+                                />
+                            </Card>
+                            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                                <AntdButton onClick={handleOnQueryBtnClick} type={'primary'}>
+                                    查询
+                                </AntdButton>
                             </Card>
                         </FlexBox>
                         <Card>
