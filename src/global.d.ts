@@ -111,6 +111,7 @@ interface MenuVo {
     url: string
     powerId: number
     parentId: number
+    moduleId: number
 }
 
 interface ElementVo {
@@ -161,18 +162,18 @@ interface PageParam {
     sortOrder?: string
 }
 
-interface GetSysLogParams extends PageParam {
-    searchRequestUrl?: string
-    searchRegex?: boolean
-    searchStartTime?: string
-    searchEndTime?: string
-}
-
 interface TableParams {
     pagination?: _TablePaginationConfig
     sortField?: React.Key | readonly React.Key[]
     sortOrder?: _SortOrder
     filters?: Record<string, _FilterValue | null>
+}
+
+interface GetSysLogParams extends PageParam {
+    searchRequestUrl?: string
+    searchRegex?: boolean
+    searchStartTime?: string
+    searchEndTime?: string
 }
 
 interface SysLogGetVo {
@@ -192,4 +193,20 @@ interface SysLogGetVo {
     executeTime: number
     userAgent: string
     operateUsername: string
+}
+
+interface GetRoleParams extends PageParam {
+    searchName?: string
+    searchRegex?: boolean
+}
+
+interface RoleWithPowerGetVo {
+    id: string
+    name: string
+    enable: string
+    modules: ModuleVo[]
+    menus: MenuVo[]
+    elements: ElementVo[]
+    operations: OperationVo[]
+    tree: _DataNode[]
 }

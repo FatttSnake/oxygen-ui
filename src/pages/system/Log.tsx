@@ -1,14 +1,14 @@
 import React from 'react'
-import FitFullScreen from '@/components/common/FitFullScreen.tsx'
+import FitFullScreen from '@/components/common/FitFullScreen'
 import Card from '@/components/common/Card'
-import { r_getSysLog } from '@/services/system.tsx'
+import { r_getSysLog } from '@/services/system'
 import {
     COLOR_ERROR_SECONDARY,
     COLOR_FONT_SECONDARY,
     DATABASE_SELECT_SUCCESS
-} from '@/constants/common.constants.ts'
-import HideScrollbar from '@/components/common/HideScrollbar.tsx'
-import { getLocalTime } from '@/utils/common.ts'
+} from '@/constants/common.constants'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import { getLocalTime } from '@/utils/common'
 import FlexBox from '@/components/common/FlexBox'
 
 const Log: React.FC = () => {

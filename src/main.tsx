@@ -8,7 +8,10 @@ import { COLOR_MAIN } from '@/constants/common.constants'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <AntdConfigProvider theme={{ token: { colorPrimary: COLOR_MAIN } }} locale={zh_CN}>
+        <AntdConfigProvider
+            theme={{ token: { colorPrimary: COLOR_MAIN, colorBgContainer: 'transparent' } }}
+            locale={zh_CN}
+        >
             <App />
         </AntdConfigProvider>
     </React.StrictMode>

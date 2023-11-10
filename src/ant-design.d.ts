@@ -3,6 +3,7 @@ import { CustomIconComponentProps } from '@ant-design/icons/es/components/Icon'
 import { TablePaginationConfig } from 'antd/lib'
 import { ColumnsType, FilterValue, SorterResult, SortOrder } from 'antd/es/table/interface'
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
+import type { DataNode } from 'antd/es/tree'
 
 declare global {
     type IconComponent =
@@ -16,4 +17,5 @@ declare global {
     type _SorterResult<T> = SorterResult<T>
     type _SortOrder = SortOrder
     type _CheckboxChangeEvent = CheckboxChangeEvent
+    type _DataNode = DataNode
 }

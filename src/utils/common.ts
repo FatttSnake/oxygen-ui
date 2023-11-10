@@ -144,3 +144,16 @@ export const getRedirectUrl = (path: string, redirectUrl: string): string => {
 export const getLocalTime = (utcTime: string, format: string = 'yyyy-MM-DD HH:mm:ssZ') => {
     return moment.utc(utcTime).local().format(format)
 }
+
+export const floorNumber = (num: number, digits: number) => {
+    if (digits > 0) {
+        return Math.floor(num / Math.pow(10, digits - 1)) * Math.pow(10, digits - 1)
+    } else {
+        const regExpMatchArray = num.toString().match(new RegExp('^\\d\\.\\d{' + -digits + '}'))
+        if (regExpMatchArray !== null) {
+            return parseFloat(regExpMatchArray[0]).toFixed(-digits)
+        } else {
+            return num
+        }
+    }
+}
