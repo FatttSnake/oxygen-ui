@@ -162,14 +162,14 @@ interface PageParam {
     sortOrder?: string
 }
 
-interface TableParams {
+interface TableParam {
     pagination?: _TablePaginationConfig
     sortField?: React.Key | readonly React.Key[]
     sortOrder?: _SortOrder
     filters?: Record<string, _FilterValue | null>
 }
 
-interface GetSysLogParams extends PageParam {
+interface GetSysLogParam extends PageParam {
     searchRequestUrl?: string
     searchRegex?: boolean
     searchStartTime?: string
@@ -195,7 +195,7 @@ interface SysLogGetVo {
     operateUsername: string
 }
 
-interface GetRoleParams extends PageParam {
+interface GetRoleParam extends PageParam {
     searchName?: string
     searchRegex?: boolean
 }
@@ -209,4 +209,9 @@ interface RoleWithPowerGetVo {
     elements: ElementVo[]
     operations: OperationVo[]
     tree: _DataNode[]
+}
+
+interface RoleChangeStatusParam {
+    id: string
+    enable: boolean
 }

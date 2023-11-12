@@ -3,13 +3,19 @@ import FitFullScreen from '@/components/common/FitFullScreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
-import { r_getRole } from '@/services/system.tsx'
-import { DATABASE_SELECT_SUCCESS } from '@/constants/common.constants.ts'
+import { r_changeRoleStatus, r_getRole } from '@/services/system.tsx'
+import {
+    COLOR_ERROR_SECONDARY,
+    COLOR_FONT_SECONDARY,
+    COLOR_PRODUCTION,
+    DATABASE_SELECT_SUCCESS
+} from '@/constants/common.constants.ts'
+import Icon from '@ant-design/icons'
 
 const Role: React.FC = () => {
     const [roleData, setRoleData] = useState<RoleWithPowerGetVo[]>([])
     const [loading, setLoading] = useState(false)
-    const [tableParams, setTableParams] = useState<TableParams>({
+    const [tableParams, setTableParams] = useState<TableParam>({
         pagination: {
             current: 1,
             pageSize: 20,
@@ -38,6 +44,35 @@ const Role: React.FC = () => {
             align: 'center',
             render: (value) =>
                 value ? <AntdTag color={'success'}>启用</AntdTag> : <AntdTag>禁用</AntdTag>
+        },
+        {
+            title: '操作',
+            dataIndex: 'enable',
+            width: '15em',
+            align: 'center',
+            render: (value, record) => (
+                <>
+                    <AntdSpace size={'middle'}>
+                        {value ? (
+                            <a
+                                style={{ color: COLOR_PRODUCTION }}
+                                onClick={handleOnChangStatusBtnClick(record.id, false)}
+                            >
+                                禁用
+                            </a>
+                        ) : (
+                            <a
+                                style={{ color: COLOR_PRODUCTION }}
+                                onClick={handleOnChangStatusBtnClick(record.id, true)}
+                            >
+                                启用
+                            </a>
+                        )}
+                        <a style={{ color: COLOR_PRODUCTION }}>编辑</a>
+                        <a style={{ color: COLOR_PRODUCTION }}>删除</a>
+                    </AntdSpace>
+                </>
+            )
         }
     ]
 
@@ -103,6 +138,12 @@ const Role: React.FC = () => {
 
     const handleOnQueryBtnClick = () => {
         getRole()
+    }
+
+    const handleOnChangStatusBtnClick = (id: string, newStatus: boolean) => {
+        return () => {
+            void r_changeRoleStatus({ id, enable: newStatus })
+        }
     }
 
     const getRole = () => {
@@ -244,7 +285,55 @@ const Role: React.FC = () => {
                     autoHideWaitingTime={500}
                 >
                     <FlexBox gap={20}>
-                        <FlexBox direction={'horizontal'} gap={10}></FlexBox>
+                        <FlexBox direction={'horizontal'} gap={10}>
+                            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                                <AntdButton type={'primary'} style={{ padding: '4px 8px' }}>
+                                    <Icon
+                                        component={IconFatwebPlus}
+                                        style={{ fontSize: '1.5em' }}
+                                    />
+                                </AntdButton>
+                            </Card>
+                            <Card style={{ overflow: 'inherit' }}>
+                                <AntdInput
+                                    addonBefore={
+                                        <span
+                                            style={{
+                                                fontSize: '0.9em',
+                                                color: COLOR_FONT_SECONDARY
+                                            }}
+                                        >
+                                            名称
+                                        </span>
+                                    }
+                                    suffix={
+                                        <>
+                                            {!isRegexLegal ? (
+                                                <span style={{ color: COLOR_ERROR_SECONDARY }}>
+                                                    非法表达式
+                                                </span>
+                                            ) : undefined}
+                                            <AntdCheckbox
+                                                checked={useRegex}
+                                                onChange={handleOnUseRegexChange}
+                                            >
+                                                <AntdTooltip title={'正则表达式'}>.*</AntdTooltip>
+                                            </AntdCheckbox>
+                                        </>
+                                    }
+                                    allowClear
+                                    value={searchName}
+                                    onChange={handleOnSearchNameChange}
+                                    onKeyDown={handleOnSearchNameKeyDown}
+                                    status={isRegexLegal ? undefined : 'error'}
+                                />
+                            </Card>
+                            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                                <AntdButton onClick={handleOnQueryBtnClick} type={'primary'}>
+                                    查询
+                                </AntdButton>
+                            </Card>
+                        </FlexBox>
                         <Card>
                             <AntdTable
                                 dataSource={roleData}

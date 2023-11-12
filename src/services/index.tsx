@@ -118,6 +118,9 @@ const request = {
     async put<T>(url: string, data?: object): Promise<AxiosResponse<_Response<T>>> {
         return await request.request('PUT', url, { data })
     },
+    async patch<T>(url: string, data?: object): Promise<AxiosResponse<_Response<T>>> {
+        return await request.request('PATCH', url, { data })
+    },
     async delete<T>(url: string, data?: object): Promise<AxiosResponse<_Response<T>>> {
         return await request.request('DELETE', url, { params: data })
     },

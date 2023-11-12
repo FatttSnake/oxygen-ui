@@ -14,7 +14,7 @@ import FlexBox from '@/components/common/FlexBox'
 const Log: React.FC = () => {
     const [logData, setLogData] = useState<SysLogGetVo[]>([])
     const [loading, setLoading] = useState(false)
-    const [tableParams, setTableParams] = useState<TableParams>({
+    const [tableParams, setTableParams] = useState<TableParam>({
         pagination: {
             current: 1,
             pageSize: 20,
