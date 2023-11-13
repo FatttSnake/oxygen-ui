@@ -169,7 +169,7 @@ interface TableParam {
     filters?: Record<string, _FilterValue | null>
 }
 
-interface GetSysLogParam extends PageParam {
+interface SysLogGetParam extends PageParam {
     searchRequestUrl?: string
     searchRegex?: boolean
     searchStartTime?: string
@@ -195,7 +195,7 @@ interface SysLogGetVo {
     operateUsername: string
 }
 
-interface GetRoleParam extends PageParam {
+interface RoleGetParam extends PageParam {
     searchName?: string
     searchRegex?: boolean
 }
@@ -214,4 +214,18 @@ interface RoleWithPowerGetVo {
 interface RoleChangeStatusParam {
     id: string
     enable: boolean
+}
+
+interface RoleAddEditParam {
+    id?: string
+    name: string
+    powerIds: number[]
+    enable: boolean
+}
+
+interface PowerSetVo {
+    moduleList: ModuleVo[]
+    menuList: MenuVo[]
+    elementList: ElementVo[]
+    operationList: OperationVo[]
 }

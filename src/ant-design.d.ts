@@ -17,5 +17,9 @@ declare global {
     type _SorterResult<T> = SorterResult<T>
     type _SortOrder = SortOrder
     type _CheckboxChangeEvent = CheckboxChangeEvent
-    type _DataNode = DataNode
+    interface _DataNode extends DataNode {
+        value: React.Key
+        fullTitle: string
+        children?: _DataNode[]
+    }
 }

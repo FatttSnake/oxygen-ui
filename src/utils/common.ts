@@ -157,3 +157,116 @@ export const floorNumber = (num: number, digits: number) => {
         }
     }
 }
+
+export const powerListToPowerTree = (
+    modules: ModuleVo[],
+    menus: MenuVo[],
+    elements: ElementVo[],
+    operations: OperationVo[]
+): _DataNode[] => {
+    const menuMap = new Map<number, _DataNode[]>()
+    const elementMap = new Map<number, _DataNode[]>()
+    const operationMap = new Map<number, _DataNode[]>()
+
+    operations.forEach((operation) => {
+        if (
+            operationMap.has(operation.elementId) &&
+            operationMap.get(operation.elementId) !== null
+        ) {
+            operationMap.get(operation.elementId)?.push({
+                title: operation.name,
+                fullTitle: operation.name,
+                key: operation.powerId,
+                value: operation.powerId
+            })
+        } else {
+            operationMap.set(operation.elementId, [
+                {
+                    title: operation.name,
+                    fullTitle: operation.name,
+                    key: operation.powerId,
+                    value: operation.powerId
+                }
+            ])
+        }
+    })
+
+    elements.forEach((element) => {
+        if (elementMap.has(element.menuId) && elementMap.get(element.menuId) !== null) {
+            elementMap.get(element.menuId)?.push({
+                title: element.name,
+                fullTitle: element.name,
+                key: element.powerId,
+                value: element.powerId,
+                children: operationMap.get(element.id)?.map((value) => {
+                    value.fullTitle = `${element.name}-${value.fullTitle}`
+                    return value
+                })
+            })
+        } else {
+            elementMap.set(element.menuId, [
+                {
+                    title: element.name,
+                    fullTitle: element.name,
+                    key: element.powerId,
+                    value: element.powerId,
+                    children: operationMap.get(element.id)?.map((value) => {
+                        value.fullTitle = `${element.name}-${value.fullTitle}`
+                        return value
+                    })
+                }
+            ])
+        }
+    })
+
+    menus.forEach((menu) => {
+        if (menuMap.has(menu.moduleId) && menuMap.get(menu.moduleId) !== null) {
+            menuMap.get(menu.moduleId)?.push({
+                title: menu.name,
+                fullTitle: menu.name,
+                key: menu.powerId,
+                value: menu.powerId,
+                children: elementMap.get(menu.id)?.map((value) => {
+                    value.fullTitle = `${menu.name}-${value.fullTitle}`
+                    value.children?.forEach((value1) => {
+                        value1.fullTitle = `${menu.name}-${value1.fullTitle}`
+                    })
+                    return value
+                })
+            })
+        } else {
+            menuMap.set(menu.moduleId, [
+                {
+                    title: menu.name,
+                    fullTitle: menu.name,
+                    key: menu.powerId,
+                    value: menu.powerId,
+                    children: elementMap.get(menu.id)?.map((value) => {
+                        value.fullTitle = `${menu.name}-${value.fullTitle}`
+                        value.children?.forEach((value1) => {
+                            value1.fullTitle = `${menu.name}-${value1.fullTitle}`
+                        })
+                        return value
+                    })
+                }
+            ])
+        }
+    })
+
+    return modules.map((module) => ({
+        title: module.name,
+        fullTitle: module.name,
+        key: module.powerId,
+        value: module.powerId,
+        children: menuMap.get(module.id)?.map((value) => {
+            value.fullTitle = `${module.name}-${value.fullTitle}`
+            value.children?.forEach((value1) => {
+                value1.fullTitle = `${module.name}-${value1.fullTitle}`
+                value1.children?.forEach((value2) => {
+                    value2.fullTitle = `${module.name}-${value2.fullTitle}`
+                })
+            })
+            return value
+        })
+    }))
+}
