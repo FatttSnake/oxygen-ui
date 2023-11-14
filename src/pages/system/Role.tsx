@@ -9,7 +9,8 @@ import {
     r_power_get,
     r_role_get,
     r_role_update,
-    r_role_delete
+    r_role_delete,
+    r_role_delete_list
 } from '@/services/system.tsx'
 import {
     COLOR_ERROR_SECONDARY,
@@ -20,9 +21,9 @@ import {
     DATABASE_INSERT_SUCCESS,
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
-} from '@/constants/common.constants.ts'
+} from '@/constants/common.constants'
 import Icon from '@ant-design/icons'
-import { powerListToPowerTree } from '@/utils/common.ts'
+import { getLocalTime, powerListToPowerTree } from '@/utils/common'
 
 const Role: React.FC = () => {
     const [modal, contextHolder] = AntdModal.useModal()
@@ -47,17 +48,33 @@ const Role: React.FC = () => {
     const [powerTreeData, setPowerTreeData] = useState<_DataNode[]>([])
     const [isLoadingPower, setIsLoadingPower] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [tableSelectedItem, setTableSelectedItem] = useState<React.Key[]>([])
 
     const dataColumns: _ColumnsType<RoleWithPowerGetVo> = [
         {
             title: '名称',
             dataIndex: 'name',
-            width: '20%'
+            width: '15%'
         },
         {
             title: '权限',
             dataIndex: 'tree',
-            render: (value: _DataNode[]) => <AntdTree treeData={value} />
+            render: (value: _DataNode[]) =>
+                value.length ? <AntdTree treeData={value} /> : <AntdTag>无</AntdTag>
+        },
+        {
+            title: '创建时间',
+            dataIndex: 'createTime',
+            width: '0',
+            align: 'center',
+            render: (value: string) => getLocalTime(value)
+        },
+        {
+            title: '修改时间',
+            dataIndex: 'updateTime',
+            width: '0',
+            align: 'center',
+            render: (value: string) => getLocalTime(value)
         },
         {
             title: '状态',
@@ -133,6 +150,10 @@ const Role: React.FC = () => {
         }
     }
 
+    const handleOnTableSelectChange = (selectedRowKeys: React.Key[]) => {
+        setTableSelectedItem(selectedRowKeys)
+    }
+
     const handleOnAddBtnClick = () => {
         setIsDrawerEdit(false)
         setIsDrawerOpen(true)
@@ -140,6 +161,27 @@ const Role: React.FC = () => {
         form.setFieldValue('name', newFormValues?.name)
         form.setFieldValue('powerIds', newFormValues?.powerIds)
         form.setFieldValue('enable', newFormValues?.enable ?? true)
+    }
+
+    const handleOnListDeleteBtnClick = () => {
+        setIsLoading(true)
+
+        void r_role_delete_list(tableSelectedItem)
+            .then((res) => {
+                const data = res.data
+
+                if (data.code === DATABASE_DELETE_SUCCESS) {
+                    void message.success('删除成功')
+                    setTimeout(() => {
+                        getRole()
+                    })
+                } else {
+                    void message.error('删除失败，请稍后重试')
+                }
+            })
+            .finally(() => {
+                setIsLoading(false)
+            })
     }
 
     const handleOnEditBtnClick = (value: RoleWithPowerGetVo) => {
@@ -167,19 +209,22 @@ const Role: React.FC = () => {
                 .then(
                     (confirmed) => {
                         if (confirmed) {
-                            setIsSubmitting(true)
-                            r_role_delete(value.id)
+                            setIsLoading(true)
+
+                            void r_role_delete(value.id)
                                 .then((res) => {
                                     const data = res.data
                                     if (data.code === DATABASE_DELETE_SUCCESS) {
                                         void message.success('删除成功')
-                                        getRole()
+                                        setTimeout(() => {
+                                            getRole()
+                                        })
                                     } else {
                                         void message.error('删除失败，请稍后重试')
                                     }
                                 })
                                 .finally(() => {
-                                    setIsSubmitting(false)
+                                    setIsLoading(false)
                                 })
                         }
                     },
@@ -293,7 +338,10 @@ const Role: React.FC = () => {
                 .then((res) => {
                     const data = res.data
                     if (data.code === DATABASE_UPDATE_SUCCESS) {
-                        getRole()
+                        void message.success('更新成功')
+                        setTimeout(() => {
+                            getRole()
+                        })
                     } else {
                         void message.error('更新失败，请稍后重试')
                     }
@@ -445,7 +493,21 @@ const Role: React.FC = () => {
                                 >
                                     <Icon
                                         component={IconFatwebPlus}
-                                        style={{ fontSize: '1.5em' }}
+                                        style={{ fontSize: '1.2em' }}
+                                    />
+                                </AntdButton>
+                            </Card>
+                            <Card
+                                hidden={tableSelectedItem.length === 0}
+                                style={{ overflow: 'inherit', flex: '0 0 auto' }}
+                            >
+                                <AntdButton
+                                    style={{ padding: '4px 8px' }}
+                                    onClick={handleOnListDeleteBtnClick}
+                                >
+                                    <Icon
+                                        component={IconFatwebDelete}
+                                        style={{ fontSize: '1.2em' }}
                                     />
                                 </AntdButton>
                             </Card>
@@ -497,6 +559,10 @@ const Role: React.FC = () => {
                                 pagination={tableParams.pagination}
                                 loading={isLoading}
                                 onChange={handleOnTableChange}
+                                rowSelection={{
+                                    type: 'checkbox',
+                                    onChange: handleOnTableSelectChange
+                                }}
                             />
                         </Card>
                     </FlexBox>

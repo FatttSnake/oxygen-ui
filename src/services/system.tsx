@@ -1,3 +1,4 @@
+import React from 'react'
 import request from '@/services/index'
 import { URL_API_SYS_LOG, URL_API_SYS_POWER, URL_API_SYS_ROLE } from '@/constants/urls.constants'
 
@@ -19,4 +20,4 @@ export const r_role_update = (param: RoleAddEditParam) =>
 
 export const r_role_delete = (id: string) => request.delete(`${URL_API_SYS_ROLE}/${id}`)
 
-export const r_role_delete_list = (ids: string[]) => request.delete(URL_API_SYS_ROLE, { ids })
+export const r_role_delete_list = (ids: React.Key[]) => request.delete(URL_API_SYS_ROLE, { ids })

@@ -122,7 +122,7 @@ const request = {
         return await request.request('PATCH', url, { data })
     },
     async delete<T>(url: string, data?: object): Promise<AxiosResponse<_Response<T>>> {
-        return await request.request('DELETE', url, { params: data })
+        return await request.request('DELETE', url, { data })
     },
     async request<T>(
         method = 'GET',

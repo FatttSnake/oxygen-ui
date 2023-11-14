@@ -1,5 +1,7 @@
 import { STORAGE_TOKEN_KEY, STORAGE_USER_INFO_KEY } from '@/constants/common.constants'
 import moment from 'moment'
+import ReactDOM from 'react-dom/client'
+import LoadingMask from '@/components/common/LoadingMask.tsx'
 
 export const getQueryVariable = (variable: string) => {
     const query = window.location.search.substring(1)
@@ -269,4 +271,26 @@ export const powerListToPowerTree = (
             return value
         })
     }))
+}
+
+export const showLoadingMask = (id: string) => {
+    if (document.querySelector(`#${id}`)) {
+        return
+    }
+
+    const container = document.createElement('div')
+    document.body.appendChild(container)
+    container.id = id
+    container.setAttribute(
+        'style',
+        'position: fixed; width: 100vw; height: 100vh; z-index: 10000; left: 0; top: 0;'
+    )
+
+    return ReactDOM.createRoot(container).render(<LoadingMask />)
+}
+
+export const removeLoadingMask = (id: string) => {
+    document.querySelectorAll(`#${id}`).forEach((value) => {
+        value.parentNode?.removeChild(value)
+    })
 }

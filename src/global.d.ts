@@ -134,12 +134,16 @@ interface RoleVo {
     id: string
     name: string
     enable: boolean
+    createTime: string
+    updateTime: string
 }
 
 interface GroupVo {
     id: string
     name: string
     enable: boolean
+    createTime: string
+    updateTime: string
 }
 
 interface LoginForm {
@@ -204,6 +208,8 @@ interface RoleWithPowerGetVo {
     id: string
     name: string
     enable: string
+    createTime: string
+    updateTime: string
     modules: ModuleVo[]
     menus: MenuVo[]
     elements: ElementVo[]
