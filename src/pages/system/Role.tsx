@@ -4,16 +4,18 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 import {
-    r_addRole,
-    r_changeRoleStatus,
-    r_getPower,
-    r_getRole,
-    r_updateRole
+    r_role_add,
+    r_role_changStatus,
+    r_power_get,
+    r_role_get,
+    r_role_update,
+    r_role_delete
 } from '@/services/system.tsx'
 import {
     COLOR_ERROR_SECONDARY,
     COLOR_FONT_SECONDARY,
     COLOR_PRODUCTION,
+    DATABASE_DELETE_SUCCESS,
     DATABASE_DUPLICATE_KEY,
     DATABASE_INSERT_SUCCESS,
     DATABASE_SELECT_SUCCESS,
@@ -23,6 +25,7 @@ import Icon from '@ant-design/icons'
 import { powerListToPowerTree } from '@/utils/common.ts'
 
 const Role: React.FC = () => {
+    const [modal, contextHolder] = AntdModal.useModal()
     const [form] = AntdForm.useForm<RoleAddEditParam>()
     const formValues = AntdForm.useWatch([], form)
     const [newFormValues, setNewFormValues] = useState<RoleAddEditParam>()
@@ -93,7 +96,12 @@ const Role: React.FC = () => {
                         >
                             编辑
                         </a>
-                        <a style={{ color: COLOR_PRODUCTION }}>删除</a>
+                        <a
+                            style={{ color: COLOR_PRODUCTION }}
+                            onClick={handleOnDeleteBtnClick(record)}
+                        >
+                            删除
+                        </a>
                     </AntdSpace>
                 </>
             )
@@ -149,6 +157,37 @@ const Role: React.FC = () => {
         }
     }
 
+    const handleOnDeleteBtnClick = (value: RoleWithPowerGetVo) => {
+        return () => {
+            modal
+                .confirm({
+                    title: '确定删除',
+                    content: `确定删除角色 ${value.name} 吗？`
+                })
+                .then(
+                    (confirmed) => {
+                        if (confirmed) {
+                            setIsSubmitting(true)
+                            r_role_delete(value.id)
+                                .then((res) => {
+                                    const data = res.data
+                                    if (data.code === DATABASE_DELETE_SUCCESS) {
+                                        void message.success('删除成功')
+                                        getRole()
+                                    } else {
+                                        void message.error('删除失败，请稍后重试')
+                                    }
+                                })
+                                .finally(() => {
+                                    setIsSubmitting(false)
+                                })
+                        }
+                    },
+                    () => {}
+                )
+        }
+    }
+
     const handleOnDrawerClose = () => {
         setIsDrawerOpen(false)
     }
@@ -161,53 +200,41 @@ const Role: React.FC = () => {
         setIsSubmitting(true)
 
         if (isDrawerEdit) {
-            void r_updateRole(formValues)
+            void r_role_update(formValues)
                 .then((res) => {
                     const data = res.data
                     switch (data.code) {
                         case DATABASE_UPDATE_SUCCESS:
-                            void message.success({
-                                content: '更新成功'
-                            })
                             setIsDrawerOpen(false)
+                            void message.success('更新成功')
                             getRole()
                             break
                         case DATABASE_DUPLICATE_KEY:
-                            void message.error({
-                                content: '已存在相同名称的角色'
-                            })
+                            void message.error('已存在相同名称的角色')
                             break
                         default:
-                            void message.error({
-                                content: '更新失败，请稍后重试'
-                            })
+                            void message.error('更新失败，请稍后重试')
                     }
                 })
                 .finally(() => {
                     setIsSubmitting(false)
                 })
         } else {
-            void r_addRole(formValues)
+            void r_role_add(formValues)
                 .then((res) => {
                     const data = res.data
                     switch (data.code) {
                         case DATABASE_INSERT_SUCCESS:
-                            void message.success({
-                                content: '添加成功'
-                            })
-                            setNewFormValues(undefined)
                             setIsDrawerOpen(false)
+                            void message.success('添加成功')
+                            setNewFormValues(undefined)
                             getRole()
                             break
                         case DATABASE_DUPLICATE_KEY:
-                            void message.error({
-                                content: '已存在相同名称的角色'
-                            })
+                            void message.error('已存在相同名称的角色')
                             break
                         default:
-                            void message.error({
-                                content: '添加失败，请稍后重试'
-                            })
+                            void message.error('添加失败，请稍后重试')
                     }
                 })
                 .finally(() => {
@@ -262,15 +289,13 @@ const Role: React.FC = () => {
             }
 
             setIsLoading(true)
-            void r_changeRoleStatus({ id, enable: newStatus })
+            void r_role_changStatus({ id, enable: newStatus })
                 .then((res) => {
                     const data = res.data
                     if (data.code === DATABASE_UPDATE_SUCCESS) {
                         getRole()
                     } else {
-                        void message.error({
-                            content: '更新失败，请稍后重试'
-                        })
+                        void message.error('更新失败，请稍后重试')
                     }
                 })
                 .finally(() => {
@@ -285,15 +310,13 @@ const Role: React.FC = () => {
         }
 
         if (!isRegexLegal) {
-            void message.error({
-                content: '非法正则表达式'
-            })
+            void message.error('非法正则表达式')
             return
         }
 
         setIsLoading(true)
 
-        void r_getRole({
+        void r_role_get({
             currentPage: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize,
             sortField:
@@ -332,9 +355,7 @@ const Role: React.FC = () => {
                             }
                         })
                 } else {
-                    void message.error({
-                        content: '获取失败，请稍后重试'
-                    })
+                    void message.error('获取失败，请稍后重试')
                 }
             })
             .finally(() => {
@@ -349,7 +370,7 @@ const Role: React.FC = () => {
 
         setIsLoadingPower(true)
 
-        void r_getPower()
+        void r_power_get()
             .then((res) => {
                 const data = res.data
 
@@ -365,9 +386,7 @@ const Role: React.FC = () => {
                             )
                         )
                 } else {
-                    void message.error({
-                        content: '获取权限列表失败，请稍后重试'
-                    })
+                    void message.error('获取权限列表失败，请稍后重试')
                 }
             })
             .finally(() => {
@@ -540,6 +559,7 @@ const Role: React.FC = () => {
                     </AntdForm.Item>
                 </AntdForm>
             </AntdDrawer>
+            {contextHolder}
         </>
     )
 }

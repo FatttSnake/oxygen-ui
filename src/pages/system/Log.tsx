@@ -1,7 +1,7 @@
 import React from 'react'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import Card from '@/components/common/Card'
-import { r_getSysLog } from '@/services/system'
+import { r_sysLog_get } from '@/services/system'
 import {
     COLOR_ERROR_SECONDARY,
     COLOR_FONT_SECONDARY,
@@ -209,15 +209,13 @@ const Log: React.FC = () => {
         }
 
         if (!isRegexLegal) {
-            void message.error({
-                content: '非法正则表达式'
-            })
+            void message.error('非法正则表达式')
             return
         }
 
         setLoading(true)
 
-        void r_getSysLog({
+        void r_sysLog_get({
             currentPage: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize,
             sortField:
@@ -245,9 +243,7 @@ const Log: React.FC = () => {
                             }
                         })
                 } else {
-                    void message.error({
-                        content: '获取失败，请稍后重试'
-                    })
+                    void message.error('获取失败，请稍后重试')
                 }
             })
             .finally(() => {
