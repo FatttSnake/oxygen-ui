@@ -599,6 +599,7 @@ const Role: React.FC = () => {
                     treeCheckable
                     treeNodeLabelProp={'fullTitle'}
                     allowClear
+                    treeNodeFilterProp={'fullTitle'}
                     loading={isLoadingPower}
                 />
             </AntdForm.Item>

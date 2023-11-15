@@ -257,6 +257,9 @@ const Group: React.FC = () => {
         setIsDrawerOpen(false)
     }
 
+    const filterOption = (input: string, option?: { label: string; value: string }) =>
+        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+
     const handleOnSubmit = () => {
         if (isSubmitting) {
             return
@@ -586,6 +589,7 @@ const Group: React.FC = () => {
                     mode={'multiple'}
                     allowClear
                     showSearch
+                    filterOption={filterOption}
                     options={roleData.map((value) => ({
                         value: value.id,
                         label: `${value.name}${!value.enable ? '(已禁用)' : ''}`
