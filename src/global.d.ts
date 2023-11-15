@@ -233,3 +233,29 @@ interface PowerSetVo {
     elementList: ElementVo[]
     operationList: OperationVo[]
 }
+
+interface GroupGetParam extends PageParam {
+    searchName?: string
+    searchRegex?: boolean
+}
+
+interface GroupWithRoleGetVo {
+    id: string
+    name: string
+    enable: string
+    createTime: string
+    updateTime: string
+    roles: RoleVo[]
+}
+
+interface GroupAddEditParam {
+    id?: string
+    name: string
+    roleIds: number[]
+    enable: boolean
+}
+
+interface GroupChangeStatusParam {
+    id: string
+    enable: boolean
+}

@@ -1,7 +1,7 @@
 import React from 'react'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import Card from '@/components/common/Card'
-import { r_sysLog_get } from '@/services/system'
+import { r_sys_log_get } from '@/services/system'
 import {
     COLOR_ERROR_SECONDARY,
     COLOR_FONT_SECONDARY,
@@ -215,7 +215,7 @@ const Log: React.FC = () => {
 
         setLoading(true)
 
-        void r_sysLog_get({
+        void r_sys_log_get({
             currentPage: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize,
             sortField:

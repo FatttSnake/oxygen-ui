@@ -4,13 +4,13 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 import {
-    r_role_add,
-    r_role_changStatus,
-    r_power_get,
-    r_role_get,
-    r_role_update,
-    r_role_delete,
-    r_role_delete_list
+    r_sys_role_add,
+    r_sys_role_change_status,
+    r_sys_power_get_list,
+    r_sys_role_get,
+    r_sys_role_update,
+    r_sys_role_delete,
+    r_sys_role_delete_list
 } from '@/services/system'
 import {
     COLOR_ERROR_SECONDARY,
@@ -174,7 +174,7 @@ const Role: React.FC = () => {
                     if (confirmed) {
                         setIsLoading(true)
 
-                        void r_role_delete_list(tableSelectedItem)
+                        void r_sys_role_delete_list(tableSelectedItem)
                             .then((res) => {
                                 const data = res.data
 
@@ -223,7 +223,7 @@ const Role: React.FC = () => {
                         if (confirmed) {
                             setIsLoading(true)
 
-                            void r_role_delete(value.id)
+                            void r_sys_role_delete(value.id)
                                 .then((res) => {
                                     const data = res.data
                                     if (data.code === DATABASE_DELETE_SUCCESS) {
@@ -257,7 +257,7 @@ const Role: React.FC = () => {
         setIsSubmitting(true)
 
         if (isDrawerEdit) {
-            void r_role_update(formValues)
+            void r_sys_role_update(formValues)
                 .then((res) => {
                     const data = res.data
                     switch (data.code) {
@@ -277,7 +277,7 @@ const Role: React.FC = () => {
                     setIsSubmitting(false)
                 })
         } else {
-            void r_role_add(formValues)
+            void r_sys_role_add(formValues)
                 .then((res) => {
                     const data = res.data
                     switch (data.code) {
@@ -346,7 +346,7 @@ const Role: React.FC = () => {
             }
 
             setIsLoading(true)
-            void r_role_changStatus({ id, enable: newStatus })
+            void r_sys_role_change_status({ id, enable: newStatus })
                 .then((res) => {
                     const data = res.data
                     if (data.code === DATABASE_UPDATE_SUCCESS) {
@@ -376,7 +376,7 @@ const Role: React.FC = () => {
 
         setIsLoading(true)
 
-        void r_role_get({
+        void r_sys_role_get({
             currentPage: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize,
             sortField:
@@ -430,7 +430,7 @@ const Role: React.FC = () => {
 
         setIsLoadingPower(true)
 
-        void r_power_get()
+        void r_sys_power_get_list()
             .then((res) => {
                 const data = res.data
 
