@@ -19,7 +19,8 @@ declare global {
     type _CheckboxChangeEvent = CheckboxChangeEvent
     interface _DataNode extends DataNode {
         value: React.Key
-        fullTitle: string
+        fullTitle?: string
+        parentId?: number
         children?: _DataNode[]
     }
 }

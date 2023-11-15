@@ -1,7 +1,8 @@
-import { STORAGE_TOKEN_KEY, STORAGE_USER_INFO_KEY } from '@/constants/common.constants'
 import moment from 'moment'
 import ReactDOM from 'react-dom/client'
-import LoadingMask from '@/components/common/LoadingMask.tsx'
+import _ from 'lodash'
+import { STORAGE_TOKEN_KEY, STORAGE_USER_INFO_KEY } from '@/constants/common.constants'
+import LoadingMask from '@/components/common/LoadingMask'
 
 export const getQueryVariable = (variable: string) => {
     const query = window.location.search.substring(1)
@@ -166,111 +167,106 @@ export const powerListToPowerTree = (
     elements: ElementVo[],
     operations: OperationVo[]
 ): _DataNode[] => {
-    const menuMap = new Map<number, _DataNode[]>()
-    const elementMap = new Map<number, _DataNode[]>()
-    const operationMap = new Map<number, _DataNode[]>()
+    const moduleChildrenMap = new Map<string, _DataNode[]>()
+    const menuChildrenMap = new Map<string, _DataNode[]>()
+    const elementChildrenMap = new Map<string, _DataNode[]>()
 
     operations.forEach((operation) => {
-        if (
-            operationMap.has(operation.elementId) &&
-            operationMap.get(operation.elementId) !== null
-        ) {
-            operationMap.get(operation.elementId)?.push({
+        if (elementChildrenMap.get(String(operation.elementId))) {
+            elementChildrenMap.get(String(operation.elementId))?.push({
                 title: operation.name,
-                fullTitle: operation.name,
-                key: operation.powerId,
-                value: operation.powerId
+                key: operation.id,
+                value: operation.id
             })
         } else {
-            operationMap.set(operation.elementId, [
+            elementChildrenMap.set(String(operation.elementId), [
                 {
                     title: operation.name,
-                    fullTitle: operation.name,
-                    key: operation.powerId,
-                    value: operation.powerId
+                    key: operation.id,
+                    value: operation.id
                 }
             ])
         }
     })
 
-    elements.forEach((element) => {
-        if (elementMap.has(element.menuId) && elementMap.get(element.menuId) !== null) {
-            elementMap.get(element.menuId)?.push({
-                title: element.name,
-                fullTitle: element.name,
-                key: element.powerId,
-                value: element.powerId,
-                children: operationMap.get(element.id)?.map((value) => {
-                    value.fullTitle = `${element.name}-${value.fullTitle}`
-                    return value
-                })
-            })
+    const elementTrees = parentToTree(
+        elements.map((element) => ({
+            title: element.name,
+            key: element.id,
+            value: element.id,
+            parentId: element.parentId,
+            children: elementChildrenMap.get(String(element.id))
+        }))
+    )
+
+    elementTrees.forEach((element) => {
+        if (menuChildrenMap.get(String(floorNumber(element.key as number, 5)))) {
+            menuChildrenMap.get(String(floorNumber(element.key as number, 5)))?.push(element)
         } else {
-            elementMap.set(element.menuId, [
-                {
-                    title: element.name,
-                    fullTitle: element.name,
-                    key: element.powerId,
-                    value: element.powerId,
-                    children: operationMap.get(element.id)?.map((value) => {
-                        value.fullTitle = `${element.name}-${value.fullTitle}`
-                        return value
-                    })
-                }
-            ])
+            menuChildrenMap.set(String(floorNumber(element.key as number, 5)), [element])
         }
     })
 
-    menus.forEach((menu) => {
-        if (menuMap.has(menu.moduleId) && menuMap.get(menu.moduleId) !== null) {
-            menuMap.get(menu.moduleId)?.push({
-                title: menu.name,
-                fullTitle: menu.name,
-                key: menu.powerId,
-                value: menu.powerId,
-                children: elementMap.get(menu.id)?.map((value) => {
-                    value.fullTitle = `${menu.name}-${value.fullTitle}`
-                    value.children?.forEach((value1) => {
-                        value1.fullTitle = `${menu.name}-${value1.fullTitle}`
-                    })
-                    return value
-                })
-            })
+    const menuTrees = parentToTree(
+        menus.map((menu) => ({
+            title: menu.name,
+            key: menu.id,
+            value: menu.id,
+            parentId: menu.parentId,
+            children: menuChildrenMap.get(String(menu.id))
+        }))
+    )
+
+    menuTrees.forEach((menu) => {
+        if (moduleChildrenMap.get(String(floorNumber(menu.key as number, 7)))) {
+            moduleChildrenMap.get(String(floorNumber(menu.key as number, 7)))?.push(menu)
         } else {
-            menuMap.set(menu.moduleId, [
-                {
-                    title: menu.name,
-                    fullTitle: menu.name,
-                    key: menu.powerId,
-                    value: menu.powerId,
-                    children: elementMap.get(menu.id)?.map((value) => {
-                        value.fullTitle = `${menu.name}-${value.fullTitle}`
-                        value.children?.forEach((value1) => {
-                            value1.fullTitle = `${menu.name}-${value1.fullTitle}`
-                        })
-                        return value
-                    })
-                }
-            ])
+            moduleChildrenMap.set(String(floorNumber(menu.key as number, 7)), [menu])
         }
     })
 
-    return modules.map((module) => ({
-        title: module.name,
-        fullTitle: module.name,
-        key: module.powerId,
-        value: module.powerId,
-        children: menuMap.get(module.id)?.map((value) => {
-            value.fullTitle = `${module.name}-${value.fullTitle}`
-            value.children?.forEach((value1) => {
-                value1.fullTitle = `${module.name}-${value1.fullTitle}`
-                value1.children?.forEach((value2) => {
-                    value2.fullTitle = `${module.name}-${value2.fullTitle}`
-                })
-            })
-            return value
+    return modules.map((module) =>
+        getFullTitle({
+            title: module.name,
+            key: module.id,
+            value: module.id,
+            children: moduleChildrenMap.get(String(module.id))
         })
-    }))
+    )
+}
+
+const parentToTree = (data: _DataNode[]): _DataNode[] => {
+    const parents = data.filter((value) => !value.parentId)
+    const children = data.filter((value) => value.parentId)
+
+    const translator = (parents: _DataNode[], children: _DataNode[]) => {
+        parents.forEach((parent) => {
+            children.forEach((current, index) => {
+                if (current.parentId === parent.key) {
+                    const temp = _.cloneDeep(children)
+                    temp.splice(index, 1)
+                    translator([current], temp)
+                    typeof parent.children !== 'undefined'
+                        ? parent.children.push({ ...current })
+                        : (parent.children = [current])
+                }
+            })
+        })
+    }
+
+    translator(parents, children)
+
+    return parents
+}
+
+const getFullTitle = (data: _DataNode, preTitle?: string) => {
+    data.fullTitle = `${preTitle ? `${preTitle}-` : ''}${data.title as string}`
+    data.children &&
+        data.children.forEach((value) => {
+            getFullTitle(value, data.fullTitle)
+        })
+
+    return data
 }
 
 export const showLoadingMask = (id: string) => {

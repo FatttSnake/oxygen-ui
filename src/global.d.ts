@@ -102,31 +102,29 @@ interface UserInfoVo {
 interface ModuleVo {
     id: number
     name: string
-    powerId: number
 }
 
 interface MenuVo {
     id: number
     name: string
     url: string
-    powerId: number
     parentId: number
     moduleId: number
+    children: MenuVo[]
 }
 
 interface ElementVo {
     id: number
     name: string
-    powerId: number
     parentId: number
     menuId: number
+    children: ElementVo[]
 }
 
 interface OperationVo {
     id: number
     name: string
     code: string
-    powerId: number
     elementId: number
 }
 

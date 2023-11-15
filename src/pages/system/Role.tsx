@@ -11,7 +11,7 @@ import {
     r_role_update,
     r_role_delete,
     r_role_delete_list
-} from '@/services/system.tsx'
+} from '@/services/system'
 import {
     COLOR_ERROR_SECONDARY,
     COLOR_FONT_SECONDARY,
@@ -164,24 +164,36 @@ const Role: React.FC = () => {
     }
 
     const handleOnListDeleteBtnClick = () => {
-        setIsLoading(true)
-
-        void r_role_delete_list(tableSelectedItem)
-            .then((res) => {
-                const data = res.data
-
-                if (data.code === DATABASE_DELETE_SUCCESS) {
-                    void message.success('删除成功')
-                    setTimeout(() => {
-                        getRole()
-                    })
-                } else {
-                    void message.error('删除失败，请稍后重试')
-                }
+        modal
+            .confirm({
+                title: '确定删除',
+                content: `确定删除选中的 ${tableSelectedItem.length} 个角色吗？`
             })
-            .finally(() => {
-                setIsLoading(false)
-            })
+            .then(
+                (confirmed) => {
+                    if (confirmed) {
+                        setIsLoading(true)
+
+                        void r_role_delete_list(tableSelectedItem)
+                            .then((res) => {
+                                const data = res.data
+
+                                if (data.code === DATABASE_DELETE_SUCCESS) {
+                                    void message.success('删除成功')
+                                    setTimeout(() => {
+                                        getRole()
+                                    })
+                                } else {
+                                    void message.error('删除失败，请稍后重试')
+                                }
+                            })
+                            .finally(() => {
+                                setIsLoading(false)
+                            })
+                    }
+                },
+                () => {}
+            )
     }
 
     const handleOnEditBtnClick = (value: RoleWithPowerGetVo) => {
@@ -192,7 +204,7 @@ const Role: React.FC = () => {
             form.setFieldValue('name', value.name)
             form.setFieldValue(
                 'powerIds',
-                value.operations.map((operation) => operation.powerId)
+                value.operations.map((operation) => operation.id)
             )
             form.setFieldValue('enable', value.enable)
             void form.validateFields()
@@ -570,6 +582,7 @@ const Role: React.FC = () => {
             </FitFullScreen>
             <AntdDrawer
                 title={isDrawerEdit ? '编辑角色' : '添加角色'}
+                width={'36vw'}
                 onClose={handleOnDrawerClose}
                 open={isDrawerOpen}
                 closable={!isSubmitting}
