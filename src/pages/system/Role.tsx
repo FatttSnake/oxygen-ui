@@ -487,6 +487,132 @@ const Role: React.FC = () => {
         JSON.stringify(tableParams.pagination?.current)
     ])
 
+    const toolbar = (
+        <FlexBox direction={'horizontal'} gap={10}>
+            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                <AntdButton
+                    type={'primary'}
+                    style={{ padding: '4px 8px' }}
+                    onClick={handleOnAddBtnClick}
+                >
+                    <Icon component={IconFatwebPlus} style={{ fontSize: '1.2em' }} />
+                </AntdButton>
+            </Card>
+            <Card
+                hidden={tableSelectedItem.length === 0}
+                style={{ overflow: 'inherit', flex: '0 0 auto' }}
+            >
+                <AntdButton style={{ padding: '4px 8px' }} onClick={handleOnListDeleteBtnClick}>
+                    <Icon component={IconFatwebDelete} style={{ fontSize: '1.2em' }} />
+                </AntdButton>
+            </Card>
+            <Card style={{ overflow: 'inherit' }}>
+                <AntdInput
+                    addonBefore={
+                        <span
+                            style={{
+                                fontSize: '0.9em',
+                                color: COLOR_FONT_SECONDARY
+                            }}
+                        >
+                            名称
+                        </span>
+                    }
+                    suffix={
+                        <>
+                            {!isRegexLegal ? (
+                                <span style={{ color: COLOR_ERROR_SECONDARY }}>非法表达式</span>
+                            ) : undefined}
+                            <AntdCheckbox checked={isUseRegex} onChange={handleOnUseRegexChange}>
+                                <AntdTooltip title={'正则表达式'}>.*</AntdTooltip>
+                            </AntdCheckbox>
+                        </>
+                    }
+                    allowClear
+                    value={searchName}
+                    onChange={handleOnSearchNameChange}
+                    onKeyDown={handleOnSearchNameKeyDown}
+                    status={isRegexLegal ? undefined : 'error'}
+                />
+            </Card>
+            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                <AntdButton onClick={handleOnQueryBtnClick} type={'primary'}>
+                    查询
+                </AntdButton>
+            </Card>
+        </FlexBox>
+    )
+
+    const table = (
+        <Card>
+            <AntdTable
+                dataSource={roleData}
+                columns={dataColumns}
+                rowKey={(record) => record.id}
+                pagination={tableParams.pagination}
+                loading={isLoading}
+                onChange={handleOnTableChange}
+                rowSelection={{
+                    type: 'checkbox',
+                    onChange: handleOnTableSelectChange
+                }}
+            />
+        </Card>
+    )
+
+    const drawerToolbar = (
+        <AntdSpace>
+            <AntdTooltip title={'刷新权限列表'}>
+                <AntdButton onClick={getPowerTreeData} disabled={isSubmitting}>
+                    <Icon component={IconFatwebRefresh} />
+                </AntdButton>
+            </AntdTooltip>
+            <AntdButton onClick={handleOnDrawerClose} disabled={isSubmitting}>
+                取消
+            </AntdButton>
+            <AntdButton
+                type={'primary'}
+                disabled={!submittable}
+                loading={isSubmitting}
+                onClick={handleOnSubmit}
+            >
+                提交
+            </AntdButton>
+        </AntdSpace>
+    )
+
+    const addAndEditForm = (
+        <AntdForm form={form} disabled={isSubmitting}>
+            <AntdForm.Item hidden={!isDrawerEdit} name={'id'} label={'ID'}>
+                <AntdInput disabled />
+            </AntdForm.Item>
+            <AntdForm.Item
+                name={'name'}
+                label={'名称'}
+                rules={[{ required: true, whitespace: false }]}
+            >
+                <AntdInput allowClear />
+            </AntdForm.Item>
+            <AntdForm.Item name={'powerIds'} label={'权限'}>
+                <AntdTreeSelect
+                    treeData={powerTreeData}
+                    treeCheckable
+                    treeNodeLabelProp={'fullTitle'}
+                    allowClear
+                    loading={isLoadingPower}
+                />
+            </AntdForm.Item>
+            <AntdForm.Item
+                valuePropName={'checked'}
+                name={'enable'}
+                label={'启用'}
+                rules={[{ required: true, type: 'boolean' }]}
+            >
+                <AntdSwitch />
+            </AntdForm.Item>
+        </AntdForm>
+    )
+
     return (
         <>
             <FitFullScreen>
@@ -496,87 +622,8 @@ const Role: React.FC = () => {
                     autoHideWaitingTime={500}
                 >
                     <FlexBox gap={20}>
-                        <FlexBox direction={'horizontal'} gap={10}>
-                            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
-                                <AntdButton
-                                    type={'primary'}
-                                    style={{ padding: '4px 8px' }}
-                                    onClick={handleOnAddBtnClick}
-                                >
-                                    <Icon
-                                        component={IconFatwebPlus}
-                                        style={{ fontSize: '1.2em' }}
-                                    />
-                                </AntdButton>
-                            </Card>
-                            <Card
-                                hidden={tableSelectedItem.length === 0}
-                                style={{ overflow: 'inherit', flex: '0 0 auto' }}
-                            >
-                                <AntdButton
-                                    style={{ padding: '4px 8px' }}
-                                    onClick={handleOnListDeleteBtnClick}
-                                >
-                                    <Icon
-                                        component={IconFatwebDelete}
-                                        style={{ fontSize: '1.2em' }}
-                                    />
-                                </AntdButton>
-                            </Card>
-                            <Card style={{ overflow: 'inherit' }}>
-                                <AntdInput
-                                    addonBefore={
-                                        <span
-                                            style={{
-                                                fontSize: '0.9em',
-                                                color: COLOR_FONT_SECONDARY
-                                            }}
-                                        >
-                                            名称
-                                        </span>
-                                    }
-                                    suffix={
-                                        <>
-                                            {!isRegexLegal ? (
-                                                <span style={{ color: COLOR_ERROR_SECONDARY }}>
-                                                    非法表达式
-                                                </span>
-                                            ) : undefined}
-                                            <AntdCheckbox
-                                                checked={isUseRegex}
-                                                onChange={handleOnUseRegexChange}
-                                            >
-                                                <AntdTooltip title={'正则表达式'}>.*</AntdTooltip>
-                                            </AntdCheckbox>
-                                        </>
-                                    }
-                                    allowClear
-                                    value={searchName}
-                                    onChange={handleOnSearchNameChange}
-                                    onKeyDown={handleOnSearchNameKeyDown}
-                                    status={isRegexLegal ? undefined : 'error'}
-                                />
-                            </Card>
-                            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
-                                <AntdButton onClick={handleOnQueryBtnClick} type={'primary'}>
-                                    查询
-                                </AntdButton>
-                            </Card>
-                        </FlexBox>
-                        <Card>
-                            <AntdTable
-                                dataSource={roleData}
-                                columns={dataColumns}
-                                rowKey={(record) => record.id}
-                                pagination={tableParams.pagination}
-                                loading={isLoading}
-                                onChange={handleOnTableChange}
-                                rowSelection={{
-                                    type: 'checkbox',
-                                    onChange: handleOnTableSelectChange
-                                }}
-                            />
-                        </Card>
+                        {toolbar}
+                        {table}
                     </FlexBox>
                 </HideScrollbar>
             </FitFullScreen>
@@ -587,56 +634,9 @@ const Role: React.FC = () => {
                 open={isDrawerOpen}
                 closable={!isSubmitting}
                 maskClosable={!isSubmitting}
-                extra={
-                    <AntdSpace>
-                        <AntdTooltip title={'刷新权限列表'}>
-                            <AntdButton onClick={getPowerTreeData} disabled={isSubmitting}>
-                                <Icon component={IconFatwebRefresh} />
-                            </AntdButton>
-                        </AntdTooltip>
-                        <AntdButton onClick={handleOnDrawerClose} disabled={isSubmitting}>
-                            取消
-                        </AntdButton>
-                        <AntdButton
-                            type={'primary'}
-                            disabled={!submittable}
-                            loading={isSubmitting}
-                            onClick={handleOnSubmit}
-                        >
-                            提交
-                        </AntdButton>
-                    </AntdSpace>
-                }
+                extra={drawerToolbar}
             >
-                <AntdForm form={form} disabled={isSubmitting}>
-                    <AntdForm.Item hidden={!isDrawerEdit} name={'id'} label={'ID'}>
-                        <AntdInput disabled />
-                    </AntdForm.Item>
-                    <AntdForm.Item
-                        name={'name'}
-                        label={'名称'}
-                        rules={[{ required: true, whitespace: false }]}
-                    >
-                        <AntdInput allowClear />
-                    </AntdForm.Item>
-                    <AntdForm.Item name={'powerIds'} label={'权限'}>
-                        <AntdTreeSelect
-                            treeData={powerTreeData}
-                            treeCheckable
-                            treeNodeLabelProp={'fullTitle'}
-                            allowClear
-                            loading={isLoadingPower}
-                        />
-                    </AntdForm.Item>
-                    <AntdForm.Item
-                        valuePropName={'checked'}
-                        name={'enable'}
-                        label={'启用'}
-                        rules={[{ required: true, type: 'boolean' }]}
-                    >
-                        <AntdSwitch />
-                    </AntdForm.Item>
-                </AntdForm>
+                {addAndEditForm}
             </AntdDrawer>
             {contextHolder}
         </>
