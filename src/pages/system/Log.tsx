@@ -261,6 +261,66 @@ const Log: React.FC = () => {
         JSON.stringify(tableParams.pagination?.current)
     ])
 
+    const toolbar = (
+        <FlexBox direction={'horizontal'} gap={10}>
+            <Card style={{ overflow: 'inherit' }}>
+                <AntdInput
+                    addonBefore={
+                        <span
+                            style={{
+                                fontSize: '0.9em',
+                                color: COLOR_FONT_SECONDARY
+                            }}
+                        >
+                            请求 Url
+                        </span>
+                    }
+                    suffix={
+                        <>
+                            {!isRegexLegal ? (
+                                <span style={{ color: COLOR_ERROR_SECONDARY }}>非法表达式</span>
+                            ) : undefined}
+                            <AntdCheckbox checked={useRegex} onChange={handleOnUseRegexChange}>
+                                <AntdTooltip title={'正则表达式'}>.*</AntdTooltip>
+                            </AntdCheckbox>
+                        </>
+                    }
+                    allowClear
+                    value={searchRequestUrl}
+                    onChange={handleOnSearchUrlChange}
+                    onKeyDown={handleOnSearchUrlKeyDown}
+                    status={isRegexLegal ? undefined : 'error'}
+                />
+            </Card>
+            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                <AntdDatePicker.RangePicker
+                    showTime
+                    allowClear
+                    changeOnBlur
+                    onChange={handleOnDateRangeChange}
+                />
+            </Card>
+            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                <AntdButton onClick={handleOnQueryBtnClick} type={'primary'}>
+                    查询
+                </AntdButton>
+            </Card>
+        </FlexBox>
+    )
+
+    const table = (
+        <Card>
+            <AntdTable
+                dataSource={logData}
+                columns={dataColumns}
+                rowKey={(record) => record.id}
+                pagination={tableParams.pagination}
+                loading={loading}
+                onChange={handleOnTableChange}
+            />
+        </Card>
+    )
+
     return (
         <>
             <FitFullScreen>
@@ -270,65 +330,8 @@ const Log: React.FC = () => {
                     autoHideWaitingTime={500}
                 >
                     <FlexBox gap={20}>
-                        <FlexBox direction={'horizontal'} gap={10}>
-                            <Card style={{ overflow: 'inherit' }}>
-                                <AntdInput
-                                    addonBefore={
-                                        <span
-                                            style={{
-                                                fontSize: '0.9em',
-                                                color: COLOR_FONT_SECONDARY
-                                            }}
-                                        >
-                                            请求 Url
-                                        </span>
-                                    }
-                                    suffix={
-                                        <>
-                                            {!isRegexLegal ? (
-                                                <span style={{ color: COLOR_ERROR_SECONDARY }}>
-                                                    非法表达式
-                                                </span>
-                                            ) : undefined}
-                                            <AntdCheckbox
-                                                checked={useRegex}
-                                                onChange={handleOnUseRegexChange}
-                                            >
-                                                <AntdTooltip title={'正则表达式'}>.*</AntdTooltip>
-                                            </AntdCheckbox>
-                                        </>
-                                    }
-                                    allowClear
-                                    value={searchRequestUrl}
-                                    onChange={handleOnSearchUrlChange}
-                                    onKeyDown={handleOnSearchUrlKeyDown}
-                                    status={isRegexLegal ? undefined : 'error'}
-                                />
-                            </Card>
-                            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
-                                <AntdDatePicker.RangePicker
-                                    showTime
-                                    allowClear
-                                    changeOnBlur
-                                    onChange={handleOnDateRangeChange}
-                                />
-                            </Card>
-                            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
-                                <AntdButton onClick={handleOnQueryBtnClick} type={'primary'}>
-                                    查询
-                                </AntdButton>
-                            </Card>
-                        </FlexBox>
-                        <Card>
-                            <AntdTable
-                                dataSource={logData}
-                                columns={dataColumns}
-                                rowKey={(record) => record.id}
-                                pagination={tableParams.pagination}
-                                loading={loading}
-                                onChange={handleOnTableChange}
-                            />
-                        </Card>
+                        {toolbar}
+                        {table}
                     </FlexBox>
                 </HideScrollbar>
             </FitFullScreen>
