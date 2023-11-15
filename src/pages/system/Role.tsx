@@ -65,21 +65,21 @@ const Role: React.FC = () => {
         {
             title: '创建时间',
             dataIndex: 'createTime',
-            width: '0',
+            width: '10%',
             align: 'center',
             render: (value: string) => getLocalTime(value)
         },
         {
             title: '修改时间',
             dataIndex: 'updateTime',
-            width: '0',
+            width: '10%',
             align: 'center',
             render: (value: string) => getLocalTime(value)
         },
         {
             title: '状态',
             dataIndex: 'enable',
-            width: '0',
+            width: '5%',
             align: 'center',
             render: (value) =>
                 value ? <AntdTag color={'success'}>启用</AntdTag> : <AntdTag>禁用</AntdTag>
