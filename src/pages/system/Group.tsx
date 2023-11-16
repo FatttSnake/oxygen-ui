@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import FitFullScreen from '@/components/common/FitFullScreen.tsx'
-import HideScrollbar from '@/components/common/HideScrollbar.tsx'
-import FlexBox from '@/components/common/FlexBox.tsx'
 import Icon from '@ant-design/icons'
-import Card from '@/components/common/Card.tsx'
+import FitFullScreen from '@/components/common/FitFullScreen'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import FlexBox from '@/components/common/FlexBox'
+import Card from '@/components/common/Card'
 import {
     COLOR_ERROR_SECONDARY,
     COLOR_FONT_SECONDARY,
@@ -13,8 +13,8 @@ import {
     DATABASE_INSERT_SUCCESS,
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
-} from '@/constants/common.constants.ts'
-import { getLocalTime } from '@/utils/common.tsx'
+} from '@/constants/common.constants'
+import { getLocalTime } from '@/utils/common'
 import {
     r_sys_group_add,
     r_sys_group_change_status,
@@ -23,7 +23,7 @@ import {
     r_sys_group_get,
     r_sys_group_update,
     r_sys_role_get_list
-} from '@/services/system.tsx'
+} from '@/services/system'
 
 const Group: React.FC = () => {
     const [modal, contextHolder] = AntdModal.useModal()

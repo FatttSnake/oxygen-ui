@@ -1,6 +1,6 @@
 import { getCaptcha, getLocalStorage, removeToken, setLocalStorage } from './common'
-import { r_login, r_logout } from '@/services/auth'
-import { r_getInfo } from '@/services/user'
+import { r_auth_login, r_auth_logout } from '@/services/auth'
+import { r_sys_user_info } from '@/services/system'
 import {
     STORAGE_TOKEN_KEY,
     STORAGE_USER_INFO_KEY,
@@ -10,11 +10,11 @@ import {
 let captcha: Captcha
 
 export const login = async (username: string, password: string) => {
-    return await r_login(username, password)
+    return await r_auth_login(username, password)
 }
 
 export const logout = async () => {
-    return r_logout().finally(() => {
+    return r_auth_logout().finally(() => {
         removeToken()
     })
 }
@@ -37,7 +37,7 @@ export const getUserInfo = async (): Promise<UserWithPowerInfoVo> => {
 export const requestUserInfo = async () => {
     let user: UserWithPowerInfoVo | null
 
-    await r_getInfo().then((value) => {
+    await r_sys_user_info().then((value) => {
         const response = value.data
         if (response.code === DATABASE_SELECT_SUCCESS) {
             user = response.data
