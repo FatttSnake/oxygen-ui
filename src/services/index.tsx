@@ -3,11 +3,11 @@ import { jwtDecode, JwtPayload } from 'jwt-decode'
 import { message } from 'antd'
 import { getToken, removeToken, setToken } from '@/utils/common'
 import {
-    SYSTEM_ACCESS_DENIED,
-    SYSTEM_TOKEN_HAS_EXPIRED,
-    SYSTEM_TOKEN_ILLEGAL,
-    SYSTEM_TOKEN_RENEW_SUCCESS,
-    SYSTEM_UNAUTHORIZED
+    PERMISSION_ACCESS_DENIED,
+    PERMISSION_TOKEN_HAS_EXPIRED,
+    PERMISSION_TOKEN_ILLEGAL,
+    PERMISSION_TOKEN_RENEW_SUCCESS,
+    PERMISSION_UNAUTHORIZED
 } from '@/constants/common.constants'
 
 const service: AxiosInstance = axios.create({
@@ -46,7 +46,7 @@ service.interceptors.request.use(
                     })
                     .then((value: AxiosResponse<_Response<TokenVo>>) => {
                         const response = value.data
-                        if (response.code === SYSTEM_TOKEN_RENEW_SUCCESS) {
+                        if (response.code === PERMISSION_TOKEN_RENEW_SUCCESS) {
                             setToken(response.data?.token ?? '')
                         }
                     })
@@ -65,7 +65,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     (response: AxiosResponse<_Response<never>>) => {
         switch (response.data.code) {
-            case SYSTEM_UNAUTHORIZED:
+            case PERMISSION_UNAUTHORIZED:
                 removeToken()
                 void message.error(
                     <>
@@ -76,8 +76,8 @@ service.interceptors.response.use(
                     location.reload()
                 }, 1500)
                 throw response?.data
-            case SYSTEM_TOKEN_ILLEGAL:
-            case SYSTEM_TOKEN_HAS_EXPIRED:
+            case PERMISSION_TOKEN_ILLEGAL:
+            case PERMISSION_TOKEN_HAS_EXPIRED:
                 removeToken()
                 void message.error(
                     <>
@@ -88,7 +88,7 @@ service.interceptors.response.use(
                     location.reload()
                 }, 1500)
                 throw response?.data
-            case SYSTEM_ACCESS_DENIED:
+            case PERMISSION_ACCESS_DENIED:
                 void message.error(
                     <>
                         <strong>暂无权限操作</strong>

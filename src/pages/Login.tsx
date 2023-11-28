@@ -4,10 +4,10 @@ import '@/assets/css/pages/login.scss'
 import { getLocalTime, setToken } from '@/utils/common'
 import { getUserInfo, login } from '@/utils/auth'
 import {
-    SYSTEM_LOGIN_SUCCESS,
-    SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR,
-    SYSTEM_USER_DISABLE,
-    SYSTEM_USERNAME_NOT_FOUND
+    PERMISSION_LOGIN_SUCCESS,
+    PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR,
+    PERMISSION_USER_DISABLE,
+    PERMISSION_USERNAME_NOT_FOUND
 } from '@/constants/common.constants'
 
 const Login: React.FC = () => {
@@ -23,7 +23,7 @@ const Login: React.FC = () => {
                 const res = value.data
                 const { code, data } = res
                 switch (code) {
-                    case SYSTEM_LOGIN_SUCCESS:
+                    case PERMISSION_LOGIN_SUCCESS:
                         setToken(data?.token ?? '')
                         void messageApi.success('登录成功')
                         setTimeout(() => {
@@ -53,8 +53,8 @@ const Login: React.FC = () => {
                             })
                         }, 1500)
                         break
-                    case SYSTEM_USERNAME_NOT_FOUND:
-                    case SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR:
+                    case PERMISSION_USERNAME_NOT_FOUND:
+                    case PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR:
                         void messageApi.error(
                             <>
                                 <strong>用户名</strong>或<strong>密码</strong>错误，请重试
@@ -62,7 +62,7 @@ const Login: React.FC = () => {
                         )
                         setIsLoggingIn(false)
                         break
-                    case SYSTEM_USER_DISABLE:
+                    case PERMISSION_USER_DISABLE:
                         void messageApi.error(
                             <>
                                 该用户已被<strong>禁用</strong>
