@@ -148,6 +148,10 @@ export const getLocalTime = (utcTime: string, format: string = 'yyyy-MM-DD HH:mm
     return moment.utc(utcTime).local().format(format)
 }
 
+export const isPastTime = (utcTime: string) => {
+    return moment.utc(utcTime).isBefore(moment.now())
+}
+
 export const floorNumber = (num: number, digits: number) => {
     if (digits > 0) {
         return Math.floor(num / Math.pow(10, digits - 1)) * Math.pow(10, digits - 1)

@@ -63,7 +63,9 @@ interface UserWithPowerInfoVo {
     locking: boolean
     expiration: string
     credentialsExpiration: string
-    enable: number
+    enable: boolean
+    currentLoginTime: string
+    currentLoginIp: string
     lastLoginTime: string
     lastLoginIp: string
     createTime: string
@@ -81,7 +83,9 @@ interface UserWithRoleInfoVo {
     locking: boolean
     expiration: string
     credentialsExpiration: string
-    enable: number
+    enable: boolean
+    currentLoginTime: string
+    currentLoginIp: string
     lastLoginTime: string
     lastLoginIp: string
     createTime: string
@@ -89,6 +93,21 @@ interface UserWithRoleInfoVo {
     userInfo: UserInfoVo
     roles: RoleVo[]
     groups: GroupVo[]
+}
+
+interface UserAddEditParam {
+    id?: string
+    username: string
+    password?: string
+    locking?: boolean
+    expiration?: string
+    credentialsExpiration?: string
+    enable?: boolean
+    nickname?: string
+    avatar?: string
+    email?: string
+    roleIds: number[]
+    groupIds: number[]
 }
 
 interface UserInfoVo {
@@ -242,7 +261,7 @@ interface GroupGetParam extends PageParam {
 interface GroupWithRoleGetVo {
     id: string
     name: string
-    enable: string
+    enable: boolean
     createTime: string
     updateTime: string
     roles: RoleVo[]
@@ -258,4 +277,8 @@ interface GroupAddEditParam {
 interface GroupChangeStatusParam {
     id: string
     enable: boolean
+}
+
+interface AvatarBase64Vo {
+    base64: string
 }

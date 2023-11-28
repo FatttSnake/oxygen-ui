@@ -42,9 +42,12 @@ const Login: React.FC = () => {
                                             </span>
                                             <br />
                                             <span>
-                                                上次登录：
-                                                {getLocalTime(user.lastLoginTime)}【
-                                                {user.lastLoginIp}】
+                                                最近登录：
+                                                {user.lastLoginTime
+                                                    ? `${getLocalTime(user.lastLoginTime)}【${
+                                                          user.lastLoginIp
+                                                      }】`
+                                                    : '无'}
                                             </span>
                                         </>
                                     ),
