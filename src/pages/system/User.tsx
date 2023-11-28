@@ -600,7 +600,7 @@ const User: React.FC = () => {
                 hidden={isDrawerEdit}
                 name={'password'}
                 label={'密码'}
-                rules={[{ required: true, whitespace: false }]}
+                rules={[{ whitespace: false }]}
             >
                 <AntdInput.Password allowClear />
             </AntdForm.Item>
