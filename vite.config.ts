@@ -29,7 +29,7 @@ export default defineConfig({
                     react: ['Suspense', 'createContext'],
                     'react-router': ['useMatches', 'RouterProvider'],
                     'react-router-dom': ['createBrowserRouter'],
-                    antd: ['message']
+                    antd: ['message', 'notification']
                 },
                 {
                     from: 'react-router',

@@ -1,5 +1,6 @@
-import moment from 'moment'
 import ReactDOM from 'react-dom/client'
+import moment from 'moment'
+import dayjs from 'dayjs'
 import _ from 'lodash'
 import { STORAGE_TOKEN_KEY, STORAGE_USER_INFO_KEY } from '@/constants/common.constants'
 import LoadingMask from '@/components/common/LoadingMask'
@@ -144,8 +145,20 @@ export const getRedirectUrl = (path: string, redirectUrl: string): string => {
     return `${path}?redirect=${encodeURIComponent(redirectUrl)}`
 }
 
-export const getLocalTime = (utcTime: string, format: string = 'yyyy-MM-DD HH:mm:ssZ') => {
+export const utcToLocalTime = (utcTime: string, format: string = 'yyyy-MM-DD HH:mm:ssZ') => {
     return moment.utc(utcTime).local().format(format)
+}
+
+export const dayjsToLocalTime = (date: dayjs.Dayjs, format: string = 'YYYY-MM-DD HH:mm:ssZ') => {
+    return date.format(format)
+}
+
+export const dayjsToUtc = (date: dayjs.Dayjs) => {
+    return date.toISOString()
+}
+
+export const localTimeToUtc = (localTime: string) => {
+    return moment(localTime).toISOString()
 }
 
 export const isPastTime = (utcTime: string) => {

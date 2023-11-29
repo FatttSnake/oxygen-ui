@@ -3,7 +3,6 @@ import Icon from '@ant-design/icons'
 import '@/assets/css/components/home/footer.scss'
 import FitCenter from '@/components/common/FitCenter'
 import FitFullScreen from '@/components/common/FitFullScreen'
-import { NavLink } from 'react-router-dom'
 
 const Footer: React.FC = () => {
     return (

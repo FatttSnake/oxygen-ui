@@ -1,9 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Icon from '@ant-design/icons'
-import FitFullScreen from '@/components/common/FitFullScreen'
-import HideScrollbar from '@/components/common/HideScrollbar'
-import FlexBox from '@/components/common/FlexBox'
-import Card from '@/components/common/Card'
 import {
     COLOR_ERROR_SECONDARY,
     COLOR_FONT_SECONDARY,
@@ -14,7 +10,7 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { getLocalTime } from '@/utils/common'
+import { utcToLocalTime } from '@/utils/common'
 import {
     r_sys_group_add,
     r_sys_group_change_status,
@@ -24,6 +20,10 @@ import {
     r_sys_group_update,
     r_sys_role_get_list
 } from '@/services/system'
+import FitFullScreen from '@/components/common/FitFullScreen'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import FlexBox from '@/components/common/FlexBox'
+import Card from '@/components/common/Card'
 
 const Group: React.FC = () => {
     const [modal, contextHolder] = AntdModal.useModal()
@@ -75,14 +75,14 @@ const Group: React.FC = () => {
             dataIndex: 'createTime',
             width: '10%',
             align: 'center',
-            render: (value: string) => getLocalTime(value)
+            render: (value: string) => utcToLocalTime(value)
         },
         {
             title: '修改时间',
             dataIndex: 'updateTime',
             width: '10%',
             align: 'center',
-            render: (value: string) => getLocalTime(value)
+            render: (value: string) => utcToLocalTime(value)
         },
         {
             title: '状态',

@@ -1,7 +1,7 @@
 import React from 'react'
 import '@/assets/css/components/home/home.scss'
-import FitFullScreen from '@/components/common/FitFullScreen'
 import { HomeFrameworkContext } from '@/pages/HomeFramework'
+import FitFullScreen from '@/components/common/FitFullScreen'
 import Slogan from '@/components/home/Slogan'
 import OxygenToolbox from '@/components/home/OxygenToolbox'
 import Indicator from '@/components/common/Indicator'

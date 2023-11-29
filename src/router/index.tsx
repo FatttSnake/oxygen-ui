@@ -1,8 +1,8 @@
 import React from 'react'
-import tools from '@/router/tools'
+import system from '@/router/system'
 import home from '@/router/home'
 import user from '@/router/user'
-import system from '@/router/system'
+import tools from '@/router/tools'
 
 const mapJsonToRoute = (jsonObject: RouteJsonObject[]): RouteObject[] => {
     return jsonObject.map((value) => ({

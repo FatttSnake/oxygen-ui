@@ -1,5 +1,4 @@
 import React from 'react'
-import request from '@/services/index'
 import {
     URL_SYS_USER_INFO,
     URL_SYS_USER,
@@ -10,6 +9,7 @@ import {
     URL_SYS_GROUP_LIST,
     URL_SYS_LOG
 } from '@/constants/urls.constants'
+import request from '@/services/index'
 
 export const r_sys_user_info = () => request.get<UserWithPowerInfoVo>(URL_SYS_USER_INFO)
 

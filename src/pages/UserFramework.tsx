@@ -1,11 +1,11 @@
 import React from 'react'
-import user from '@/router/user'
 import '@/assets/css/pages/tools-framework.scss'
+import user from '@/router/user'
+import { hasPathPermission } from '@/utils/auth'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
 import SidebarItem from '@/components/common/sidebar/SidebarItem'
-import { hasPathPermission } from '@/utils/auth'
 import LoadingMask from '@/components/common/LoadingMask'
 
 const ToolsFramework: React.FC = () => {

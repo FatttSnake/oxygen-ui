@@ -1,14 +1,15 @@
 import React from 'react'
-import FitFullScreen from '@/components/common/FitFullScreen'
-import Card from '@/components/common/Card'
-import { r_sys_log_get } from '@/services/system'
+import dayjs from 'dayjs'
 import {
     COLOR_ERROR_SECONDARY,
     COLOR_FONT_SECONDARY,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
+import { dayjsToUtc, utcToLocalTime } from '@/utils/common'
+import { r_sys_log_get } from '@/services/system'
+import FitFullScreen from '@/components/common/FitFullScreen'
+import Card from '@/components/common/Card'
 import HideScrollbar from '@/components/common/HideScrollbar'
-import { getLocalTime } from '@/utils/common'
 import FlexBox from '@/components/common/FlexBox'
 
 const Log: React.FC = () => {
@@ -87,7 +88,7 @@ const Log: React.FC = () => {
         {
             title: '开始时间',
             dataIndex: 'startTime',
-            render: (value: string) => getLocalTime(value),
+            render: (value: string) => utcToLocalTime(value),
             align: 'center',
             sorter: true
         },
@@ -96,7 +97,9 @@ const Log: React.FC = () => {
             dataIndex: 'executeTime',
             render: (value, record) => (
                 <AntdTooltip
-                    title={`${getLocalTime(record.startTime)} ~ ${getLocalTime(record.endTime)}`}
+                    title={`${utcToLocalTime(record.startTime)} ~ ${utcToLocalTime(
+                        record.endTime
+                    )}`}
                 >
                     {`${value}ms`}
                 </AntdTooltip>
@@ -188,12 +191,9 @@ const Log: React.FC = () => {
         }
     }
 
-    const handleOnDateRangeChange = (_dates: unknown, dateStrings: [string, string]) => {
-        if (dateStrings[0] && dateStrings[1]) {
-            setTimeRange([
-                new Date(dateStrings[0]).toISOString(),
-                new Date(dateStrings[1]).toISOString()
-            ])
+    const handleOnDateRangeChange = (dates: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null) => {
+        if (dates && dates[0] && dates[1]) {
+            setTimeRange([dayjsToUtc(dates[0]), dayjsToUtc(dates[1])])
         } else {
             setTimeRange(undefined)
         }

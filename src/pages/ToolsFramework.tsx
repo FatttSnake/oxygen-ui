@@ -1,6 +1,6 @@
 import React from 'react'
-import { tools } from '@/router/tools'
 import '@/assets/css/pages/tools-framework.scss'
+import { tools } from '@/router/tools'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import SidebarScroll, { SidebarScrollElement } from '@/components/common/sidebar/SidebarScroll'
 import Sidebar from '@/components/common/sidebar'

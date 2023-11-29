@@ -1,6 +1,6 @@
 import React from 'react'
-import system from '@/router/system'
 import '@/assets/css/pages/system-framework.scss'
+import system from '@/router/system'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'

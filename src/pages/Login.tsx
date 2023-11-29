@@ -1,14 +1,13 @@
 import React from 'react'
-import { notification } from 'antd'
 import '@/assets/css/pages/login.scss'
-import { getLocalTime, setToken } from '@/utils/common'
-import { getUserInfo, login } from '@/utils/auth'
 import {
     PERMISSION_LOGIN_SUCCESS,
     PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR,
     PERMISSION_USER_DISABLE,
     PERMISSION_USERNAME_NOT_FOUND
 } from '@/constants/common.constants'
+import { utcToLocalTime, setToken } from '@/utils/common'
+import { getUserInfo, login } from '@/utils/auth'
 
 const Login: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage()
@@ -44,7 +43,7 @@ const Login: React.FC = () => {
                                             <span>
                                                 最近登录：
                                                 {user.lastLoginTime
-                                                    ? `${getLocalTime(user.lastLoginTime)}【${
+                                                    ? `${utcToLocalTime(user.lastLoginTime)}【${
                                                           user.lastLoginIp
                                                       }】`
                                                     : '无'}

@@ -1,11 +1,11 @@
-import { getCaptcha, getLocalStorage, removeToken, setLocalStorage } from './common'
-import { r_auth_login, r_auth_logout } from '@/services/auth'
-import { r_sys_user_info } from '@/services/system'
 import {
     STORAGE_TOKEN_KEY,
     STORAGE_USER_INFO_KEY,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
+import { getCaptcha, getLocalStorage, removeToken, setLocalStorage } from './common'
+import { r_sys_user_info } from '@/services/system'
+import { r_auth_login, r_auth_logout } from '@/services/auth'
 
 let captcha: Captcha
 

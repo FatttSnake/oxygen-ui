@@ -1,17 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import FitFullScreen from '@/components/common/FitFullScreen'
-import HideScrollbar from '@/components/common/HideScrollbar'
-import FlexBox from '@/components/common/FlexBox'
-import Card from '@/components/common/Card'
-import {
-    r_sys_role_add,
-    r_sys_role_change_status,
-    r_sys_power_get_list,
-    r_sys_role_get,
-    r_sys_role_update,
-    r_sys_role_delete,
-    r_sys_role_delete_list
-} from '@/services/system'
+import React from 'react'
+import Icon from '@ant-design/icons'
 import {
     COLOR_ERROR_SECONDARY,
     COLOR_FONT_SECONDARY,
@@ -22,8 +10,20 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import Icon from '@ant-design/icons'
-import { getLocalTime, powerListToPowerTree } from '@/utils/common'
+import { utcToLocalTime, powerListToPowerTree } from '@/utils/common'
+import {
+    r_sys_role_add,
+    r_sys_role_change_status,
+    r_sys_power_get_list,
+    r_sys_role_get,
+    r_sys_role_update,
+    r_sys_role_delete,
+    r_sys_role_delete_list
+} from '@/services/system'
+import FitFullScreen from '@/components/common/FitFullScreen'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import FlexBox from '@/components/common/FlexBox'
+import Card from '@/components/common/Card'
 
 const Role: React.FC = () => {
     const [modal, contextHolder] = AntdModal.useModal()
@@ -67,14 +67,14 @@ const Role: React.FC = () => {
             dataIndex: 'createTime',
             width: '10%',
             align: 'center',
-            render: (value: string) => getLocalTime(value)
+            render: (value: string) => utcToLocalTime(value)
         },
         {
             title: '修改时间',
             dataIndex: 'updateTime',
             width: '10%',
             align: 'center',
-            render: (value: string) => getLocalTime(value)
+            render: (value: string) => utcToLocalTime(value)
         },
         {
             title: '状态',

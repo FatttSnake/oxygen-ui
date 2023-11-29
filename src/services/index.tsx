@@ -1,7 +1,5 @@
 import axios, { type AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { jwtDecode, JwtPayload } from 'jwt-decode'
-import { message } from 'antd'
-import { getToken, removeToken, setToken } from '@/utils/common'
 import {
     PERMISSION_ACCESS_DENIED,
     PERMISSION_TOKEN_HAS_EXPIRED,
@@ -9,6 +7,7 @@ import {
     PERMISSION_TOKEN_RENEW_SUCCESS,
     PERMISSION_UNAUTHORIZED
 } from '@/constants/common.constants'
+import { getToken, removeToken, setToken } from '@/utils/common'
 
 const service: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,

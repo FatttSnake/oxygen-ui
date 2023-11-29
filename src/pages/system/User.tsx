@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import Icon from '@ant-design/icons'
+import dayjs from 'dayjs'
 import {
     COLOR_BACKGROUND,
     COLOR_ERROR_SECONDARY,
@@ -10,12 +12,7 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { ColumnsType } from 'antd/es/table/interface'
-import FitFullScreen from '@/components/common/FitFullScreen.tsx'
-import HideScrollbar from '@/components/common/HideScrollbar.tsx'
-import FlexBox from '@/components/common/FlexBox.tsx'
-import Card from '@/components/common/Card.tsx'
-import Icon from '@ant-design/icons'
+import { utcToLocalTime, isPastTime, localTimeToUtc, dayjsToUtc } from '@/utils/common'
 import {
     r_sys_group_get_list,
     r_sys_role_get_list,
@@ -24,10 +21,12 @@ import {
     r_sys_user_delete_list,
     r_sys_user_get,
     r_sys_user_update
-} from '@/services/system.tsx'
-import { getLocalTime, isPastTime } from '@/utils/common.tsx'
-import { r_api_avatar_random_base64 } from '@/services/api/avatar.ts'
-import moment from 'moment'
+} from '@/services/system'
+import { r_api_avatar_random_base64 } from '@/services/api/avatar'
+import FitFullScreen from '@/components/common/FitFullScreen'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import FlexBox from '@/components/common/FlexBox'
+import Card from '@/components/common/Card'
 
 const User: React.FC = () => {
     const [modal, contextHolder] = AntdModal.useModal()
@@ -57,7 +56,7 @@ const User: React.FC = () => {
     const [tableSelectedItem, setTableSelectedItem] = useState<React.Key[]>([])
     const [avatar, setAvatar] = useState('')
 
-    const dataColumns: ColumnsType<UserWithRoleInfoVo> = [
+    const dataColumns: _ColumnsType<UserWithRoleInfoVo> = [
         {
             dataIndex: 'username',
             title: '用户',
@@ -122,7 +121,7 @@ const User: React.FC = () => {
             title: '最近登录',
             render: (_, record) =>
                 record.currentLoginTime
-                    ? `${getLocalTime(record.currentLoginTime)}【${record.currentLoginIp}】`
+                    ? `${utcToLocalTime(record.currentLoginTime)}【${record.currentLoginIp}】`
                     : '无',
             align: 'center'
         },
@@ -334,10 +333,10 @@ const User: React.FC = () => {
             void r_sys_user_update({
                 ...formValues,
                 expiration: formValues.expiration
-                    ? new Date(formValues.expiration).toISOString()
+                    ? localTimeToUtc(formValues.expiration)
                     : undefined,
                 credentialsExpiration: formValues.credentialsExpiration
-                    ? new Date(formValues.credentialsExpiration).toISOString()
+                    ? localTimeToUtc(formValues.credentialsExpiration)
                     : undefined
             })
                 .then((res) => {
@@ -362,10 +361,10 @@ const User: React.FC = () => {
             void r_sys_user_add({
                 ...formValues,
                 expiration: formValues.expiration
-                    ? new Date(formValues.expiration).toISOString()
+                    ? localTimeToUtc(formValues.expiration)
                     : undefined,
                 credentialsExpiration: formValues.credentialsExpiration
-                    ? new Date(formValues.credentialsExpiration).toISOString()
+                    ? localTimeToUtc(formValues.credentialsExpiration)
                     : undefined
             })
                 .then((res) => {
@@ -649,9 +648,9 @@ const User: React.FC = () => {
             <AntdForm.Item
                 name={'expiration'}
                 label={'过期时间'}
-                getValueProps={(date: string) => (date ? { value: moment.utc(date) } : {})}
-                getValueFromEvent={(_, dateString: string) =>
-                    dateString ? moment(dateString).format('yyyy-MM-DD HH:mm:ss') : undefined
+                getValueProps={(date: string) => (date ? { value: dayjs(date) } : {})}
+                getValueFromEvent={(date: dayjs.Dayjs | null) =>
+                    date ? dayjsToUtc(date) : undefined
                 }
             >
                 <AntdDatePicker showTime allowClear changeOnBlur style={{ width: '100%' }} />
@@ -659,9 +658,9 @@ const User: React.FC = () => {
             <AntdForm.Item
                 name={'credentialsExpiration'}
                 label={'认证过期时间'}
-                getValueProps={(date: string) => (date ? { value: moment.utc(date) } : {})}
-                getValueFromEvent={(_, dateString: string) =>
-                    dateString ? moment(dateString).format('yyyy-MM-DD HH:mm:ss') : undefined
+                getValueProps={(date: string) => (date ? { value: dayjs(date) } : {})}
+                getValueFromEvent={(date: dayjs.Dayjs | null) =>
+                    date ? dayjsToUtc(date) : undefined
                 }
             >
                 <AntdDatePicker showTime allowClear changeOnBlur style={{ width: '100%' }} />
