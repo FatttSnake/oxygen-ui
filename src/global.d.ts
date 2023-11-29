@@ -175,6 +175,11 @@ interface TableParam {
     filters?: Record<string, _FilterValue | null>
 }
 
+interface UserGetParam extends PageParam {
+    searchValue?: string
+    searchRegex?: boolean
+}
+
 interface UserAddEditParam {
     id?: string
     username: string

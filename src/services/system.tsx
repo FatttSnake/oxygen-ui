@@ -13,7 +13,8 @@ import request from '@/services/index'
 
 export const r_sys_user_info = () => request.get<UserWithPowerInfoVo>(URL_SYS_USER_INFO)
 
-export const r_sys_user_get = () => request.get<PageVo<UserWithRoleInfoVo>>(URL_SYS_USER)
+export const r_sys_user_get = (param: UserGetParam) =>
+    request.get<PageVo<UserWithRoleInfoVo>>(URL_SYS_USER, param)
 
 export const r_sys_user_add = (param: UserAddEditParam) => request.post(URL_SYS_USER, param)
 

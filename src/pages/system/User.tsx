@@ -348,14 +348,16 @@ const User: React.FC = () => {
                         >
                             <AntdInput.Password />
                         </AntdForm.Item>
-                        <AntdForm.Item
-                            name={'needChangePassword'}
-                            label={'需改密'}
-                            valuePropName={'checked'}
-                            rules={[{ type: 'boolean' }]}
-                        >
-                            <AntdSwitch />
-                        </AntdForm.Item>
+                        {value.id !== '0' ? (
+                            <AntdForm.Item
+                                name={'needChangePassword'}
+                                label={'需改密'}
+                                valuePropName={'checked'}
+                                rules={[{ type: 'boolean' }]}
+                            >
+                                <AntdSwitch />
+                            </AntdForm.Item>
+                        ) : undefined}
                     </AntdForm>
                 ),
                 onOk: () =>
@@ -583,7 +585,19 @@ const User: React.FC = () => {
 
         setIsLoadingUserData(true)
 
-        void r_sys_user_get()
+        void r_sys_user_get({
+            currentPage: tableParams.pagination?.current,
+            pageSize: tableParams.pagination?.pageSize,
+            sortField:
+                tableParams.sortField && tableParams.sortOrder
+                    ? (tableParams.sortField as string)
+                    : undefined,
+            sortOrder:
+                tableParams.sortField && tableParams.sortOrder ? tableParams.sortOrder : undefined,
+            searchValue: searchValue.trim().length ? searchValue : undefined,
+            searchRegex: isUseRegex ? isUseRegex : undefined,
+            ...tableParams.filters
+        })
             .then((res) => {
                 const data = res.data
                 if (data.code === DATABASE_SELECT_SUCCESS) {
