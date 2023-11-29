@@ -195,12 +195,14 @@ const User: React.FC = () => {
                         >
                             编辑
                         </a>
-                        <a
-                            style={{ color: COLOR_PRODUCTION }}
-                            onClick={handleOnDeleteBtnClick(record)}
-                        >
-                            删除
-                        </a>
+                        {record.id !== '0' ? (
+                            <a
+                                style={{ color: COLOR_PRODUCTION }}
+                                onClick={handleOnDeleteBtnClick(record)}
+                            >
+                                删除
+                            </a>
+                        ) : undefined}
                     </AntdSpace>
                 </>
             )
@@ -928,7 +930,8 @@ const User: React.FC = () => {
                 onChange={handleOnTableChange}
                 rowSelection={{
                     type: 'checkbox',
-                    onChange: handleOnTableSelectChange
+                    onChange: handleOnTableSelectChange,
+                    getCheckboxProps: (record) => ({ disabled: record.id === '0' })
                 }}
             />
         </Card>
