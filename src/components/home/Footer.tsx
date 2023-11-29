@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
     return (
         <>
             <FitFullScreen backgroundColor={'#333'}>
-                <FitCenter vertical={true} style={{ gap: '20px' }}>
+                <FitCenter vertical={true} style={{ gap: 20 }}>
                     <div className={'icons'}>
                         <NavLink to={'https://github.com/FatttSnake'}>
                             <Icon component={IconFatwebGithub} className={'icon'} />

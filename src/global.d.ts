@@ -95,21 +95,6 @@ interface UserWithRoleInfoVo {
     groups: GroupVo[]
 }
 
-interface UserAddEditParam {
-    id?: string
-    username: string
-    password?: string
-    locking?: boolean
-    expiration?: string
-    credentialsExpiration?: string
-    enable?: boolean
-    nickname?: string
-    avatar?: string
-    email?: string
-    roleIds: number[]
-    groupIds: number[]
-}
-
 interface UserInfoVo {
     id: string
     userId: string
@@ -188,6 +173,27 @@ interface TableParam {
     sortField?: React.Key | readonly React.Key[]
     sortOrder?: _SortOrder
     filters?: Record<string, _FilterValue | null>
+}
+
+interface UserAddEditParam {
+    id?: string
+    username: string
+    password?: string
+    locking?: boolean
+    expiration?: string
+    credentialsExpiration?: string
+    enable?: boolean
+    nickname?: string
+    avatar?: string
+    email?: string
+    roleIds: number[]
+    groupIds: number[]
+}
+
+interface UserChangePasswordParam {
+    id: string
+    password: string
+    credentialsExpiration?: string
 }
 
 interface SysLogGetParam extends PageParam {

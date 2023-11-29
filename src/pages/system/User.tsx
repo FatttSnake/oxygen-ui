@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Icon from '@ant-design/icons'
 import dayjs from 'dayjs'
 import {
@@ -12,11 +12,12 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { utcToLocalTime, isPastTime, localTimeToUtc, dayjsToUtc } from '@/utils/common'
+import { utcToLocalTime, isPastTime, localTimeToUtc, dayjsToUtc, getNowUtc } from '@/utils/common'
 import {
     r_sys_group_get_list,
     r_sys_role_get_list,
     r_sys_user_add,
+    r_sys_user_change_password,
     r_sys_user_delete,
     r_sys_user_delete_list,
     r_sys_user_get,
@@ -28,13 +29,30 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 
+interface ChangePasswordFields extends UserChangePasswordParam {
+    passwordConfirm: string
+    needChangePassword: boolean
+}
+
 const User: React.FC = () => {
     const [modal, contextHolder] = AntdModal.useModal()
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [isDrawerEdit, setIsDrawerEdit] = useState(false)
+    const [isDrawerSubmittable, setIsDrawerSubmittable] = useState(false)
+    const [isDrawerSubmitting, setIsDrawerSubmitting] = useState(false)
+    const [roleData, setRoleData] = useState<RoleVo[]>([])
+    const [groupData, setGroupData] = useState<GroupVo[]>([])
+    const [isLoadingRole, setIsLoadingRole] = useState(false)
+    const [isLoadingGroup, setIsLoadingGroup] = useState(false)
+    const [avatar, setAvatar] = useState('')
+
     const [form] = AntdForm.useForm<UserAddEditParam>()
     const formValues = AntdForm.useWatch([], form)
     const [newFormValues, setNewFormValues] = useState<UserAddEditParam>()
-    const [userData, setUserData] = useState<UserWithRoleInfoVo[]>([])
-    const [isLoading, setIsLoading] = useState(false)
+
+    const [changePasswordForm] = AntdForm.useForm<ChangePasswordFields>()
+
     const [tableParams, setTableParams] = useState<TableParam>({
         pagination: {
             current: 1,
@@ -42,25 +60,19 @@ const User: React.FC = () => {
             position: ['bottomCenter']
         }
     })
+    const [tableSelectedItem, setTableSelectedItem] = useState<React.Key[]>([])
+    const [userData, setUserData] = useState<UserWithRoleInfoVo[]>([])
+    const [isLoadingUserData, setIsLoadingUserData] = useState(false)
+
     const [searchValue, setSearchValue] = useState('')
     const [isUseRegex, setIsUseRegex] = useState(false)
     const [isRegexLegal, setIsRegexLegal] = useState(true)
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const [isDrawerEdit, setIsDrawerEdit] = useState(false)
-    const [submittable, setSubmittable] = useState(false)
-    const [roleData, setRoleData] = useState<RoleVo[]>([])
-    const [groupData, setGroupData] = useState<GroupVo[]>([])
-    const [isLoadingRole, setIsLoadingRole] = useState(false)
-    const [isLoadingGroup, setIsLoadingGroup] = useState(false)
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [tableSelectedItem, setTableSelectedItem] = useState<React.Key[]>([])
-    const [avatar, setAvatar] = useState('')
 
     const dataColumns: _ColumnsType<UserWithRoleInfoVo> = [
         {
             dataIndex: 'username',
             title: '用户',
-            render: (value, record) => `${value}(${record.id})`,
+            render: (value, record) => <AntdTooltip title={record.id}>{value}</AntdTooltip>,
             width: '0'
         },
         {
@@ -68,7 +80,13 @@ const User: React.FC = () => {
             title: '头像',
             render: (value) => (
                 <AntdAvatar
-                    src={<img src={`data:image/png;base64,${value}`} alt={'avatar'} />}
+                    src={
+                        <AntdImage
+                            preview={{ mask: <Icon component={IconFatwebEye}></Icon> }}
+                            src={`data:image/png;base64,${value}`}
+                            alt={'avatar'}
+                        />
+                    }
                     style={{ background: COLOR_BACKGROUND }}
                 />
             ),
@@ -127,25 +145,35 @@ const User: React.FC = () => {
         },
         {
             title: '状态',
-            render: (_, record) =>
-                !record.locking &&
-                (!record.expiration || !isPastTime(record.expiration)) &&
-                (!record.credentialsExpiration || !isPastTime(record.credentialsExpiration)) &&
-                record.enable ? (
-                    <AntdTag color={'green'}>正常</AntdTag>
-                ) : (
-                    <>
-                        {record.locking ? <AntdTag>锁定</AntdTag> : undefined}
-                        {record.expiration && isPastTime(record.expiration) ? (
-                            <AntdTag>过期</AntdTag>
-                        ) : undefined}
-                        {record.credentialsExpiration &&
-                        isPastTime(record.credentialsExpiration) ? (
-                            <AntdTag>改密</AntdTag>
-                        ) : undefined}
-                        {!record.enable ? <AntdTag>禁用</AntdTag> : undefined}
-                    </>
-                ),
+            render: (_, record) => (
+                <AntdTooltip
+                    title={
+                        <>
+                            <p>创建：{utcToLocalTime(record.createTime)}</p>
+                            <p>修改：{utcToLocalTime(record.updateTime)}</p>
+                        </>
+                    }
+                >
+                    {!record.locking &&
+                    (!record.expiration || !isPastTime(record.expiration)) &&
+                    (!record.credentialsExpiration || !isPastTime(record.credentialsExpiration)) &&
+                    record.enable ? (
+                        <AntdTag color={'green'}>正常</AntdTag>
+                    ) : (
+                        <>
+                            {record.locking ? <AntdTag>锁定</AntdTag> : undefined}
+                            {record.expiration && isPastTime(record.expiration) ? (
+                                <AntdTag>过期</AntdTag>
+                            ) : undefined}
+                            {record.credentialsExpiration &&
+                            isPastTime(record.credentialsExpiration) ? (
+                                <AntdTag>改密</AntdTag>
+                            ) : undefined}
+                            {!record.enable ? <AntdTag>禁用</AntdTag> : undefined}
+                        </>
+                    )}
+                </AntdTooltip>
+            ),
             align: 'center'
         },
         {
@@ -155,6 +183,12 @@ const User: React.FC = () => {
             render: (_, record) => (
                 <>
                     <AntdSpace size={'middle'}>
+                        <a
+                            style={{ color: COLOR_PRODUCTION }}
+                            onClick={handleOnChangePasswordBtnClick(record)}
+                        >
+                            修改密码
+                        </a>
                         <a
                             style={{ color: COLOR_PRODUCTION }}
                             onClick={handleOnEditBtnClick(record)}
@@ -230,7 +264,7 @@ const User: React.FC = () => {
             .then(
                 (confirmed) => {
                     if (confirmed) {
-                        setIsLoading(true)
+                        setIsLoadingUserData(true)
 
                         void r_sys_user_delete_list(tableSelectedItem)
                             .then((res) => {
@@ -246,12 +280,121 @@ const User: React.FC = () => {
                                 }
                             })
                             .finally(() => {
-                                setIsLoading(false)
+                                setIsLoadingUserData(false)
                             })
                     }
                 },
                 () => {}
             )
+    }
+
+    const handleOnChangePasswordBtnClick = (value: UserWithRoleInfoVo) => {
+        return () => {
+            changePasswordForm.setFieldValue('id', value.id)
+            changePasswordForm.setFieldValue('password', undefined)
+            changePasswordForm.setFieldValue('passwordConfirm', undefined)
+            changePasswordForm.setFieldValue(
+                'needChangePassword',
+                value.credentialsExpiration && isPastTime(value.credentialsExpiration)
+            )
+            void modal.confirm({
+                icon: <></>,
+                title: (
+                    <>
+                        <Icon
+                            style={{ color: COLOR_PRODUCTION, marginRight: 10 }}
+                            component={IconFatwebSetting}
+                        />
+                        修改用户 {value.username} 的密码
+                    </>
+                ),
+                content: (
+                    <AntdForm
+                        form={changePasswordForm}
+                        style={{ marginTop: 20 }}
+                        labelCol={{ span: 6 }}
+                        wrapperCol={{ span: 18 }}
+                    >
+                        <AntdForm.Item name={'id'} label={'ID'} labelAlign={'right'}>
+                            <AntdInput disabled />
+                        </AntdForm.Item>
+                        <AntdForm.Item
+                            name={'password'}
+                            label={'密码'}
+                            rules={[
+                                {
+                                    required: true
+                                }
+                            ]}
+                        >
+                            <AntdInput.Password />
+                        </AntdForm.Item>
+                        <AntdForm.Item
+                            name={'passwordConfirm'}
+                            label={'确认密码'}
+                            rules={[
+                                {
+                                    required: true
+                                },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue('password') === value) {
+                                            return Promise.resolve()
+                                        }
+                                        return Promise.reject(new Error('两次密码输入不一致'))
+                                    }
+                                })
+                            ]}
+                        >
+                            <AntdInput.Password />
+                        </AntdForm.Item>
+                        <AntdForm.Item
+                            name={'needChangePassword'}
+                            label={'需改密'}
+                            valuePropName={'checked'}
+                            rules={[{ type: 'boolean' }]}
+                        >
+                            <AntdSwitch />
+                        </AntdForm.Item>
+                    </AntdForm>
+                ),
+                onOk: () =>
+                    changePasswordForm
+                        .validateFields()
+                        .then(
+                            () => {
+                                return new Promise((resolve, reject) => {
+                                    void r_sys_user_change_password({
+                                        id: changePasswordForm.getFieldValue('id') as string,
+                                        password: changePasswordForm.getFieldValue(
+                                            'password'
+                                        ) as string,
+                                        credentialsExpiration: (changePasswordForm.getFieldValue(
+                                            'needChangePassword'
+                                        ) as boolean)
+                                            ? getNowUtc()
+                                            : undefined
+                                    }).then((res) => {
+                                        const response = res.data
+                                        if (response.success) {
+                                            resolve(true)
+                                        } else {
+                                            reject(response.msg)
+                                        }
+                                    })
+                                })
+                            },
+                            () => {
+                                return new Promise((_, reject) => {
+                                    reject('输入有误')
+                                })
+                            }
+                        )
+                        .then(() => {
+                            getUser()
+                        })
+            })
+        }
     }
 
     const handleOnEditBtnClick = (value: UserWithRoleInfoVo) => {
@@ -291,7 +434,7 @@ const User: React.FC = () => {
                 .then(
                     (confirmed) => {
                         if (confirmed) {
-                            setIsLoading(true)
+                            setIsLoadingUserData(true)
 
                             void r_sys_user_delete(value.id)
                                 .then((res) => {
@@ -306,7 +449,7 @@ const User: React.FC = () => {
                                     }
                                 })
                                 .finally(() => {
-                                    setIsLoading(false)
+                                    setIsLoadingUserData(false)
                                 })
                         }
                     },
@@ -323,11 +466,11 @@ const User: React.FC = () => {
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
 
     const handleOnSubmit = () => {
-        if (isSubmitting) {
+        if (isDrawerSubmitting) {
             return
         }
 
-        setIsSubmitting(true)
+        setIsDrawerSubmitting(true)
 
         if (isDrawerEdit) {
             void r_sys_user_update({
@@ -355,7 +498,7 @@ const User: React.FC = () => {
                     }
                 })
                 .finally(() => {
-                    setIsSubmitting(false)
+                    setIsDrawerSubmitting(false)
                 })
         } else {
             void r_sys_user_add({
@@ -384,7 +527,7 @@ const User: React.FC = () => {
                     }
                 })
                 .finally(() => {
-                    setIsSubmitting(false)
+                    setIsDrawerSubmitting(false)
                 })
         }
     }
@@ -429,7 +572,7 @@ const User: React.FC = () => {
     }
 
     const getUser = () => {
-        if (isLoading) {
+        if (isLoadingUserData) {
             return
         }
 
@@ -438,7 +581,7 @@ const User: React.FC = () => {
             return
         }
 
-        setIsLoading(true)
+        setIsLoadingUserData(true)
 
         void r_sys_user_get()
             .then((res) => {
@@ -460,7 +603,7 @@ const User: React.FC = () => {
                 }
             })
             .finally(() => {
-                setIsLoading(false)
+                setIsLoadingUserData(false)
             })
     }
 
@@ -526,10 +669,10 @@ const User: React.FC = () => {
     useEffect(() => {
         form.validateFields({ validateOnly: true }).then(
             () => {
-                setSubmittable(true)
+                setIsDrawerSubmittable(true)
             },
             () => {
-                setSubmittable(false)
+                setIsDrawerSubmittable(false)
             }
         )
 
@@ -564,8 +707,19 @@ const User: React.FC = () => {
     ])
 
     const addAndEditForm = (
-        <AntdForm form={form} disabled={isSubmitting}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+        <AntdForm
+            form={form}
+            disabled={isDrawerSubmitting}
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 18 }}
+        >
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    marginBottom: 20
+                }}
+            >
                 <AntdTooltip title={'点击获取新头像'}>
                     <AntdAvatar
                         src={
@@ -577,7 +731,7 @@ const User: React.FC = () => {
                             />
                         }
                         size={100}
-                        style={{ background: COLOR_BACKGROUND }}
+                        style={{ background: COLOR_BACKGROUND, cursor: 'pointer' }}
                         onClick={getAvatar}
                     />
                 </AntdTooltip>
@@ -646,7 +800,7 @@ const User: React.FC = () => {
                         valuePropName={'checked'}
                         name={'locking'}
                         label={'锁定'}
-                        rules={[{ required: true, type: 'boolean' }]}
+                        rules={[{ type: 'boolean' }]}
                     >
                         <AntdSwitch />
                     </AntdForm.Item>
@@ -684,7 +838,7 @@ const User: React.FC = () => {
                         valuePropName={'checked'}
                         name={'enable'}
                         label={'启用'}
-                        rules={[{ required: true, type: 'boolean' }]}
+                        rules={[{ type: 'boolean' }]}
                     >
                         <AntdSwitch />
                     </AntdForm.Item>
@@ -756,7 +910,7 @@ const User: React.FC = () => {
                 columns={dataColumns}
                 rowKey={(record) => record.id}
                 pagination={tableParams.pagination}
-                loading={isLoading}
+                loading={isLoadingUserData}
                 onChange={handleOnTableChange}
                 rowSelection={{
                     type: 'checkbox',
@@ -769,17 +923,17 @@ const User: React.FC = () => {
     const drawerToolbar = (
         <AntdSpace>
             <AntdTooltip title={'刷新角色和用户组列表'}>
-                <AntdButton onClick={handleOnDrawerRefresh} disabled={isSubmitting}>
+                <AntdButton onClick={handleOnDrawerRefresh} disabled={isDrawerSubmitting}>
                     <Icon component={IconFatwebRefresh} />
                 </AntdButton>
             </AntdTooltip>
-            <AntdButton onClick={handleOnDrawerClose} disabled={isSubmitting}>
+            <AntdButton onClick={handleOnDrawerClose} disabled={isDrawerSubmitting}>
                 取消
             </AntdButton>
             <AntdButton
                 type={'primary'}
-                disabled={!submittable}
-                loading={isSubmitting}
+                disabled={!isDrawerSubmittable}
+                loading={isDrawerSubmitting}
                 onClick={handleOnSubmit}
             >
                 提交
@@ -806,8 +960,8 @@ const User: React.FC = () => {
                 width={'36vw'}
                 onClose={handleOnDrawerClose}
                 open={isDrawerOpen}
-                closable={!isSubmitting}
-                maskClosable={!isSubmitting}
+                closable={!isDrawerSubmitting}
+                maskClosable={!isDrawerSubmitting}
                 extra={drawerToolbar}
             >
                 {addAndEditForm}

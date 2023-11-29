@@ -145,6 +145,14 @@ export const getRedirectUrl = (path: string, redirectUrl: string): string => {
     return `${path}?redirect=${encodeURIComponent(redirectUrl)}`
 }
 
+export const getNowLocalTime = (format: string = 'yyyy-MM-DD HH:mm:ssZ') => {
+    return moment().local().format(format)
+}
+
+export const getNowUtc = () => {
+    return moment().toISOString()
+}
+
 export const utcToLocalTime = (utcTime: string, format: string = 'yyyy-MM-DD HH:mm:ssZ') => {
     return moment.utc(utcTime).local().format(format)
 }
