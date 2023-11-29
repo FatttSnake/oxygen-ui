@@ -178,7 +178,7 @@ const User: React.FC = () => {
         },
         {
             title: '操作',
-            width: '10em',
+            width: '14em',
             align: 'center',
             render: (_, record) => (
                 <>
