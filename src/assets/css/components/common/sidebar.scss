@@ -264,6 +264,8 @@
         position: absolute;
         padding-left: 6px;
         left: 100%;
+        z-index: 1000;
+        box-shadow: 5px 5px 15px 0 rgba(0,0,0,0.1);
 
         .content {
           padding: 8px;
