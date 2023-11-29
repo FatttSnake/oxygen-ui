@@ -176,6 +176,7 @@ interface TableParam {
 }
 
 interface UserGetParam extends PageParam {
+    searchType?: string
     searchValue?: string
     searchRegex?: boolean
 }

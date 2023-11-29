@@ -4,7 +4,6 @@ import dayjs from 'dayjs'
 import {
     COLOR_BACKGROUND,
     COLOR_ERROR_SECONDARY,
-    COLOR_FONT_SECONDARY,
     COLOR_PRODUCTION,
     DATABASE_DELETE_SUCCESS,
     DATABASE_DUPLICATE_KEY,
@@ -64,6 +63,7 @@ const User: React.FC = () => {
     const [userData, setUserData] = useState<UserWithRoleInfoVo[]>([])
     const [isLoadingUserData, setIsLoadingUserData] = useState(false)
 
+    const [searchType, setSearchType] = useState('ALL')
     const [searchValue, setSearchValue] = useState('')
     const [isUseRegex, setIsUseRegex] = useState(false)
     const [isRegexLegal, setIsRegexLegal] = useState(true)
@@ -557,6 +557,10 @@ const User: React.FC = () => {
         }
     }
 
+    const handleOnSearchTypeChange = (value: string) => {
+        setSearchType(value)
+    }
+
     const handleOnUseRegexChange = (e: _CheckboxChangeEvent) => {
         setIsUseRegex(e.target.checked)
         if (e.target.checked) {
@@ -596,6 +600,7 @@ const User: React.FC = () => {
                     : undefined,
             sortOrder:
                 tableParams.sortField && tableParams.sortOrder ? tableParams.sortOrder : undefined,
+            searchType,
             searchValue: searchValue.trim().length ? searchValue : undefined,
             searchRegex: isUseRegex ? isUseRegex : undefined,
             ...tableParams.filters
@@ -885,14 +890,18 @@ const User: React.FC = () => {
             <Card style={{ overflow: 'inherit' }}>
                 <AntdInput
                     addonBefore={
-                        <span
-                            style={{
-                                fontSize: '0.9em',
-                                color: COLOR_FONT_SECONDARY
-                            }}
+                        <AntdSelect
+                            value={searchType}
+                            onChange={handleOnSearchTypeChange}
+                            style={{ width: '6em' }}
+                            dropdownStyle={{ textAlign: 'center' }}
                         >
-                            内容
-                        </span>
+                            <AntdSelect.Option value={'ALL'}>全部</AntdSelect.Option>
+                            <AntdSelect.Option value={'ID'}>ID</AntdSelect.Option>
+                            <AntdSelect.Option value={'USERNAME'}>用户名</AntdSelect.Option>
+                            <AntdSelect.Option value={'NICKNAME'}>昵称</AntdSelect.Option>
+                            <AntdSelect.Option value={'EMAIL'}>邮箱</AntdSelect.Option>
+                        </AntdSelect>
                     }
                     suffix={
                         <>
