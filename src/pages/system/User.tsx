@@ -595,14 +595,17 @@ const User: React.FC = () => {
             >
                 <AntdInput allowClear />
             </AntdForm.Item>
-            <AntdForm.Item
-                hidden={isDrawerEdit}
-                name={'password'}
-                label={'密码'}
-                rules={[{ whitespace: false }]}
-            >
-                <AntdInput.Password allowClear />
-            </AntdForm.Item>
+            {!isDrawerEdit ? (
+                <>
+                    <AntdForm.Item
+                        name={'password'}
+                        label={'密码'}
+                        rules={[{ required: true, whitespace: false }]}
+                    >
+                        <AntdInput.Password allowClear />
+                    </AntdForm.Item>
+                </>
+            ) : undefined}
             <AntdForm.Item name={'nickname'} label={'昵称'} rules={[{ whitespace: false }]}>
                 <AntdInput allowClear />
             </AntdForm.Item>
@@ -613,66 +616,80 @@ const User: React.FC = () => {
             >
                 <AntdInput type={'email'} allowClear />
             </AntdForm.Item>
-            <AntdForm.Item name={'roleIds'} label={'角色'}>
-                <AntdSelect
-                    mode={'multiple'}
-                    allowClear
-                    showSearch
-                    filterOption={filterOption}
-                    options={roleData.map((value) => ({
-                        value: value.id,
-                        label: `${value.name}${!value.enable ? '(已禁用)' : ''}`
-                    }))}
-                />
-            </AntdForm.Item>
-            <AntdForm.Item name={'groupIds'} label={'用户组'}>
-                <AntdSelect
-                    mode={'multiple'}
-                    allowClear
-                    showSearch
-                    filterOption={filterOption}
-                    options={groupData.map((value) => ({
-                        value: value.id,
-                        label: `${value.name}${!value.enable ? '(已禁用)' : ''}`
-                    }))}
-                />
-            </AntdForm.Item>
-            <AntdForm.Item
-                valuePropName={'checked'}
-                name={'locking'}
-                label={'锁定'}
-                rules={[{ required: true, type: 'boolean' }]}
-            >
-                <AntdSwitch />
-            </AntdForm.Item>
-            <AntdForm.Item
-                name={'expiration'}
-                label={'过期时间'}
-                getValueProps={(date: string) => (date ? { value: dayjs(date) } : {})}
-                getValueFromEvent={(date: dayjs.Dayjs | null) =>
-                    date ? dayjsToUtc(date) : undefined
-                }
-            >
-                <AntdDatePicker showTime allowClear changeOnBlur style={{ width: '100%' }} />
-            </AntdForm.Item>
-            <AntdForm.Item
-                name={'credentialsExpiration'}
-                label={'认证过期时间'}
-                getValueProps={(date: string) => (date ? { value: dayjs(date) } : {})}
-                getValueFromEvent={(date: dayjs.Dayjs | null) =>
-                    date ? dayjsToUtc(date) : undefined
-                }
-            >
-                <AntdDatePicker showTime allowClear changeOnBlur style={{ width: '100%' }} />
-            </AntdForm.Item>
-            <AntdForm.Item
-                valuePropName={'checked'}
-                name={'enable'}
-                label={'启用'}
-                rules={[{ required: true, type: 'boolean' }]}
-            >
-                <AntdSwitch />
-            </AntdForm.Item>
+            {formValues?.id !== '0' ? (
+                <>
+                    <AntdForm.Item name={'roleIds'} label={'角色'}>
+                        <AntdSelect
+                            mode={'multiple'}
+                            allowClear
+                            showSearch
+                            filterOption={filterOption}
+                            options={roleData.map((value) => ({
+                                value: value.id,
+                                label: `${value.name}${!value.enable ? '(已禁用)' : ''}`
+                            }))}
+                        />
+                    </AntdForm.Item>
+                    <AntdForm.Item name={'groupIds'} label={'用户组'}>
+                        <AntdSelect
+                            mode={'multiple'}
+                            allowClear
+                            showSearch
+                            filterOption={filterOption}
+                            options={groupData.map((value) => ({
+                                value: value.id,
+                                label: `${value.name}${!value.enable ? '(已禁用)' : ''}`
+                            }))}
+                        />
+                    </AntdForm.Item>
+                    <AntdForm.Item
+                        valuePropName={'checked'}
+                        name={'locking'}
+                        label={'锁定'}
+                        rules={[{ required: true, type: 'boolean' }]}
+                    >
+                        <AntdSwitch />
+                    </AntdForm.Item>
+                    <AntdForm.Item
+                        name={'expiration'}
+                        label={'过期时间'}
+                        getValueProps={(date: string) => (date ? { value: dayjs(date) } : {})}
+                        getValueFromEvent={(date: dayjs.Dayjs | null) =>
+                            date ? dayjsToUtc(date) : undefined
+                        }
+                    >
+                        <AntdDatePicker
+                            showTime
+                            allowClear
+                            changeOnBlur
+                            style={{ width: '100%' }}
+                        />
+                    </AntdForm.Item>
+                    <AntdForm.Item
+                        name={'credentialsExpiration'}
+                        label={'认证过期时间'}
+                        getValueProps={(date: string) => (date ? { value: dayjs(date) } : {})}
+                        getValueFromEvent={(date: dayjs.Dayjs | null) =>
+                            date ? dayjsToUtc(date) : undefined
+                        }
+                    >
+                        <AntdDatePicker
+                            showTime
+                            allowClear
+                            changeOnBlur
+                            style={{ width: '100%' }}
+                        />
+                    </AntdForm.Item>
+                    <AntdForm.Item
+                        valuePropName={'checked'}
+                        name={'enable'}
+                        label={'启用'}
+                        rules={[{ required: true, type: 'boolean' }]}
+                    >
+                        <AntdSwitch />
+                    </AntdForm.Item>
+                </>
+            ) : undefined}
         </AntdForm>
     )
 
