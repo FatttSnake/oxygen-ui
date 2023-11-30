@@ -5,8 +5,8 @@ import {
     COLOR_FONT_SECONDARY,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
-import { dayjsToUtc, utcToLocalTime } from '@/utils/common'
-import { useUpdatedEffect } from '@/utils/hooks'
+import { useUpdatedEffect } from '@/util/hooks'
+import { dayjsToUtc, utcToLocalTime } from '@/util/datetime'
 import { r_sys_log_get } from '@/services/system'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import Card from '@/components/common/Card'

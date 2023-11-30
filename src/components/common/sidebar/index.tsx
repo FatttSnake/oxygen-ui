@@ -1,7 +1,7 @@
 import React from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/components/common/sidebar.scss'
-import { getLocalStorage, setLocalStorage } from '@/utils/common'
+import { getLocalStorage, setLocalStorage } from '@/util/browser'
 import SidebarSeparate from '@/components/common/sidebar/SidebarSeparate'
 import SidebarFooter from '@/components/common/sidebar/SidebarFooter'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-const user: RouteJsonObject[] = [
+const system: RouteJsonObject[] = [
     {
         path: '',
         absolutePath: '/system',
@@ -61,4 +61,4 @@ const user: RouteJsonObject[] = [
     }
 ]
 
-export default user
+export default system

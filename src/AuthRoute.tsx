@@ -1,6 +1,6 @@
 import { PRODUCTION_NAME } from '@/constants/common.constants'
-import { getLoginStatus } from '@/utils/auth'
-import { getRedirectUrl } from '@/utils/common'
+import { getRedirectUrl } from '@/util/route'
+import { getLoginStatus } from '@/util/auth'
 
 const AuthRoute = () => {
     const matches = useMatches()

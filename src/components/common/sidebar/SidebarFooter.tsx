@@ -1,8 +1,8 @@
 import React from 'react'
 import Icon from '@ant-design/icons'
 import { COLOR_ERROR } from '@/constants/common.constants'
-import { getRedirectUrl } from '@/utils/common'
-import { getLoginStatus, getNickname, logout } from '@/utils/auth'
+import { getRedirectUrl } from '@/util/route'
+import { getLoginStatus, getNickname, logout } from '@/util/auth'
 
 const SidebarFooter: React.FC = () => {
     const matches = useMatches()

@@ -10,8 +10,8 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { utcToLocalTime } from '@/utils/common'
-import { useUpdatedEffect } from '@/utils/hooks'
+import { useUpdatedEffect } from '@/util/hooks'
+import { utcToLocalTime } from '@/util/datetime'
 import {
     r_sys_group_add,
     r_sys_group_change_status,

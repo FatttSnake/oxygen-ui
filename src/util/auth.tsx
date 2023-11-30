@@ -1,76 +1,19 @@
-import ReactDOM from 'react-dom/client'
-import moment from 'moment'
-import dayjs from 'dayjs'
 import _ from 'lodash'
-import { STORAGE_TOKEN_KEY, STORAGE_USER_INFO_KEY } from '@/constants/common.constants'
-import LoadingMask from '@/components/common/LoadingMask'
+import {
+    STORAGE_TOKEN_KEY,
+    STORAGE_USER_INFO_KEY,
+    DATABASE_SELECT_SUCCESS
+} from '@/constants/common.constants'
+import { floorNumber, randomColor, randomFloat, randomInt } from '@/util/common'
+import { getLocalStorage, removeLocalStorage, setLocalStorage } from '@/util/browser'
+import { getFullTitle } from '@/util/route'
+import { r_sys_user_info } from '@/services/system'
+import { r_auth_login, r_auth_logout } from '@/services/auth'
 
-export const getQueryVariable = (variable: string) => {
-    const query = window.location.search.substring(1)
-    const vars = query.split('&')
-    for (const value of vars) {
-        const pair = value.split('=')
-        if (pair[0] === variable) {
-            return decodeURIComponent(pair[1].replace(/\+/g, ' '))
-        }
-    }
-    return null
-}
-
-export const setCookie = (
-    name: string,
-    value: string,
-    daysToLive: number | null,
-    path: string | null
-) => {
-    let cookie = `${name}=${encodeURIComponent(value)}`
-
-    if (typeof daysToLive === 'number') {
-        cookie = `${cookie}; max-age=${daysToLive * 24 * 60 * 60}`
-    }
-
-    if (typeof path === 'string') {
-        cookie = `${cookie}; path=${path}`
-    }
-
-    document.cookie = cookie
-}
-
-export const setLocalStorage = (name: string, value: string) => {
-    localStorage.setItem(name, value)
-}
+let captcha: Captcha
 
 export const setToken = (token: string) => {
     setLocalStorage(STORAGE_TOKEN_KEY, token)
-}
-
-export const getCookie = (name: string) => {
-    const cookieArr = document.cookie.split(';')
-
-    for (const cookie of cookieArr) {
-        const cookiePair = cookie.split('=')
-        if (cookiePair[0].trim() === name) {
-            return decodeURIComponent(cookiePair[1])
-        }
-    }
-
-    return null
-}
-
-export const getLocalStorage = (name: string) => {
-    return localStorage.getItem(name)
-}
-
-export const getToken = () => {
-    return getLocalStorage(STORAGE_TOKEN_KEY)
-}
-
-export const removeCookie = (name: string) => {
-    document.cookie = `${name}=; max-age=0`
-}
-
-export const removeLocalStorage = (name: string) => {
-    localStorage.removeItem(name)
 }
 
 export const removeToken = () => {
@@ -78,8 +21,8 @@ export const removeToken = () => {
     removeLocalStorage(STORAGE_TOKEN_KEY)
 }
 
-export const clearLocalStorage = () => {
-    localStorage.clear()
+export const getToken = () => {
+    return getLocalStorage(STORAGE_TOKEN_KEY)
 }
 
 export const getCaptcha = (width: number, high: number, num: number) => {
@@ -122,68 +65,102 @@ export const getCaptcha = (width: number, high: number, num: number) => {
     }
 }
 
-const randomInt = (start: number, end: number) => {
-    if (start > end) {
-        const t = start
-        start = end
-        end = t
+export const login = async (username: string, password: string) => {
+    return await r_auth_login(username, password)
+}
+
+export const logout = async () => {
+    return r_auth_logout().finally(() => {
+        removeToken()
+    })
+}
+
+export const getLoginStatus = () => {
+    return getLocalStorage(STORAGE_TOKEN_KEY) !== null
+}
+
+export const getUserInfo = async (): Promise<UserWithPowerInfoVo> => {
+    if (getLocalStorage(STORAGE_USER_INFO_KEY) !== null) {
+        return new Promise((resolve) => {
+            resolve(
+                JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo
+            )
+        })
     }
-    start = Math.ceil(start)
-    end = Math.floor(end)
-    return start + Math.floor(Math.random() * (end - start))
+    return requestUserInfo()
 }
 
-const randomFloat = (start: number, end: number) => {
-    return start + Math.random() * (end - start)
-}
+export const requestUserInfo = async () => {
+    let user: UserWithPowerInfoVo | null
 
-const randomColor = (start: number, end: number) => {
-    return `rgb(${randomInt(start, end)},${randomInt(start, end)},${randomInt(start, end)})`
-}
-
-export const getRedirectUrl = (path: string, redirectUrl: string): string => {
-    return `${path}?redirect=${encodeURIComponent(redirectUrl)}`
-}
-
-export const getNowLocalTime = (format: string = 'yyyy-MM-DD HH:mm:ssZ') => {
-    return moment().local().format(format)
-}
-
-export const getNowUtc = () => {
-    return moment().toISOString()
-}
-
-export const utcToLocalTime = (utcTime: string, format: string = 'yyyy-MM-DD HH:mm:ssZ') => {
-    return moment.utc(utcTime).local().format(format)
-}
-
-export const dayjsToLocalTime = (date: dayjs.Dayjs, format: string = 'YYYY-MM-DD HH:mm:ssZ') => {
-    return date.format(format)
-}
-
-export const dayjsToUtc = (date: dayjs.Dayjs) => {
-    return date.toISOString()
-}
-
-export const localTimeToUtc = (localTime: string) => {
-    return moment(localTime).toISOString()
-}
-
-export const isPastTime = (utcTime: string) => {
-    return moment.utc(utcTime).isBefore(moment.now())
-}
-
-export const floorNumber = (num: number, digits: number) => {
-    if (digits > 0) {
-        return Math.floor(num / Math.pow(10, digits - 1)) * Math.pow(10, digits - 1)
-    } else {
-        const regExpMatchArray = num.toString().match(new RegExp('^\\d\\.\\d{' + -digits + '}'))
-        if (regExpMatchArray !== null) {
-            return parseFloat(regExpMatchArray[0]).toFixed(-digits)
-        } else {
-            return num
+    await r_sys_user_info().then((value) => {
+        const response = value.data
+        if (response.code === DATABASE_SELECT_SUCCESS) {
+            user = response.data
+            setLocalStorage(STORAGE_USER_INFO_KEY, JSON.stringify(user))
         }
+    })
+
+    return new Promise<UserWithPowerInfoVo>((resolve, reject) => {
+        if (user) {
+            resolve(user)
+        }
+        reject(user)
+    })
+}
+
+export const getNickname = async () => {
+    const user = await getUserInfo()
+
+    return user.userInfo.nickname
+}
+
+export const getUsername = async () => {
+    const user = await getUserInfo()
+
+    return user.username
+}
+
+export const getPermissionPath = (): string[] => {
+    const s = getLocalStorage(STORAGE_USER_INFO_KEY)
+    if (s === null) {
+        return []
     }
+
+    const user = JSON.parse(s) as UserWithPowerInfoVo
+    const paths: string[] = []
+    user.menus.forEach((menu) => {
+        paths.push(menu.url)
+    })
+
+    return paths
+}
+
+export const hasPathPermission = (path: string) => {
+    return getPermissionPath().indexOf(path) !== -1
+}
+
+/*
+export const getAuthRoute = (route: RouteJsonObject[]): RouteJsonObject[] => {
+    return route.map((value) => {
+        if (value.absolutePath) {
+            value.absolutePath
+        }
+        if (value.children) {
+            value.children = getAuthRoute(value.children)
+        }
+        return value
+    })
+}
+*/
+
+export const getCaptchaSrc = () => {
+    captcha = getCaptcha(300, 150, 4)
+    return captcha.base64Src
+}
+
+export const verifyCaptcha = (value: string) => {
+    return captcha.value.toLowerCase() === value.replace(/\s*/g, '').toLowerCase()
 }
 
 export const powerListToPowerTree = (
@@ -282,36 +259,4 @@ const parentToTree = (data: _DataNode[]): _DataNode[] => {
     translator(parents, children)
 
     return parents
-}
-
-const getFullTitle = (data: _DataNode, preTitle?: string) => {
-    data.fullTitle = `${preTitle ? `${preTitle}-` : ''}${data.title as string}`
-    data.children &&
-        data.children.forEach((value) => {
-            getFullTitle(value, data.fullTitle)
-        })
-
-    return data
-}
-
-export const showLoadingMask = (id: string) => {
-    if (document.querySelector(`#${id}`)) {
-        return
-    }
-
-    const container = document.createElement('div')
-    document.body.appendChild(container)
-    container.id = id
-    container.setAttribute(
-        'style',
-        'position: fixed; width: 100vw; height: 100vh; z-index: 10000; left: 0; top: 0;'
-    )
-
-    return ReactDOM.createRoot(container).render(<LoadingMask />)
-}
-
-export const removeLoadingMask = (id: string) => {
-    document.querySelectorAll(`#${id}`).forEach((value) => {
-        value.parentNode?.removeChild(value)
-    })
 }

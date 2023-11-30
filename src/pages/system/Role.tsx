@@ -10,8 +10,9 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { utcToLocalTime, powerListToPowerTree } from '@/utils/common'
-import { useUpdatedEffect } from '@/utils/hooks'
+import { useUpdatedEffect } from '@/util/hooks'
+import { utcToLocalTime } from '@/util/datetime'
+import { powerListToPowerTree } from '@/util/auth.tsx'
 import {
     r_sys_role_add,
     r_sys_role_change_status,

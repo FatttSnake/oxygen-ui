@@ -7,7 +7,7 @@ import {
     PERMISSION_TOKEN_RENEW_SUCCESS,
     PERMISSION_UNAUTHORIZED
 } from '@/constants/common.constants'
-import { getToken, removeToken, setToken } from '@/utils/common'
+import { getToken, setToken, removeToken } from '@/util/auth'
 
 const service: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,

@@ -6,8 +6,8 @@ import {
     PERMISSION_USER_DISABLE,
     PERMISSION_USERNAME_NOT_FOUND
 } from '@/constants/common.constants'
-import { utcToLocalTime, setToken } from '@/utils/common'
-import { getUserInfo, login } from '@/utils/auth'
+import { utcToLocalTime } from '@/util/datetime'
+import { getUserInfo, login, setToken } from '@/util/auth'
 
 const Login: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage()
