@@ -8,8 +8,10 @@ import {
 } from '@/constants/common.constants'
 import { utcToLocalTime } from '@/util/datetime'
 import { getUserInfo, login, setToken } from '@/util/auth'
+import { AppContext } from '@/App'
 
 const Login: React.FC = () => {
+    const { refreshRouter } = useContext(AppContext)
     const [messageApi, contextHolder] = message.useMessage()
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
@@ -32,6 +34,7 @@ const Login: React.FC = () => {
                                 navigate('/')
                             }
                             void getUserInfo().then((user) => {
+                                refreshRouter()
                                 notification.success({
                                     message: '欢迎回来',
                                     description: (

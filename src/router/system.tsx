@@ -1,4 +1,5 @@
 import React from 'react'
+import { getAuthRoute } from '@/util/route'
 
 const system: RouteJsonObject[] = [
     {
@@ -18,7 +19,6 @@ const system: RouteJsonObject[] = [
         name: '用户管理',
         icon: React.lazy(() => import('~icons/fatweb/user.jsx')),
         menu: true,
-        permission: true,
         autoHide: true
     },
     {
@@ -29,7 +29,6 @@ const system: RouteJsonObject[] = [
         name: '角色管理',
         icon: React.lazy(() => import('~icons/fatweb/role.jsx')),
         menu: true,
-        permission: true,
         autoHide: true
     },
     {
@@ -40,7 +39,6 @@ const system: RouteJsonObject[] = [
         name: '群组管理',
         icon: React.lazy(() => import('~icons/fatweb/group.jsx')),
         menu: true,
-        permission: true,
         autoHide: true
     },
     {
@@ -51,7 +49,6 @@ const system: RouteJsonObject[] = [
         name: '系统日志',
         icon: React.lazy(() => import('~icons/fatweb/log.jsx')),
         menu: true,
-        permission: true,
         autoHide: true
     },
     {
@@ -60,5 +57,7 @@ const system: RouteJsonObject[] = [
         element: <Navigate to="/system" replace />
     }
 ]
+
+export const getSystemRouteJson = () => getAuthRoute(system, true)
 
 export default system

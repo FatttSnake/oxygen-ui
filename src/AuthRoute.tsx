@@ -22,8 +22,13 @@ const AuthRoute = () => {
             )
         }
         if (isLogin && lastMatch.pathname === '/login') {
-            return <Navigate to="/" />
+            return <Navigate to={'/'} />
         }
+
+        if (location.pathname.length > 1 && location.pathname.endsWith('/')) {
+            return <Navigate to={location.pathname.substring(0, location.pathname.length - 1)} />
+        }
+
         return outlet
     }, [
         handle?.title,

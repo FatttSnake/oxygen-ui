@@ -1,3 +1,6 @@
+import { getLocalStorage } from '@/util/browser.tsx'
+import { STORAGE_USER_INFO_KEY } from '@/constants/common.constants.ts'
+
 export const getRedirectUrl = (path: string, redirectUrl: string): string => {
     return `${path}?redirect=${encodeURIComponent(redirectUrl)}`
 }
@@ -10,4 +13,73 @@ export const getFullTitle = (data: _DataNode, preTitle?: string) => {
         })
 
     return data
+}
+
+export const getPermissionPath = (): string[] => {
+    const s = getLocalStorage(STORAGE_USER_INFO_KEY)
+    if (s === null) {
+        return []
+    }
+
+    const user = JSON.parse(s) as UserWithPowerInfoVo
+    const paths: string[] = []
+    user.menus.forEach((menu) => {
+        paths.push(menu.url)
+    })
+
+    return paths
+}
+
+export const hasPathPermission = (path: string) => {
+    return getPermissionPath().indexOf(path) !== -1
+}
+
+export const getAuthRoute = (
+    route: RouteJsonObject[],
+    parentPermission: boolean = false
+): RouteJsonObject[] => {
+    return route
+        .filter(
+            (value) =>
+                !(value.permission || parentPermission) || hasPathPermission(value.absolutePath)
+        )
+        .map((value) => {
+            if (value.children) {
+                value.children = getAuthRoute(value.children, parentPermission || value.permission)
+            }
+            return value
+        })
+}
+
+export const mapJsonToRoute = (jsonObject: RouteJsonObject[]): RouteObject[] => {
+    return jsonObject.map((value) => ({
+        path: value.path,
+        id: value.id,
+        element: value.element,
+        Component: value.component,
+        handle: {
+            absolutePath: value.absolutePath,
+            name: value.name,
+            titlePrefix: value.titlePrefix,
+            title: value.title,
+            titlePostfix: value.titlePostfix,
+            icon: value.icon,
+            menu: value.menu,
+            auth: value.auth,
+            permission: value.permission,
+            autoHide: value.autoHide
+        },
+        children: value.children && mapJsonToRoute(value.children)
+    }))
+}
+
+export const setTitle = (jsonObject: RouteJsonObject[], title: string): RouteJsonObject[] => {
+    return jsonObject.map((value) => {
+        if (!value.title) {
+            value.title = title
+        }
+        value.children && setTitle(value.children, title)
+
+        return value
+    })
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/pages/home-framework.scss'
 import { COLOR_FONT_SECONDARY } from '@/constants/common.constants'
-import router from '@/router'
+import { getRouter } from '@/router'
 import LoadingMask from '@/components/common/LoadingMask'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 
@@ -54,7 +54,8 @@ export const HomeFrameworkContext = createContext<{
 
 const HomeFramework: React.FC = () => {
     const routeId = useMatches()[1].id
-    const routeChildren = router.routes[0].children?.find((value) => value.id === routeId)?.children
+    const routeChildren = getRouter().routes[0].children?.find((value) => value.id === routeId)
+        ?.children
 
     const pathname = useLocation().pathname
 

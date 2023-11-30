@@ -1,6 +1,6 @@
 import React from 'react'
 import '@/assets/css/pages/system-framework.scss'
-import system from '@/router/system'
+import { getSystemRouteJson } from '@/router/system'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
@@ -25,7 +25,7 @@ const SystemFramework: React.FC = () => {
                         }
                     >
                         <SidebarItemList>
-                            {system.map((value) => {
+                            {getSystemRouteJson().map((value) => {
                                 return value.menu ? (
                                     <SidebarItem
                                         end={value.id === 'system' ? true : undefined}

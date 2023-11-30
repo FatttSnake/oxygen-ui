@@ -1,7 +1,7 @@
 import React from 'react'
 import '@/assets/css/pages/tools-framework.scss'
 import user from '@/router/user'
-import { hasPathPermission } from '@/util/auth'
+import { hasPathPermission } from '@/util/route'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'

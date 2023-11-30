@@ -121,39 +121,6 @@ export const getUsername = async () => {
     return user.username
 }
 
-export const getPermissionPath = (): string[] => {
-    const s = getLocalStorage(STORAGE_USER_INFO_KEY)
-    if (s === null) {
-        return []
-    }
-
-    const user = JSON.parse(s) as UserWithPowerInfoVo
-    const paths: string[] = []
-    user.menus.forEach((menu) => {
-        paths.push(menu.url)
-    })
-
-    return paths
-}
-
-export const hasPathPermission = (path: string) => {
-    return getPermissionPath().indexOf(path) !== -1
-}
-
-/*
-export const getAuthRoute = (route: RouteJsonObject[]): RouteJsonObject[] => {
-    return route.map((value) => {
-        if (value.absolutePath) {
-            value.absolutePath
-        }
-        if (value.children) {
-            value.children = getAuthRoute(value.children)
-        }
-        return value
-    })
-}
-*/
-
 export const getCaptchaSrc = () => {
     captcha = getCaptcha(300, 150, 4)
     return captcha.base64Src

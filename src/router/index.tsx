@@ -1,41 +1,10 @@
 import React from 'react'
+import _ from 'lodash'
 import system from '@/router/system'
 import home from '@/router/home'
 import user from '@/router/user'
 import tools from '@/router/tools'
-
-const mapJsonToRoute = (jsonObject: RouteJsonObject[]): RouteObject[] => {
-    return jsonObject.map((value) => ({
-        path: value.path,
-        id: value.id,
-        element: value.element,
-        Component: value.component,
-        handle: {
-            absolutePath: value.absolutePath,
-            name: value.name,
-            titlePrefix: value.titlePrefix,
-            title: value.title,
-            titlePostfix: value.titlePostfix,
-            icon: value.icon,
-            menu: value.menu,
-            auth: value.auth,
-            permission: value.permission,
-            autoHide: value.autoHide
-        },
-        children: value.children && mapJsonToRoute(value.children)
-    }))
-}
-
-const setTitle = (jsonObject: RouteJsonObject[], title: string): RouteJsonObject[] => {
-    return jsonObject.map((value) => {
-        if (!value.title) {
-            value.title = title
-        }
-        value.children && setTitle(value.children, title)
-
-        return value
-    })
-}
+import { getAuthRoute, mapJsonToRoute, setTitle } from '@/util/route'
 
 const root: RouteJsonObject[] = [
     {
@@ -80,7 +49,8 @@ const root: RouteJsonObject[] = [
                 component: React.lazy(() => import('@/pages/SystemFramework')),
                 children: setTitle(system, '系统设置'),
                 name: '系统设置',
-                auth: true
+                auth: true,
+                permission: true
             },
             {
                 path: '',
@@ -98,7 +68,4 @@ const root: RouteJsonObject[] = [
     }
 ]
 
-const routes = mapJsonToRoute(root)
-
-const router = createBrowserRouter(routes)
-export default router
+export const getRouter = () => createBrowserRouter(mapJsonToRoute(getAuthRoute(_.cloneDeep(root))))
