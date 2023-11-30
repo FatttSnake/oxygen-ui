@@ -19,7 +19,11 @@ const Log: React.FC = () => {
         pagination: {
             current: 1,
             pageSize: 20,
-            position: ['bottomCenter']
+            position: ['bottomCenter'],
+            showTotal: (total, range) =>
+                `第 ${
+                    range[0] === range[1] ? `${range[0]}` : `${range[0]}~${range[1]}`
+                } 项 共 ${total} 项`
         }
     })
     const [searchRequestUrl, setSearchRequestUrl] = useState('')
@@ -134,6 +138,7 @@ const Log: React.FC = () => {
         filters: Record<string, _FilterValue | null>,
         sorter: _SorterResult<SysLogGetVo> | _SorterResult<SysLogGetVo>[]
     ) => {
+        pagination = { ...tableParams.pagination, ...pagination }
         if (Array.isArray(sorter)) {
             setTableParams({
                 pagination,

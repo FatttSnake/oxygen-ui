@@ -56,7 +56,11 @@ const User: React.FC = () => {
         pagination: {
             current: 1,
             pageSize: 20,
-            position: ['bottomCenter']
+            position: ['bottomCenter'],
+            showTotal: (total, range) =>
+                `第 ${
+                    range[0] === range[1] ? `${range[0]}` : `${range[0]}~${range[1]}`
+                } 项 共 ${total} 项`
         }
     })
     const [tableSelectedItem, setTableSelectedItem] = useState<React.Key[]>([])
@@ -214,6 +218,7 @@ const User: React.FC = () => {
         filters: Record<string, _FilterValue | null>,
         sorter: _SorterResult<UserWithRoleInfoVo> | _SorterResult<UserWithRoleInfoVo>[]
     ) => {
+        pagination = { ...tableParams.pagination, ...pagination }
         if (Array.isArray(sorter)) {
             setTableParams({
                 pagination,
