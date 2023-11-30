@@ -6,6 +6,7 @@ import {
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
 import { dayjsToUtc, utcToLocalTime } from '@/utils/common'
+import { useUpdatedEffect } from '@/utils/hooks'
 import { r_sys_log_get } from '@/services/system'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import Card from '@/components/common/Card'
@@ -256,7 +257,7 @@ const Log: React.FC = () => {
             })
     }
 
-    useEffect(() => {
+    useUpdatedEffect(() => {
         getLog()
     }, [
         JSON.stringify(tableParams.filters),

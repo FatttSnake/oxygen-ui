@@ -11,6 +11,7 @@ import {
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
 import { utcToLocalTime, powerListToPowerTree } from '@/utils/common'
+import { useUpdatedEffect } from '@/utils/hooks'
 import {
     r_sys_role_add,
     r_sys_role_change_status,
@@ -166,6 +167,9 @@ const Role: React.FC = () => {
         form.setFieldValue('name', newFormValues?.name)
         form.setFieldValue('powerIds', newFormValues?.powerIds)
         form.setFieldValue('enable', newFormValues?.enable ?? true)
+        if (!powerTreeData || !powerTreeData.length) {
+            getPowerTreeData()
+        }
     }
 
     const handleOnListDeleteBtnClick = () => {
@@ -212,6 +216,9 @@ const Role: React.FC = () => {
                 value.operations.map((operation) => operation.id)
             )
             form.setFieldValue('enable', value.enable)
+            if (!powerTreeData || !powerTreeData.length) {
+                getPowerTreeData()
+            }
             void form.validateFields()
         }
     }
@@ -478,11 +485,7 @@ const Role: React.FC = () => {
         }
     }, [formValues])
 
-    useEffect(() => {
-        getPowerTreeData()
-    }, [])
-
-    useEffect(() => {
+    useUpdatedEffect(() => {
         getRole()
     }, [
         JSON.stringify(tableParams.filters),

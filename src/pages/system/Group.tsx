@@ -11,6 +11,7 @@ import {
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
 import { utcToLocalTime } from '@/utils/common'
+import { useUpdatedEffect } from '@/utils/hooks'
 import {
     r_sys_group_add,
     r_sys_group_change_status,
@@ -174,6 +175,9 @@ const Group: React.FC = () => {
         form.setFieldValue('name', newFormValues?.name)
         form.setFieldValue('roleIds', newFormValues?.roleIds)
         form.setFieldValue('enable', newFormValues?.enable ?? true)
+        if (!roleData || !roleData.length) {
+            getRoleData()
+        }
     }
 
     const handleOnListDeleteBtnClick = () => {
@@ -220,6 +224,9 @@ const Group: React.FC = () => {
                 value.roles.map((role) => role.id)
             )
             form.setFieldValue('enable', value.enable)
+            if (!roleData || !roleData.length) {
+                getRoleData()
+            }
             void form.validateFields()
         }
     }
@@ -469,11 +476,7 @@ const Group: React.FC = () => {
         }
     }, [formValues])
 
-    useEffect(() => {
-        getRoleData()
-    }, [])
-
-    useEffect(() => {
+    useUpdatedEffect(() => {
         getGroup()
     }, [
         JSON.stringify(tableParams.filters),

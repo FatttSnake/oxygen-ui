@@ -12,6 +12,7 @@ import {
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
 import { utcToLocalTime, isPastTime, localTimeToUtc, dayjsToUtc, getNowUtc } from '@/utils/common'
+import { useUpdatedEffect } from '@/utils/hooks'
 import {
     r_sys_group_get_list,
     r_sys_role_get_list,
@@ -259,6 +260,12 @@ const User: React.FC = () => {
         form.setFieldValue('roleIds', newFormValues?.roleIds)
         form.setFieldValue('groupIds', newFormValues?.groupIds)
 
+        if (!roleData || !roleData.length) {
+            getRoleData()
+        }
+        if (!groupData || !groupData.length) {
+            getGroupData()
+        }
         getAvatar()
     }
 
@@ -429,6 +436,12 @@ const User: React.FC = () => {
                 'groupIds',
                 value.groups.map((group) => group.id)
             )
+            if (!roleData || !roleData.length) {
+                getRoleData()
+            }
+            if (!groupData || !groupData.length) {
+                getGroupData()
+            }
             void form.validateFields()
         }
     }
@@ -718,11 +731,7 @@ const User: React.FC = () => {
         }
     }, [formValues])
 
-    useEffect(() => {
-        handleOnDrawerRefresh()
-    }, [])
-
-    useEffect(() => {
+    useUpdatedEffect(() => {
         getUser()
     }, [
         JSON.stringify(tableParams.filters),
