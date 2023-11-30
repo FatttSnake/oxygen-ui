@@ -133,22 +133,22 @@ export const verifyCaptcha = (value: string) => {
 export const powerListToPowerTree = (
     modules: ModuleVo[],
     menus: MenuVo[],
-    elements: ElementVo[],
+    funcs: FuncVo[],
     operations: OperationVo[]
 ): _DataNode[] => {
     const moduleChildrenMap = new Map<string, _DataNode[]>()
     const menuChildrenMap = new Map<string, _DataNode[]>()
-    const elementChildrenMap = new Map<string, _DataNode[]>()
+    const funcChildrenMap = new Map<string, _DataNode[]>()
 
     operations.forEach((operation) => {
-        if (elementChildrenMap.get(String(operation.elementId))) {
-            elementChildrenMap.get(String(operation.elementId))?.push({
+        if (funcChildrenMap.get(String(operation.funcId))) {
+            funcChildrenMap.get(String(operation.funcId))?.push({
                 title: operation.name,
                 key: operation.id,
                 value: operation.id
             })
         } else {
-            elementChildrenMap.set(String(operation.elementId), [
+            funcChildrenMap.set(String(operation.funcId), [
                 {
                     title: operation.name,
                     key: operation.id,
@@ -158,21 +158,21 @@ export const powerListToPowerTree = (
         }
     })
 
-    const elementTrees = parentToTree(
-        elements.map((element) => ({
-            title: element.name,
-            key: element.id,
-            value: element.id,
-            parentId: element.parentId,
-            children: elementChildrenMap.get(String(element.id))
+    const funcTrees = parentToTree(
+        funcs.map((func) => ({
+            title: func.name,
+            key: func.id,
+            value: func.id,
+            parentId: func.parentId,
+            children: funcChildrenMap.get(String(func.id))
         }))
     )
 
-    elementTrees.forEach((element) => {
-        if (menuChildrenMap.get(String(floorNumber(element.key as number, 5)))) {
-            menuChildrenMap.get(String(floorNumber(element.key as number, 5)))?.push(element)
+    funcTrees.forEach((func) => {
+        if (menuChildrenMap.get(String(floorNumber(func.key as number, 5)))) {
+            menuChildrenMap.get(String(floorNumber(func.key as number, 5)))?.push(func)
         } else {
-            menuChildrenMap.set(String(floorNumber(element.key as number, 5)), [element])
+            menuChildrenMap.set(String(floorNumber(func.key as number, 5)), [func])
         }
     })
 

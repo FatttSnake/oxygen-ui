@@ -73,7 +73,7 @@ interface UserWithPowerInfoVo {
     userInfo: UserInfoVo
     modules: ModuleVo[]
     menus: MenuVo[]
-    elements: ElementVo[]
+    funcs: FuncVo[]
     operations: OperationVo[]
 }
 
@@ -117,19 +117,19 @@ interface MenuVo {
     children: MenuVo[]
 }
 
-interface ElementVo {
+interface FuncVo {
     id: number
     name: string
     parentId: number
     menuId: number
-    children: ElementVo[]
+    children: FuncVo[]
 }
 
 interface OperationVo {
     id: number
     name: string
     code: string
-    elementId: number
+    funcId: number
 }
 
 interface RoleVo {
@@ -241,7 +241,7 @@ interface RoleWithPowerGetVo {
     updateTime: string
     modules: ModuleVo[]
     menus: MenuVo[]
-    elements: ElementVo[]
+    funcs: FuncVo[]
     operations: OperationVo[]
     tree: _DataNode[]
 }
@@ -261,7 +261,7 @@ interface RoleAddEditParam {
 interface PowerSetVo {
     moduleList: ModuleVo[]
     menuList: MenuVo[]
-    elementList: ElementVo[]
+    funcList: FuncVo[]
     operationList: OperationVo[]
 }
 

@@ -411,7 +411,7 @@ const Role: React.FC = () => {
                         value.tree = powerListToPowerTree(
                             value.modules,
                             value.menus,
-                            value.elements,
+                            value.funcs,
                             value.operations
                         )
 
@@ -454,7 +454,7 @@ const Role: React.FC = () => {
                             powerListToPowerTree(
                                 powerSet.moduleList,
                                 powerSet.menuList,
-                                powerSet.elementList,
+                                powerSet.funcList,
                                 powerSet.operationList
                             )
                         )
