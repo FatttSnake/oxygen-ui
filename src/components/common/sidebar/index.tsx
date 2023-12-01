@@ -13,11 +13,11 @@ interface SidebarProps extends React.PropsWithChildren {
 }
 
 const Sidebar: React.FC<SidebarProps> = (props) => {
-    const [hideSidebar, setHideSidebar] = useState(getLocalStorage('hideSidebar') === 'false')
+    const [hideSidebar, setHideSidebar] = useState(getLocalStorage('HIDE_SIDEBAR') === 'true')
 
     const switchSidebar = () => {
+        setLocalStorage('HIDE_SIDEBAR', !hideSidebar ? 'true' : 'false')
         setHideSidebar(!hideSidebar)
-        setLocalStorage('hideSidebar', hideSidebar ? 'true' : 'false')
         props.onSidebarSwitch && props.onSidebarSwitch(hideSidebar)
     }
 
