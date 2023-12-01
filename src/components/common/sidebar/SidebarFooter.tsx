@@ -49,7 +49,11 @@ const SidebarFooter: React.FC = () => {
 
     return (
         <div className={'footer'}>
-            <span className={'icon-user'} onClick={handleClickAvatar}>
+            <span
+                className={'icon-user'}
+                onClick={handleClickAvatar}
+                title={getLoginStatus() ? '个人中心' : '登录'}
+            >
                 <Icon component={IconFatwebUser} />
             </span>
             <span hidden={getLoginStatus()} className={'text'}>

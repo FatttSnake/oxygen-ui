@@ -12,18 +12,7 @@ const SystemFramework: React.FC = () => {
         <>
             <FitFullScreen className={'flex-horizontal'}>
                 <div className={'left-panel'}>
-                    <Sidebar
-                        title={'系统设置'}
-                        bottomFixed={
-                            <SidebarItemList>
-                                <SidebarItem
-                                    path={'/user'}
-                                    icon={IconFatwebUser}
-                                    text={'个人中心'}
-                                />
-                            </SidebarItemList>
-                        }
-                    >
+                    <Sidebar title={'系统设置'}>
                         <SidebarItemList>
                             {getSystemRouteJson().map((value) => {
                                 return value.menu ? (
