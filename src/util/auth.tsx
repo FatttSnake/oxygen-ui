@@ -121,6 +121,12 @@ export const getUsername = async () => {
     return user.username
 }
 
+export const getUserId = async () => {
+    const user = await getUserInfo()
+
+    return user.id
+}
+
 export const getCaptchaSrc = () => {
     captcha = getCaptcha(300, 150, 4)
     return captcha.base64Src
@@ -226,4 +232,42 @@ const parentToTree = (data: _DataNode[]): _DataNode[] => {
     translator(parents, children)
 
     return parents
+}
+
+export const getPermissionPath = (): string[] => {
+    const s = getLocalStorage(STORAGE_USER_INFO_KEY)
+    if (s === null) {
+        return []
+    }
+
+    const user = JSON.parse(s) as UserWithPowerInfoVo
+    const paths: string[] = []
+    user.menus.forEach((menu) => {
+        paths.push(menu.url)
+    })
+
+    return paths
+}
+
+export const hasPathPermission = (path: string) => {
+    return getPermissionPath().indexOf(path) !== -1
+}
+
+export const getPermission = (): string[] => {
+    const s = getLocalStorage(STORAGE_USER_INFO_KEY)
+    if (s === null) {
+        return []
+    }
+
+    const user = JSON.parse(s) as UserWithPowerInfoVo
+    const operationCodes: string[] = []
+    user.operations.forEach((operation) => {
+        operationCodes.push(operation.code)
+    })
+
+    return operationCodes
+}
+
+export const hasPermission = (operationCode: string) => {
+    return getPermission().indexOf(operationCode) !== -1
 }

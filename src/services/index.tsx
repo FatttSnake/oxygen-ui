@@ -7,6 +7,7 @@ import {
     PERMISSION_TOKEN_RENEW_SUCCESS,
     PERMISSION_UNAUTHORIZED
 } from '@/constants/common.constants'
+import { getRedirectUrl } from '@/util/route'
 import { getToken, setToken, removeToken } from '@/util/auth'
 
 const service: AxiosInstance = axios.create({
@@ -84,7 +85,9 @@ service.interceptors.response.use(
                     </>
                 )
                 setTimeout(() => {
-                    location.reload()
+                    location.replace(
+                        getRedirectUrl('/login', `${location.pathname}${location.search}`)
+                    )
                 }, 1500)
                 throw response?.data
             case PERMISSION_ACCESS_DENIED:

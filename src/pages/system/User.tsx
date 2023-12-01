@@ -12,6 +12,7 @@ import {
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
 import { useUpdatedEffect } from '@/util/hooks'
+import { hasPermission } from '@/util/auth'
 import { utcToLocalTime, isPastTime, localTimeToUtc, dayjsToUtc, getNowUtc } from '@/util/datetime'
 import {
     r_sys_group_get_list,
@@ -23,6 +24,7 @@ import {
     r_sys_user_get,
     r_sys_user_update
 } from '@/services/system'
+import Permission from '@/components/common/Permission'
 import { r_api_avatar_random_base64 } from '@/services/api/avatar'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
@@ -188,26 +190,32 @@ const User: React.FC = () => {
             render: (_, record) => (
                 <>
                     <AntdSpace size={'middle'}>
-                        <a
-                            style={{ color: COLOR_PRODUCTION }}
-                            onClick={handleOnChangePasswordBtnClick(record)}
-                        >
-                            修改密码
-                        </a>
-                        <a
-                            style={{ color: COLOR_PRODUCTION }}
-                            onClick={handleOnEditBtnClick(record)}
-                        >
-                            编辑
-                        </a>
-                        {record.id !== '0' ? (
+                        <Permission operationCode={'system:user:modify:password'}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
-                                onClick={handleOnDeleteBtnClick(record)}
+                                onClick={handleOnChangePasswordBtnClick(record)}
                             >
-                                删除
+                                修改密码
                             </a>
-                        ) : undefined}
+                        </Permission>
+                        <Permission operationCode={'system:user:modify:one'}>
+                            <a
+                                style={{ color: COLOR_PRODUCTION }}
+                                onClick={handleOnEditBtnClick(record)}
+                            >
+                                编辑
+                            </a>
+                        </Permission>
+                        <Permission operationCode={'system:user:delete:one'}>
+                            {record.id !== '0' ? (
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnDeleteBtnClick(record)}
+                                >
+                                    删除
+                                </a>
+                            ) : undefined}
+                        </Permission>
                     </AntdSpace>
                 </>
             )
@@ -393,6 +401,7 @@ const User: React.FC = () => {
                                     }).then((res) => {
                                         const response = res.data
                                         if (response.success) {
+                                            void message.success('修改密码成功')
                                             resolve(true)
                                         } else {
                                             reject(response.msg)
@@ -884,15 +893,17 @@ const User: React.FC = () => {
 
     const toolbar = (
         <FlexBox direction={'horizontal'} gap={10}>
-            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
-                <AntdButton
-                    type={'primary'}
-                    style={{ padding: '4px 8px' }}
-                    onClick={handleOnAddBtnClick}
-                >
-                    <Icon component={IconFatwebPlus} style={{ fontSize: '1.2em' }} />
-                </AntdButton>
-            </Card>
+            <Permission operationCode={'system:user:add:one'}>
+                <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                    <AntdButton
+                        type={'primary'}
+                        style={{ padding: '4px 8px' }}
+                        onClick={handleOnAddBtnClick}
+                    >
+                        <Icon component={IconFatwebPlus} style={{ fontSize: '1.2em' }} />
+                    </AntdButton>
+                </Card>
+            </Permission>
             <Card
                 hidden={tableSelectedItem.length === 0}
                 style={{ overflow: 'inherit', flex: '0 0 auto' }}
@@ -951,11 +962,15 @@ const User: React.FC = () => {
                 pagination={tableParams.pagination}
                 loading={isLoadingUserData}
                 onChange={handleOnTableChange}
-                rowSelection={{
-                    type: 'checkbox',
-                    onChange: handleOnTableSelectChange,
-                    getCheckboxProps: (record) => ({ disabled: record.id === '0' })
-                }}
+                rowSelection={
+                    hasPermission('system:user:delete:multiple')
+                        ? {
+                              type: 'checkbox',
+                              onChange: handleOnTableSelectChange,
+                              getCheckboxProps: (record) => ({ disabled: record.id === '0' })
+                          }
+                        : undefined
+                }
             />
         </Card>
     )

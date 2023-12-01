@@ -28,13 +28,15 @@ const Login: React.FC = () => {
                         setToken(data?.token ?? '')
                         void messageApi.success('登录成功')
                         setTimeout(() => {
-                            if (searchParams.has('redirect')) {
-                                navigate(searchParams.get('redirect') ?? '/')
-                            } else {
-                                navigate('/')
-                            }
                             void getUserInfo().then((user) => {
                                 refreshRouter()
+
+                                if (searchParams.has('redirect')) {
+                                    navigate(searchParams.get('redirect') ?? '/')
+                                } else {
+                                    navigate('/')
+                                }
+
                                 notification.success({
                                     message: '欢迎回来',
                                     description: (

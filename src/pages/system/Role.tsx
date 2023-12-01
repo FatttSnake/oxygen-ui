@@ -12,7 +12,7 @@ import {
 } from '@/constants/common.constants'
 import { useUpdatedEffect } from '@/util/hooks'
 import { utcToLocalTime } from '@/util/datetime'
-import { powerListToPowerTree } from '@/util/auth.tsx'
+import { hasPermission, powerListToPowerTree } from '@/util/auth'
 import {
     r_sys_role_add,
     r_sys_role_change_status,
@@ -22,6 +22,7 @@ import {
     r_sys_role_delete,
     r_sys_role_delete_list
 } from '@/services/system'
+import Permission from '@/components/common/Permission'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
@@ -98,33 +99,39 @@ const Role: React.FC = () => {
             render: (value, record) => (
                 <>
                     <AntdSpace size={'middle'}>
-                        {value ? (
+                        <Permission operationCode={'system:role:modify:status'}>
+                            {value ? (
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnChangStatusBtnClick(record.id, false)}
+                                >
+                                    禁用
+                                </a>
+                            ) : (
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnChangStatusBtnClick(record.id, true)}
+                                >
+                                    启用
+                                </a>
+                            )}
+                        </Permission>
+                        <Permission operationCode={'system:role:modify:one'}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
-                                onClick={handleOnChangStatusBtnClick(record.id, false)}
+                                onClick={handleOnEditBtnClick(record)}
                             >
-                                禁用
+                                编辑
                             </a>
-                        ) : (
+                        </Permission>
+                        <Permission operationCode={'system:role:delete:one'}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
-                                onClick={handleOnChangStatusBtnClick(record.id, true)}
+                                onClick={handleOnDeleteBtnClick(record)}
                             >
-                                启用
+                                删除
                             </a>
-                        )}
-                        <a
-                            style={{ color: COLOR_PRODUCTION }}
-                            onClick={handleOnEditBtnClick(record)}
-                        >
-                            编辑
-                        </a>
-                        <a
-                            style={{ color: COLOR_PRODUCTION }}
-                            onClick={handleOnDeleteBtnClick(record)}
-                        >
-                            删除
-                        </a>
+                        </Permission>
                     </AntdSpace>
                 </>
             )
@@ -498,15 +505,17 @@ const Role: React.FC = () => {
 
     const toolbar = (
         <FlexBox direction={'horizontal'} gap={10}>
-            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
-                <AntdButton
-                    type={'primary'}
-                    style={{ padding: '4px 8px' }}
-                    onClick={handleOnAddBtnClick}
-                >
-                    <Icon component={IconFatwebPlus} style={{ fontSize: '1.2em' }} />
-                </AntdButton>
-            </Card>
+            <Permission operationCode={'system:role:add:one'}>
+                <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                    <AntdButton
+                        type={'primary'}
+                        style={{ padding: '4px 8px' }}
+                        onClick={handleOnAddBtnClick}
+                    >
+                        <Icon component={IconFatwebPlus} style={{ fontSize: '1.2em' }} />
+                    </AntdButton>
+                </Card>
+            </Permission>
             <Card
                 hidden={tableSelectedItem.length === 0}
                 style={{ overflow: 'inherit', flex: '0 0 auto' }}
@@ -561,10 +570,14 @@ const Role: React.FC = () => {
                 pagination={tableParams.pagination}
                 loading={isLoading}
                 onChange={handleOnTableChange}
-                rowSelection={{
-                    type: 'checkbox',
-                    onChange: handleOnTableSelectChange
-                }}
+                rowSelection={
+                    hasPermission('system:role:delete:multiple')
+                        ? {
+                              type: 'checkbox',
+                              onChange: handleOnTableSelectChange
+                          }
+                        : undefined
+                }
             />
         </Card>
     )

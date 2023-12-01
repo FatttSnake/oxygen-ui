@@ -11,6 +11,7 @@ import {
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
 import { useUpdatedEffect } from '@/util/hooks'
+import { hasPermission } from '@/util/auth'
 import { utcToLocalTime } from '@/util/datetime'
 import {
     r_sys_group_add,
@@ -21,6 +22,7 @@ import {
     r_sys_group_update,
     r_sys_role_get_list
 } from '@/services/system'
+import Permission from '@/components/common/Permission'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
@@ -105,33 +107,39 @@ const Group: React.FC = () => {
             render: (value, record) => (
                 <>
                     <AntdSpace size={'middle'}>
-                        {value ? (
+                        <Permission operationCode={'system:group:modify:status'}>
+                            {value ? (
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnChangStatusBtnClick(record.id, false)}
+                                >
+                                    禁用
+                                </a>
+                            ) : (
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnChangStatusBtnClick(record.id, true)}
+                                >
+                                    启用
+                                </a>
+                            )}
+                        </Permission>
+                        <Permission operationCode={'system:group:modify:one'}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
-                                onClick={handleOnChangStatusBtnClick(record.id, false)}
+                                onClick={handleOnEditBtnClick(record)}
                             >
-                                禁用
+                                编辑
                             </a>
-                        ) : (
+                        </Permission>
+                        <Permission operationCode={'system:group:delete:one'}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
-                                onClick={handleOnChangStatusBtnClick(record.id, true)}
+                                onClick={handleOnDeleteBtnClick(record)}
                             >
-                                启用
+                                删除
                             </a>
-                        )}
-                        <a
-                            style={{ color: COLOR_PRODUCTION }}
-                            onClick={handleOnEditBtnClick(record)}
-                        >
-                            编辑
-                        </a>
-                        <a
-                            style={{ color: COLOR_PRODUCTION }}
-                            onClick={handleOnDeleteBtnClick(record)}
-                        >
-                            删除
-                        </a>
+                        </Permission>
                     </AntdSpace>
                 </>
             )
@@ -488,15 +496,17 @@ const Group: React.FC = () => {
 
     const toolbar = (
         <FlexBox direction={'horizontal'} gap={10}>
-            <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
-                <AntdButton
-                    type={'primary'}
-                    style={{ padding: '4px 8px' }}
-                    onClick={handleOnAddBtnClick}
-                >
-                    <Icon component={IconFatwebPlus} style={{ fontSize: '1.2em' }} />
-                </AntdButton>
-            </Card>
+            <Permission operationCode={'system:group:add:one'}>
+                <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
+                    <AntdButton
+                        type={'primary'}
+                        style={{ padding: '4px 8px' }}
+                        onClick={handleOnAddBtnClick}
+                    >
+                        <Icon component={IconFatwebPlus} style={{ fontSize: '1.2em' }} />
+                    </AntdButton>
+                </Card>
+            </Permission>
             <Card
                 hidden={tableSelectedItem.length === 0}
                 style={{ overflow: 'inherit', flex: '0 0 auto' }}
@@ -551,10 +561,14 @@ const Group: React.FC = () => {
                 pagination={tableParams.pagination}
                 loading={isLoading}
                 onChange={handleOnTableChange}
-                rowSelection={{
-                    type: 'checkbox',
-                    onChange: handleOnTableSelectChange
-                }}
+                rowSelection={
+                    hasPermission('system:group:delete:multiple')
+                        ? {
+                              type: 'checkbox',
+                              onChange: handleOnTableSelectChange
+                          }
+                        : undefined
+                }
             />
         </Card>
     )

@@ -1,5 +1,5 @@
-import { getLocalStorage } from '@/util/browser.tsx'
-import { STORAGE_USER_INFO_KEY } from '@/constants/common.constants.ts'
+import { RouteObject } from 'react-router'
+import { hasPathPermission } from '@/util/auth'
 
 export const getRedirectUrl = (path: string, redirectUrl: string): string => {
     return `${path}?redirect=${encodeURIComponent(redirectUrl)}`
@@ -13,25 +13,6 @@ export const getFullTitle = (data: _DataNode, preTitle?: string) => {
         })
 
     return data
-}
-
-export const getPermissionPath = (): string[] => {
-    const s = getLocalStorage(STORAGE_USER_INFO_KEY)
-    if (s === null) {
-        return []
-    }
-
-    const user = JSON.parse(s) as UserWithPowerInfoVo
-    const paths: string[] = []
-    user.menus.forEach((menu) => {
-        paths.push(menu.url)
-    })
-
-    return paths
-}
-
-export const hasPathPermission = (path: string) => {
-    return getPermissionPath().indexOf(path) !== -1
 }
 
 export const getAuthRoute = (
