@@ -12,6 +12,16 @@ const system: RouteJsonObject[] = [
         menu: true
     },
     {
+        path: 'settings',
+        absolutePath: '/system/settings',
+        id: 'system-settings',
+        component: React.lazy(() => import('@/pages/system/Settings')),
+        name: '系统设置',
+        icon: React.lazy(() => import('~icons/fatweb/setting.jsx')),
+        menu: true,
+        autoHide: true
+    },
+    {
         path: 'user',
         absolutePath: '/system/user',
         id: 'system-user',

@@ -7,7 +7,9 @@ import {
     URL_SYS_ROLE_LIST,
     URL_SYS_GROUP,
     URL_SYS_GROUP_LIST,
-    URL_SYS_LOG
+    URL_SYS_LOG,
+    URL_SYS_SETTINGS,
+    URL_SYS_SETTINGS_MAIL
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -63,3 +65,8 @@ export const r_sys_group_delete_list = (ids: React.Key[]) => request.delete(URL_
 
 export const r_sys_log_get = (param: SysLogGetParam) =>
     request.get<PageVo<SysLogGetVo>>(URL_SYS_LOG, param)
+
+export const r_sys_settings_get = () => request.get<SystemSettingVo>(URL_SYS_SETTINGS)
+
+export const r_sys_settings_mail_update = (param: MailSettingsParam) =>
+    request.put(URL_SYS_SETTINGS_MAIL, param)

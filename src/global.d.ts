@@ -294,3 +294,23 @@ interface GroupChangeStatusParam {
 interface AvatarBase64Vo {
     base64: string
 }
+
+interface SystemSettingVo {
+    mail: MailSettingsVo
+}
+
+interface MailSettingsVo {
+    host?: string
+    port?: number
+    username?: string
+    password?: string
+    from?: string
+}
+
+interface MailSettingsParam {
+    host?: string
+    port?: number
+    username?: string
+    password?: string
+    from?: string
+}
