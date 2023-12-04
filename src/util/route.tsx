@@ -22,7 +22,9 @@ export const getAuthRoute = (
     return route
         .filter(
             (value) =>
-                !(value.permission || parentPermission) || hasPathPermission(value.absolutePath)
+                value.path === '*' ||
+                !(value.permission || parentPermission) ||
+                hasPathPermission(value.absolutePath)
         )
         .map((value) => {
             if (value.children) {
