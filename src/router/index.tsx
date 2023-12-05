@@ -22,7 +22,7 @@ const root: RouteJsonObject[] = [
                 path: 'loading',
                 absolutePath: '/loading',
                 id: 'loading',
-                component: React.lazy(() => import('@/components/common/LoadingMask'))
+                component: React.lazy(() => import('@/components/common/FullscreenLoadingMask'))
             },
             {
                 path: 'tools',

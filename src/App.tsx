@@ -1,6 +1,6 @@
 import React from 'react'
 import { getRouter } from '@/router'
-import LoadingMask from '@/components/common/LoadingMask'
+import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 export const AppContext = createContext<{ refreshRouter: () => void }>({
     refreshRouter: () => undefined
@@ -18,7 +18,7 @@ const App: React.FC = () => {
                     }
                 }}
             >
-                <Suspense fallback={<LoadingMask />}>
+                <Suspense fallback={<FullscreenLoadingMask />}>
                     <RouterProvider router={routerState} />
                 </Suspense>
             </AppContext.Provider>

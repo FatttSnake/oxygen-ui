@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client'
-import LoadingMask from '@/components/common/LoadingMask'
+import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 export const randomInt = (start: number, end: number) => {
     if (start > end) {
@@ -46,7 +46,7 @@ export const showLoadingMask = (id: string) => {
         'position: fixed; width: 100vw; height: 100vh; z-index: 10000; left: 0; top: 0;'
     )
 
-    return ReactDOM.createRoot(container).render(<LoadingMask />)
+    return ReactDOM.createRoot(container).render(<FullscreenLoadingMask />)
 }
 
 export const removeLoadingMask = (id: string) => {

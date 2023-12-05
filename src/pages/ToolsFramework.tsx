@@ -7,7 +7,7 @@ import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
 import SidebarItem from '@/components/common/sidebar/SidebarItem'
 import SidebarSeparate from '@/components/common/sidebar/SidebarSeparate'
-import LoadingMask from '@/components/common/LoadingMask'
+import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 const ToolsFramework: React.FC = () => {
     const sidebarScrollRef = useRef<SidebarScrollElement>(null)
@@ -67,7 +67,7 @@ const ToolsFramework: React.FC = () => {
                     <Suspense
                         fallback={
                             <>
-                                <LoadingMask />
+                                <FullscreenLoadingMask />
                             </>
                         }
                     >

@@ -6,7 +6,7 @@ import FitFullScreen from '@/components/common/FitFullScreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
 import SidebarItem from '@/components/common/sidebar/SidebarItem'
-import LoadingMask from '@/components/common/LoadingMask'
+import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 const ToolsFramework: React.FC = () => {
     return (
@@ -46,7 +46,7 @@ const ToolsFramework: React.FC = () => {
                     <Suspense
                         fallback={
                             <>
-                                <LoadingMask />
+                                <FullscreenLoadingMask />
                             </>
                         }
                     >

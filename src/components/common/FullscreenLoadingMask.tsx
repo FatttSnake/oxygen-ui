@@ -1,10 +1,10 @@
 import React from 'react'
 import Icon from '@ant-design/icons'
-import '@/assets/css/components/common/loading-mask.scss'
+import '@/assets/css/components/common/fullscreen-loading-mask.scss'
 import { COLOR_FONT_MAIN } from '@/constants/common.constants'
 import FitFullScreen from '@/components/common/FitFullScreen'
 
-const LoadingMask: React.FC = () => {
+const FullscreenLoadingMask: React.FC = () => {
     const loadingIcon = (
         <>
             <Icon
@@ -17,7 +17,7 @@ const LoadingMask: React.FC = () => {
     return (
         <>
             <FitFullScreen>
-                <div className={'loading-mask'}>
+                <div className={'fullscreen-loading-mask'}>
                     <AntdSpin indicator={loadingIcon} />
                 </div>
             </FitFullScreen>
@@ -25,4 +25,4 @@ const LoadingMask: React.FC = () => {
     )
 }
 
-export default LoadingMask
+export default FullscreenLoadingMask

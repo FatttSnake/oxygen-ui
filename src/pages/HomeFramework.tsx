@@ -3,7 +3,7 @@ import Icon from '@ant-design/icons'
 import '@/assets/css/pages/home-framework.scss'
 import { COLOR_FONT_SECONDARY } from '@/constants/common.constants'
 import { getRouter } from '@/router'
-import LoadingMask from '@/components/common/LoadingMask'
+import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 
 export const HomeFrameworkContext = createContext<{
@@ -206,7 +206,7 @@ const HomeFramework: React.FC = () => {
                         <Suspense
                             fallback={
                                 <>
-                                    <LoadingMask />
+                                    <FullscreenLoadingMask />
                                 </>
                             }
                         >
