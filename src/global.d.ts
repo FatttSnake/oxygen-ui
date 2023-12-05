@@ -295,22 +295,30 @@ interface AvatarBase64Vo {
     base64: string
 }
 
-interface SystemSettingVo {
+interface SystemSettingsVo {
     mail: MailSettingsVo
 }
 
 interface MailSettingsVo {
     host?: string
     port?: number
+    securityType?: string
     username?: string
     password?: string
     from?: string
+    fromName?: string
 }
 
 interface MailSettingsParam {
     host?: string
     port?: number
+    securityType?: string
     username?: string
     password?: string
     from?: string
+    fromName?: string
+}
+
+interface MailSendParam {
+    to: string
 }

@@ -22,11 +22,8 @@
         font-size: 1.2em;
       }
 
-      .bt {
+      :nth-child(n+3) {
         flex: 0 0 auto;
-      }
-
-      .bt-reset {
         color: constants.$font-main-color;
       }
 
