@@ -348,4 +348,6 @@ interface HardwareInfoVo {
     cpuPhysicalProcessorCount: number
     cpuLogicalProcessorCount: number
     microarchitecture: string
+    memories: string
+    disks: string
 }

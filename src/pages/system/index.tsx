@@ -69,13 +69,21 @@ const SoftwareInfo: React.FC = () => {
                     <div>后端服务器启动时间</div>
                 </FlexBox>
                 <FlexBox className={'value'}>
-                    <div>{softwareInfoData?.os}</div>
-                    <div>{softwareInfoData?.bitness}</div>
-                    <div>{`${softwareInfoData?.javaVersion} (${softwareInfoData?.javaVersionDate})`}</div>
-                    <div>{softwareInfoData?.javaVendor}</div>
-                    <div>{`${softwareInfoData?.javaRuntime} (build ${softwareInfoData?.javaRuntimeVersion})`}</div>
-                    <div>{`${softwareInfoData?.jvm} (build ${softwareInfoData?.jvmVersion}, ${softwareInfoData?.jvmInfo})`}</div>
-                    <div>{softwareInfoData?.jvmVendor}</div>
+                    <div title={softwareInfoData?.os}>{softwareInfoData?.os}</div>
+                    <div title={softwareInfoData?.bitness.toString()}>
+                        {softwareInfoData?.bitness}
+                    </div>
+                    <div
+                        title={`${softwareInfoData?.javaVersion} (${softwareInfoData?.javaVersionDate})`}
+                    >{`${softwareInfoData?.javaVersion} (${softwareInfoData?.javaVersionDate})`}</div>
+                    <div title={softwareInfoData?.javaVendor}>{softwareInfoData?.javaVendor}</div>
+                    <div
+                        title={`${softwareInfoData?.javaRuntime} (build ${softwareInfoData?.javaRuntimeVersion})`}
+                    >{`${softwareInfoData?.javaRuntime} (build ${softwareInfoData?.javaRuntimeVersion})`}</div>
+                    <div
+                        title={`${softwareInfoData?.jvm} (build ${softwareInfoData?.jvmVersion}, ${softwareInfoData?.jvmInfo})`}
+                    >{`${softwareInfoData?.jvm} (build ${softwareInfoData?.jvmVersion}, ${softwareInfoData?.jvmInfo})`}</div>
+                    <div title={softwareInfoData?.jvmVendor}>{softwareInfoData?.jvmVendor}</div>
                     <div>
                         {softwareInfoData?.osBootTime &&
                             utcToLocalTime(softwareInfoData?.osBootTime)}
@@ -113,21 +121,35 @@ const HardwareInfo: React.FC = () => {
             <FlexBox className={'card-content'} direction={'horizontal'}>
                 <FlexBox className={'key'}>
                     <div>CPU</div>
-                    <div>架构</div>
+                    <div>CPU 架构</div>
                     <div>微架构</div>
                     <div>64位</div>
                     <div>CPU 插槽</div>
                     <div>CPU 内核</div>
                     <div>CPU 逻辑处理器</div>
+                    <div>内存</div>
+                    <div>磁盘</div>
                 </FlexBox>
                 <FlexBox className={'value'}>
-                    <div>{hardwareInfoData?.cpu}</div>
-                    <div>{hardwareInfoData?.arch}</div>
-                    <div>{hardwareInfoData?.microarchitecture}</div>
-                    <div>{hardwareInfoData?.is64Bit ? '是' : '否'}</div>
-                    <div>{hardwareInfoData?.cpuPhysicalPackageCount}</div>
-                    <div>{hardwareInfoData?.cpuPhysicalProcessorCount}</div>
-                    <div>{hardwareInfoData?.cpuLogicalProcessorCount}</div>
+                    <div title={hardwareInfoData?.cpu}>{hardwareInfoData?.cpu}</div>
+                    <div title={hardwareInfoData?.arch}>{hardwareInfoData?.arch}</div>
+                    <div title={hardwareInfoData?.microarchitecture}>
+                        {hardwareInfoData?.microarchitecture}
+                    </div>
+                    <div title={hardwareInfoData?.is64Bit ? '是' : '否'}>
+                        {hardwareInfoData?.is64Bit ? '是' : '否'}
+                    </div>
+                    <div title={hardwareInfoData?.cpuPhysicalPackageCount.toString()}>
+                        {hardwareInfoData?.cpuPhysicalPackageCount}
+                    </div>
+                    <div title={hardwareInfoData?.cpuPhysicalProcessorCount.toString()}>
+                        {hardwareInfoData?.cpuPhysicalProcessorCount}
+                    </div>
+                    <div title={hardwareInfoData?.cpuLogicalProcessorCount.toString()}>
+                        {hardwareInfoData?.cpuLogicalProcessorCount}
+                    </div>
+                    <div title={hardwareInfoData?.memories}>{hardwareInfoData?.memories}</div>
+                    <div title={hardwareInfoData?.disks}>{hardwareInfoData?.disks}</div>
                 </FlexBox>
             </FlexBox>
         </CommonCard>
