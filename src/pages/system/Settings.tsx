@@ -198,9 +198,12 @@ const Settings: React.FC = () => {
             <FitFullScreen>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox className={'root-content'}>
-                        <Permission operationCode={'system:settings:query:mail'}>
-                            <MailSettings />
-                        </Permission>
+                        <FlexBox direction={'horizontal'} className={'root-row'}>
+                            <Permission operationCode={'system:settings:query:mail'}>
+                                <MailSettings />
+                            </Permission>
+                            <div />
+                        </FlexBox>
                     </FlexBox>
                 </HideScrollbar>
             </FitFullScreen>

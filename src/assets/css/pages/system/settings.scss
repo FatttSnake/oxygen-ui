@@ -2,33 +2,37 @@
 
 .root-content {
   padding: 30px;
-  gap: 10px;
+  gap: 20px;
 
-  .settings-card {
-    padding: 20px;
+  .root-row {
     gap: 20px;
 
-    > .head {
-      align-items: center;
-      gap: 5px;
+    .settings-card {
+      padding: 20px;
+      gap: 20px;
 
-      .icon {
-        font-size: constants.$SIZE_ICON_MD;
-        flex: 0 0 auto;
-      }
+      > .head {
+        align-items: center;
+        gap: 5px;
 
-      .title {
-        display: flex;
-        font-size: 1.2em;
-      }
+        .icon {
+          font-size: constants.$SIZE_ICON_MD;
+          flex: 0 0 auto;
+        }
 
-      :nth-child(n+3) {
-        flex: 0 0 auto;
-        color: constants.$font-main-color;
-      }
+        .title {
+          display: flex;
+          font-size: 1.2em;
+        }
 
-      .bt-save {
-        color: constants.$main-color;
+        :nth-child(n+3) {
+          flex: 0 0 auto;
+          color: constants.$font-main-color;
+        }
+
+        .bt-save {
+          color: constants.$main-color;
+        }
       }
     }
   }
