@@ -12,11 +12,14 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import LoadingMask from '@/components/common/LoadingMask'
+import Permission from '@/components/common/Permission.tsx'
+import { hasPermission } from '@/util/auth.tsx'
 
 interface SettingsCardProps extends React.PropsWithChildren {
     icon: IconComponent
     title: string
     loading?: boolean
+    modifyOperationCode?: string
     expand?: React.ReactNode
     onReset?: () => void
     onSave?: () => void
@@ -29,7 +32,7 @@ const SettingsCard: React.FC<SettingsCardProps> = (props) => {
                     <Icon component={props.icon} className={'icon'} />
                     <div className={'title'}>{props.title}</div>
                     {!props.loading ? (
-                        <>
+                        <Permission operationCode={props.modifyOperationCode}>
                             {props.expand}
                             <AntdButton onClick={props.onReset} title={'重置'}>
                                 <Icon component={IconFatwebBack} />
@@ -37,7 +40,7 @@ const SettingsCard: React.FC<SettingsCardProps> = (props) => {
                             <AntdButton className={'bt-save'} onClick={props.onSave} title={'保存'}>
                                 <Icon component={IconFatwebSave} />
                             </AntdButton>
-                        </>
+                        </Permission>
                     ) : undefined}
                 </FlexBox>
                 <LoadingMask hidden={!props.loading}>{props.children}</LoadingMask>
@@ -145,13 +148,18 @@ const MailSettings: React.FC = () => {
                 loading={loading}
                 onReset={handleOnReset}
                 onSave={handleOnSave}
+                modifyOperationCode={'system:settings:modify:mail'}
                 expand={
                     <AntdButton onClick={handleOnTest} title={'测试'}>
                         <Icon component={IconFatwebTest} />
                     </AntdButton>
                 }
             >
-                <AntdForm form={mailForm} labelCol={{ flex: '8em' }}>
+                <AntdForm
+                    form={mailForm}
+                    labelCol={{ flex: '8em' }}
+                    disabled={!hasPermission('system:settings:modify:mail')}
+                >
                     <AntdForm.Item label={'SMTP 服务器'} name={'host'}>
                         <AntdInput />
                     </AntdForm.Item>
@@ -190,7 +198,9 @@ const Settings: React.FC = () => {
             <FitFullScreen>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox className={'root-content'}>
-                        <MailSettings />
+                        <Permission operationCode={'system:settings:query:mail'}>
+                            <MailSettings />
+                        </Permission>
                     </FlexBox>
                 </HideScrollbar>
             </FitFullScreen>
