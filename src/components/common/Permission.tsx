@@ -1,5 +1,5 @@
 import React from 'react'
-import { hasPermission } from '@/util/auth.tsx'
+import { hasPermission } from '@/util/auth'
 
 interface PermissionProps extends React.PropsWithChildren {
     operationCode?: string

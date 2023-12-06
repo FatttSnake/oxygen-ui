@@ -322,3 +322,30 @@ interface MailSettingsParam {
 interface MailSendParam {
     to: string
 }
+
+interface SoftwareInfoVo {
+    os: string
+    bitness: number
+    javaVersion: string
+    javaVersionDate: string
+    javaVendor: string
+    javaRuntime: string
+    javaRuntimeVersion: string
+    jvm: string
+    jvmVersion: string
+    jvmInfo: string
+    jvmVendor: string
+    javaClassVersion: string
+    osBootTime: string
+    serverStartupTime: string
+}
+
+interface HardwareInfoVo {
+    cpu: string
+    arch: string
+    is64Bit: boolean
+    cpuPhysicalPackageCount: number
+    cpuPhysicalProcessorCount: number
+    cpuLogicalProcessorCount: number
+    microarchitecture: string
+}

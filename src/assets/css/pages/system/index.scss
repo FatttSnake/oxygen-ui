@@ -7,14 +7,14 @@
   .root-row {
     gap: 20px;
 
-    .settings-card {
+    .common-card {
       padding: 20px;
       gap: 20px;
-      color: constants.$main-color;
 
       > .head {
         align-items: center;
         gap: 5px;
+        color: constants.$main-color;
 
         .icon {
           font-size: constants.$SIZE_ICON_MD;
@@ -25,14 +25,31 @@
           display: flex;
           font-size: 1.2em;
         }
+      }
 
-        :nth-child(n+3) {
+      .card-content {
+        font-size: 1.1em;
+        padding: 0 10px;
+        gap: 10px;
+
+        .key {
           flex: 0 0 auto;
           color: constants.$font-main-color;
         }
 
-        .bt-save {
-          color: constants.$main-color;
+        .value {
+          color: constants.$font-secondary-color;
+          overflow: hidden;
+
+          > * {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        > * {
+          gap: 5px;
         }
       }
     }

@@ -2,6 +2,7 @@ import React from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/pages/system/settings.scss'
 import { useUpdatedEffect } from '@/util/hooks'
+import { hasPermission } from '@/util/auth'
 import {
     r_sys_settings_mail_get,
     r_sys_settings_mail_send,
@@ -12,8 +13,7 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import LoadingMask from '@/components/common/LoadingMask'
-import Permission from '@/components/common/Permission.tsx'
-import { hasPermission } from '@/util/auth.tsx'
+import Permission from '@/components/common/Permission'
 
 interface SettingsCardProps extends React.PropsWithChildren {
     icon: IconComponent

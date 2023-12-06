@@ -7,8 +7,8 @@ const system: RouteJsonObject[] = [
         absolutePath: '/system',
         id: 'system',
         component: React.lazy(() => import('@/pages/system')),
-        name: '系统设置',
-        icon: React.lazy(() => import('~icons/fatweb/setting.jsx')),
+        name: '系统概况',
+        icon: React.lazy(() => import('~icons/fatweb/chart.jsx')),
         menu: true
     },
     {

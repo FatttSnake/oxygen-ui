@@ -5,6 +5,7 @@ import { COLOR_FONT_MAIN } from '@/constants/common.constants'
 
 interface LoadingMaskProps extends React.PropsWithChildren {
     hidden?: boolean
+    maskContent?: React.ReactNode
 }
 const LoadingMask: React.FC<LoadingMaskProps> = (props) => {
     const loadingIcon = (
@@ -21,7 +22,7 @@ const LoadingMask: React.FC<LoadingMaskProps> = (props) => {
     ) : (
         <>
             <div className={'loading-mask'}>
-                <AntdSpin indicator={loadingIcon} />
+                {props.maskContent || <AntdSpin indicator={loadingIcon} />}
             </div>
         </>
     )
