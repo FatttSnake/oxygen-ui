@@ -10,7 +10,10 @@ import {
     URL_SYS_LOG,
     URL_SYS_SETTINGS_MAIL,
     URL_SYS_STATISTICS_SOFTWARE,
-    URL_SYS_STATISTICS_HARDWARE
+    URL_SYS_STATISTICS_HARDWARE,
+    URL_SYS_STATISTICS_CPU,
+    URL_SYS_STATISTICS_MEMORY,
+    URL_SYS_STATISTICS_JVM
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -80,3 +83,9 @@ export const r_sys_statistics_software = () =>
 
 export const r_sys_statistics_hardware = () =>
     request.get<HardwareInfoVo>(URL_SYS_STATISTICS_HARDWARE)
+
+export const r_sys_statistics_cpu = () => request.get<CpuInfoVo>(URL_SYS_STATISTICS_CPU)
+
+export const r_sys_statistics_memory = () => request.get<MemoryInfoVo>(URL_SYS_STATISTICS_MEMORY)
+
+export const r_sys_statistics_jvm = () => request.get<MemoryInfoVo>(URL_SYS_STATISTICS_JVM)

@@ -3,9 +3,12 @@
 .root-content {
   padding: 30px;
   gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
 
-  .root-row {
-    gap: 20px;
+  >.card-box {
+    width: 48%;
+    flex: 0 0 auto;
 
     .common-card {
       padding: 20px;
@@ -45,6 +48,15 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+          }
+        }
+
+        .value-chart {
+          >div {
+            height: 12px;
+            >* {
+              transform: translateY(1px);
+            }
           }
         }
 

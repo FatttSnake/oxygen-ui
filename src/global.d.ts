@@ -351,3 +351,24 @@ interface HardwareInfoVo {
     memories: string
     disks: string
 }
+
+interface CpuInfoVo {
+    user: number
+    nice: number
+    system: number
+    idle: number
+    iowait: number
+    irq: number
+    softirq: number
+    steal: number
+    processors: CpuInfoVo[]
+}
+
+interface MemoryInfoVo {
+    total: number
+    free: number
+    virtualInUse: number
+    virtualMax: number
+    swapTotal: number
+    swapUsed: number
+}

@@ -14,6 +14,9 @@ export const URL_SYS_SETTINGS_MAIL = `${URL_SYS_SETTINGS}/mail`
 export const URL_SYS_STATISTICS = '/system/statistics'
 export const URL_SYS_STATISTICS_SOFTWARE = `${URL_SYS_STATISTICS}/software`
 export const URL_SYS_STATISTICS_HARDWARE = `${URL_SYS_STATISTICS}/hardware`
+export const URL_SYS_STATISTICS_CPU = `${URL_SYS_STATISTICS}/cpu`
+export const URL_SYS_STATISTICS_MEMORY = `${URL_SYS_STATISTICS}/memory`
+export const URL_SYS_STATISTICS_JVM = `${URL_SYS_STATISTICS}/jvm`
 
 export const URL_API_V1 = '/api/v1'
 export const URL_API_V1_AVATAR_RANDOM_BASE64 = `${URL_API_V1}/avatar/base64`
