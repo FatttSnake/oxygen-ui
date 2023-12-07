@@ -193,9 +193,9 @@ const Role: React.FC = () => {
 
                         void r_sys_role_delete_list(tableSelectedItem)
                             .then((res) => {
-                                const data = res.data
+                                const response = res.data
 
-                                if (data.code === DATABASE_DELETE_SUCCESS) {
+                                if (response.code === DATABASE_DELETE_SUCCESS) {
                                     void message.success('删除成功')
                                     setTimeout(() => {
                                         getRole()
@@ -245,8 +245,8 @@ const Role: React.FC = () => {
 
                             void r_sys_role_delete(value.id)
                                 .then((res) => {
-                                    const data = res.data
-                                    if (data.code === DATABASE_DELETE_SUCCESS) {
+                                    const response = res.data
+                                    if (response.code === DATABASE_DELETE_SUCCESS) {
                                         void message.success('删除成功')
                                         setTimeout(() => {
                                             getRole()
@@ -279,8 +279,8 @@ const Role: React.FC = () => {
         if (isDrawerEdit) {
             void r_sys_role_update(formValues)
                 .then((res) => {
-                    const data = res.data
-                    switch (data.code) {
+                    const response = res.data
+                    switch (response.code) {
                         case DATABASE_UPDATE_SUCCESS:
                             setIsDrawerOpen(false)
                             void message.success('更新成功')
@@ -299,8 +299,8 @@ const Role: React.FC = () => {
         } else {
             void r_sys_role_add(formValues)
                 .then((res) => {
-                    const data = res.data
-                    switch (data.code) {
+                    const response = res.data
+                    switch (response.code) {
                         case DATABASE_INSERT_SUCCESS:
                             setIsDrawerOpen(false)
                             void message.success('添加成功')
@@ -368,8 +368,8 @@ const Role: React.FC = () => {
             setIsLoading(true)
             void r_sys_role_change_status({ id, enable: newStatus })
                 .then((res) => {
-                    const data = res.data
-                    if (data.code === DATABASE_UPDATE_SUCCESS) {
+                    const response = res.data
+                    if (response.code === DATABASE_UPDATE_SUCCESS) {
                         void message.success('更新成功')
                         setTimeout(() => {
                             getRole()
@@ -410,9 +410,9 @@ const Role: React.FC = () => {
             ...tableParams.filters
         })
             .then((res) => {
-                const data = res.data
-                if (data.code === DATABASE_SELECT_SUCCESS) {
-                    const records = data.data?.records
+                const response = res.data
+                if (response.code === DATABASE_SELECT_SUCCESS) {
+                    const records = response.data?.records
 
                     records?.map((value) => {
                         value.tree = powerListToPowerTree(
@@ -426,12 +426,12 @@ const Role: React.FC = () => {
                     })
 
                     records && setRoleData(records)
-                    data.data &&
+                    response.data &&
                         setTableParams({
                             ...tableParams,
                             pagination: {
                                 ...tableParams.pagination,
-                                total: data.data.total
+                                total: response.data.total
                             }
                         })
                 } else {
@@ -452,10 +452,10 @@ const Role: React.FC = () => {
 
         void r_sys_power_get_list()
             .then((res) => {
-                const data = res.data
+                const response = res.data
 
-                if (data.code === DATABASE_SELECT_SUCCESS) {
-                    const powerSet = data.data
+                if (response.code === DATABASE_SELECT_SUCCESS) {
+                    const powerSet = response.data
                     powerSet &&
                         setPowerTreeData(
                             powerListToPowerTree(

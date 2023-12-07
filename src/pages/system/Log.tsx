@@ -237,15 +237,15 @@ const Log: React.FC = () => {
             ...tableParams.filters
         })
             .then((res) => {
-                const data = res.data
-                if (data.code === DATABASE_SELECT_SUCCESS) {
-                    data.data && setLogData(data.data.records)
-                    data.data &&
+                const response = res.data
+                if (response.code === DATABASE_SELECT_SUCCESS) {
+                    response.data && setLogData(response.data.records)
+                    response.data &&
                         setTableParams({
                             ...tableParams,
                             pagination: {
                                 ...tableParams.pagination,
-                                total: data.data.total
+                                total: response.data.total
                             }
                         })
                 } else {

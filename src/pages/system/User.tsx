@@ -290,9 +290,9 @@ const User: React.FC = () => {
 
                         void r_sys_user_delete_list(tableSelectedItem)
                             .then((res) => {
-                                const data = res.data
+                                const response = res.data
 
-                                if (data.code === DATABASE_DELETE_SUCCESS) {
+                                if (response.code === DATABASE_DELETE_SUCCESS) {
                                     void message.success('删除成功')
                                     setTimeout(() => {
                                         getUser()
@@ -469,8 +469,8 @@ const User: React.FC = () => {
 
                             void r_sys_user_delete(value.id)
                                 .then((res) => {
-                                    const data = res.data
-                                    if (data.code === DATABASE_DELETE_SUCCESS) {
+                                    const response = res.data
+                                    if (response.code === DATABASE_DELETE_SUCCESS) {
                                         void message.success('删除成功')
                                         setTimeout(() => {
                                             getUser()
@@ -514,8 +514,8 @@ const User: React.FC = () => {
                     : undefined
             })
                 .then((res) => {
-                    const data = res.data
-                    switch (data.code) {
+                    const response = res.data
+                    switch (response.code) {
                         case DATABASE_UPDATE_SUCCESS:
                             setIsDrawerOpen(false)
                             void message.success('更新成功')
@@ -542,8 +542,8 @@ const User: React.FC = () => {
                     : undefined
             })
                 .then((res) => {
-                    const data = res.data
-                    switch (data.code) {
+                    const response = res.data
+                    switch (response.code) {
                         case DATABASE_INSERT_SUCCESS:
                             setIsDrawerOpen(false)
                             void message.success('添加成功')
@@ -633,17 +633,17 @@ const User: React.FC = () => {
             ...tableParams.filters
         })
             .then((res) => {
-                const data = res.data
-                if (data.code === DATABASE_SELECT_SUCCESS) {
-                    const records = data.data?.records
+                const response = res.data
+                if (response.code === DATABASE_SELECT_SUCCESS) {
+                    const records = response.data?.records
 
                     records && setUserData(records)
-                    data.data &&
+                    response.data &&
                         setTableParams({
                             ...tableParams,
                             pagination: {
                                 ...tableParams.pagination,
-                                total: data.data.total
+                                total: response.data.total
                             }
                         })
                 } else {
@@ -669,10 +669,10 @@ const User: React.FC = () => {
 
         void r_sys_role_get_list()
             .then((res) => {
-                const data = res.data
+                const response = res.data
 
-                if (data.code === DATABASE_SELECT_SUCCESS) {
-                    data.data && setRoleData(data.data)
+                if (response.code === DATABASE_SELECT_SUCCESS) {
+                    response.data && setRoleData(response.data)
                 } else {
                     void message.error('获取角色列表失败，请稍后重试')
                 }
@@ -691,10 +691,10 @@ const User: React.FC = () => {
 
         void r_sys_group_get_list()
             .then((res) => {
-                const data = res.data
+                const response = res.data
 
-                if (data.code === DATABASE_SELECT_SUCCESS) {
-                    data.data && setGroupData(data.data)
+                if (response.code === DATABASE_SELECT_SUCCESS) {
+                    response.data && setGroupData(response.data)
                 } else {
                     void message.error('获取用户组列表失败，请稍后重试')
                 }
