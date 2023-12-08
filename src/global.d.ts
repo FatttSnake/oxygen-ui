@@ -361,6 +361,7 @@ interface CpuInfoVo {
     irq: number
     softirq: number
     steal: number
+    total: number
     processors: CpuInfoVo[]
 }
 

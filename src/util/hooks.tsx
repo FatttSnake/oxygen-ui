@@ -10,7 +10,7 @@ export const useUpdatedEffect = (
         if (isFirstRender.current) {
             isFirstRender.current = false
         } else {
-            effect()
+            return effect()
         }
     }, dependencies)
 }

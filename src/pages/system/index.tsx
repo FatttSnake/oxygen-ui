@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Icon from '@ant-design/icons'
 import * as echarts from 'echarts/core'
 import {
@@ -8,7 +8,7 @@ import {
     GridComponentOption
 } from 'echarts/components'
 import { BarChart, BarSeriesOption } from 'echarts/charts'
-import { CanvasRenderer } from 'echarts/renderers'
+import { SVGRenderer } from 'echarts/renderers'
 import '@/assets/css/pages/system/index.scss'
 import { useUpdatedEffect } from '@/util/hooks'
 import { utcToLocalTime } from '@/util/datetime'
@@ -22,12 +22,12 @@ import FlexBox from '@/components/common/FlexBox'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import LoadingMask from '@/components/common/LoadingMask'
-import EChartReact from '@/components/common/echarts/EChartReact'
 
-echarts.use([TooltipComponent, GridComponent, BarChart, CanvasRenderer])
+echarts.use([TooltipComponent, GridComponent, BarChart, SVGRenderer])
 type EChartsOption = echarts.ComposeOption<
     TooltipComponentOption | GridComponentOption | BarSeriesOption
 >
+
 interface CommonCardProps extends React.PropsWithChildren {
     icon: IconComponent
     title: string
@@ -174,47 +174,54 @@ const HardwareInfo: React.FC = () => {
 }
 
 const CPUInfo: React.FC = () => {
-    const [cpuInfoData, setCpuInfoData] = useState<BarSeriesOption[]>()
+    const keyDivRef = useRef<HTMLDivElement>(null)
+    const percentDivRef = useRef<HTMLDivElement>(null)
+    const cpuInfoDivRef = useRef<HTMLDivElement>(null)
+    const cpuInfoEChatsRef = useRef<echarts.EChartsType[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [cpuInfoEChartsOption, setCpuInfoEChartsOption] = useState<EChartsOption[]>([])
 
     const defaultSeriesOption: BarSeriesOption = {
         type: 'bar',
         stack: 'total',
-        emphasis: {
-            focus: 'series'
+        itemStyle: {
+            color: (params) => {
+                switch (params.seriesName) {
+                    case 'idle':
+                        return '#F5F5F5'
+                    default:
+                        return params.color ?? echarts.color.random()
+                }
+            }
+        },
+        tooltip: {
+            valueFormatter: (value) => `${((value as number) * 100).toFixed(2)}%`
         }
     }
 
     useUpdatedEffect(() => {
-        setInterval(
-            () =>
-                r_sys_statistics_cpu().then((res) => {
-                    const response = res.data
-                    if (response.success) {
-                        const data = response.data
-                        if (data) {
-                            const cpuInfoData = Object.entries(data)
-                                .filter(([key]) => key !== 'processors')
-                                .map(([key, value]) => ({
-                                    ...defaultSeriesOption,
-                                    name: key,
-                                    data: [value as number]
-                                }))
-                            console.log(cpuInfoData)
-                            setCpuInfoData(cpuInfoData)
-                        }
-                    }
-                }),
-            5000
-        )
+        const intervalId = setInterval(() => getCpuInfo(), 2000)
+
+        const handleOnWindowResize = () => {
+            setTimeout(() => {
+                cpuInfoEChatsRef.current.forEach((value) => value.resize())
+            }, 50)
+        }
+
+        window.addEventListener('resize', handleOnWindowResize)
+
+        return () => {
+            clearInterval(intervalId)
+            window.removeEventListener('resize', handleOnWindowResize)
+        }
     }, [])
 
-    const option: EChartsOption = {
+    const cpuInfoEChartBaseOption: EChartsOption = {
         tooltip: {},
         xAxis: {
             show: false
         },
         yAxis: {
-            data: ['总使用'],
             axisLine: {
                 show: false
             },
@@ -230,30 +237,109 @@ const CPUInfo: React.FC = () => {
             axisPointer: {
                 show: false
             }
-        },
-        series: cpuInfoData
+        }
     }
+
+    const getCpuInfo = () => {
+        void r_sys_statistics_cpu().then((res) => {
+            const response = res.data
+            if (response.success) {
+                const data = response.data
+                if (data) {
+                    if (isLoading) {
+                        setIsLoading(false)
+                    }
+
+                    setTimeout(() => {
+                        const dataList = data.processors.map((value) =>
+                            cpuInfoVoToCpuInfoData(value)
+                        )
+                        dataList.unshift(cpuInfoVoToCpuInfoData(data))
+
+                        setCpuInfoEChartsOption(
+                            dataList.map((value, index) => ({
+                                ...cpuInfoEChartBaseOption,
+                                yAxis: {
+                                    ...cpuInfoEChartBaseOption.yAxis,
+                                    data: [index === 0 ? '总占用' : `CPU ${index - 1}`]
+                                },
+                                series: value
+                            }))
+                        )
+
+                        if (percentDivRef.current) {
+                            percentDivRef.current.innerHTML = ''
+                            dataList.forEach((value) => {
+                                const percentElement = document.createElement('div')
+                                const idle = value.find((item) => item.name === 'idle')?.data[0]
+                                percentElement.innerText =
+                                    idle !== undefined
+                                        ? `${((1 - idle) * 100).toFixed(2)}%`
+                                        : 'Unknown'
+                                percentDivRef.current?.appendChild(percentElement)
+                            })
+                        }
+
+                        if (cpuInfoDivRef.current?.childElementCount !== dataList.length) {
+                            keyDivRef.current && (keyDivRef.current.innerHTML = '')
+                            cpuInfoDivRef.current && (cpuInfoDivRef.current.innerHTML = '')
+                            for (let i = 0; i < dataList.length; i++) {
+                                const keyElement = document.createElement('div')
+                                keyElement.innerText = i === 0 ? '总占用' : `CPU ${i - 1}`
+                                keyDivRef.current?.appendChild(keyElement)
+
+                                const valueElement = document.createElement('div')
+                                cpuInfoDivRef.current?.appendChild(valueElement)
+                                cpuInfoEChatsRef.current.push(
+                                    echarts.init(valueElement, null, { renderer: 'svg' })
+                                )
+                            }
+                        }
+                    })
+                }
+            }
+        })
+    }
+
+    const cpuInfoVoToCpuInfoData = (cpuInfoVo: CpuInfoVo) =>
+        Object.entries(cpuInfoVo)
+            .filter(([key]) => !['total', 'processors'].includes(key))
+            .map(([key, value]) => ({
+                ...defaultSeriesOption,
+                name: key,
+                data: [(value as number) / cpuInfoVo.total]
+            }))
+            .sort((a, b) => {
+                const order = [
+                    'steal',
+                    'irq',
+                    'softirq',
+                    'iowait',
+                    'system',
+                    'nice',
+                    'user',
+                    'idle'
+                ]
+                return order.indexOf(a.name) - order.indexOf(b.name)
+            })
+
+    useEffect(() => {
+        cpuInfoEChatsRef.current?.forEach((value, index) => {
+            try {
+                value.setOption(cpuInfoEChartsOption[index])
+            } catch (e) {
+                /* empty */
+            }
+        })
+    }, [cpuInfoEChartsOption])
 
     return (
         <>
-            <CommonCard icon={IconFatwebCpu} title={'CPU 信息'} loading={false}>
+            <CommonCard icon={IconFatwebCpu} title={'CPU 信息'} loading={isLoading}>
                 <FlexBox className={'card-content'} direction={'horizontal'}>
-                    <FlexBox className={'key'}>
-                        <div>总占用</div>
-                        <div>总占用</div>
-                        <div>总占用</div>
-                    </FlexBox>
-                    <FlexBox className={'value-chart'}>
-                        <div>
-                            <EChartReact
-                                echarts={echarts}
-                                opts={{ renderer: 'svg', height: 12 }}
-                                option={option}
-                            />
-                        </div>
-                        <div></div>
-                        <div></div>
-                    </FlexBox>
+                    <FlexBox className={'key'} ref={keyDivRef} />
+                    <FlexBox className={'value-chart'} ref={cpuInfoDivRef} />
+                    <FlexBox className={'value-percent'} ref={percentDivRef} />
                 </FlexBox>
             </CommonCard>
         </>
@@ -287,7 +373,6 @@ const System: React.FC = () => {
                         <CPUInfo />
                         <MemoryInfo />
                         <JvmInfo />
-                        <div />
                     </FlexBox>
                 </HideScrollbar>
             </FitFullScreen>

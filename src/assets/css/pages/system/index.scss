@@ -35,7 +35,7 @@
         padding: 0 10px;
         gap: 10px;
 
-        .key {
+        .key, .value-percent {
           flex: 0 0 auto;
           color: constants.$font-main-color;
         }
@@ -52,7 +52,10 @@
         }
 
         .value-chart {
+          justify-content: space-around;
+          width: 0;
           >div {
+            max-height: 12px;
             height: 12px;
             >* {
               transform: translateY(1px);
