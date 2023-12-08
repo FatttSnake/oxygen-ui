@@ -53,11 +53,7 @@ const barDefaultSeriesOption: BarSeriesOption = {
 }
 
 const eChartsBaseOption: EChartsOption = {
-    tooltip: {
-        axisPointer: {
-            axis: 'x'
-        }
-    },
+    tooltip: {},
     xAxis: {
         show: false
     },
@@ -399,7 +395,7 @@ const MemoryInfo: React.FC = () => {
                     }
 
                     setTimeout(() => {
-                        const eEchartsOptions = [
+                        const eEchartsOption = [
                             {
                                 ...eChartsBaseOption,
                                 xAxis: {
@@ -493,11 +489,11 @@ const MemoryInfo: React.FC = () => {
                                 ]
                             }
                         ]
-                        setMemoryInfoEChartsOption(eEchartsOptions)
+                        setMemoryInfoEChartsOption(eEchartsOption)
 
                         if (percentDivRef.current) {
                             percentDivRef.current.innerHTML = ''
-                            eEchartsOptions.forEach((value) => {
+                            eEchartsOption.forEach((value) => {
                                 const percentElement = document.createElement('div')
                                 percentElement.innerText = `${(
                                     (value.series[0].data[0] /
@@ -512,7 +508,7 @@ const MemoryInfo: React.FC = () => {
                         if (!memoryInfoEChatsRef.current.length) {
                             memoryInfoDivRef.current && (memoryInfoDivRef.current.innerHTML = '')
 
-                            eEchartsOptions.forEach(() => {
+                            eEchartsOption.forEach(() => {
                                 const element = document.createElement('div')
                                 memoryInfoDivRef.current?.appendChild(element)
                                 memoryInfoEChatsRef.current.push(
