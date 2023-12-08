@@ -15,6 +15,7 @@ import { utcToLocalTime } from '@/util/datetime'
 import {
     r_sys_statistics_cpu,
     r_sys_statistics_hardware,
+    r_sys_statistics_memory,
     r_sys_statistics_software
 } from '@/services/system'
 import Card from '@/components/common/Card'
@@ -22,6 +23,7 @@ import FlexBox from '@/components/common/FlexBox'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import LoadingMask from '@/components/common/LoadingMask'
+import { formatByteSize } from '@/util/common.tsx'
 
 echarts.use([TooltipComponent, GridComponent, BarChart, SVGRenderer])
 type EChartsOption = echarts.ComposeOption<
@@ -32,6 +34,50 @@ interface CommonCardProps extends React.PropsWithChildren {
     icon: IconComponent
     title: string
     loading?: boolean
+}
+
+const barDefaultSeriesOption: BarSeriesOption = {
+    type: 'bar',
+    stack: 'total',
+    itemStyle: {
+        color: (params) => {
+            switch (params.seriesName) {
+                case 'idle':
+                case 'free':
+                    return '#F5F5F5'
+                default:
+                    return params.color ?? echarts.color.random()
+            }
+        }
+    }
+}
+
+const eChartsBaseOption: EChartsOption = {
+    tooltip: {
+        axisPointer: {
+            axis: 'x'
+        }
+    },
+    xAxis: {
+        show: false
+    },
+    yAxis: {
+        axisLine: {
+            show: false
+        },
+        axisLabel: {
+            show: false
+        },
+        axisTick: {
+            show: false
+        },
+        splitLine: {
+            show: false
+        },
+        axisPointer: {
+            show: false
+        }
+    }
 }
 
 const CommonCard: React.FC<CommonCardProps> = (props) => {
@@ -181,26 +227,15 @@ const CPUInfo: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true)
     const [cpuInfoEChartsOption, setCpuInfoEChartsOption] = useState<EChartsOption[]>([])
 
-    const defaultSeriesOption: BarSeriesOption = {
-        type: 'bar',
-        stack: 'total',
-        itemStyle: {
-            color: (params) => {
-                switch (params.seriesName) {
-                    case 'idle':
-                        return '#F5F5F5'
-                    default:
-                        return params.color ?? echarts.color.random()
-                }
-            }
-        },
+    const cpuDefaultSeriesOption: BarSeriesOption = {
+        ...barDefaultSeriesOption,
         tooltip: {
             valueFormatter: (value) => `${((value as number) * 100).toFixed(2)}%`
         }
     }
 
     useUpdatedEffect(() => {
-        const intervalId = setInterval(() => getCpuInfo(), 2000)
+        const intervalId = setInterval(getCpuInfo(), 2000)
 
         const handleOnWindowResize = () => {
             setTimeout(() => {
@@ -215,30 +250,6 @@ const CPUInfo: React.FC = () => {
             window.removeEventListener('resize', handleOnWindowResize)
         }
     }, [])
-
-    const cpuInfoEChartBaseOption: EChartsOption = {
-        tooltip: {},
-        xAxis: {
-            show: false
-        },
-        yAxis: {
-            axisLine: {
-                show: false
-            },
-            axisLabel: {
-                show: false
-            },
-            axisTick: {
-                show: false
-            },
-            splitLine: {
-                show: false
-            },
-            axisPointer: {
-                show: false
-            }
-        }
-    }
 
     const getCpuInfo = () => {
         void r_sys_statistics_cpu().then((res) => {
@@ -258,9 +269,9 @@ const CPUInfo: React.FC = () => {
 
                         setCpuInfoEChartsOption(
                             dataList.map((value, index) => ({
-                                ...cpuInfoEChartBaseOption,
+                                ...eChartsBaseOption,
                                 yAxis: {
-                                    ...cpuInfoEChartBaseOption.yAxis,
+                                    ...eChartsBaseOption.yAxis,
                                     data: [index === 0 ? '总占用' : `CPU ${index - 1}`]
                                 },
                                 series: value
@@ -299,13 +310,15 @@ const CPUInfo: React.FC = () => {
                 }
             }
         })
+
+        return getCpuInfo
     }
 
     const cpuInfoVoToCpuInfoData = (cpuInfoVo: CpuInfoVo) =>
         Object.entries(cpuInfoVo)
             .filter(([key]) => !['total', 'processors'].includes(key))
             .map(([key, value]) => ({
-                ...defaultSeriesOption,
+                ...cpuDefaultSeriesOption,
                 name: key,
                 data: [(value as number) / cpuInfoVo.total]
             }))
@@ -347,17 +360,198 @@ const CPUInfo: React.FC = () => {
 }
 
 const MemoryInfo: React.FC = () => {
-    return (
-        <>
-            <CommonCard icon={IconFatwebMemory} title={'内存信息'} loading={true}></CommonCard>
-        </>
-    )
-}
+    const percentDivRef = useRef<HTMLDivElement>(null)
+    const memoryInfoDivRef = useRef<HTMLDivElement>(null)
+    const memoryInfoEChatsRef = useRef<echarts.EChartsType[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [memoryInfoEChartsOption, setMemoryInfoEChartsOption] = useState<EChartsOption[]>([])
 
-const JvmInfo: React.FC = () => {
+    const memoryDefaultSeriesOption: BarSeriesOption = {
+        ...barDefaultSeriesOption,
+        tooltip: { valueFormatter: (value) => formatByteSize(value as number) }
+    }
+
+    useUpdatedEffect(() => {
+        const intervalId = setInterval(getMemoryInfo(), 2000)
+
+        const handleOnWindowResize = () => {
+            setTimeout(() => {
+                memoryInfoEChatsRef.current.forEach((value) => value.resize())
+            }, 50)
+        }
+
+        window.addEventListener('resize', handleOnWindowResize)
+
+        return () => {
+            clearInterval(intervalId)
+            window.removeEventListener('resize', handleOnWindowResize)
+        }
+    }, [])
+
+    const getMemoryInfo = () => {
+        void r_sys_statistics_memory().then((res) => {
+            const response = res.data
+            if (response.success) {
+                const data = response.data
+                if (data) {
+                    if (isLoading) {
+                        setIsLoading(false)
+                    }
+
+                    setTimeout(() => {
+                        const eEchartsOptions = [
+                            {
+                                ...eChartsBaseOption,
+                                xAxis: {
+                                    ...eChartsBaseOption.xAxis,
+                                    max: data.total
+                                },
+                                yAxis: {
+                                    ...eChartsBaseOption.yAxis,
+                                    data: ['物理内存']
+                                },
+                                series: [
+                                    {
+                                        ...memoryDefaultSeriesOption,
+                                        name: 'used',
+                                        data: [data.total - data.free]
+                                    },
+                                    {
+                                        ...memoryDefaultSeriesOption,
+                                        name: 'free',
+                                        data: [data.free]
+                                    }
+                                ]
+                            },
+                            {
+                                ...eChartsBaseOption,
+                                xAxis: {
+                                    ...eChartsBaseOption.xAxis,
+                                    max: data.virtualMax
+                                },
+                                yAxis: {
+                                    ...eChartsBaseOption.yAxis,
+                                    data: ['虚拟']
+                                },
+                                series: [
+                                    {
+                                        ...memoryDefaultSeriesOption,
+                                        name: 'used',
+                                        data: [data.virtualInUse]
+                                    },
+                                    {
+                                        ...memoryDefaultSeriesOption,
+                                        name: 'free',
+                                        data: [data.virtualMax - data.virtualInUse]
+                                    }
+                                ]
+                            },
+                            {
+                                ...eChartsBaseOption,
+                                xAxis: {
+                                    ...eChartsBaseOption.xAxis,
+                                    max: data.swapTotal
+                                },
+                                yAxis: {
+                                    ...eChartsBaseOption.yAxis,
+                                    data: ['swap']
+                                },
+                                series: [
+                                    {
+                                        ...memoryDefaultSeriesOption,
+                                        name: 'used',
+                                        data: [data.swapUsed]
+                                    },
+                                    {
+                                        ...memoryDefaultSeriesOption,
+                                        name: 'free',
+                                        data: [data.swapTotal - data.swapUsed]
+                                    }
+                                ]
+                            },
+                            {
+                                ...eChartsBaseOption,
+                                xAxis: {
+                                    ...eChartsBaseOption.xAxis,
+                                    max: data.jvmTotal
+                                },
+                                yAxis: {
+                                    ...eChartsBaseOption.yAxis,
+                                    data: ['jvm 内存']
+                                },
+                                series: [
+                                    {
+                                        ...memoryDefaultSeriesOption,
+                                        name: 'used',
+                                        data: [data.jvmTotal - data.jvmFree]
+                                    },
+                                    {
+                                        ...memoryDefaultSeriesOption,
+                                        name: 'free',
+                                        data: [data.jvmFree]
+                                    }
+                                ]
+                            }
+                        ]
+                        setMemoryInfoEChartsOption(eEchartsOptions)
+
+                        if (percentDivRef.current) {
+                            percentDivRef.current.innerHTML = ''
+                            eEchartsOptions.forEach((value) => {
+                                const percentElement = document.createElement('div')
+                                percentElement.innerText = `${(
+                                    (value.series[0].data[0] /
+                                        (value.series[0].data[0] + value.series[1].data[0])) *
+                                    100
+                                ).toFixed(2)}%`
+
+                                percentDivRef.current?.appendChild(percentElement)
+                            })
+                        }
+
+                        if (!memoryInfoEChatsRef.current.length) {
+                            memoryInfoDivRef.current && (memoryInfoDivRef.current.innerHTML = '')
+
+                            eEchartsOptions.forEach(() => {
+                                const element = document.createElement('div')
+                                memoryInfoDivRef.current?.appendChild(element)
+                                memoryInfoEChatsRef.current.push(
+                                    echarts.init(element, null, { renderer: 'svg' })
+                                )
+                            })
+                        }
+                    })
+                }
+            }
+        })
+
+        return getMemoryInfo
+    }
+
+    useEffect(() => {
+        memoryInfoEChatsRef.current?.forEach((value, index) => {
+            try {
+                value.setOption(memoryInfoEChartsOption[index])
+            } catch (e) {
+                /* empty */
+            }
+        })
+    }, [memoryInfoEChartsOption])
+
     return (
         <>
-            <CommonCard icon={IconFatwebJava} title={'JVM 信息'} loading={true}></CommonCard>
+            <CommonCard icon={IconFatwebMemory} title={'内存信息'} loading={isLoading}>
+                <FlexBox className={'card-content'} direction={'horizontal'}>
+                    <FlexBox className={'key'}>
+                        <div>物理内存</div>
+                        <div>虚拟内存</div>
+                        <div>swap</div>
+                        <div>jvm 内存</div>
+                    </FlexBox>
+                    <FlexBox className={'value-chart'} ref={memoryInfoDivRef} />
+                    <FlexBox className={'value-percent'} ref={percentDivRef} />
+                </FlexBox>
+            </CommonCard>
         </>
     )
 }
@@ -372,7 +566,6 @@ const System: React.FC = () => {
                         <HardwareInfo />
                         <CPUInfo />
                         <MemoryInfo />
-                        <JvmInfo />
                     </FlexBox>
                 </HideScrollbar>
             </FitFullScreen>

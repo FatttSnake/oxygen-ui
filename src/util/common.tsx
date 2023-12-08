@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
+import { floor } from 'lodash'
 
 export const randomInt = (start: number, end: number) => {
     if (start > end) {
@@ -53,4 +54,80 @@ export const removeLoadingMask = (id: string) => {
     document.querySelectorAll(`#${id}`).forEach((value) => {
         value.parentNode?.removeChild(value)
     })
+}
+
+export enum ByteUnit {
+    B = 'B',
+    KiB = 'KiB',
+    Mib = 'Mib',
+    GiB = 'GiB',
+    TiB = 'TiB',
+    PiB = 'PiB',
+    EiB = 'EiB',
+    ZiB = 'ZiB',
+    YiB = 'YiB'
+}
+
+export const formatByteSize = (byteSize: number): string => {
+    const BASE = 1024
+    if (byteSize <= -1) {
+        return byteSize.toString()
+    }
+
+    if (floor(byteSize / BASE) <= 0) {
+        return formatByte(byteSize, ByteUnit.B)
+    }
+
+    byteSize /= BASE
+    if (floor(byteSize / BASE) <= 0) {
+        return formatByte(byteSize, ByteUnit.KiB)
+    }
+
+    byteSize /= BASE
+    if (floor(byteSize / BASE) <= 0) {
+        return formatByte(byteSize, ByteUnit.Mib)
+    }
+
+    byteSize /= BASE
+    if (floor(byteSize / BASE) <= 0) {
+        return formatByte(byteSize, ByteUnit.GiB)
+    }
+
+    byteSize /= BASE
+    if (floor(byteSize / BASE) <= 0) {
+        return formatByte(byteSize, ByteUnit.TiB)
+    }
+
+    byteSize /= BASE
+    if (floor(byteSize / BASE) <= 0) {
+        return formatByte(byteSize, ByteUnit.PiB)
+    }
+
+    byteSize /= BASE
+    if (floor(byteSize / BASE) <= 0) {
+        return formatByte(byteSize, ByteUnit.EiB)
+    }
+
+    byteSize /= BASE
+    if (floor(byteSize / BASE) <= 0) {
+        return formatByte(byteSize, ByteUnit.ZiB)
+    }
+
+    byteSize /= BASE
+    return formatByte(byteSize, ByteUnit.YiB)
+}
+
+const formatByte = (size: number, unit: ByteUnit): string => {
+    let precision
+    if ((size * 1000) % 10 > 0) {
+        precision = 3
+    } else if ((size * 100) % 10 > 0) {
+        precision = 2
+    } else if ((size * 10) % 10 > 0) {
+        precision = 1
+    } else {
+        precision = 0
+    }
+
+    return `${size.toFixed(precision)}${unit}`
 }

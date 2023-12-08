@@ -372,4 +372,6 @@ interface MemoryInfoVo {
     virtualMax: number
     swapTotal: number
     swapUsed: number
+    jvmTotal: number
+    jvmFree: number
 }
