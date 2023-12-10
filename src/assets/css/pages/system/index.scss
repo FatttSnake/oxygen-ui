@@ -28,6 +28,11 @@
           display: flex;
           font-size: 1.2em;
         }
+
+        :nth-child(n+3) {
+          flex: 0 0 auto;
+          color: constants.$font-main-color;
+        }
       }
 
       .card-content {

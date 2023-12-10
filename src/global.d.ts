@@ -365,13 +365,20 @@ interface CpuInfoVo {
     processors: CpuInfoVo[]
 }
 
-interface MemoryInfoVo {
-    total: number
-    free: number
-    virtualInUse: number
-    virtualMax: number
+interface StorageInfoVo {
+    memoryTotal: number
+    memoryFree: number
+    virtualMemoryInUse: number
+    virtualMemoryMax: number
     swapTotal: number
     swapUsed: number
     jvmTotal: number
     jvmFree: number
+    fileStores: FileStoreInfoVo[]
+}
+
+interface FileStoreInfoVo {
+    mount: string
+    total: number
+    free: number
 }
