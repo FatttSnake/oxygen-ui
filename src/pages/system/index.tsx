@@ -221,7 +221,7 @@ const CPUInfo: React.FC = () => {
     const keyDivRef = useRef<HTMLDivElement>(null)
     const percentDivRef = useRef<HTMLDivElement>(null)
     const cpuInfoDivRef = useRef<HTMLDivElement>(null)
-    const cpuInfoEChatsRef = useRef<echarts.EChartsType[]>([])
+    const cpuInfoEChartsRef = useRef<echarts.EChartsType[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [refreshInterval, setRefreshInterval] = useState('5')
     const [cpuInfoEChartsOption, setCpuInfoEChartsOption] = useState<EChartsOption[]>([])
@@ -234,18 +234,16 @@ const CPUInfo: React.FC = () => {
     }
 
     useUpdatedEffect(() => {
-        const handleOnWindowResize = () => {
-            setTimeout(() => {
-                cpuInfoEChatsRef.current.forEach((value) => value.resize())
-            }, 50)
-        }
+        const chartResizeObserver = new ResizeObserver(() => {
+            cpuInfoEChartsRef.current.forEach((value) => value.resize())
+        })
 
-        window.addEventListener('resize', handleOnWindowResize)
+        cpuInfoDivRef.current && chartResizeObserver.observe(cpuInfoDivRef.current)
 
         return () => {
-            window.removeEventListener('resize', handleOnWindowResize)
+            cpuInfoDivRef.current && chartResizeObserver.unobserve(cpuInfoDivRef.current)
         }
-    }, [])
+    }, [cpuInfoDivRef.current])
 
     useUpdatedEffect(() => {
         const intervalId = setInterval(getCpuInfo(), parseInt(refreshInterval) * 1000)
@@ -295,7 +293,7 @@ const CPUInfo: React.FC = () => {
                             })
                         }
 
-                        if (!cpuInfoEChatsRef.current.length) {
+                        if (!cpuInfoEChartsRef.current.length) {
                             keyDivRef.current && (keyDivRef.current.innerHTML = '')
                             cpuInfoDivRef.current && (cpuInfoDivRef.current.innerHTML = '')
                             for (let i = 0; i < dataList.length; i++) {
@@ -305,7 +303,7 @@ const CPUInfo: React.FC = () => {
 
                                 const valueElement = document.createElement('div')
                                 cpuInfoDivRef.current?.appendChild(valueElement)
-                                cpuInfoEChatsRef.current.push(
+                                cpuInfoEChartsRef.current.push(
                                     echarts.init(valueElement, null, { renderer: 'svg' })
                                 )
                             }
@@ -341,7 +339,7 @@ const CPUInfo: React.FC = () => {
             })
 
     useEffect(() => {
-        cpuInfoEChatsRef.current?.forEach((value, index) => {
+        cpuInfoEChartsRef.current?.forEach((value, index) => {
             try {
                 value.setOption(cpuInfoEChartsOption[index])
             } catch (e) {
@@ -391,7 +389,7 @@ const StorageInfo: React.FC = () => {
     const keyDivRef = useRef<HTMLDivElement>(null)
     const percentDivRef = useRef<HTMLDivElement>(null)
     const storageInfoDivRef = useRef<HTMLDivElement>(null)
-    const storageInfoEChatsRef = useRef<echarts.EChartsType[]>([])
+    const storageInfoEChartsRef = useRef<echarts.EChartsType[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [refreshInterval, setRefreshInterval] = useState('5')
     const [storageInfoEChartsOption, setStorageInfoEChartsOption] = useState<EChartsOption[]>([])
@@ -402,18 +400,16 @@ const StorageInfo: React.FC = () => {
     }
 
     useUpdatedEffect(() => {
-        const handleOnWindowResize = () => {
-            setTimeout(() => {
-                storageInfoEChatsRef.current.forEach((value) => value.resize())
-            }, 50)
-        }
+        const chartResizeObserver = new ResizeObserver(() => {
+            storageInfoEChartsRef.current.forEach((value) => value.resize())
+        })
 
-        window.addEventListener('resize', handleOnWindowResize)
+        storageInfoDivRef.current && chartResizeObserver.observe(storageInfoDivRef.current)
 
         return () => {
-            window.removeEventListener('resize', handleOnWindowResize)
+            storageInfoDivRef.current && chartResizeObserver.unobserve(storageInfoDivRef.current)
         }
-    }, [])
+    }, [storageInfoDivRef.current])
 
     useUpdatedEffect(() => {
         const intervalId = setInterval(getStorageInfo(), parseInt(refreshInterval) * 1000)
@@ -485,13 +481,13 @@ const StorageInfo: React.FC = () => {
                             })
                         }
 
-                        if (!storageInfoEChatsRef.current.length) {
+                        if (!storageInfoEChartsRef.current.length) {
                             storageInfoDivRef.current && (storageInfoDivRef.current.innerHTML = '')
 
                             eChartsOptions.forEach(() => {
                                 const element = document.createElement('div')
                                 storageInfoDivRef.current?.appendChild(element)
-                                storageInfoEChatsRef.current.push(
+                                storageInfoEChartsRef.current.push(
                                     echarts.init(element, null, { renderer: 'svg' })
                                 )
                             })
@@ -529,7 +525,7 @@ const StorageInfo: React.FC = () => {
     })
 
     useEffect(() => {
-        storageInfoEChatsRef.current?.forEach((value, index) => {
+        storageInfoEChartsRef.current?.forEach((value, index) => {
             try {
                 value.setOption(storageInfoEChartsOption[index])
             } catch (e) {
