@@ -204,7 +204,6 @@ interface UserChangePasswordParam {
 
 interface SysLogGetParam extends PageParam {
     searchRequestUrl?: string
-    searchRegex?: boolean
     searchStartTime?: string
     searchEndTime?: string
 }

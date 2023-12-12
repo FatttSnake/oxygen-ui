@@ -1,10 +1,6 @@
 import React from 'react'
 import dayjs from 'dayjs'
-import {
-    COLOR_ERROR_SECONDARY,
-    COLOR_FONT_SECONDARY,
-    DATABASE_SELECT_SUCCESS
-} from '@/constants/common.constants'
+import { COLOR_FONT_SECONDARY, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
 import { useUpdatedEffect } from '@/util/hooks'
 import { dayjsToUtc, utcToLocalTime } from '@/util/datetime'
 import { r_sys_log_get } from '@/services/system'
@@ -28,8 +24,6 @@ const Log: React.FC = () => {
         }
     })
     const [searchRequestUrl, setSearchRequestUrl] = useState('')
-    const [useRegex, setUseRegex] = useState(false)
-    const [isRegexLegal, setIsRegexLegal] = useState(true)
     const [timeRange, setTimeRange] = useState<[string, string]>()
 
     const dataColumns: _ColumnsType<SysLogGetVo> = [
@@ -163,38 +157,11 @@ const Log: React.FC = () => {
 
     const handleOnSearchUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchRequestUrl(e.target.value)
-
-        if (useRegex) {
-            try {
-                RegExp(e.target.value)
-                setIsRegexLegal(!(e.target.value.includes('{}') || e.target.value.includes('[]')))
-            } catch (e) {
-                setIsRegexLegal(false)
-            }
-        } else {
-            setIsRegexLegal(true)
-        }
     }
 
     const handleOnSearchUrlKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             getLog()
-        }
-    }
-
-    const handleOnUseRegexChange = (e: _CheckboxChangeEvent) => {
-        setUseRegex(e.target.checked)
-        if (e.target.checked) {
-            try {
-                RegExp(searchRequestUrl)
-                setIsRegexLegal(
-                    !(searchRequestUrl.includes('{}') || searchRequestUrl.includes('[]'))
-                )
-            } catch (e) {
-                setIsRegexLegal(false)
-            }
-        } else {
-            setIsRegexLegal(true)
         }
     }
 
@@ -215,11 +182,6 @@ const Log: React.FC = () => {
             return
         }
 
-        if (!isRegexLegal) {
-            void message.error('非法正则表达式')
-            return
-        }
-
         setLoading(true)
 
         void r_sys_log_get({
@@ -232,7 +194,6 @@ const Log: React.FC = () => {
             sortOrder:
                 tableParams.sortField && tableParams.sortOrder ? tableParams.sortOrder : undefined,
             searchRequestUrl: searchRequestUrl.trim().length ? searchRequestUrl : undefined,
-            searchRegex: useRegex ? useRegex : undefined,
             searchStartTime: timeRange && timeRange[0],
             searchEndTime: timeRange && timeRange[1],
             ...tableParams.filters
@@ -282,21 +243,10 @@ const Log: React.FC = () => {
                             请求 Url
                         </span>
                     }
-                    suffix={
-                        <>
-                            {!isRegexLegal ? (
-                                <span style={{ color: COLOR_ERROR_SECONDARY }}>非法表达式</span>
-                            ) : undefined}
-                            <AntdCheckbox checked={useRegex} onChange={handleOnUseRegexChange}>
-                                <AntdTooltip title={'正则表达式'}>.*</AntdTooltip>
-                            </AntdCheckbox>
-                        </>
-                    }
                     allowClear
                     value={searchRequestUrl}
                     onChange={handleOnSearchUrlChange}
                     onKeyDown={handleOnSearchUrlKeyDown}
-                    status={isRegexLegal ? undefined : 'error'}
                 />
             </Card>
             <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
