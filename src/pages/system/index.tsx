@@ -14,10 +14,10 @@ import { useUpdatedEffect } from '@/util/hooks'
 import { formatByteSize } from '@/util/common'
 import { utcToLocalTime } from '@/util/datetime'
 import {
-    r_sys_statistics_cpu,
-    r_sys_statistics_hardware,
-    r_sys_statistics_software,
-    r_sys_statistics_storage
+    r_sys_statistic_cpu,
+    r_sys_statistic_hardware,
+    r_sys_statistic_software,
+    r_sys_statistic_storage
 } from '@/services/system'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
@@ -101,7 +101,7 @@ const SoftwareInfo: React.FC = () => {
     const [softwareInfoData, setSoftwareInfoData] = useState<SoftwareInfoVo>()
 
     useUpdatedEffect(() => {
-        void r_sys_statistics_software().then((res) => {
+        void r_sys_statistic_software().then((res) => {
             const response = res.data
             if (response.success) {
                 response.data && setSoftwareInfoData(response.data)
@@ -163,7 +163,7 @@ const HardwareInfo: React.FC = () => {
     const [hardwareInfoData, setHardwareInfoData] = useState<HardwareInfoVo>()
 
     useUpdatedEffect(() => {
-        void r_sys_statistics_hardware().then((res) => {
+        void r_sys_statistic_hardware().then((res) => {
             const response = res.data
             if (response.success) {
                 response.data && setHardwareInfoData(response.data)
@@ -254,7 +254,7 @@ const CPUInfo: React.FC = () => {
     }, [refreshInterval])
 
     const getCpuInfo = () => {
-        void r_sys_statistics_cpu().then((res) => {
+        void r_sys_statistic_cpu().then((res) => {
             const response = res.data
             if (response.success) {
                 const data = response.data
@@ -420,7 +420,7 @@ const StorageInfo: React.FC = () => {
     }, [refreshInterval])
 
     const getStorageInfo = () => {
-        void r_sys_statistics_storage().then((res) => {
+        void r_sys_statistic_storage().then((res) => {
             const response = res.data
             if (response.success) {
                 const data = response.data

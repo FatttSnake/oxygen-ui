@@ -9,10 +9,10 @@ import {
     URL_SYS_GROUP_LIST,
     URL_SYS_LOG,
     URL_SYS_SETTINGS_MAIL,
-    URL_SYS_STATISTICS_SOFTWARE,
-    URL_SYS_STATISTICS_HARDWARE,
-    URL_SYS_STATISTICS_CPU,
-    URL_SYS_STATISTICS_STORAGE
+    URL_SYS_STATISTIC_SOFTWARE,
+    URL_SYS_STATISTIC_HARDWARE,
+    URL_SYS_STATISTIC_CPU,
+    URL_SYS_STATISTIC_STORAGE
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -77,12 +77,12 @@ export const r_sys_settings_mail_update = (param: MailSettingsParam) =>
 export const r_sys_settings_mail_send = (param: MailSendParam) =>
     request.post(URL_SYS_SETTINGS_MAIL, param)
 
-export const r_sys_statistics_software = () =>
-    request.get<SoftwareInfoVo>(URL_SYS_STATISTICS_SOFTWARE)
+export const r_sys_statistic_software = () =>
+    request.get<SoftwareInfoVo>(URL_SYS_STATISTIC_SOFTWARE)
 
-export const r_sys_statistics_hardware = () =>
-    request.get<HardwareInfoVo>(URL_SYS_STATISTICS_HARDWARE)
+export const r_sys_statistic_hardware = () =>
+    request.get<HardwareInfoVo>(URL_SYS_STATISTIC_HARDWARE)
 
-export const r_sys_statistics_cpu = () => request.get<CpuInfoVo>(URL_SYS_STATISTICS_CPU)
+export const r_sys_statistic_cpu = () => request.get<CpuInfoVo>(URL_SYS_STATISTIC_CPU)
 
-export const r_sys_statistics_storage = () => request.get<StorageInfoVo>(URL_SYS_STATISTICS_STORAGE)
+export const r_sys_statistic_storage = () => request.get<StorageInfoVo>(URL_SYS_STATISTIC_STORAGE)
