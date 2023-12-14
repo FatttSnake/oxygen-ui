@@ -39,7 +39,11 @@ const Log: React.FC = () => {
             align: 'center',
             filters: [
                 { text: 'Info', value: 'INFO' },
-                { text: 'Statistics', value: 'STATISTICS' },
+                { text: 'Login', value: 'LOGIN' },
+                { text: 'Logout', value: 'LOGOUT' },
+                { text: 'Register', value: 'Register' },
+                { text: 'Statistic', value: 'STATISTIC' },
+                { text: 'API', value: 'API' },
                 { text: 'Error', value: 'ERROR' }
             ]
         },
