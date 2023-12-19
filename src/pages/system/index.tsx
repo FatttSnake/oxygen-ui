@@ -156,6 +156,7 @@ const OnlineInfo: React.FC = () => {
     const onlineInfoEChartsRef = useRef<echarts.EChartsType | null>(null)
     const [isLoading, setIsLoading] = useState(false)
     const [currentOnlineCount, setCurrentOnlineCount] = useState(-1)
+    const [scope, setScope] = useState('WEAK')
 
     useUpdatedEffect(() => {
         const chartResizeObserver = new ResizeObserver(() => {
@@ -173,14 +174,23 @@ const OnlineInfo: React.FC = () => {
         getOnlineInfo()
     }, [])
 
-    const getOnlineInfo = () => {
+    const handleOnScopeChange = (value: string) => {
+        setScope(value)
+        getOnlineInfo(value)
+    }
+
+    const handleOnRefresh = () => {
+        getOnlineInfo()
+    }
+
+    const getOnlineInfo = (_scope: string = scope) => {
         if (isLoading) {
             return
         }
 
         setIsLoading(true)
 
-        void r_sys_statistic_online().then((res) => {
+        void r_sys_statistic_online({ scope: _scope }).then((res) => {
             const response = res.data
             if (response.success) {
                 const data = response.data
@@ -224,15 +234,30 @@ const OnlineInfo: React.FC = () => {
                 <>
                     <FlexBox gap={10} direction={'horizontal'}>
                         <span style={{ whiteSpace: 'nowrap' }}>在线用户</span>
-                        <AntdTag>当前 {currentOnlineCount}</AntdTag>
+                        <AntdTag>
+                            当前 {currentOnlineCount === -1 ? '获取中...' : currentOnlineCount}
+                        </AntdTag>
                     </FlexBox>
                 </>
             }
             loading={isLoading}
             expand={
-                <AntdButton title={'刷新'} onClick={() => getOnlineInfo()}>
-                    <Icon component={IconFatwebRefresh} />
-                </AntdButton>
+                <>
+                    <AntdSelect value={scope} onChange={handleOnScopeChange} disabled={isLoading}>
+                        <AntdSelect.Option key={'DAY'}>今天</AntdSelect.Option>
+                        <AntdSelect.Option key={'WEAK'}>最近7天</AntdSelect.Option>
+                        <AntdSelect.Option key={'MONTH'}>最近30天</AntdSelect.Option>
+                        <AntdSelect.Option key={'QUARTER'}>最近3个月</AntdSelect.Option>
+                        <AntdSelect.Option key={'YEAR'}>最近12个月</AntdSelect.Option>
+                        <AntdSelect.Option key={'TWO_YEARS'}>最近2年</AntdSelect.Option>
+                        <AntdSelect.Option key={'THREE_YEARS'}>最近3年</AntdSelect.Option>
+                        <AntdSelect.Option key={'FIVE_YEARS'}>最近5年</AntdSelect.Option>
+                        <AntdSelect.Option key={'ALL'}>全部</AntdSelect.Option>
+                    </AntdSelect>
+                    <AntdButton title={'刷新'} onClick={handleOnRefresh} disabled={isLoading}>
+                        <Icon component={IconFatwebRefresh} />
+                    </AntdButton>
+                </>
             }
         >
             <FlexBox className={'card-content'} direction={'horizontal'}>

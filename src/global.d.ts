@@ -385,3 +385,7 @@ interface OnlineInfoVo {
         record: string
     }[]
 }
+
+interface OnlineInfoGetParam {
+    scope: string
+}

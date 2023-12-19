@@ -88,4 +88,5 @@ export const r_sys_statistic_cpu = () => request.get<CpuInfoVo>(URL_SYS_STATISTI
 
 export const r_sys_statistic_storage = () => request.get<StorageInfoVo>(URL_SYS_STATISTIC_STORAGE)
 
-export const r_sys_statistic_online = () => request.get<OnlineInfoVo>(URL_SYS_STATISTIC_ONLINE)
+export const r_sys_statistic_online = (param: OnlineInfoGetParam) =>
+    request.get<OnlineInfoVo>(URL_SYS_STATISTIC_ONLINE, param)
