@@ -28,3 +28,11 @@ export const localTimeToUtc = (localTime: string) => {
 export const isPastTime = (utcTime: string) => {
     return moment.utc(utcTime).isBefore(moment.now())
 }
+
+export const utcToMillisecond = (utcTime: string) => {
+    return moment.utc(utcTime).valueOf()
+}
+
+export const millisecondToUtc = (millisecond: number) => {
+    return moment(millisecond).toISOString()
+}

@@ -389,3 +389,18 @@ interface OnlineInfoVo {
 interface OnlineInfoGetParam {
     scope: string
 }
+
+interface ActiveInfoVo {
+    registerHistory: {
+        time: string
+        count: number
+    }[]
+    loginHistory: {
+        time: string
+        count: number
+    }[]
+}
+
+interface ActiveInfoGetParam {
+    scope: string
+}

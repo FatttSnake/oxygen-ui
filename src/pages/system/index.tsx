@@ -14,11 +14,13 @@ import {
 import { BarChart, BarSeriesOption, LineChart, LineSeriesOption } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { SVGRenderer } from 'echarts/renderers'
+import { TopLevelFormatterParams } from 'echarts/types/dist/shared'
 import '@/assets/css/pages/system/index.scss'
 import { useUpdatedEffect } from '@/util/hooks'
 import { formatByteSize } from '@/util/common'
 import { utcToLocalTime } from '@/util/datetime'
 import {
+    r_sys_statistic_active,
     r_sys_statistic_cpu,
     r_sys_statistic_hardware,
     r_sys_statistic_online,
@@ -90,6 +92,30 @@ const barEChartsBaseOption: EChartsOption = {
     }
 }
 
+const getTooltipTimeFormatter = (format: string = 'yyyy-MM-DD HH:mm:ss') => {
+    return (params: TopLevelFormatterParams) =>
+        `${utcToLocalTime(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+            params[0].data[0],
+            format
+        )}<br><span style="display: flex; justify-content: space-between"><span>${
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            params[0]['marker']
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        }${params[0]['seriesName']}</span><span style="font-weight: bold">${
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+            params[0].data[1]
+        }</span></span> `
+}
+
 const lineEChartsBaseOption: EChartsOption = {
     tooltip: {
         trigger: 'axis'
@@ -114,11 +140,8 @@ const lineEChartsBaseOption: EChartsOption = {
         {
             type: 'inside',
             start: 0,
-            end: 100
-        },
-        {
-            start: 0,
-            end: 100
+            end: 100,
+            minValueSpan: 2 * 60 * 60 * 1000
         }
     ],
     series: [{}]
@@ -201,7 +224,6 @@ const OnlineInfo: React.FC = () => {
 
                     setTimeout(() => {
                         const dataList = data.history.map((value) => [value.time, value.record])
-
                         onlineInfoEChartsRef.current = echarts.init(
                             onlineInfoDivRef.current,
                             null,
@@ -210,6 +232,13 @@ const OnlineInfo: React.FC = () => {
 
                         onlineInfoEChartsRef.current?.setOption({
                             ...lineEChartsBaseOption,
+                            tooltip: {
+                                ...lineEChartsBaseOption.tooltip,
+                                formatter: getTooltipTimeFormatter('yyyy-MM-DD HH:mm')
+                            },
+                            xAxis: {
+                                ...lineEChartsBaseOption.xAxis
+                            },
                             series: [
                                 {
                                     name: '在线人数',
@@ -262,6 +291,142 @@ const OnlineInfo: React.FC = () => {
         >
             <FlexBox className={'card-content'} direction={'horizontal'}>
                 <div className={'big-chart'} ref={onlineInfoDivRef} />
+            </FlexBox>
+        </CommonCard>
+    )
+}
+
+const ActiveInfo: React.FC = () => {
+    const activeInfoDivRef = useRef<HTMLDivElement>(null)
+    const activeInfoEChartsRef = useRef<echarts.EChartsType | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const [scope, setScope] = useState('WEAK')
+
+    useUpdatedEffect(() => {
+        const chartResizeObserver = new ResizeObserver(() => {
+            activeInfoEChartsRef.current?.resize()
+        })
+
+        activeInfoDivRef.current && chartResizeObserver.observe(activeInfoDivRef.current)
+
+        return () => {
+            activeInfoDivRef.current && chartResizeObserver.unobserve(activeInfoDivRef.current)
+        }
+    }, [isLoading])
+
+    useUpdatedEffect(() => {
+        getActiveInfo()
+    }, [])
+
+    const handleOnScopeChange = (value: string) => {
+        setScope(value)
+        getActiveInfo(value)
+    }
+
+    const handleOnRefresh = () => {
+        getActiveInfo()
+    }
+
+    const getActiveInfo = (_scope: string = scope) => {
+        if (isLoading) {
+            return
+        }
+
+        setIsLoading(true)
+
+        void r_sys_statistic_active({ scope: _scope }).then((res) => {
+            const response = res.data
+            if (response.success) {
+                const data = response.data
+                if (data) {
+                    setIsLoading(false)
+
+                    setTimeout(() => {
+                        const registerList = data.registerHistory.map((value) => [
+                            value.time,
+                            value.count
+                        ])
+                        const loginList = data.loginHistory.map((value) => [
+                            value.time,
+                            value.count
+                        ])
+
+                        activeInfoEChartsRef.current = echarts.init(
+                            activeInfoDivRef.current,
+                            null,
+                            { renderer: 'svg' }
+                        )
+
+                        activeInfoEChartsRef.current?.setOption({
+                            ...lineEChartsBaseOption,
+                            tooltip: {
+                                ...lineEChartsBaseOption.tooltip,
+                                formatter: getTooltipTimeFormatter('yyyy-MM-DD')
+                            },
+                            dataZoom: [
+                                {
+                                    type: 'inside',
+                                    start: 0,
+                                    end: 100,
+                                    minValueSpan: 2 * 24 * 60 * 60 * 1000
+                                }
+                            ],
+                            series: [
+                                {
+                                    name: '注册人数',
+                                    type: 'line',
+                                    smooth: true,
+                                    symbol: 'none',
+                                    areaStyle: {},
+                                    data: registerList
+                                },
+                                {
+                                    name: '登录人数',
+                                    type: 'line',
+                                    smooth: true,
+                                    symbol: 'none',
+                                    areaStyle: {},
+                                    data: loginList
+                                }
+                            ]
+                        })
+                    })
+                }
+            }
+        })
+    }
+
+    return (
+        <CommonCard
+            icon={IconFatwebAnalysis}
+            title={
+                <>
+                    <FlexBox gap={10} direction={'horizontal'}>
+                        <span style={{ whiteSpace: 'nowrap' }}>用户活跃</span>
+                    </FlexBox>
+                </>
+            }
+            loading={isLoading}
+            expand={
+                <>
+                    <AntdSelect value={scope} onChange={handleOnScopeChange} disabled={isLoading}>
+                        <AntdSelect.Option key={'WEAK'}>最近7天</AntdSelect.Option>
+                        <AntdSelect.Option key={'MONTH'}>最近30天</AntdSelect.Option>
+                        <AntdSelect.Option key={'QUARTER'}>最近3个月</AntdSelect.Option>
+                        <AntdSelect.Option key={'YEAR'}>最近12个月</AntdSelect.Option>
+                        <AntdSelect.Option key={'TWO_YEARS'}>最近2年</AntdSelect.Option>
+                        <AntdSelect.Option key={'THREE_YEARS'}>最近3年</AntdSelect.Option>
+                        <AntdSelect.Option key={'FIVE_YEARS'}>最近5年</AntdSelect.Option>
+                        <AntdSelect.Option key={'ALL'}>全部</AntdSelect.Option>
+                    </AntdSelect>
+                    <AntdButton title={'刷新'} onClick={handleOnRefresh} disabled={isLoading}>
+                        <Icon component={IconFatwebRefresh} />
+                    </AntdButton>
+                </>
+            }
+        >
+            <FlexBox className={'card-content'} direction={'horizontal'}>
+                <div className={'big-chart'} ref={activeInfoDivRef} />
             </FlexBox>
         </CommonCard>
     )
@@ -748,6 +913,7 @@ const System: React.FC = () => {
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         <OnlineInfo />
+                        <ActiveInfo />
                         <SoftwareInfo />
                         <HardwareInfo />
                         <CPUInfo />

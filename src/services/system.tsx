@@ -13,7 +13,8 @@ import {
     URL_SYS_STATISTIC_HARDWARE,
     URL_SYS_STATISTIC_CPU,
     URL_SYS_STATISTIC_STORAGE,
-    URL_SYS_STATISTIC_ONLINE
+    URL_SYS_STATISTIC_ONLINE,
+    URL_SYS_STATISTIC_ACTIVE
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -90,3 +91,6 @@ export const r_sys_statistic_storage = () => request.get<StorageInfoVo>(URL_SYS_
 
 export const r_sys_statistic_online = (param: OnlineInfoGetParam) =>
     request.get<OnlineInfoVo>(URL_SYS_STATISTIC_ONLINE, param)
+
+export const r_sys_statistic_active = (param: ActiveInfoGetParam) =>
+    request.get<ActiveInfoVo>(URL_SYS_STATISTIC_ACTIVE, param)
