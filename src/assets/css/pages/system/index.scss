@@ -74,6 +74,11 @@
           text-align: right;
         }
 
+        .big-chart {
+          width: 0;
+          height: 400px;
+        }
+
         > * {
           gap: 5px;
         }

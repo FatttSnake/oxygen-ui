@@ -294,10 +294,6 @@ interface AvatarBase64Vo {
     base64: string
 }
 
-interface SystemSettingsVo {
-    mail: MailSettingsVo
-}
-
 interface MailSettingsVo {
     host?: string
     port?: number
@@ -380,4 +376,12 @@ interface FileStoreInfoVo {
     mount: string
     total: number
     free: number
+}
+
+interface OnlineInfoVo {
+    current: number
+    history: {
+        time: string
+        record: string
+    }[]
 }

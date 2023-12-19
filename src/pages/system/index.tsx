@@ -5,9 +5,14 @@ import {
     TooltipComponent,
     TooltipComponentOption,
     GridComponent,
-    GridComponentOption
+    GridComponentOption,
+    ToolboxComponentOption,
+    DataZoomComponentOption,
+    ToolboxComponent,
+    DataZoomComponent
 } from 'echarts/components'
-import { BarChart, BarSeriesOption } from 'echarts/charts'
+import { BarChart, BarSeriesOption, LineChart, LineSeriesOption } from 'echarts/charts'
+import { UniversalTransition } from 'echarts/features'
 import { SVGRenderer } from 'echarts/renderers'
 import '@/assets/css/pages/system/index.scss'
 import { useUpdatedEffect } from '@/util/hooks'
@@ -16,6 +21,7 @@ import { utcToLocalTime } from '@/util/datetime'
 import {
     r_sys_statistic_cpu,
     r_sys_statistic_hardware,
+    r_sys_statistic_online,
     r_sys_statistic_software,
     r_sys_statistic_storage
 } from '@/services/system'
@@ -25,9 +31,23 @@ import FitFullScreen from '@/components/common/FitFullScreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import LoadingMask from '@/components/common/LoadingMask'
 
-echarts.use([TooltipComponent, GridComponent, BarChart, SVGRenderer])
+echarts.use([
+    TooltipComponent,
+    ToolboxComponent,
+    GridComponent,
+    DataZoomComponent,
+    BarChart,
+    LineChart,
+    SVGRenderer,
+    UniversalTransition
+])
 type EChartsOption = echarts.ComposeOption<
-    TooltipComponentOption | GridComponentOption | BarSeriesOption
+    | TooltipComponentOption
+    | ToolboxComponentOption
+    | GridComponentOption
+    | BarSeriesOption
+    | DataZoomComponentOption
+    | LineSeriesOption
 >
 
 const barDefaultSeriesOption: BarSeriesOption = {
@@ -46,7 +66,7 @@ const barDefaultSeriesOption: BarSeriesOption = {
     }
 }
 
-const eChartsBaseOption: EChartsOption = {
+const barEChartsBaseOption: EChartsOption = {
     tooltip: {},
     xAxis: {
         show: false
@@ -70,9 +90,43 @@ const eChartsBaseOption: EChartsOption = {
     }
 }
 
+const lineEChartsBaseOption: EChartsOption = {
+    tooltip: {
+        trigger: 'axis'
+    },
+    toolbox: {
+        feature: {
+            dataZoom: {
+                yAxisIndex: 'none'
+            },
+            restore: {},
+            saveAsImage: {}
+        }
+    },
+    xAxis: {
+        type: 'time'
+    },
+    yAxis: {
+        type: 'value',
+        interval: 1
+    },
+    dataZoom: [
+        {
+            type: 'inside',
+            start: 0,
+            end: 100
+        },
+        {
+            start: 0,
+            end: 100
+        }
+    ],
+    series: [{}]
+}
+
 interface CommonCardProps extends React.PropsWithChildren {
     icon: IconComponent
-    title: string
+    title: React.ReactNode
     loading?: boolean
     expand?: React.ReactNode
 }
@@ -94,6 +148,97 @@ const CommonCard: React.FC<CommonCardProps> = (props) => {
                 </LoadingMask>
             </FlexBox>
         </Card>
+    )
+}
+
+const OnlineInfo: React.FC = () => {
+    const onlineInfoDivRef = useRef<HTMLDivElement>(null)
+    const onlineInfoEChartsRef = useRef<echarts.EChartsType | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const [currentOnlineCount, setCurrentOnlineCount] = useState(-1)
+
+    useUpdatedEffect(() => {
+        const chartResizeObserver = new ResizeObserver(() => {
+            onlineInfoEChartsRef.current?.resize()
+        })
+
+        onlineInfoDivRef.current && chartResizeObserver.observe(onlineInfoDivRef.current)
+
+        return () => {
+            onlineInfoDivRef.current && chartResizeObserver.unobserve(onlineInfoDivRef.current)
+        }
+    }, [isLoading])
+
+    useUpdatedEffect(() => {
+        getOnlineInfo()
+    }, [])
+
+    const getOnlineInfo = () => {
+        if (isLoading) {
+            return
+        }
+
+        setIsLoading(true)
+
+        void r_sys_statistic_online().then((res) => {
+            const response = res.data
+            if (response.success) {
+                const data = response.data
+                if (data) {
+                    setIsLoading(false)
+
+                    setCurrentOnlineCount(data.current)
+
+                    setTimeout(() => {
+                        const dataList = data.history.map((value) => [value.time, value.record])
+
+                        onlineInfoEChartsRef.current = echarts.init(
+                            onlineInfoDivRef.current,
+                            null,
+                            { renderer: 'svg' }
+                        )
+
+                        onlineInfoEChartsRef.current?.setOption({
+                            ...lineEChartsBaseOption,
+                            series: [
+                                {
+                                    name: '在线人数',
+                                    type: 'line',
+                                    smooth: true,
+                                    symbol: 'none',
+                                    areaStyle: {},
+                                    data: dataList
+                                }
+                            ]
+                        })
+                    })
+                }
+            }
+        })
+    }
+
+    return (
+        <CommonCard
+            icon={IconFatwebOnline}
+            title={
+                <>
+                    <FlexBox gap={10} direction={'horizontal'}>
+                        <span style={{ whiteSpace: 'nowrap' }}>在线用户</span>
+                        <AntdTag>当前 {currentOnlineCount}</AntdTag>
+                    </FlexBox>
+                </>
+            }
+            loading={isLoading}
+            expand={
+                <AntdButton title={'刷新'} onClick={() => getOnlineInfo()}>
+                    <Icon component={IconFatwebRefresh} />
+                </AntdButton>
+            }
+        >
+            <FlexBox className={'card-content'} direction={'horizontal'}>
+                <div className={'big-chart'} ref={onlineInfoDivRef} />
+            </FlexBox>
+        </CommonCard>
     )
 }
 
@@ -271,9 +416,9 @@ const CPUInfo: React.FC = () => {
 
                         setCpuInfoEChartsOption(
                             dataList.map((value, index) => ({
-                                ...eChartsBaseOption,
+                                ...barEChartsBaseOption,
                                 yAxis: {
-                                    ...eChartsBaseOption.yAxis,
+                                    ...barEChartsBaseOption.yAxis,
                                     data: [index === 0 ? '总占用' : `CPU ${index - 1}`]
                                 },
                                 series: value
@@ -501,13 +646,13 @@ const StorageInfo: React.FC = () => {
     }
 
     const storageInfoVoToStorageEChartsOption = (label: string, used: number, free: number) => ({
-        ...eChartsBaseOption,
+        ...barEChartsBaseOption,
         xAxis: {
-            ...eChartsBaseOption.xAxis,
+            ...barEChartsBaseOption.xAxis,
             max: used + free
         },
         yAxis: {
-            ...eChartsBaseOption.yAxis,
+            ...barEChartsBaseOption.yAxis,
             data: [label]
         },
         series: [
@@ -577,6 +722,7 @@ const System: React.FC = () => {
             <FitFullScreen>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
+                        <OnlineInfo />
                         <SoftwareInfo />
                         <HardwareInfo />
                         <CPUInfo />
