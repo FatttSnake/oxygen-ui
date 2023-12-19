@@ -18,7 +18,7 @@ import { TopLevelFormatterParams } from 'echarts/types/dist/shared'
 import '@/assets/css/pages/system/index.scss'
 import { useUpdatedEffect } from '@/util/hooks'
 import { formatByteSize } from '@/util/common'
-import { utcToLocalTime } from '@/util/datetime'
+import { getTimesBetweenTwoTimes, utcToLocalTime } from '@/util/datetime'
 import {
     r_sys_statistic_active,
     r_sys_statistic_cpu,
@@ -223,7 +223,17 @@ const OnlineInfo: React.FC = () => {
                     setCurrentOnlineCount(data.current)
 
                     setTimeout(() => {
-                        const dataList = data.history.map((value) => [value.time, value.record])
+                        const dataList = getTimesBetweenTwoTimes(
+                            data.history[0].time,
+                            data.history[data.history.length - 1].time,
+                            'minute'
+                        ).map((time) => [
+                            time,
+                            data.history.find(
+                                (value) => value.time.substring(0, 16) === time.substring(0, 16)
+                            )?.record ?? 0
+                        ])
+
                         onlineInfoEChartsRef.current = echarts.init(
                             onlineInfoDivRef.current,
                             null,
@@ -342,14 +352,32 @@ const ActiveInfo: React.FC = () => {
                     setIsLoading(false)
 
                     setTimeout(() => {
-                        const registerList = data.registerHistory.map((value) => [
-                            value.time,
-                            value.count
-                        ])
-                        const loginList = data.loginHistory.map((value) => [
-                            value.time,
-                            value.count
-                        ])
+                        const registerList = data.registerHistory.length
+                            ? getTimesBetweenTwoTimes(
+                                  data.registerHistory[0].time,
+                                  data.registerHistory[data.registerHistory.length - 1].time,
+                                  'day'
+                              ).map((time) => [
+                                  time,
+                                  data.registerHistory.find(
+                                      (value) =>
+                                          value.time.substring(0, 10) === time.substring(0, 10)
+                                  )?.count ?? 0
+                              ])
+                            : []
+                        const loginList = data.loginHistory.length
+                            ? getTimesBetweenTwoTimes(
+                                  data.loginHistory[0].time,
+                                  data.loginHistory[data.loginHistory.length - 1].time,
+                                  'day'
+                              ).map((time) => [
+                                  time,
+                                  data.loginHistory.find(
+                                      (value) =>
+                                          value.time.substring(0, 10) === time.substring(0, 10)
+                                  )?.count ?? 0
+                              ])
+                            : []
 
                         activeInfoEChartsRef.current = echarts.init(
                             activeInfoDivRef.current,

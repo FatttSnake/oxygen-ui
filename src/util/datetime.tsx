@@ -1,4 +1,4 @@
-import moment from 'moment/moment'
+import moment, { unitOfTime } from 'moment/moment'
 import dayjs from 'dayjs'
 
 export const getNowLocalTime = (format: string = 'yyyy-MM-DD HH:mm:ssZ') => {
@@ -35,4 +35,23 @@ export const utcToMillisecond = (utcTime: string) => {
 
 export const millisecondToUtc = (millisecond: number) => {
     return moment(millisecond).toISOString()
+}
+
+export const getTimesBetweenTwoTimes = (
+    startTime: string,
+    endTime: string,
+    interval: unitOfTime.Diff
+) => {
+    const timesList: string[] = []
+    const start = moment.utc(startTime)
+    const end = moment.utc(endTime)
+
+    const count = end.diff(start, interval)
+    timesList.push(start.toISOString())
+
+    for (let i = 0; i < count; i++) {
+        timesList.push(start.add(1, interval).toISOString())
+    }
+
+    return timesList
 }
