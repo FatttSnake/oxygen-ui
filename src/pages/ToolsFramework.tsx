@@ -1,7 +1,7 @@
 import React from 'react'
 import '@/assets/css/pages/tools-framework.scss'
 import { tools } from '@/router/tools'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import SidebarScroll, { SidebarScrollElement } from '@/components/common/sidebar/SidebarScroll'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
@@ -20,7 +20,7 @@ const ToolsFramework: React.FC = () => {
 
     return (
         <>
-            <FitFullScreen className={'flex-horizontal'}>
+            <FitFullscreen className={'flex-horizontal'}>
                 <div className={'left-panel'}>
                     <Sidebar title={'氮工具'} onSidebarSwitch={handleOnSidebarSwitch}>
                         <SidebarItemList>
@@ -74,7 +74,7 @@ const ToolsFramework: React.FC = () => {
                         <Outlet />
                     </Suspense>
                 </div>
-            </FitFullScreen>
+            </FitFullscreen>
         </>
     )
 }

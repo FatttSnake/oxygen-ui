@@ -1,7 +1,7 @@
 import React from 'react'
 import '@/assets/css/components/home/home.scss'
 import { HomeFrameworkContext } from '@/pages/HomeFramework'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import Slogan from '@/components/home/Slogan'
 import OxygenToolbox from '@/components/home/OxygenToolbox'
 import Indicator from '@/components/common/Indicator'
@@ -155,7 +155,7 @@ const Home: React.FC = () => {
                 onKeyDown={handleKeyDown}
             >
                 {content.map((element, index) => {
-                    return <FitFullScreen key={index} {...element} />
+                    return <FitFullscreen key={index} {...element} />
                 })}
             </div>
 

@@ -2,12 +2,12 @@ import React from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/components/home/footer.scss'
 import FitCenter from '@/components/common/FitCenter'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 
 const Footer: React.FC = () => {
     return (
         <>
-            <FitFullScreen backgroundColor={'#333'}>
+            <FitFullscreen backgroundColor={'#333'}>
                 <FitCenter vertical={true} style={{ gap: 20 }}>
                     <div className={'icons'}>
                         <NavLink to={'https://github.com/FatttSnake'}>
@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
                         <NavLink to={'mailto:fatttsnake@fatweb.top'}>Mail</NavLink>
                     </div>
                 </FitCenter>
-            </FitFullScreen>
+            </FitFullscreen>
         </>
     )
 }

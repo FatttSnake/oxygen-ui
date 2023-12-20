@@ -23,7 +23,7 @@ import {
     r_sys_role_delete_list
 } from '@/services/system'
 import Permission from '@/components/common/Permission'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
@@ -638,7 +638,7 @@ const Role: React.FC = () => {
 
     return (
         <>
-            <FitFullScreen>
+            <FitFullscreen>
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar
@@ -649,7 +649,7 @@ const Role: React.FC = () => {
                         {table}
                     </FlexBox>
                 </HideScrollbar>
-            </FitFullScreen>
+            </FitFullscreen>
             <AntdDrawer
                 title={isDrawerEdit ? '编辑角色' : '添加角色'}
                 width={'36vw'}

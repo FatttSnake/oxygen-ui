@@ -26,7 +26,7 @@ import {
 } from '@/services/system'
 import Permission from '@/components/common/Permission'
 import { r_api_avatar_random_base64 } from '@/services/api/avatar'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
@@ -998,7 +998,7 @@ const User: React.FC = () => {
 
     return (
         <>
-            <FitFullScreen>
+            <FitFullscreen>
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar
@@ -1009,7 +1009,7 @@ const User: React.FC = () => {
                         {table}
                     </FlexBox>
                 </HideScrollbar>
-            </FitFullScreen>
+            </FitFullscreen>
             <AntdDrawer
                 title={isDrawerEdit ? '编辑用户' : '新增用户'}
                 width={'36vw'}

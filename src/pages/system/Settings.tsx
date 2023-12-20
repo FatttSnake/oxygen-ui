@@ -8,7 +8,7 @@ import {
     r_sys_settings_mail_send,
     r_sys_settings_mail_update
 } from '@/services/system'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
@@ -195,7 +195,7 @@ const MailSettings: React.FC = () => {
 const Settings: React.FC = () => {
     return (
         <>
-            <FitFullScreen>
+            <FitFullscreen>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox className={'root-content'}>
                         <FlexBox direction={'horizontal'} className={'root-row'}>
@@ -206,7 +206,7 @@ const Settings: React.FC = () => {
                         </FlexBox>
                     </FlexBox>
                 </HideScrollbar>
-            </FitFullScreen>
+            </FitFullscreen>
         </>
     )
 }

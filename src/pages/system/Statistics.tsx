@@ -29,7 +29,7 @@ import {
 } from '@/services/system'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import LoadingMask from '@/components/common/LoadingMask'
 import Permission from '@/components/common/Permission'
@@ -276,7 +276,7 @@ const OnlineInfo: React.FC = () => {
                     <FlexBox gap={10} direction={'horizontal'}>
                         <span style={{ whiteSpace: 'nowrap' }}>在线用户</span>
                         <AntdTag>
-                            当前 {currentOnlineCount === -1 ? '获取中...' : currentOnlineCount}
+                            {currentOnlineCount === -1 ? '获取中...' : `当前 ${currentOnlineCount}`}
                         </AntdTag>
                     </FlexBox>
                 </>
@@ -939,7 +939,7 @@ const StorageInfo: React.FC = () => {
 const Statistics: React.FC = () => {
     return (
         <>
-            <FitFullScreen>
+            <FitFullscreen>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         <Permission operationCode={'system:statistics:query:usage'}>
@@ -956,7 +956,7 @@ const Statistics: React.FC = () => {
                         </Permission>
                     </FlexBox>
                 </HideScrollbar>
-            </FitFullScreen>
+            </FitFullscreen>
         </>
     )
 }

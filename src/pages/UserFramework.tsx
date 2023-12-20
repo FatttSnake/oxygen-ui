@@ -2,7 +2,7 @@ import React from 'react'
 import '@/assets/css/pages/tools-framework.scss'
 import user from '@/router/user'
 import { hasPathPermission } from '@/util/auth'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
 import SidebarItem from '@/components/common/sidebar/SidebarItem'
@@ -11,7 +11,7 @@ import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 const ToolsFramework: React.FC = () => {
     return (
         <>
-            <FitFullScreen className={'flex-horizontal'}>
+            <FitFullscreen className={'flex-horizontal'}>
                 <div className={'left-panel'}>
                     <Sidebar
                         title={'个人中心'}
@@ -53,7 +53,7 @@ const ToolsFramework: React.FC = () => {
                         <Outlet />
                     </Suspense>
                 </div>
-            </FitFullScreen>
+            </FitFullscreen>
         </>
     )
 }

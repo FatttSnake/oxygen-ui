@@ -4,7 +4,7 @@ import { COLOR_FONT_SECONDARY, DATABASE_SELECT_SUCCESS } from '@/constants/commo
 import { useUpdatedEffect } from '@/util/hooks'
 import { dayjsToUtc, utcToLocalTime } from '@/util/datetime'
 import { r_sys_log_get } from '@/services/system'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
@@ -284,7 +284,7 @@ const Log: React.FC = () => {
 
     return (
         <>
-            <FitFullScreen>
+            <FitFullscreen>
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar
@@ -295,7 +295,7 @@ const Log: React.FC = () => {
                         {table}
                     </FlexBox>
                 </HideScrollbar>
-            </FitFullScreen>
+            </FitFullscreen>
         </>
     )
 }

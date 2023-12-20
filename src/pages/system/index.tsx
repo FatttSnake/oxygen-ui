@@ -3,7 +3,7 @@ import Icon from '@ant-design/icons'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import '@/assets/css/pages/system/index.scss'
 import HideScrollbar from '@/components/common/HideScrollbar'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 import Permission from '@/components/common/Permission.tsx'
@@ -62,7 +62,7 @@ const CommonCard = forwardRef<HTMLDivElement, CommonCardProps>((props) => {
 const System: React.FC = () => {
     return (
         <>
-            <FitFullScreen data-component={'system'}>
+            <FitFullscreen data-component={'system'}>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         <Permission path={'/system/statistics'}>
@@ -97,7 +97,7 @@ const System: React.FC = () => {
                         </Permission>
                     </FlexBox>
                 </HideScrollbar>
-            </FitFullScreen>
+            </FitFullscreen>
         </>
     )
 }

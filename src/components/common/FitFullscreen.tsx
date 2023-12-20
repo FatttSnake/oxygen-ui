@@ -7,7 +7,7 @@ interface FitFullscreenProps
     backgroundColor?: string
 }
 
-const FitFullScreen = forwardRef<HTMLDivElement, FitFullscreenProps>((props, ref) => {
+const FitFullscreen = forwardRef<HTMLDivElement, FitFullscreenProps>((props, ref) => {
     const { zIndex, backgroundColor, className, style, ..._props } = props
     return (
         <div
@@ -23,4 +23,4 @@ const FitFullScreen = forwardRef<HTMLDivElement, FitFullscreenProps>((props, ref
     )
 })
 
-export default FitFullScreen
+export default FitFullscreen

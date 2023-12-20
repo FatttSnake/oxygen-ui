@@ -23,7 +23,7 @@ import {
     r_sys_role_get_list
 } from '@/services/system'
 import Permission from '@/components/common/Permission'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
@@ -631,7 +631,7 @@ const Group: React.FC = () => {
 
     return (
         <>
-            <FitFullScreen>
+            <FitFullscreen>
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar
@@ -642,7 +642,7 @@ const Group: React.FC = () => {
                         {table}
                     </FlexBox>
                 </HideScrollbar>
-            </FitFullScreen>
+            </FitFullscreen>
             <AntdDrawer
                 title={isDrawerEdit ? '编辑用户组' : '添加用户组'}
                 width={'36vw'}

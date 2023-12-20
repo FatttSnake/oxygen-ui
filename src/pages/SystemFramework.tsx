@@ -1,7 +1,7 @@
 import React from 'react'
 import '@/assets/css/pages/system-framework.scss'
 import { getSystemRouteJson } from '@/router/system'
-import FitFullScreen from '@/components/common/FitFullScreen'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import Sidebar from '@/components/common/sidebar'
 import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
 import SidebarItem from '@/components/common/sidebar/SidebarItem'
@@ -10,7 +10,7 @@ import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 const SystemFramework: React.FC = () => {
     return (
         <>
-            <FitFullScreen className={'flex-horizontal'}>
+            <FitFullscreen className={'flex-horizontal'}>
                 <div className={'left-panel'}>
                     <Sidebar title={'系统配置'}>
                         <SidebarItemList>
@@ -39,7 +39,7 @@ const SystemFramework: React.FC = () => {
                         <Outlet />
                     </Suspense>
                 </div>
-            </FitFullScreen>
+            </FitFullscreen>
         </>
     )
 }
