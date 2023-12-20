@@ -29,7 +29,8 @@
     "react-dom": "^18.2.0",
     "react-router": "^6.20.1",
     "react-router-dom": "^6.20.1",
-    "size-sensor": "^1.0.2"
+    "size-sensor": "^1.0.2",
+    "vanilla-tilt": "^1.8.1"
   },
   "devDependencies": {
     "@svgr/core": "^8.1.0",

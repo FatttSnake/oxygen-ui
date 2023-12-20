@@ -27,7 +27,7 @@ const system: RouteJsonObject[] = [
         id: 'system-settings',
         component: React.lazy(() => import('@/pages/system/Settings')),
         name: '系统设置',
-        icon: React.lazy(() => import('~icons/fatweb/setting.jsx')),
+        icon: React.lazy(() => import('~icons/fatweb/option.jsx')),
         menu: true,
         autoHide: true
     },

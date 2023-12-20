@@ -213,6 +213,7 @@ const OnlineInfo: React.FC = () => {
         }
 
         setIsLoading(true)
+        setCurrentOnlineCount(-1)
 
         void r_sys_statistics_online({ scope: _scope }).then((res) => {
             const response = res.data

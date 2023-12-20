@@ -47,8 +47,8 @@ const root: RouteJsonObject[] = [
                 absolutePath: '/system',
                 id: 'systemFramework',
                 component: React.lazy(() => import('@/pages/SystemFramework')),
-                children: setTitle(system, '系统设置'),
-                name: '系统设置',
+                children: setTitle(system, '系统配置'),
+                name: '系统配置',
                 auth: true,
                 permission: true
             },
