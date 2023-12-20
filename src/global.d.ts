@@ -149,7 +149,7 @@ interface GroupVo {
 }
 
 interface LoginForm {
-    username: string
+    account: string
     password: string
 }
 

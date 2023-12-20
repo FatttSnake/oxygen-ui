@@ -19,7 +19,7 @@ const Login: React.FC = () => {
 
     const onFinish = (values: LoginForm) => {
         setIsLoggingIn(true)
-        void login(values.username, values.password)
+        void login(values.account, values.password)
             .then((value) => {
                 const res = value.data
                 const { code, data } = res
@@ -64,7 +64,7 @@ const Login: React.FC = () => {
                     case PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR:
                         void messageApi.error(
                             <>
-                                <strong>用户名</strong>或<strong>密码</strong>错误，请重试
+                                <strong>账号</strong>或<strong>密码</strong>错误，请重试
                             </>
                         )
                         setIsLoggingIn(false)
@@ -114,12 +114,12 @@ const Login: React.FC = () => {
                         >
                             <AntdForm.Item
                                 className={'login-from-item'}
-                                name={'username'}
-                                rules={[{ required: true, message: '用户名为空' }]}
+                                name={'account'}
+                                rules={[{ required: true, message: '账号为空' }]}
                             >
                                 <AntdInput
                                     prefix={<UserOutlined />}
-                                    placeholder={'用户名'}
+                                    placeholder={'邮箱/用户名'}
                                     disabled={isLoggingIn}
                                 />
                             </AntdForm.Item>

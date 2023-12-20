@@ -65,8 +65,8 @@ export const getCaptcha = (width: number, high: number, num: number) => {
     }
 }
 
-export const login = async (username: string, password: string) => {
-    return await r_auth_login(username, password)
+export const login = async (account: string, password: string) => {
+    return await r_auth_login(account, password)
 }
 
 export const logout = async () => {

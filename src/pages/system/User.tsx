@@ -522,7 +522,7 @@ const User: React.FC = () => {
                             getUser()
                             break
                         case DATABASE_DUPLICATE_KEY:
-                            void message.error('已存在相同用户名')
+                            void message.error('已存在相同用户名或邮箱')
                             break
                         default:
                             void message.error('更新失败，请稍后重试')
@@ -551,7 +551,7 @@ const User: React.FC = () => {
                             getUser()
                             break
                         case DATABASE_DUPLICATE_KEY:
-                            void message.error('已存在相同用户名')
+                            void message.error('已存在相同用户名或邮箱')
                             break
                         default:
                             void message.error('添加失败，请稍后重试')
@@ -810,7 +810,7 @@ const User: React.FC = () => {
             <AntdForm.Item
                 name={'email'}
                 label={'邮箱'}
-                rules={[{ whitespace: false, type: 'email' }]}
+                rules={[{ required: true, whitespace: false, type: 'email' }]}
             >
                 <AntdInput type={'email'} allowClear />
             </AntdForm.Item>
