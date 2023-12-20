@@ -15,17 +15,17 @@ import { BarChart, BarSeriesOption, LineChart, LineSeriesOption } from 'echarts/
 import { UniversalTransition } from 'echarts/features'
 import { SVGRenderer } from 'echarts/renderers'
 import { TopLevelFormatterParams } from 'echarts/types/dist/shared'
-import '@/assets/css/pages/system/statistic.scss'
+import '@/assets/css/pages/system/statistics.scss'
 import { useUpdatedEffect } from '@/util/hooks'
 import { formatByteSize } from '@/util/common'
 import { getTimesBetweenTwoTimes, utcToLocalTime } from '@/util/datetime'
 import {
-    r_sys_statistic_active,
-    r_sys_statistic_cpu,
-    r_sys_statistic_hardware,
-    r_sys_statistic_online,
-    r_sys_statistic_software,
-    r_sys_statistic_storage
+    r_sys_statistics_active,
+    r_sys_statistics_cpu,
+    r_sys_statistics_hardware,
+    r_sys_statistics_online,
+    r_sys_statistics_software,
+    r_sys_statistics_storage
 } from '@/services/system'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
@@ -214,7 +214,7 @@ const OnlineInfo: React.FC = () => {
 
         setIsLoading(true)
 
-        void r_sys_statistic_online({ scope: _scope }).then((res) => {
+        void r_sys_statistics_online({ scope: _scope }).then((res) => {
             const response = res.data
             if (response.success) {
                 const data = response.data
@@ -345,7 +345,7 @@ const ActiveInfo: React.FC = () => {
 
         setIsLoading(true)
 
-        void r_sys_statistic_active({ scope: _scope }).then((res) => {
+        void r_sys_statistics_active({ scope: _scope }).then((res) => {
             const response = res.data
             if (response.success) {
                 const data = response.data
@@ -465,7 +465,7 @@ const SoftwareInfo: React.FC = () => {
     const [softwareInfoData, setSoftwareInfoData] = useState<SoftwareInfoVo>()
 
     useUpdatedEffect(() => {
-        void r_sys_statistic_software().then((res) => {
+        void r_sys_statistics_software().then((res) => {
             const response = res.data
             if (response.success) {
                 response.data && setSoftwareInfoData(response.data)
@@ -527,7 +527,7 @@ const HardwareInfo: React.FC = () => {
     const [hardwareInfoData, setHardwareInfoData] = useState<HardwareInfoVo>()
 
     useUpdatedEffect(() => {
-        void r_sys_statistic_hardware().then((res) => {
+        void r_sys_statistics_hardware().then((res) => {
             const response = res.data
             if (response.success) {
                 response.data && setHardwareInfoData(response.data)
@@ -618,7 +618,7 @@ const CPUInfo: React.FC = () => {
     }, [refreshInterval])
 
     const getCpuInfo = () => {
-        void r_sys_statistic_cpu().then((res) => {
+        void r_sys_statistics_cpu().then((res) => {
             const response = res.data
             if (response.success) {
                 const data = response.data
@@ -784,7 +784,7 @@ const StorageInfo: React.FC = () => {
     }, [refreshInterval])
 
     const getStorageInfo = () => {
-        void r_sys_statistic_storage().then((res) => {
+        void r_sys_statistics_storage().then((res) => {
             const response = res.data
             if (response.success) {
                 const data = response.data
@@ -935,21 +935,21 @@ const StorageInfo: React.FC = () => {
     )
 }
 
-const Statistic: React.FC = () => {
+const Statistics: React.FC = () => {
     return (
         <>
             <FitFullScreen>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
-                        <Permission operationCode={'system:statistic:query:usage'}>
+                        <Permission operationCode={'system:statistics:query:usage'}>
                             <OnlineInfo />
                             <ActiveInfo />
                         </Permission>
-                        <Permission operationCode={'system:statistic:query:base'}>
+                        <Permission operationCode={'system:statistics:query:base'}>
                             <SoftwareInfo />
                             <HardwareInfo />
                         </Permission>
-                        <Permission operationCode={'system:statistic:query:real'}>
+                        <Permission operationCode={'system:statistics:query:real'}>
                             <CPUInfo />
                             <StorageInfo />
                         </Permission>
@@ -960,4 +960,4 @@ const Statistic: React.FC = () => {
     )
 }
 
-export default Statistic
+export default Statistics

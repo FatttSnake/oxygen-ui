@@ -21,7 +21,7 @@ const ToolsFramework: React.FC = () => {
                                     <SidebarItem
                                         path={'/system'}
                                         icon={IconFatwebSetting}
-                                        text={'系统设置'}
+                                        text={'系统配置'}
                                     />
                                 </SidebarItemList>
                             ) : undefined

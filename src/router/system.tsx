@@ -12,10 +12,10 @@ const system: RouteJsonObject[] = [
         menu: true
     },
     {
-        path: 'statistic',
-        absolutePath: '/system/statistic',
-        id: 'system-statistic',
-        component: React.lazy(() => import('@/pages/system/Statistic')),
+        path: 'statistics',
+        absolutePath: '/system/statistics',
+        id: 'system-statistics',
+        component: React.lazy(() => import('@/pages/system/Statistics')),
         name: '系统概况',
         icon: React.lazy(() => import('~icons/fatweb/chart.jsx')),
         menu: true,

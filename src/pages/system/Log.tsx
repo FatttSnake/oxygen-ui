@@ -42,7 +42,7 @@ const Log: React.FC = () => {
                 { text: 'Login', value: 'LOGIN' },
                 { text: 'Logout', value: 'LOGOUT' },
                 { text: 'Register', value: 'Register' },
-                { text: 'Statistic', value: 'STATISTIC' },
+                { text: 'Statistics', value: 'STATISTICS' },
                 { text: 'API', value: 'API' },
                 { text: 'Error', value: 'ERROR' }
             ]
