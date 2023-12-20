@@ -15,7 +15,7 @@ import { BarChart, BarSeriesOption, LineChart, LineSeriesOption } from 'echarts/
 import { UniversalTransition } from 'echarts/features'
 import { SVGRenderer } from 'echarts/renderers'
 import { TopLevelFormatterParams } from 'echarts/types/dist/shared'
-import '@/assets/css/pages/system/index.scss'
+import '@/assets/css/pages/system/statistic.scss'
 import { useUpdatedEffect } from '@/util/hooks'
 import { formatByteSize } from '@/util/common'
 import { getTimesBetweenTwoTimes, utcToLocalTime } from '@/util/datetime'
@@ -32,6 +32,7 @@ import FlexBox from '@/components/common/FlexBox'
 import FitFullScreen from '@/components/common/FitFullScreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import LoadingMask from '@/components/common/LoadingMask'
+import Permission from '@/components/common/Permission'
 
 echarts.use([
     TooltipComponent,
@@ -940,12 +941,18 @@ const Statistic: React.FC = () => {
             <FitFullScreen>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
-                        <OnlineInfo />
-                        <ActiveInfo />
-                        <SoftwareInfo />
-                        <HardwareInfo />
-                        <CPUInfo />
-                        <StorageInfo />
+                        <Permission operationCode={'system:statistic:query:usage'}>
+                            <OnlineInfo />
+                            <ActiveInfo />
+                        </Permission>
+                        <Permission operationCode={'system:statistic:query:base'}>
+                            <SoftwareInfo />
+                            <HardwareInfo />
+                        </Permission>
+                        <Permission operationCode={'system:statistic:query:real'}>
+                            <CPUInfo />
+                            <StorageInfo />
+                        </Permission>
                     </FlexBox>
                 </HideScrollbar>
             </FitFullScreen>
