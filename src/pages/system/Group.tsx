@@ -631,7 +631,7 @@ const Group: React.FC = () => {
 
     return (
         <>
-            <FitFullscreen>
+            <FitFullscreen data-component={'system-group'}>
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar

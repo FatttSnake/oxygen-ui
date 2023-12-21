@@ -1,86 +1,88 @@
 @use '@/assets/css/constants' as constants;
 
-.root-content {
-  padding: 30px;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
+[data-component=system-statistics] {
+  .root-content {
+    padding: 30px;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
 
-  > .card-box {
-    width: 48%;
-    flex: 0 0 auto;
+    > .card-box {
+      width: 48%;
+      flex: 0 0 auto;
 
-    .common-card {
-      padding: 20px;
-      gap: 20px;
+      .common-card {
+        padding: 20px;
+        gap: 20px;
 
-      > .head {
-        align-items: center;
-        gap: 5px;
-        color: constants.$main-color;
+        > .head {
+          align-items: center;
+          gap: 5px;
+          color: constants.$main-color;
 
-        .icon {
-          font-size: constants.$SIZE_ICON_MD;
-          flex: 0 0 auto;
-        }
+          .icon {
+            font-size: constants.$SIZE_ICON_MD;
+            flex: 0 0 auto;
+          }
 
-        .title {
-          display: flex;
-          font-size: 1.2em;
-        }
+          .title {
+            display: flex;
+            font-size: 1.2em;
+          }
 
-        :nth-child(n+3) {
-          flex: 0 0 auto;
-          color: constants.$font-main-color;
-        }
-      }
-
-      .card-content {
-        font-size: 1.1em;
-        padding: 0 10px;
-        gap: 10px;
-
-        .key, .value-percent {
-          flex: 0 0 auto;
-          color: constants.$font-main-color;
-        }
-
-        .value {
-          color: constants.$font-secondary-color;
-          overflow: hidden;
-
-          > * {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+          :nth-child(n+3) {
+            flex: 0 0 auto;
+            color: constants.$font-main-color;
           }
         }
 
-        .value-chart {
-          justify-content: space-around;
-          width: 0;
+        .card-content {
+          font-size: 1.1em;
+          padding: 0 10px;
+          gap: 10px;
 
-          > div {
-            max-height: 12px;
-            height: 12px;
+          .key, .value-percent {
+            flex: 0 0 auto;
+            color: constants.$font-main-color;
+          }
+
+          .value {
+            color: constants.$font-secondary-color;
+            overflow: hidden;
 
             > * {
-              transform: translateY(1px);
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
             }
           }
-        }
 
-        .value-percent {
-          text-align: right;
-        }
+          .value-chart {
+            justify-content: space-around;
+            width: 0;
 
-        .big-chart {
-          width: 0;
-          height: 400px;
-        }
+            > div {
+              max-height: 12px;
+              height: 12px;
 
-        > * {
-          gap: 5px;
+              > * {
+                transform: translateY(1px);
+              }
+            }
+          }
+
+          .value-percent {
+            text-align: right;
+          }
+
+          .big-chart {
+            width: 0;
+            height: 400px;
+          }
+
+          > * {
+            gap: 5px;
+          }
         }
       }
     }

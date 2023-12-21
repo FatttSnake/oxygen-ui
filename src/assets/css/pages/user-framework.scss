@@ -1,7 +1,7 @@
 @use "@/assets/css/constants" as constants;
 @use "@/assets/css/mixins" as mixins;
 
-[data-component=tools-framework] {
+[data-component=user-framework] {
   .left-panel {
     background-color: constants.$origin-color;
   }

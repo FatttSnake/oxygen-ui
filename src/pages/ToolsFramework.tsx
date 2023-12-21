@@ -20,7 +20,7 @@ const ToolsFramework: React.FC = () => {
 
     return (
         <>
-            <FitFullscreen className={'flex-horizontal'}>
+            <FitFullscreen data-component={'tools-framework'} className={'flex-horizontal'}>
                 <div className={'left-panel'}>
                     <Sidebar title={'氮工具'} onSidebarSwitch={handleOnSidebarSwitch}>
                         <SidebarItemList>

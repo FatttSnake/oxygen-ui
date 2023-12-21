@@ -10,7 +10,7 @@ import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 const SystemFramework: React.FC = () => {
     return (
         <>
-            <FitFullscreen className={'flex-horizontal'}>
+            <FitFullscreen data-component={'system-framework'} className={'flex-horizontal'}>
                 <div className={'left-panel'}>
                     <Sidebar title={'系统配置'}>
                         <SidebarItemList>

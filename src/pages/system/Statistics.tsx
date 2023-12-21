@@ -939,7 +939,7 @@ const StorageInfo: React.FC = () => {
 const Statistics: React.FC = () => {
     return (
         <>
-            <FitFullscreen>
+            <FitFullscreen data-component={'system-statistics'}>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         <Permission operationCode={'system:statistics:query:usage'}>

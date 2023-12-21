@@ -1,16 +1,14 @@
 @use "@/assets/css/constants" as constants;
 @use "@/assets/css/mixins" as mixins;
 
-body {
-  background-color: constants.$background-color;
-}
+[data-component=system-framework] {
+  .left-panel {
+    background-color: constants.$origin-color;
+  }
 
-.left-panel {
-  background-color: constants.$origin-color;
-}
-
-.right-panel {
-  flex: 1;
-  width: 0;
-  background-color: constants.$background-color;
+  .right-panel {
+    flex: 1;
+    width: 0;
+    background-color: constants.$background-color;
+  }
 }

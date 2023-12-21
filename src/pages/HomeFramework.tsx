@@ -78,6 +78,7 @@ const HomeFramework: React.FC = () => {
     return (
         <>
             <HideScrollbar
+                data-component={'home-framework'}
                 ref={hideScrollbarRef}
                 isPreventVerticalScroll={preventScroll}
                 isShowHorizontalScrollbar={true}
@@ -100,8 +101,8 @@ const HomeFramework: React.FC = () => {
                                                         isPending
                                                             ? 'pending'
                                                             : isActive
-                                                            ? 'active'
-                                                            : ''
+                                                              ? 'active'
+                                                              : ''
                                                     }
                                                 >
                                                     {(route.handle as RouteHandle).name}
@@ -126,8 +127,8 @@ const HomeFramework: React.FC = () => {
                                                                             isPending
                                                                                 ? 'pending'
                                                                                 : isActive
-                                                                                ? 'active'
-                                                                                : ''
+                                                                                  ? 'active'
+                                                                                  : ''
                                                                         }
                                                                     >
                                                                         {

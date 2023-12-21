@@ -146,6 +146,7 @@ const Home: React.FC = () => {
     return (
         <>
             <div
+                data-component={'home'}
                 tabIndex={0}
                 onWheel={handleWheel}
                 onTouchStart={handleTouchStart}
@@ -159,7 +160,7 @@ const Home: React.FC = () => {
                 })}
             </div>
 
-            <div hidden={navbarHidden} className={'indicator'}>
+            <div data-component={'home'} hidden={navbarHidden} className={'indicator'}>
                 <Indicator
                     total={content.length}
                     current={currentContent}

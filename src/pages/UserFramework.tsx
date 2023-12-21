@@ -1,5 +1,5 @@
 import React from 'react'
-import '@/assets/css/pages/tools-framework.scss'
+import '@/assets/css/pages/user-framework.scss'
 import user from '@/router/user'
 import { hasPathPermission } from '@/util/auth'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -11,7 +11,7 @@ import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 const ToolsFramework: React.FC = () => {
     return (
         <>
-            <FitFullscreen className={'flex-horizontal'}>
+            <FitFullscreen data-component={'user-framework'} className={'flex-horizontal'}>
                 <div className={'left-panel'}>
                     <Sidebar
                         title={'个人中心'}

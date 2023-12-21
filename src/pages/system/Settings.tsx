@@ -195,7 +195,7 @@ const MailSettings: React.FC = () => {
 const Settings: React.FC = () => {
     return (
         <>
-            <FitFullscreen>
+            <FitFullscreen data-component={'system-settings'}>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox className={'root-content'}>
                         <FlexBox direction={'horizontal'} className={'root-row'}>
