@@ -16,15 +16,20 @@ const ToolsFramework: React.FC = () => {
                     <Sidebar
                         title={'个人中心'}
                         bottomFixed={
-                            hasPathPermission('/system') ? (
-                                <SidebarItemList>
+                            <SidebarItemList>
+                                {hasPathPermission('/system') ? (
                                     <SidebarItem
                                         path={'/system'}
                                         icon={IconFatwebSetting}
                                         text={'系统配置'}
                                     />
-                                </SidebarItemList>
-                            ) : undefined
+                                ) : undefined}
+                                <SidebarItem
+                                    path={'/tools'}
+                                    icon={IconFatwebBack}
+                                    text={'回到氮工具'}
+                                />
+                            </SidebarItemList>
                         }
                     >
                         <SidebarItemList>

@@ -1,5 +1,5 @@
 import React from 'react'
-import '@/assets/css/pages/login.scss'
+import '@/assets/css/pages/login-.scss'
 import {
     PERMISSION_LOGIN_SUCCESS,
     PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR,
