@@ -21,9 +21,9 @@ const root: RouteJsonObject[] = [
                 component: lazySignPage
             },
             {
-                path: 'confirm',
-                absolutePath: '/confirm',
-                id: 'confirm',
+                path: 'verify',
+                absolutePath: '/verify',
+                id: 'verify',
                 component: lazySignPage
             },
             {

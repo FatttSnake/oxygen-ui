@@ -2,7 +2,8 @@ import React from 'react'
 import Icon from '@ant-design/icons'
 import { COLOR_ERROR } from '@/constants/common.constants'
 import { getRedirectUrl } from '@/util/route'
-import { getLoginStatus, getNickname, logout } from '@/util/auth'
+import { getLoginStatus, getNickname, removeToken } from '@/util/auth'
+import { r_auth_logout } from '@/services/auth'
 
 const SidebarFooter: React.FC = () => {
     const matches = useMatches()
@@ -26,7 +27,8 @@ const SidebarFooter: React.FC = () => {
         }
 
         setExiting(true)
-        void logout().finally(() => {
+        void r_auth_logout().finally(() => {
+            removeToken()
             notification.info({
                 message: '已退出登录',
                 icon: <Icon component={IconFatwebExit} style={{ color: COLOR_ERROR }} />

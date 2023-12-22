@@ -1,48 +1,199 @@
 import React, { useState } from 'react'
-import '@/assets/css/pages/sign.scss'
-import FitFullscreen from '@/components/common/FitFullscreen'
-import FitCenter from '@/components/common/FitCenter'
-import FlexBox from '@/components/common/FlexBox'
 import { useNavigate } from 'react-router'
 import Icon from '@ant-design/icons'
-import { getUserInfo, login, setToken } from '@/util/auth.tsx'
+import '@/assets/css/pages/sign.scss'
 import {
+    DATABASE_DUPLICATE_KEY,
     PERMISSION_LOGIN_SUCCESS,
     PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR,
+    PERMISSION_REGISTER_SUCCESS,
     PERMISSION_USER_DISABLE,
     PERMISSION_USERNAME_NOT_FOUND
 } from '@/constants/common.constants.ts'
-import { AppContext } from '@/App.tsx'
-import { utcToLocalTime } from '@/util/datetime.tsx'
-import { useUpdatedEffect } from '@/util/hooks.tsx'
+import { getLoginStatus, getUserInfo, setToken } from '@/util/auth'
+import { AppContext } from '@/App'
+import { utcToLocalTime } from '@/util/datetime'
+import { useUpdatedEffect } from '@/util/hooks'
+import { r_auth_login, r_auth_register } from '@/services/auth'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import FitCenter from '@/components/common/FitCenter'
+import FlexBox from '@/components/common/FlexBox'
 
 const SignUp: React.FC = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
+    const [isSigningUp, setIsSigningUp] = useState(false)
+    const [isFinish, setIsFinish] = useState(false)
+
+    const handleOnFinish = (registerParam: RegisterParam) => {
+        if (isSigningUp) {
+            return
+        }
+        setIsSigningUp(true)
+        void r_auth_register({
+            username: registerParam.username,
+            email: registerParam.email,
+            password: registerParam.password
+        })
+            .then((res) => {
+                const response = res.data
+                switch (response.code) {
+                    case PERMISSION_REGISTER_SUCCESS:
+                        void message.success('恭喜，您快要完成注册了')
+                        setIsFinish(true)
+                        break
+                    case DATABASE_DUPLICATE_KEY:
+                        void message.error('用户名或邮箱已被注册，请重试')
+                        setIsSigningUp(false)
+                        break
+                    default:
+                        void message.error('服务器出错了，请稍后重试')
+                        setIsSigningUp(false)
+                }
+            })
+            .catch(() => {
+                setIsSigningUp(false)
+            })
+    }
+
+    const handleOnRetry = () => {}
 
     return (
         <div className={'sign-up'}>
             <FitCenter>
                 <FlexBox>
-                    <div>Welcome join us</div>
-                    <AntdButton
-                        onClick={() =>
-                            navigate(
-                                `/login${
-                                    searchParams.toString() ? `?${searchParams.toString()}` : ''
-                                }`
-                            )
-                        }
-                    >
-                        登录
-                    </AntdButton>
-                    <AntdForm>
-                        <AntdForm.Item></AntdForm.Item>
+                    <div className={'title'}>
+                        <div className={'primary'}>创建账号</div>
+                        <div className={'secondary'}>Create account</div>
+                    </div>
+                    <AntdForm autoComplete={'on'} onFinish={handleOnFinish} className={'form'}>
+                        {!isFinish ? (
+                            <>
+                                <AntdForm.Item
+                                    name={'username'}
+                                    rules={[
+                                        { required: true, message: '请输入用户名' },
+                                        {
+                                            pattern: /^[a-zA-Z-_][0-9a-zA-Z-_]{2,38}$/,
+                                            message:
+                                                '只能包含字母、数字、连字符和下划线，不能以数字开头'
+                                        }
+                                    ]}
+                                >
+                                    <AntdInput
+                                        prefix={<Icon component={IconFatwebUser} />}
+                                        placeholder={'用户名'}
+                                        maxLength={39}
+                                        showCount={true}
+                                        disabled={isSigningUp}
+                                    />
+                                </AntdForm.Item>
+                                <AntdForm.Item
+                                    name={'email'}
+                                    rules={[
+                                        { required: true, message: '请输入邮箱' },
+                                        { type: 'email', message: '不是有效的邮箱地址' }
+                                    ]}
+                                >
+                                    <AntdInput
+                                        type={'email'}
+                                        prefix={<Icon component={IconFatwebEmail} />}
+                                        placeholder={'邮箱'}
+                                        disabled={isSigningUp}
+                                    />
+                                </AntdForm.Item>
+                                <AntdForm.Item
+                                    name={'password'}
+                                    rules={[
+                                        { required: true, message: '请输入密码' },
+                                        { min: 10, message: '密码至少为10位' },
+                                        { max: 30, message: '密码最多为30位' }
+                                    ]}
+                                >
+                                    <AntdInput.Password
+                                        prefix={<Icon component={IconFatwebPassword} />}
+                                        placeholder={'密码'}
+                                        disabled={isSigningUp}
+                                    />
+                                </AntdForm.Item>
+                                <AntdForm.Item
+                                    name={'passwordConfirm'}
+                                    rules={[
+                                        { required: true, message: '请确认密码' },
+                                        ({ getFieldValue }) => ({
+                                            validator(_, value) {
+                                                if (!value || getFieldValue('password') === value) {
+                                                    return Promise.resolve()
+                                                }
+                                                return Promise.reject(
+                                                    new Error('两次密码输入必须一致')
+                                                )
+                                            }
+                                        })
+                                    ]}
+                                >
+                                    <AntdInput.Password
+                                        prefix={<Icon component={IconFatwebPassword} />}
+                                        placeholder={'确认密码'}
+                                        disabled={isSigningUp}
+                                    />
+                                </AntdForm.Item>
+                                <AntdForm.Item>
+                                    <AntdButton
+                                        style={{ width: '100%' }}
+                                        type={'primary'}
+                                        htmlType={'submit'}
+                                        disabled={isSigningUp}
+                                        loading={isSigningUp}
+                                    >
+                                        注&ensp;&ensp;&ensp;&ensp;册
+                                    </AntdButton>
+                                </AntdForm.Item>
+                            </>
+                        ) : (
+                            <div className={'retry'}>
+                                我们发送了一封包含激活账号链接的邮件到您的邮箱里，如未收到，可能被归为垃圾邮件，请仔细检查。
+                                <a onClick={handleOnRetry}>重新发送</a>
+                            </div>
+                        )}
+
+                        <div className={'footer'}>
+                            已有账号？
+                            <a
+                                onClick={() =>
+                                    navigate(
+                                        `/login${
+                                            searchParams.toString()
+                                                ? `?${searchParams.toString()}`
+                                                : ''
+                                        }`,
+                                        { replace: true }
+                                    )
+                                }
+                            >
+                                登录
+                            </a>
+                        </div>
                     </AntdForm>
                 </FlexBox>
             </FitCenter>
         </div>
     )
+}
+
+const Verify: React.FC = () => {
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
+
+    useUpdatedEffect(() => {
+        if (!getLoginStatus()) {
+            navigate(`/login${searchParams.toString() ? `?${searchParams.toString()}` : ''}`, {
+                replace: true
+            })
+        }
+    }, [])
+
+    return <></>
 }
 
 const Forget: React.FC = () => {
@@ -72,7 +223,10 @@ const Forget: React.FC = () => {
                             <>
                                 <AntdForm.Item
                                     name={'account'}
-                                    rules={[{ required: true, message: '请输入邮箱' }]}
+                                    rules={[
+                                        { required: true, message: '请输入邮箱' },
+                                        { type: 'email', message: '不是有效的邮箱地址' }
+                                    ]}
                                 >
                                     <AntdInput
                                         prefix={<Icon component={IconFatwebEmail} />}
@@ -93,7 +247,7 @@ const Forget: React.FC = () => {
                                 </AntdForm.Item>
                             </>
                         ) : (
-                            <div style={{ marginBottom: 10 }}>
+                            <div className={'retry'}>
                                 我们发送了一封包含找回密码链接的邮件到您的邮箱里，如未收到，可能被归为垃圾邮件，请仔细检查。
                                 <a onClick={handleOnRetry}>重新发送</a>
                             </div>
@@ -108,7 +262,8 @@ const Forget: React.FC = () => {
                                             searchParams.toString()
                                                 ? `?${searchParams.toString()}`
                                                 : ''
-                                        }`
+                                        }`,
+                                        { replace: true }
                                     )
                                 }
                             >
@@ -128,13 +283,13 @@ const SignIn: React.FC = () => {
     const [searchParams] = useSearchParams()
     const [isSigningIn, setIsSigningIn] = useState(false)
 
-    const handleOnFinish = (loginForm: LoginForm) => {
+    const handleOnFinish = (loginParam: LoginParam) => {
         if (isSigningIn) {
             return
         }
         setIsSigningIn(true)
 
-        void login(loginForm.account, loginForm.password)
+        void r_auth_login({ account: loginParam.account, password: loginParam.password })
             .then((res) => {
                 const response = res.data
                 const { code, data } = response
@@ -216,7 +371,7 @@ const SignIn: React.FC = () => {
                     <AntdForm autoComplete={'on'} onFinish={handleOnFinish} className={'form'}>
                         <AntdForm.Item
                             name={'account'}
-                            rules={[{ required: true, message: '账号为空' }]}
+                            rules={[{ required: true, message: '请输入账号' }]}
                         >
                             <AntdInput
                                 prefix={<Icon component={IconFatwebUser} />}
@@ -226,7 +381,7 @@ const SignIn: React.FC = () => {
                         </AntdForm.Item>
                         <AntdForm.Item
                             name={'password'}
-                            rules={[{ required: true, message: '密码为空' }]}
+                            rules={[{ required: true, message: '请输入密码' }]}
                         >
                             <AntdInput.Password
                                 prefix={<Icon component={IconFatwebPassword} />}
@@ -243,7 +398,8 @@ const SignIn: React.FC = () => {
                                             searchParams.toString()
                                                 ? `?${searchParams.toString()}`
                                                 : ''
-                                        }`
+                                        }`,
+                                        { replace: true }
                                     )
                                 }}
                             >
@@ -262,7 +418,7 @@ const SignIn: React.FC = () => {
                             </AntdButton>
                         </AntdForm.Item>
                         <div className={'footer'}>
-                            还没有账户？
+                            还没有账号？
                             <a
                                 onClick={() =>
                                     navigate(
@@ -270,7 +426,8 @@ const SignIn: React.FC = () => {
                                             searchParams.toString()
                                                 ? `?${searchParams.toString()}`
                                                 : ''
-                                        }`
+                                        }`,
+                                        { replace: true }
                                     )
                                 }
                             >
@@ -290,7 +447,7 @@ const Sign: React.FC = () => {
     const match = useMatches().reduce((_, second) => second)
     const [isSwitch, setIsSwitch] = useState(false)
 
-    const leftPage = ['register', 'forget']
+    const leftPage = ['register', 'verify', 'forget']
 
     useUpdatedEffect(() => {
         lastPage.current = currentPage.current
@@ -303,6 +460,8 @@ const Sign: React.FC = () => {
         switch (leftPage.includes(currentPage.current) ? currentPage.current : lastPage.current) {
             case 'forget':
                 return <Forget />
+            case 'verify':
+                return <Verify />
             default:
                 return <SignUp />
         }

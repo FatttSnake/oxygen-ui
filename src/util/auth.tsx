@@ -8,7 +8,6 @@ import { floorNumber, randomColor, randomFloat, randomInt } from '@/util/common'
 import { getLocalStorage, removeLocalStorage, setLocalStorage } from '@/util/browser'
 import { getFullTitle } from '@/util/route'
 import { r_sys_user_info } from '@/services/system'
-import { r_auth_login, r_auth_logout } from '@/services/auth'
 
 let captcha: Captcha
 
@@ -63,16 +62,6 @@ export const getCaptcha = (width: number, high: number, num: number) => {
         value,
         base64Src
     }
-}
-
-export const login = async (account: string, password: string) => {
-    return await r_auth_login(account, password)
-}
-
-export const logout = async () => {
-    return r_auth_logout().finally(() => {
-        removeToken()
-    })
 }
 
 export const getLoginStatus = () => {

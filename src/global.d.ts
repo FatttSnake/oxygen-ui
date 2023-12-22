@@ -57,6 +57,23 @@ interface TokenVo {
     token: string
 }
 
+interface RegisterParam {
+    username: string
+    email: string
+    password: string
+}
+
+interface VerifyParam {
+    code: string
+    nickname?: string
+    avatar?: string
+}
+
+interface LoginParam {
+    account: string
+    password: string
+}
+
 interface UserWithPowerInfoVo {
     id: string
     username: string
@@ -146,11 +163,6 @@ interface GroupVo {
     enable: boolean
     createTime: string
     updateTime: string
-}
-
-interface LoginForm {
-    account: string
-    password: string
 }
 
 interface PageVo<T> {

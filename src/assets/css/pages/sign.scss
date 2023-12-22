@@ -68,6 +68,10 @@
         .form {
           width: 300px;
 
+          button {
+            font-weight: bolder;
+          }
+
           .addition {
             justify-content: space-between;
             margin-bottom: 14px;
@@ -87,13 +91,22 @@
         }
       }
 
-
-      .sign-up {
-
+      .sign-up, .sign-in, .forget {
+        .footer {
+          a {
+            font-weight: bolder;
+          }
+        }
       }
 
-      .sign-in {
+      .sign-up, .forget {
+        .retry {
+          margin-bottom: 16px;
 
+          a {
+            font-weight: bolder;
+          }
+        }
       }
     }
 
