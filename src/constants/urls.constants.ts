@@ -1,4 +1,5 @@
 export const URL_REGISTER = '/register'
+export const URL_RESEND = '/resend'
 export const URL_VERIFY = '/verify'
 export const URL_LOGIN = '/login'
 export const URL_TOKEN = '/token'

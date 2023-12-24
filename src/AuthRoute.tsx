@@ -1,6 +1,7 @@
 import { PRODUCTION_NAME } from '@/constants/common.constants'
 import { getRedirectUrl } from '@/util/route'
-import { getLoginStatus } from '@/util/auth'
+import { getLoginStatus, getVerifyStatus_async } from '@/util/auth'
+import { Navigate } from 'react-router'
 
 const AuthRoute = () => {
     const matches = useMatches()
@@ -9,17 +10,24 @@ const AuthRoute = () => {
     const location = useLocation()
     const outlet = useOutlet()
     const isLogin = getLoginStatus()
+    const isVerify = getVerifyStatus_async()
 
     return useMemo(() => {
         document.title = `${handle?.titlePrefix ?? ''}${
             handle?.title ? handle?.title : PRODUCTION_NAME
         }${handle?.titlePostfix ?? ''}`
-        if (matches.some(({ handle }) => (handle as RouteHandle)?.auth) && !isLogin) {
-            return (
-                <Navigate
-                    to={getRedirectUrl('/login', `${lastMatch.pathname}${location.search}`)}
-                />
-            )
+
+        if (matches.some(({ handle }) => (handle as RouteHandle)?.auth)) {
+            if (!isLogin) {
+                return (
+                    <Navigate
+                        to={getRedirectUrl('/login', `${lastMatch.pathname}${location.search}`)}
+                    />
+                )
+            }
+            if (isVerify === false && lastMatch.pathname !== '/verify') {
+                return <Navigate to={'/verify'} />
+            }
         }
         if (isLogin && lastMatch.pathname === '/login') {
             return <Navigate to={'/'} />

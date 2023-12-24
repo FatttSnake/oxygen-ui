@@ -77,6 +77,7 @@ interface LoginParam {
 interface UserWithPowerInfoVo {
     id: string
     username: string
+    verified: boolean
     locking: boolean
     expiration: string
     credentialsExpiration: string
@@ -97,6 +98,7 @@ interface UserWithPowerInfoVo {
 interface UserWithRoleInfoVo {
     id: string
     username: string
+    verify: string
     locking: boolean
     expiration: string
     credentialsExpiration: string

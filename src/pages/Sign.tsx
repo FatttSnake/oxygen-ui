@@ -3,27 +3,43 @@ import { useNavigate } from 'react-router'
 import Icon from '@ant-design/icons'
 import '@/assets/css/pages/sign.scss'
 import {
+    COLOR_BACKGROUND,
     DATABASE_DUPLICATE_KEY,
+    PERMISSION_ACCOUNT_NEED_INIT,
     PERMISSION_LOGIN_SUCCESS,
     PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR,
     PERMISSION_REGISTER_SUCCESS,
     PERMISSION_USER_DISABLE,
     PERMISSION_USERNAME_NOT_FOUND
 } from '@/constants/common.constants.ts'
-import { getLoginStatus, getUserInfo, setToken } from '@/util/auth'
+import { getLoginStatus, getUserInfo, requestUserInfo, setToken } from '@/util/auth'
 import { AppContext } from '@/App'
 import { utcToLocalTime } from '@/util/datetime'
 import { useUpdatedEffect } from '@/util/hooks'
-import { r_auth_login, r_auth_register } from '@/services/auth'
+import { r_auth_login, r_auth_register, r_auth_resend, r_auth_verify } from '@/services/auth'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
+import { getRedirectUrl } from '@/util/route.tsx'
+import { r_api_avatar_random_base64 } from '@/services/api/avatar.tsx'
 
 const SignUp: React.FC = () => {
+    const location = useLocation()
     const navigate = useNavigate()
-    const [searchParams] = useSearchParams()
     const [isSigningUp, setIsSigningUp] = useState(false)
     const [isFinish, setIsFinish] = useState(false)
+    const [isSending, setIsSending] = useState(false)
+
+    useUpdatedEffect(() => {
+        if (location.pathname !== '/register') {
+            return
+        }
+        if (getLoginStatus()) {
+            navigate(`/login${location.search}`, {
+                replace: true
+            })
+        }
+    }, [location.pathname])
 
     const handleOnFinish = (registerParam: RegisterParam) => {
         if (isSigningUp) {
@@ -39,8 +55,22 @@ const SignUp: React.FC = () => {
                 const response = res.data
                 switch (response.code) {
                     case PERMISSION_REGISTER_SUCCESS:
-                        void message.success('恭喜，您快要完成注册了')
-                        setIsFinish(true)
+                        void r_auth_login({
+                            account: registerParam.email,
+                            password: registerParam.password
+                        }).then((res_) => {
+                            const response_ = res_.data
+                            switch (response_.code) {
+                                case PERMISSION_LOGIN_SUCCESS:
+                                    setToken(response_.data?.token ?? '')
+                                    void message.success('恭喜，您快要完成注册了')
+                                    setIsFinish(true)
+                                    break
+                                default:
+                                    void message.success('出错了，请稍后重试')
+                                    setIsSigningUp(false)
+                            }
+                        })
                         break
                     case DATABASE_DUPLICATE_KEY:
                         void message.error('用户名或邮箱已被注册，请重试')
@@ -56,7 +86,26 @@ const SignUp: React.FC = () => {
             })
     }
 
-    const handleOnRetry = () => {}
+    const handleOnResend = () => {
+        if (isSending) {
+            return
+        }
+        setIsSending(true)
+        void message.loading({ content: '发送中', key: 'sending', duration: 0 })
+        void r_auth_resend()
+            .then((res) => {
+                const response = res.data
+                message.destroy('sending')
+                if (response.success) {
+                    void message.success('已发送验证邮件，请查收')
+                } else {
+                    void message.error('出错了，请稍后重试')
+                }
+            })
+            .finally(() => {
+                setIsSending(false)
+            })
+    }
 
     return (
         <div className={'sign-up'}>
@@ -153,22 +202,15 @@ const SignUp: React.FC = () => {
                         ) : (
                             <div className={'retry'}>
                                 我们发送了一封包含激活账号链接的邮件到您的邮箱里，如未收到，可能被归为垃圾邮件，请仔细检查。
-                                <a onClick={handleOnRetry}>重新发送</a>
+                                <a onClick={handleOnResend}>重新发送</a>
                             </div>
                         )}
 
-                        <div className={'footer'}>
+                        <div className={'footer'} hidden={isFinish}>
                             已有账号？
                             <a
                                 onClick={() =>
-                                    navigate(
-                                        `/login${
-                                            searchParams.toString()
-                                                ? `?${searchParams.toString()}`
-                                                : ''
-                                        }`,
-                                        { replace: true }
-                                    )
+                                    navigate(`/login${location.search}`, { replace: true })
                                 }
                             >
                                 登录
@@ -182,23 +224,201 @@ const SignUp: React.FC = () => {
 }
 
 const Verify: React.FC = () => {
+    const { refreshRouter } = useContext(AppContext)
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
+    const [hasCode, setHasCode] = useState(true)
+    const [isValid, setIsValid] = useState(true)
+    const [isSending, setIsSending] = useState(false)
+    const [isGettingAvatar, setIsGettingAvatar] = useState(false)
+    const [avatar, setAvatar] = useState('')
+    const [isVerifying, setIsVerifying] = useState(false)
 
     useUpdatedEffect(() => {
+        if (location.pathname !== '/verify') {
+            return
+        }
+
         if (!getLoginStatus()) {
-            navigate(`/login${searchParams.toString() ? `?${searchParams.toString()}` : ''}`, {
+            navigate(getRedirectUrl('/login', `${location.pathname}${location.search}`), {
                 replace: true
             })
+            return
         }
-    }, [])
 
-    return <></>
+        const code = searchParams.get('code')
+
+        if (!code) {
+            setHasCode(false)
+            return
+        }
+        void r_auth_verify({ code })
+            .then((res) => {
+                const response = res.data
+                if (response.code === PERMISSION_ACCOUNT_NEED_INIT) {
+                    void getUserInfo().then((user) => {
+                        setAvatar(user.userInfo.avatar)
+                    })
+                } else {
+                    setIsValid(false)
+                }
+            })
+            .catch(() => {
+                setIsValid(false)
+            })
+    }, [location.pathname])
+
+    const handleOnResend = () => {
+        if (isSending) {
+            return
+        }
+        setIsSending(true)
+        void message.loading({ content: '发送中', key: 'sending', duration: 0 })
+        void r_auth_resend()
+            .then((res) => {
+                const response = res.data
+                message.destroy('sending')
+                if (response.success) {
+                    void message.success('已发送验证邮件，请查收')
+                } else {
+                    void message.error('出错了，请稍后重试')
+                }
+            })
+            .finally(() => {
+                setIsSending(false)
+            })
+    }
+
+    const handleOnChangeAvatar = () => {
+        if (isGettingAvatar) {
+            return
+        }
+        setIsGettingAvatar(true)
+        void r_api_avatar_random_base64()
+            .then((res) => {
+                const response = res.data
+                if (response.success) {
+                    response.data?.base64 && setAvatar(response.data.base64)
+                }
+            })
+            .finally(() => {
+                setIsGettingAvatar(false)
+            })
+    }
+
+    const handleOnFinish = (verifyParam: VerifyParam) => {
+        if (isVerifying) {
+            return
+        }
+        setIsVerifying(true)
+
+        void r_auth_verify({
+            code: searchParams.get('code') ?? '',
+            avatar,
+            nickname: verifyParam.nickname
+        }).then((res) => {
+            const response = res.data
+            if (response.success) {
+                void message.success('恭喜你，完成了')
+                setTimeout(() => {
+                    void requestUserInfo().then(() => {
+                        refreshRouter()
+                        if (searchParams.has('redirect')) {
+                            navigate(searchParams.get('redirect') ?? '/')
+                        } else {
+                            navigate('/')
+                        }
+                    })
+                }, 1500)
+            } else {
+                void message.error('出错了，请稍后重试')
+                setIsVerifying(false)
+            }
+        })
+    }
+
+    return (
+        <>
+            <div className={'verify'}>
+                <FitCenter>
+                    <FlexBox>
+                        <div className={'title'}>
+                            <div className={'primary'}>验证账号</div>
+                            <div className={'secondary'}>Verify account</div>
+                        </div>
+                        <AntdForm className={'form'} onFinish={handleOnFinish}>
+                            <div className={'verify-process'} hidden={!hasCode || !isValid}>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        marginBottom: 20
+                                    }}
+                                >
+                                    <AntdTooltip title={'点击获取新头像'}>
+                                        <AntdAvatar
+                                            src={
+                                                <img
+                                                    src={`data:image/png;base64,${avatar}`}
+                                                    alt={'avatar'}
+                                                />
+                                            }
+                                            size={100}
+                                            style={{
+                                                background: COLOR_BACKGROUND,
+                                                cursor: 'pointer'
+                                            }}
+                                            onClick={handleOnChangeAvatar}
+                                        />
+                                    </AntdTooltip>
+                                </div>
+                                <AntdForm.Item hidden name={'avatar'}>
+                                    <AntdInput value={avatar} />
+                                </AntdForm.Item>
+                                <AntdForm.Item
+                                    name={'nickname'}
+                                    rules={[
+                                        { required: true, message: '请输入昵称' },
+                                        { min: 3, message: '昵称至少为3个字符' }
+                                    ]}
+                                >
+                                    <AntdInput
+                                        disabled={isVerifying}
+                                        maxLength={20}
+                                        showCount
+                                        addonBefore={'昵称'}
+                                    />
+                                </AntdForm.Item>
+                                <AntdForm.Item>
+                                    <AntdButton
+                                        style={{ width: '100%' }}
+                                        type={'primary'}
+                                        htmlType={'submit'}
+                                        disabled={isVerifying}
+                                        loading={isVerifying}
+                                    >
+                                        确&ensp;&ensp;&ensp;&ensp;定
+                                    </AntdButton>
+                                </AntdForm.Item>
+                            </div>
+                            <div className={'no-code'} hidden={hasCode}>
+                                在继续使用之前，我们需要确定您的电子邮箱地址的有效性，请点击&nbsp;
+                                <a onClick={handleOnResend}>发送验证邮件</a>
+                            </div>
+                            <div className={'not-valid'} hidden={!hasCode || isValid}>
+                                此链接有误或已失效，请点击&nbsp;
+                                <a onClick={handleOnResend}>重新发送验证邮件</a>
+                            </div>
+                        </AntdForm>
+                    </FlexBox>
+                </FitCenter>
+            </div>
+        </>
+    )
 }
 
 const Forget: React.FC = () => {
     const navigate = useNavigate()
-    const [searchParams] = useSearchParams()
     const [isLoading, setIsLoading] = useState(false)
     const [isFinish, setIsFinish] = useState(false)
 
@@ -257,14 +477,7 @@ const Forget: React.FC = () => {
                             找到了？
                             <a
                                 onClick={() =>
-                                    navigate(
-                                        `/login${
-                                            searchParams.toString()
-                                                ? `?${searchParams.toString()}`
-                                                : ''
-                                        }`,
-                                        { replace: true }
-                                    )
+                                    navigate(`/login${location.search}`, { replace: true })
                                 }
                             >
                                 登录
@@ -393,14 +606,7 @@ const SignIn: React.FC = () => {
                             <AntdCheckbox disabled={isSigningIn}>记住密码</AntdCheckbox>
                             <a
                                 onClick={() => {
-                                    navigate(
-                                        `/forget${
-                                            searchParams.toString()
-                                                ? `?${searchParams.toString()}`
-                                                : ''
-                                        }`,
-                                        { replace: true }
-                                    )
+                                    navigate(`/forget${location.search}`, { replace: true })
                                 }}
                             >
                                 忘记密码？
@@ -421,14 +627,7 @@ const SignIn: React.FC = () => {
                             还没有账号？
                             <a
                                 onClick={() =>
-                                    navigate(
-                                        `/register${
-                                            searchParams.toString()
-                                                ? `?${searchParams.toString()}`
-                                                : ''
-                                        }`,
-                                        { replace: true }
-                                    )
+                                    navigate(`/register${location.search}`, { replace: true })
                                 }
                             >
                                 注册

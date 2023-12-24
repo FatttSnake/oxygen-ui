@@ -68,6 +68,14 @@ export const getLoginStatus = () => {
     return getLocalStorage(STORAGE_TOKEN_KEY) !== null
 }
 
+export const getVerifyStatus_async = () => {
+    if (getLocalStorage(STORAGE_USER_INFO_KEY) === null) {
+        return undefined
+    }
+    return (JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo)
+        .verified
+}
+
 export const getUserInfo = async (): Promise<UserWithPowerInfoVo> => {
     if (getLocalStorage(STORAGE_USER_INFO_KEY) !== null) {
         return new Promise((resolve) => {
