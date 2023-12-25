@@ -8,6 +8,7 @@ import {
     PERMISSION_ACCOUNT_NEED_INIT,
     PERMISSION_LOGIN_SUCCESS,
     PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR,
+    PERMISSION_NO_VERIFICATION_REQUIRED,
     PERMISSION_REGISTER_SUCCESS,
     PERMISSION_USER_DISABLE,
     PERMISSION_USERNAME_NOT_FOUND
@@ -201,7 +202,7 @@ const SignUp: React.FC = () => {
                             </>
                         ) : (
                             <div className={'retry'}>
-                                我们发送了一封包含激活账号链接的邮件到您的邮箱里，如未收到，可能被归为垃圾邮件，请仔细检查。
+                                我们发送了一封包含验证账号链接的邮件到您的邮箱里，如未收到，可能被归为垃圾邮件，请仔细检查。
                                 <a onClick={handleOnResend}>重新发送</a>
                             </div>
                         )}
@@ -228,6 +229,7 @@ const Verify: React.FC = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const [hasCode, setHasCode] = useState(true)
+    const [needVerify, setNeedVerify] = useState(true)
     const [isValid, setIsValid] = useState(true)
     const [isSending, setIsSending] = useState(false)
     const [isGettingAvatar, setIsGettingAvatar] = useState(false)
@@ -255,12 +257,18 @@ const Verify: React.FC = () => {
         void r_auth_verify({ code })
             .then((res) => {
                 const response = res.data
-                if (response.code === PERMISSION_ACCOUNT_NEED_INIT) {
-                    void getUserInfo().then((user) => {
-                        setAvatar(user.userInfo.avatar)
-                    })
-                } else {
-                    setIsValid(false)
+                switch (response.code) {
+                    case PERMISSION_ACCOUNT_NEED_INIT:
+                        void getUserInfo().then((user) => {
+                            setAvatar(user.userInfo.avatar)
+                        })
+                        break
+                    case PERMISSION_NO_VERIFICATION_REQUIRED:
+                        void message.success('无需验证')
+                        setNeedVerify(false)
+                        break
+                    default:
+                        setIsValid(false)
                 }
             })
             .catch(() => {
@@ -347,7 +355,13 @@ const Verify: React.FC = () => {
                             <div className={'secondary'}>Verify account</div>
                         </div>
                         <AntdForm className={'form'} onFinish={handleOnFinish}>
-                            <div className={'verify-process'} hidden={!hasCode || !isValid}>
+                            <div className={'no-verify-need'} hidden={needVerify}>
+                                账号已验证通过，无需验证，点击&nbsp;<a href={'/'}>回到首页</a>
+                            </div>
+                            <div
+                                className={'verify-process'}
+                                hidden={!needVerify || !hasCode || !isValid}
+                            >
                                 <div
                                     style={{
                                         display: 'flex',
@@ -360,7 +374,7 @@ const Verify: React.FC = () => {
                                             src={
                                                 <img
                                                     src={`data:image/png;base64,${avatar}`}
-                                                    alt={'avatar'}
+                                                    alt={'Avatar'}
                                                 />
                                             }
                                             size={100}

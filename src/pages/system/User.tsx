@@ -91,7 +91,7 @@ const User: React.FC = () => {
                         <AntdImage
                             preview={{ mask: <Icon component={IconFatwebEye}></Icon> }}
                             src={`data:image/png;base64,${value}`}
-                            alt={'avatar'}
+                            alt={'Avatar'}
                         />
                     }
                     style={{ background: COLOR_BACKGROUND }}
@@ -161,13 +161,21 @@ const User: React.FC = () => {
                         </>
                     }
                 >
-                    {!record.locking &&
+                    {!record.verify &&
+                    !record.locking &&
                     (!record.expiration || !isPastTime(record.expiration)) &&
                     (!record.credentialsExpiration || !isPastTime(record.credentialsExpiration)) &&
                     record.enable ? (
                         <AntdTag color={'green'}>正常</AntdTag>
                     ) : (
                         <>
+                            {record.verify ? (
+                                <>
+                                    <AntdPopover content={record.verify} trigger={'click'}>
+                                        <AntdTag style={{ cursor: 'pointer' }}>未验证</AntdTag>
+                                    </AntdPopover>
+                                </>
+                            ) : undefined}
                             {record.locking ? <AntdTag>锁定</AntdTag> : undefined}
                             {record.expiration && isPastTime(record.expiration) ? (
                                 <AntdTag>过期</AntdTag>
@@ -430,6 +438,7 @@ const User: React.FC = () => {
             form.setFieldValue('id', value.id)
             form.setFieldValue('username', value.username)
             form.setFieldValue('password', undefined)
+            form.setFieldValue('verified', !value.verify?.length)
             form.setFieldValue('locking', value.locking)
             form.setFieldValue('expiration', value.expiration)
             form.setFieldValue('credentialsExpiration', value.credentialsExpiration)
@@ -727,6 +736,7 @@ const User: React.FC = () => {
         if (!isDrawerEdit && formValues) {
             setNewFormValues({
                 username: formValues.username,
+                verified: formValues.verified,
                 locking: formValues.locking,
                 expiration: formValues.expiration,
                 credentialsExpiration: formValues.credentialsExpiration,
@@ -771,7 +781,7 @@ const User: React.FC = () => {
                                 src={`data:image/png;base64,${
                                     isDrawerEdit ? formValues?.avatar : avatar
                                 }`}
-                                alt={'avatar'}
+                                alt={'Avatar'}
                             />
                         }
                         size={100}
@@ -839,6 +849,9 @@ const User: React.FC = () => {
                                 label: `${value.name}${!value.enable ? '(已禁用)' : ''}`
                             }))}
                         />
+                    </AntdForm.Item>
+                    <AntdForm.Item name={'verified'} label={'已验证'}>
+                        <AntdSwitch />
                     </AntdForm.Item>
                     <AntdForm.Item
                         valuePropName={'checked'}

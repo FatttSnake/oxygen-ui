@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Icon from '@ant-design/icons'
 import { COLOR_ERROR } from '@/constants/common.constants'
 import { getRedirectUrl } from '@/util/route'
-import { getLoginStatus, getNickname, removeToken } from '@/util/auth'
+import { getAvatar, getLoginStatus, getNickname, removeToken } from '@/util/auth'
 import { r_auth_logout } from '@/services/auth'
 
 const SidebarFooter: React.FC = () => {
@@ -12,6 +12,7 @@ const SidebarFooter: React.FC = () => {
     const navigate = useNavigate()
     const [exiting, setExiting] = useState(false)
     const [nickname, setNickname] = useState('')
+    const [avatar, setAvatar] = useState('')
 
     const handleClickAvatar = () => {
         if (getLoginStatus()) {
@@ -45,6 +46,10 @@ const SidebarFooter: React.FC = () => {
         if (getLoginStatus()) {
             void getNickname().then((nickname) => {
                 setNickname(nickname)
+
+                void getAvatar().then((avatar) => {
+                    setAvatar(`data:image/png;base64,${avatar}`)
+                })
             })
         }
     }, [loginStatus])
@@ -56,7 +61,11 @@ const SidebarFooter: React.FC = () => {
                 onClick={handleClickAvatar}
                 title={getLoginStatus() ? '个人中心' : '登录'}
             >
-                <Icon component={IconFatwebUser} />
+                {avatar ? (
+                    <img src={avatar} alt={'Avatar'} />
+                ) : (
+                    <Icon viewBox={'-20 0 1024 1024'} component={IconFatwebUser} />
+                )}
             </span>
             <span hidden={getLoginStatus()} className={'text'}>
                 未
@@ -64,7 +73,7 @@ const SidebarFooter: React.FC = () => {
                     登录
                 </NavLink>
             </span>
-            <span hidden={!getLoginStatus()} className={'text'}>
+            <span hidden={!getLoginStatus()} className={'text'} title={nickname}>
                 {nickname}
             </span>
             <div

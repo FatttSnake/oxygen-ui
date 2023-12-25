@@ -6,6 +6,8 @@ import {
     TooltipComponentOption,
     GridComponent,
     GridComponentOption,
+    LegendComponent,
+    LegendComponentOption,
     ToolboxComponentOption,
     DataZoomComponentOption,
     ToolboxComponent,
@@ -14,7 +16,7 @@ import {
 import { BarChart, BarSeriesOption, LineChart, LineSeriesOption } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { SVGRenderer } from 'echarts/renderers'
-import { TopLevelFormatterParams } from 'echarts/types/dist/shared'
+import { CallbackDataParams } from 'echarts/types/dist/shared'
 import '@/assets/css/pages/system/statistics.scss'
 import { useUpdatedEffect } from '@/util/hooks'
 import { formatByteSize } from '@/util/common'
@@ -38,6 +40,7 @@ echarts.use([
     TooltipComponent,
     ToolboxComponent,
     GridComponent,
+    LegendComponent,
     DataZoomComponent,
     BarChart,
     LineChart,
@@ -48,6 +51,7 @@ type EChartsOption = echarts.ComposeOption<
     | TooltipComponentOption
     | ToolboxComponentOption
     | GridComponentOption
+    | LegendComponentOption
     | BarSeriesOption
     | DataZoomComponentOption
     | LineSeriesOption
@@ -94,33 +98,26 @@ const barEChartsBaseOption: EChartsOption = {
 }
 
 const getTooltipTimeFormatter = (format: string = 'yyyy-MM-DD HH:mm:ss') => {
-    return (params: TopLevelFormatterParams) =>
-        `${utcToLocalTime(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-            params[0].data[0],
-            format
-        )}<br><span style="display: flex; justify-content: space-between"><span>${
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            params[0]['marker']
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        }${params[0]['seriesName']}</span><span style="font-weight: bold">${
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-            params[0].data[1]
-        }</span></span> `
+    return (params: CallbackDataParams[]) =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        `${utcToLocalTime(params[0].data[0], format)}<br>${params
+            .map(
+                (param) =>
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    `<span style="display: flex; justify-content: space-between;"><span>${param.marker}${param.seriesName}</span><span style="font-weight: bold; margin-left: 16px;">${param.data[1]}</span></span>`
+            )
+            .join('')}`
 }
 
 const lineEChartsBaseOption: EChartsOption = {
     tooltip: {
         trigger: 'axis'
     },
+    legend: {},
     toolbox: {
         feature: {
             dataZoom: {
@@ -380,6 +377,19 @@ const ActiveInfo: React.FC = () => {
                                   )?.count ?? 0
                               ])
                             : []
+                        const verifyList = data.verifyHistory.length
+                            ? getTimesBetweenTwoTimes(
+                                  data.verifyHistory[0].time,
+                                  data.verifyHistory[data.verifyHistory.length - 1].time,
+                                  'day'
+                              ).map((time) => [
+                                  time,
+                                  data.verifyHistory.find(
+                                      (value) =>
+                                          value.time.substring(0, 10) === time.substring(0, 10)
+                                  )?.count ?? 0
+                              ])
+                            : []
 
                         activeInfoEChartsRef.current = echarts.init(
                             activeInfoDivRef.current,
@@ -417,6 +427,14 @@ const ActiveInfo: React.FC = () => {
                                     symbol: 'none',
                                     areaStyle: {},
                                     data: loginList
+                                },
+                                {
+                                    name: '验证账号人数',
+                                    type: 'line',
+                                    smooth: true,
+                                    symbol: 'none',
+                                    areaStyle: {},
+                                    data: verifyList
                                 }
                             ]
                         })

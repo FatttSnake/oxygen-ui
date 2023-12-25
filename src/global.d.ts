@@ -199,6 +199,7 @@ interface UserAddEditParam {
     id?: string
     username: string
     password?: string
+    verified: boolean
     locking?: boolean
     expiration?: string
     credentialsExpiration?: string
@@ -410,6 +411,10 @@ interface ActiveInfoVo {
         count: number
     }[]
     loginHistory: {
+        time: string
+        count: number
+    }[]
+    verifyHistory: {
         time: string
         count: number
     }[]

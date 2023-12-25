@@ -112,6 +112,12 @@ export const getNickname = async () => {
     return user.userInfo.nickname
 }
 
+export const getAvatar = async () => {
+    const user = await getUserInfo()
+
+    return user.userInfo.avatar
+}
+
 export const getUsername = async () => {
     const user = await getUserInfo()
 

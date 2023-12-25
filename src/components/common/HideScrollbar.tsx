@@ -433,6 +433,9 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>((prop
     }
 
     useEffect(() => {
+        setTimeout(() => {
+            reloadScrollbar()
+        }, 500)
         const resizeObserver = new ResizeObserver(() => {
             reloadScrollbar()
         })

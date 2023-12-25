@@ -91,6 +91,13 @@
         }
       }
 
+      .verify {
+        a {
+          color: constants.$production-color;
+          font-weight: bolder;
+        }
+      }
+
       .sign-up, .sign-in, .forget {
         .footer {
           a {
