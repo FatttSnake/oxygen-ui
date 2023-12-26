@@ -69,6 +69,15 @@ interface VerifyParam {
     avatar?: string
 }
 
+interface ForgetParam {
+    email: string
+}
+
+interface RetrieveParam {
+    code: string
+    password: string
+}
+
 interface LoginParam {
     account: string
     password: string

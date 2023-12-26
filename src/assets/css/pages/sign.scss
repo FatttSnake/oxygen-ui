@@ -5,6 +5,10 @@
   background-color: #D2D0DD;
   user-select: none;
 
+  a {
+    cursor: pointer;
+  }
+
   a:hover {
     color: constants.$production-color;
   }
@@ -67,6 +71,7 @@
 
         .form {
           width: 300px;
+          font-size: 14px;
 
           button {
             font-weight: bolder;
@@ -107,7 +112,7 @@
       }
 
       .sign-up, .forget {
-        .retry {
+        .retry, .success {
           margin-bottom: 16px;
 
           a {

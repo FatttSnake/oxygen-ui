@@ -10,6 +10,8 @@ import {
     PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR,
     PERMISSION_NO_VERIFICATION_REQUIRED,
     PERMISSION_REGISTER_SUCCESS,
+    PERMISSION_RETRIEVE_CODE_ERROR_OR_EXPIRED,
+    PERMISSION_RETRIEVE_SUCCESS,
     PERMISSION_USER_DISABLE,
     PERMISSION_USERNAME_NOT_FOUND
 } from '@/constants/common.constants.ts'
@@ -17,7 +19,14 @@ import { getLoginStatus, getUserInfo, requestUserInfo, setToken } from '@/util/a
 import { AppContext } from '@/App'
 import { utcToLocalTime } from '@/util/datetime'
 import { useUpdatedEffect } from '@/util/hooks'
-import { r_auth_login, r_auth_register, r_auth_resend, r_auth_verify } from '@/services/auth'
+import {
+    r_auth_forget,
+    r_auth_login,
+    r_auth_register,
+    r_auth_resend,
+    r_auth_retrieve,
+    r_auth_verify
+} from '@/services/auth'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
@@ -433,15 +442,65 @@ const Verify: React.FC = () => {
 
 const Forget: React.FC = () => {
     const navigate = useNavigate()
-    const [isLoading, setIsLoading] = useState(false)
-    const [isFinish, setIsFinish] = useState(false)
+    const [searchParams] = useSearchParams()
+    const [isSending, setIsSending] = useState(false)
+    const [isSent, setIsSent] = useState(false)
+    const [isChanging, setIsChanging] = useState(false)
+    const [isChanged, setIsChanged] = useState(false)
 
-    const handleOnFinish = () => {
-        setIsFinish(true)
+    const handleOnSend = (forgetParam: ForgetParam) => {
+        if (isSending) {
+            return
+        }
+        setIsSending(true)
+
+        void r_auth_forget(forgetParam)
+            .then((res) => {
+                const response = res.data
+                if (response.success) {
+                    void message.success('已发送验证邮件，请查收')
+                    setIsSent(true)
+                } else {
+                    void message.error('出错了，请稍后重试')
+                }
+            })
+            .finally(() => {
+                setIsSending(false)
+            })
     }
 
     const handleOnRetry = () => {
-        setIsFinish(false)
+        setIsSent(false)
+    }
+
+    const handleOnChange = (retrieveParam: RetrieveParam) => {
+        if (isChanging) {
+            return
+        }
+        setIsChanging(true)
+
+        void r_auth_retrieve({
+            code: searchParams.get('code') ?? '',
+            password: retrieveParam.password
+        })
+            .then((res) => {
+                const response = res.data
+
+                switch (response.code) {
+                    case PERMISSION_RETRIEVE_SUCCESS:
+                        void message.success('密码已更新')
+                        setIsChanged(true)
+                        break
+                    case PERMISSION_RETRIEVE_CODE_ERROR_OR_EXPIRED:
+                        void message.error('验证码有误，请重新获取')
+                        break
+                    default:
+                        void message.error('出错了，请稍后重试')
+                }
+            })
+            .finally(() => {
+                setIsChanging(false)
+            })
     }
 
     return (
@@ -452,52 +511,109 @@ const Forget: React.FC = () => {
                         <div className={'primary'}>找回密码</div>
                         <div className={'secondary'}>Retrieve password</div>
                     </div>
-                    <AntdForm autoComplete={'on'} onFinish={handleOnFinish} className={'form'}>
-                        {!isFinish ? (
+                    <div className={'form'}>
+                        {!searchParams.get('code') ? (
+                            !isSent ? (
+                                <>
+                                    <AntdForm autoComplete={'on'} onFinish={handleOnSend}>
+                                        <AntdForm.Item
+                                            name={'email'}
+                                            rules={[
+                                                { required: true, message: '请输入邮箱' },
+                                                { type: 'email', message: '不是有效的邮箱地址' }
+                                            ]}
+                                        >
+                                            <AntdInput
+                                                prefix={<Icon component={IconFatwebEmail} />}
+                                                placeholder={'邮箱'}
+                                                disabled={isSending}
+                                            />
+                                        </AntdForm.Item>
+                                        <AntdForm.Item>
+                                            <AntdButton
+                                                style={{ width: '100%' }}
+                                                type={'primary'}
+                                                htmlType={'submit'}
+                                                disabled={isSending}
+                                                loading={isSending}
+                                            >
+                                                确&ensp;&ensp;&ensp;&ensp;定
+                                            </AntdButton>
+                                        </AntdForm.Item>
+                                    </AntdForm>
+                                </>
+                            ) : (
+                                <div className={'retry'}>
+                                    我们向您发送了一封包含找回密码链接的邮件，如未收到，可能被归为垃圾邮件，请仔细检查。
+                                    <a onClick={handleOnRetry}>重新发送</a>
+                                </div>
+                            )
+                        ) : !isChanged ? (
                             <>
-                                <AntdForm.Item
-                                    name={'account'}
-                                    rules={[
-                                        { required: true, message: '请输入邮箱' },
-                                        { type: 'email', message: '不是有效的邮箱地址' }
-                                    ]}
-                                >
-                                    <AntdInput
-                                        prefix={<Icon component={IconFatwebEmail} />}
-                                        placeholder={'邮箱'}
-                                        disabled={isLoading}
-                                    />
-                                </AntdForm.Item>
-                                <AntdForm.Item>
-                                    <AntdButton
-                                        style={{ width: '100%' }}
-                                        type={'primary'}
-                                        htmlType={'submit'}
-                                        disabled={isLoading}
-                                        loading={isLoading}
+                                <AntdForm autoComplete={'on'} onFinish={handleOnChange}>
+                                    <AntdForm.Item
+                                        name={'password'}
+                                        rules={[
+                                            { required: true, message: '请输入密码' },
+                                            { min: 10, message: '密码至少为10位' },
+                                            { max: 30, message: '密码最多为30位' }
+                                        ]}
                                     >
-                                        确&ensp;&ensp;&ensp;&ensp;定
-                                    </AntdButton>
-                                </AntdForm.Item>
+                                        <AntdInput.Password
+                                            addonBefore={
+                                                <span>新&nbsp;&nbsp;密&nbsp;&nbsp;码</span>
+                                            }
+                                            placeholder={'密码'}
+                                            disabled={isChanging}
+                                        />
+                                    </AntdForm.Item>
+                                    <AntdForm.Item
+                                        name={'passwordConfirm'}
+                                        rules={[
+                                            { required: true, message: '请确认密码' },
+                                            ({ getFieldValue }) => ({
+                                                validator(_, value) {
+                                                    if (
+                                                        !value ||
+                                                        getFieldValue('password') === value
+                                                    ) {
+                                                        return Promise.resolve()
+                                                    }
+                                                    return Promise.reject(
+                                                        new Error('两次密码输入必须一致')
+                                                    )
+                                                }
+                                            })
+                                        ]}
+                                    >
+                                        <AntdInput.Password
+                                            addonBefore={'确认密码'}
+                                            placeholder={'确认密码'}
+                                            disabled={isChanging}
+                                        />
+                                    </AntdForm.Item>
+                                    <AntdForm.Item>
+                                        <AntdButton
+                                            style={{ width: '100%' }}
+                                            type={'primary'}
+                                            htmlType={'submit'}
+                                            disabled={isChanging}
+                                            loading={isChanging}
+                                        >
+                                            更&ensp;&ensp;&ensp;&ensp;改
+                                        </AntdButton>
+                                    </AntdForm.Item>
+                                </AntdForm>
                             </>
                         ) : (
-                            <div className={'retry'}>
-                                我们发送了一封包含找回密码链接的邮件到您的邮箱里，如未收到，可能被归为垃圾邮件，请仔细检查。
-                                <a onClick={handleOnRetry}>重新发送</a>
-                            </div>
+                            <div className={'success'}>恭喜你，密码已更新，请重新登录。</div>
                         )}
 
                         <div className={'footer'}>
                             找到了？
-                            <a
-                                onClick={() =>
-                                    navigate(`/login${location.search}`, { replace: true })
-                                }
-                            >
-                                登录
-                            </a>
+                            <a onClick={() => navigate(`/login`, { replace: true })}>登录</a>
                         </div>
-                    </AntdForm>
+                    </div>
                 </FlexBox>
             </FitCenter>
         </div>
