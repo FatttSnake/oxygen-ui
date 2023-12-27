@@ -281,7 +281,12 @@ const OnlineInfo: React.FC = () => {
             loading={isLoading}
             expand={
                 <>
-                    <AntdSelect value={scope} onChange={handleOnScopeChange} disabled={isLoading}>
+                    <AntdSelect
+                        value={scope}
+                        onChange={handleOnScopeChange}
+                        disabled={isLoading}
+                        style={{ width: '8em' }}
+                    >
                         <AntdSelect.Option key={'DAY'}>今天</AntdSelect.Option>
                         <AntdSelect.Option key={'WEAK'}>最近7天</AntdSelect.Option>
                         <AntdSelect.Option key={'MONTH'}>最近30天</AntdSelect.Option>
@@ -399,6 +404,7 @@ const ActiveInfo: React.FC = () => {
 
                         activeInfoEChartsRef.current?.setOption({
                             ...lineEChartsBaseOption,
+                            useUTC: true,
                             tooltip: {
                                 ...lineEChartsBaseOption.tooltip,
                                 formatter: getTooltipTimeFormatter('yyyy-MM-DD')
@@ -457,7 +463,12 @@ const ActiveInfo: React.FC = () => {
             loading={isLoading}
             expand={
                 <>
-                    <AntdSelect value={scope} onChange={handleOnScopeChange} disabled={isLoading}>
+                    <AntdSelect
+                        value={scope}
+                        onChange={handleOnScopeChange}
+                        disabled={isLoading}
+                        style={{ width: '8em' }}
+                    >
                         <AntdSelect.Option key={'WEAK'}>最近7天</AntdSelect.Option>
                         <AntdSelect.Option key={'MONTH'}>最近30天</AntdSelect.Option>
                         <AntdSelect.Option key={'QUARTER'}>最近3个月</AntdSelect.Option>

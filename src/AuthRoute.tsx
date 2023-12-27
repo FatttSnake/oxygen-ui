@@ -29,7 +29,7 @@ const AuthRoute = () => {
                 return <Navigate to={'/verify'} />
             }
         }
-        if (isLogin && lastMatch.pathname === '/login') {
+        if (isLogin && ['/login', '/forget'].includes(lastMatch.pathname)) {
             return <Navigate to={'/'} />
         }
 

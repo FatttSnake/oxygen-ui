@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Icon from '@ant-design/icons'
 import { COLOR_ERROR } from '@/constants/common.constants'
 import { getRedirectUrl } from '@/util/route'
+import { useUpdatedEffect } from '@/util/hooks'
 import { getAvatar, getLoginStatus, getNickname, removeToken } from '@/util/auth'
 import { r_auth_logout } from '@/services/auth'
 
@@ -42,7 +43,7 @@ const SidebarFooter: React.FC = () => {
 
     const loginStatus = getLoginStatus()
 
-    useEffect(() => {
+    useUpdatedEffect(() => {
         if (getLoginStatus()) {
             void getNickname().then((nickname) => {
                 setNickname(nickname)
