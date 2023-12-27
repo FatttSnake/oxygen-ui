@@ -976,8 +976,8 @@ const Statistics: React.FC = () => {
                             <ActiveInfo />
                         </Permission>
                         <Permission operationCode={'system:statistics:query:base'}>
-                            <SoftwareInfo />
                             <HardwareInfo />
+                            <SoftwareInfo />
                         </Permission>
                         <Permission operationCode={'system:statistics:query:real'}>
                             <CPUInfo />

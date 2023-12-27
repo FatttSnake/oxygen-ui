@@ -318,6 +318,16 @@ interface AvatarBase64Vo {
     base64: string
 }
 
+interface BaseSettingsVo {
+    appName?: string
+    appUrl?: string
+}
+
+interface BaseSettingsParam {
+    appName: string
+    appUrl: string
+}
+
 interface MailSettingsVo {
     host?: string
     port?: number

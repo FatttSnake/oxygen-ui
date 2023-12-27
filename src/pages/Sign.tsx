@@ -6,6 +6,7 @@ import {
     COLOR_BACKGROUND,
     DATABASE_DUPLICATE_KEY,
     PERMISSION_ACCOUNT_NEED_INIT,
+    PERMISSION_FORGET_SUCCESS,
     PERMISSION_LOGIN_SUCCESS,
     PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR,
     PERMISSION_NO_VERIFICATION_REQUIRED,
@@ -13,6 +14,7 @@ import {
     PERMISSION_RETRIEVE_CODE_ERROR_OR_EXPIRED,
     PERMISSION_RETRIEVE_SUCCESS,
     PERMISSION_USER_DISABLE,
+    PERMISSION_USER_NOT_FOUND,
     PERMISSION_USERNAME_NOT_FOUND
 } from '@/constants/common.constants.ts'
 import { getLoginStatus, getUserInfo, requestUserInfo, setToken } from '@/util/auth'
@@ -457,11 +459,16 @@ const Forget: React.FC = () => {
         void r_auth_forget(forgetParam)
             .then((res) => {
                 const response = res.data
-                if (response.success) {
-                    void message.success('已发送验证邮件，请查收')
-                    setIsSent(true)
-                } else {
-                    void message.error('出错了，请稍后重试')
+                switch (response.code) {
+                    case PERMISSION_FORGET_SUCCESS:
+                        void message.success('已发送验证邮件，请查收')
+                        setIsSent(true)
+                        break
+                    case PERMISSION_USER_NOT_FOUND:
+                        void message.error('用户不存在')
+                        break
+                    default:
+                        void message.error('出错了，请稍后重试')
                 }
             })
             .finally(() => {

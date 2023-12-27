@@ -49,7 +49,7 @@ const root: RouteJsonObject[] = [
                 absolutePath: '/tools',
                 id: 'toolsFramework',
                 component: React.lazy(() => import('@/pages/ToolsFramework')),
-                children: setTitle(tools, '氮工具'),
+                children: setTitle(tools, '氧工具'),
                 name: '工具',
                 auth: false
             },

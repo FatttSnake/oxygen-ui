@@ -15,6 +15,7 @@ export const URL_SYS_ROLE_LIST = '/system/role/list'
 export const URL_SYS_GROUP = '/system/group'
 export const URL_SYS_GROUP_LIST = '/system/group/list'
 export const URL_SYS_SETTINGS = '/system/settings'
+export const URL_SYS_SETTINGS_BASE = `${URL_SYS_SETTINGS}/base`
 export const URL_SYS_SETTINGS_MAIL = `${URL_SYS_SETTINGS}/mail`
 export const URL_SYS_STATISTICS = '/system/statistics'
 export const URL_SYS_STATISTICS_SOFTWARE = `${URL_SYS_STATISTICS}/software`

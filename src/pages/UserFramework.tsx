@@ -27,7 +27,7 @@ const ToolsFramework: React.FC = () => {
                                 <SidebarItem
                                     path={'/tools'}
                                     icon={IconFatwebBack}
-                                    text={'回到氮工具'}
+                                    text={'回到氧工具'}
                                 />
                             </SidebarItemList>
                         }

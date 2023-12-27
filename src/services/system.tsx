@@ -14,7 +14,8 @@ import {
     URL_SYS_STATISTICS_CPU,
     URL_SYS_STATISTICS_STORAGE,
     URL_SYS_STATISTICS_ONLINE,
-    URL_SYS_STATISTICS_ACTIVE
+    URL_SYS_STATISTICS_ACTIVE,
+    URL_SYS_SETTINGS_BASE
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -70,6 +71,11 @@ export const r_sys_group_delete_list = (ids: React.Key[]) => request.delete(URL_
 
 export const r_sys_log_get = (param: SysLogGetParam) =>
     request.get<PageVo<SysLogGetVo>>(URL_SYS_LOG, param)
+
+export const r_sys_settings_base_get = () => request.get<BaseSettingsVo>(URL_SYS_SETTINGS_BASE)
+
+export const r_sys_settings_base_update = (param: BaseSettingsParam) =>
+    request.put(URL_SYS_SETTINGS_BASE, param)
 
 export const r_sys_settings_mail_get = () => request.get<MailSettingsVo>(URL_SYS_SETTINGS_MAIL)
 
