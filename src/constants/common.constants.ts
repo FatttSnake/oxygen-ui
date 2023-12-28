@@ -1,4 +1,4 @@
-export const PRODUCTION_NAME = 'FatWeb'
+export const PRODUCTION_NAME = 'Oxygen Toolbox'
 export const STORAGE_TOKEN_KEY = 'JWT_TOKEN'
 export const STORAGE_USER_INFO_KEY = 'USER_INFO'
 export const COLOR_ORIGIN = 'white'

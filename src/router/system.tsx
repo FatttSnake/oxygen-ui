@@ -8,7 +8,7 @@ const system: RouteJsonObject[] = [
         id: 'system',
         component: React.lazy(() => import('@/pages/system')),
         name: '系统管理',
-        icon: React.lazy(() => import('~icons/fatweb/setting.jsx')),
+        icon: React.lazy(() => import('~icons/oxygen/setting.jsx')),
         menu: true
     },
     {
@@ -17,7 +17,7 @@ const system: RouteJsonObject[] = [
         id: 'system-statistics',
         component: React.lazy(() => import('@/pages/system/Statistics')),
         name: '系统概况',
-        icon: React.lazy(() => import('~icons/fatweb/chart.jsx')),
+        icon: React.lazy(() => import('~icons/oxygen/chart.jsx')),
         menu: true,
         autoHide: true
     },
@@ -27,7 +27,7 @@ const system: RouteJsonObject[] = [
         id: 'system-settings',
         component: React.lazy(() => import('@/pages/system/Settings')),
         name: '系统设置',
-        icon: React.lazy(() => import('~icons/fatweb/option.jsx')),
+        icon: React.lazy(() => import('~icons/oxygen/option.jsx')),
         menu: true,
         autoHide: true
     },
@@ -37,7 +37,7 @@ const system: RouteJsonObject[] = [
         id: 'system-user',
         component: React.lazy(() => import('@/pages/system/User')),
         name: '用户管理',
-        icon: React.lazy(() => import('~icons/fatweb/user.jsx')),
+        icon: React.lazy(() => import('~icons/oxygen/user.jsx')),
         menu: true,
         autoHide: true
     },
@@ -47,7 +47,7 @@ const system: RouteJsonObject[] = [
         id: 'system-role',
         component: React.lazy(() => import('@/pages/system/Role')),
         name: '角色管理',
-        icon: React.lazy(() => import('~icons/fatweb/role.jsx')),
+        icon: React.lazy(() => import('~icons/oxygen/role.jsx')),
         menu: true,
         autoHide: true
     },
@@ -57,7 +57,7 @@ const system: RouteJsonObject[] = [
         id: 'system-group',
         component: React.lazy(() => import('@/pages/system/Group')),
         name: '群组管理',
-        icon: React.lazy(() => import('~icons/fatweb/group.jsx')),
+        icon: React.lazy(() => import('~icons/oxygen/group.jsx')),
         menu: true,
         autoHide: true
     },
@@ -67,7 +67,7 @@ const system: RouteJsonObject[] = [
         id: 'system-log',
         component: React.lazy(() => import('@/pages/system/Log')),
         name: '系统日志',
-        icon: React.lazy(() => import('~icons/fatweb/log.jsx')),
+        icon: React.lazy(() => import('~icons/oxygen/log.jsx')),
         menu: true,
         autoHide: true
     },

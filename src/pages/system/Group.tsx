@@ -503,7 +503,7 @@ const Group: React.FC = () => {
                         style={{ padding: '4px 8px' }}
                         onClick={handleOnAddBtnClick}
                     >
-                        <Icon component={IconFatwebPlus} style={{ fontSize: '1.2em' }} />
+                        <Icon component={IconOxygenPlus} style={{ fontSize: '1.2em' }} />
                     </AntdButton>
                 </Card>
             </Permission>
@@ -512,7 +512,7 @@ const Group: React.FC = () => {
                 style={{ overflow: 'inherit', flex: '0 0 auto' }}
             >
                 <AntdButton style={{ padding: '4px 8px' }} onClick={handleOnListDeleteBtnClick}>
-                    <Icon component={IconFatwebDelete} style={{ fontSize: '1.2em' }} />
+                    <Icon component={IconOxygenDelete} style={{ fontSize: '1.2em' }} />
                 </AntdButton>
             </Card>
             <Card style={{ overflow: 'inherit' }}>
@@ -577,7 +577,7 @@ const Group: React.FC = () => {
         <AntdSpace>
             <AntdTooltip title={'刷新角色列表'}>
                 <AntdButton onClick={getRoleData} disabled={isSubmitting}>
-                    <Icon component={IconFatwebRefresh} />
+                    <Icon component={IconOxygenRefresh} />
                 </AntdButton>
             </AntdTooltip>
             <AntdButton onClick={handleOnDrawerClose} disabled={isSubmitting}>

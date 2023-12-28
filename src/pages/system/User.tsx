@@ -89,7 +89,7 @@ const User: React.FC = () => {
                 <AntdAvatar
                     src={
                         <AntdImage
-                            preview={{ mask: <Icon component={IconFatwebEye}></Icon> }}
+                            preview={{ mask: <Icon component={IconOxygenEye}></Icon> }}
                             src={`data:image/png;base64,${value}`}
                             alt={'Avatar'}
                         />
@@ -333,7 +333,7 @@ const User: React.FC = () => {
                     <>
                         <Icon
                             style={{ color: COLOR_PRODUCTION, marginRight: 10 }}
-                            component={IconFatwebSetting}
+                            component={IconOxygenSetting}
                         />
                         修改用户 {value.username} 的密码
                     </>
@@ -913,7 +913,7 @@ const User: React.FC = () => {
                         style={{ padding: '4px 8px' }}
                         onClick={handleOnAddBtnClick}
                     >
-                        <Icon component={IconFatwebPlus} style={{ fontSize: '1.2em' }} />
+                        <Icon component={IconOxygenPlus} style={{ fontSize: '1.2em' }} />
                     </AntdButton>
                 </Card>
             </Permission>
@@ -922,7 +922,7 @@ const User: React.FC = () => {
                 style={{ overflow: 'inherit', flex: '0 0 auto' }}
             >
                 <AntdButton style={{ padding: '4px 8px' }} onClick={handleOnListDeleteBtnClick}>
-                    <Icon component={IconFatwebDelete} style={{ fontSize: '1.2em' }} />
+                    <Icon component={IconOxygenDelete} style={{ fontSize: '1.2em' }} />
                 </AntdButton>
             </Card>
             <Card style={{ overflow: 'inherit' }}>
@@ -992,7 +992,7 @@ const User: React.FC = () => {
         <AntdSpace>
             <AntdTooltip title={'刷新角色和用户组列表'}>
                 <AntdButton onClick={handleOnDrawerRefresh} disabled={isDrawerSubmitting}>
-                    <Icon component={IconFatwebRefresh} />
+                    <Icon component={IconOxygenRefresh} />
                 </AntdButton>
             </AntdTooltip>
             <AntdButton onClick={handleOnDrawerClose} disabled={isDrawerSubmitting}>

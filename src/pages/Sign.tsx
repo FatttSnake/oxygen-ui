@@ -142,7 +142,7 @@ const SignUp: React.FC = () => {
                                     ]}
                                 >
                                     <AntdInput
-                                        prefix={<Icon component={IconFatwebUser} />}
+                                        prefix={<Icon component={IconOxygenUser} />}
                                         placeholder={'用户名'}
                                         maxLength={39}
                                         showCount={true}
@@ -158,7 +158,7 @@ const SignUp: React.FC = () => {
                                 >
                                     <AntdInput
                                         type={'email'}
-                                        prefix={<Icon component={IconFatwebEmail} />}
+                                        prefix={<Icon component={IconOxygenEmail} />}
                                         placeholder={'邮箱'}
                                         disabled={isSigningUp}
                                     />
@@ -172,7 +172,7 @@ const SignUp: React.FC = () => {
                                     ]}
                                 >
                                     <AntdInput.Password
-                                        prefix={<Icon component={IconFatwebPassword} />}
+                                        prefix={<Icon component={IconOxygenPassword} />}
                                         placeholder={'密码'}
                                         disabled={isSigningUp}
                                     />
@@ -194,7 +194,7 @@ const SignUp: React.FC = () => {
                                     ]}
                                 >
                                     <AntdInput.Password
-                                        prefix={<Icon component={IconFatwebPassword} />}
+                                        prefix={<Icon component={IconOxygenPassword} />}
                                         placeholder={'确认密码'}
                                         disabled={isSigningUp}
                                     />
@@ -531,7 +531,7 @@ const Forget: React.FC = () => {
                                             ]}
                                         >
                                             <AntdInput
-                                                prefix={<Icon component={IconFatwebEmail} />}
+                                                prefix={<Icon component={IconOxygenEmail} />}
                                                 placeholder={'邮箱'}
                                                 disabled={isSending}
                                             />
@@ -724,7 +724,7 @@ const SignIn: React.FC = () => {
                             rules={[{ required: true, message: '请输入账号' }]}
                         >
                             <AntdInput
-                                prefix={<Icon component={IconFatwebUser} />}
+                                prefix={<Icon component={IconOxygenUser} />}
                                 placeholder={'邮箱/用户名'}
                                 disabled={isSigningIn}
                             />
@@ -734,7 +734,7 @@ const SignIn: React.FC = () => {
                             rules={[{ required: true, message: '请输入密码' }]}
                         >
                             <AntdInput.Password
-                                prefix={<Icon component={IconFatwebPassword} />}
+                                prefix={<Icon component={IconOxygenPassword} />}
                                 placeholder={'密码'}
                                 disabled={isSigningIn}
                             />

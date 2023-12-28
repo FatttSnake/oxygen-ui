@@ -49,7 +49,7 @@ export default defineConfig({
                 IconsResolver({
                     prefix: 'icon',
                     extension: 'jsx',
-                    customCollections: ['fatweb']
+                    customCollections: ['oxygen']
                 }),
                 AntDesignResolver({
                     resolveIcons: true
@@ -69,7 +69,7 @@ export default defineConfig({
             jsx: 'react',
             autoInstall: true,
             customCollections: {
-                fatweb: FileSystemIconLoader('src/assets/svg', (svg) =>
+                oxygen: FileSystemIconLoader('src/assets/svg', (svg) =>
                     svg.replace(/^svg /, '<svg fill="currentColor"')
                 )
             }

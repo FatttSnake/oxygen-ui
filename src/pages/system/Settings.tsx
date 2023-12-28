@@ -37,10 +37,10 @@ const SettingsCard: React.FC<SettingsCardProps> = (props) => {
                         <Permission operationCode={props.modifyOperationCode}>
                             {props.expand}
                             <AntdButton onClick={props.onReset} title={'重置'}>
-                                <Icon component={IconFatwebBack} />
+                                <Icon component={IconOxygenBack} />
                             </AntdButton>
                             <AntdButton className={'bt-save'} onClick={props.onSave} title={'保存'}>
-                                <Icon component={IconFatwebSave} />
+                                <Icon component={IconOxygenSave} />
                             </AntdButton>
                         </Permission>
                     ) : undefined}
@@ -145,7 +145,7 @@ const MailSettings: React.FC = () => {
     return (
         <>
             <SettingsCard
-                icon={IconFatwebEmail}
+                icon={IconOxygenEmail}
                 title={'邮件'}
                 loading={loading}
                 onReset={handleOnReset}
@@ -153,7 +153,7 @@ const MailSettings: React.FC = () => {
                 modifyOperationCode={'system:settings:modify:mail'}
                 expand={
                     <AntdButton onClick={handleOnTest} title={'测试'}>
-                        <Icon component={IconFatwebTest} />
+                        <Icon component={IconOxygenTest} />
                     </AntdButton>
                 }
             >
@@ -238,7 +238,7 @@ const BaseSettings: React.FC = () => {
     return (
         <>
             <SettingsCard
-                icon={IconFatwebEmail}
+                icon={IconOxygenEmail}
                 title={'基础'}
                 loading={loading}
                 onReset={handleOnReset}

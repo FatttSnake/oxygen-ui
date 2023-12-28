@@ -33,7 +33,7 @@ const SidebarFooter: React.FC = () => {
             removeToken()
             notification.info({
                 message: '已退出登录',
-                icon: <Icon component={IconFatwebExit} style={{ color: COLOR_ERROR }} />
+                icon: <Icon component={IconOxygenExit} style={{ color: COLOR_ERROR }} />
             })
             setTimeout(() => {
                 window.location.reload()
@@ -65,7 +65,7 @@ const SidebarFooter: React.FC = () => {
                 {avatar ? (
                     <img src={avatar} alt={'Avatar'} />
                 ) : (
-                    <Icon viewBox={'-20 0 1024 1024'} component={IconFatwebUser} />
+                    <Icon viewBox={'-20 0 1024 1024'} component={IconOxygenUser} />
                 )}
             </span>
             <span hidden={getLoginStatus()} className={'text'}>
@@ -84,7 +84,7 @@ const SidebarFooter: React.FC = () => {
                 <div className={'content'}>
                     <span hidden={!getLoginStatus()} className={'icon-exit'} onClick={handleLogout}>
                         <Icon
-                            component={exiting ? IconFatwebLoading : IconFatwebExit}
+                            component={exiting ? IconOxygenLoading : IconOxygenExit}
                             spin={exiting}
                         />
                     </span>

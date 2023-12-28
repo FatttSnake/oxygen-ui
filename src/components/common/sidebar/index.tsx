@@ -29,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             >
                 <div className={'title'}>
                     <span className={'icon-box'} onClick={switchSidebar}>
-                        <Icon component={IconFatwebExpand} />
+                        <Icon component={IconOxygenExpand} />
                     </span>
                     <span className={'text'}>{props.title}</span>
                 </div>

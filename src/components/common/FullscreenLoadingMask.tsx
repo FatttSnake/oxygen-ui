@@ -8,7 +8,7 @@ const FullscreenLoadingMask: React.FC = () => {
     const loadingIcon = (
         <>
             <Icon
-                component={IconFatwebLoading}
+                component={IconOxygenLoading}
                 style={{ fontSize: 24, color: COLOR_FONT_MAIN }}
                 spin
             />

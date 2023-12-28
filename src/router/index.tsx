@@ -1,7 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
 import system from '@/router/system'
-import home from '@/router/home'
 import user from '@/router/user'
 import tools from '@/router/tools'
 import { getAuthRoute, mapJsonToRoute, setTitle } from '@/util/route'
@@ -45,15 +44,6 @@ const root: RouteJsonObject[] = [
                 component: React.lazy(() => import('@/components/common/FullscreenLoadingMask'))
             },
             {
-                path: 'tools',
-                absolutePath: '/tools',
-                id: 'toolsFramework',
-                component: React.lazy(() => import('@/pages/ToolsFramework')),
-                children: setTitle(tools, '氧工具'),
-                name: '工具',
-                auth: false
-            },
-            {
                 path: 'user',
                 absolutePath: '/user',
                 id: 'userFramework',
@@ -75,9 +65,11 @@ const root: RouteJsonObject[] = [
             {
                 path: '',
                 absolutePath: '/',
-                id: 'homeFramework',
-                component: React.lazy(() => import('@/pages/HomeFramework')),
-                children: home
+                id: 'toolsFramework',
+                component: React.lazy(() => import('@/pages/ToolsFramework')),
+                children: setTitle(tools, '氧工具'),
+                name: '工具',
+                auth: false
             },
             {
                 path: '*',

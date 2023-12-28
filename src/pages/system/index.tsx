@@ -66,32 +66,32 @@ const System: React.FC = () => {
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         <Permission path={'/system/statistics'}>
-                            <CommonCard icon={IconFatwebAnalysis} url={'statistics'}>
+                            <CommonCard icon={IconOxygenAnalysis} url={'statistics'}>
                                 系统概况
                             </CommonCard>
                         </Permission>
                         <Permission path={'/system/settings'}>
-                            <CommonCard icon={IconFatwebOption} url={'settings'}>
+                            <CommonCard icon={IconOxygenOption} url={'settings'}>
                                 系统设置
                             </CommonCard>
                         </Permission>
                         <Permission path={'/system/user'}>
-                            <CommonCard icon={IconFatwebUser} url={'user'}>
+                            <CommonCard icon={IconOxygenUser} url={'user'}>
                                 用户管理
                             </CommonCard>
                         </Permission>
                         <Permission path={'/system/role'}>
-                            <CommonCard icon={IconFatwebRole} url={'role'}>
+                            <CommonCard icon={IconOxygenRole} url={'role'}>
                                 角色管理
                             </CommonCard>
                         </Permission>
                         <Permission path={'/system/group'}>
-                            <CommonCard icon={IconFatwebGroup} url={'group'}>
+                            <CommonCard icon={IconOxygenGroup} url={'group'}>
                                 群组管理
                             </CommonCard>
                         </Permission>
                         <Permission path={'/system/log'}>
-                            <CommonCard icon={IconFatwebLog} url={'log'}>
+                            <CommonCard icon={IconOxygenLog} url={'log'}>
                                 系统日志
                             </CommonCard>
                         </Permission>

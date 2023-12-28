@@ -7,7 +7,7 @@ const user: RouteJsonObject[] = [
         id: 'user',
         component: React.lazy(() => import('@/pages/user')),
         name: '个人档案',
-        icon: React.lazy(() => import('~icons/fatweb/user.jsx')),
+        icon: React.lazy(() => import('~icons/oxygen/user.jsx')),
         menu: true
     },
     {

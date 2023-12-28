@@ -267,7 +267,7 @@ const OnlineInfo: React.FC = () => {
 
     return (
         <CommonCard
-            icon={IconFatwebOnline}
+            icon={IconOxygenOnline}
             title={
                 <>
                     <FlexBox gap={10} direction={'horizontal'}>
@@ -298,7 +298,7 @@ const OnlineInfo: React.FC = () => {
                         <AntdSelect.Option key={'ALL'}>全部</AntdSelect.Option>
                     </AntdSelect>
                     <AntdButton title={'刷新'} onClick={handleOnRefresh} disabled={isLoading}>
-                        <Icon component={IconFatwebRefresh} />
+                        <Icon component={IconOxygenRefresh} />
                     </AntdButton>
                 </>
             }
@@ -452,7 +452,7 @@ const ActiveInfo: React.FC = () => {
 
     return (
         <CommonCard
-            icon={IconFatwebAnalysis}
+            icon={IconOxygenAnalysis}
             title={
                 <>
                     <FlexBox gap={10} direction={'horizontal'}>
@@ -479,7 +479,7 @@ const ActiveInfo: React.FC = () => {
                         <AntdSelect.Option key={'ALL'}>全部</AntdSelect.Option>
                     </AntdSelect>
                     <AntdButton title={'刷新'} onClick={handleOnRefresh} disabled={isLoading}>
-                        <Icon component={IconFatwebRefresh} />
+                        <Icon component={IconOxygenRefresh} />
                     </AntdButton>
                 </>
             }
@@ -507,7 +507,7 @@ const SoftwareInfo: React.FC = () => {
 
     return (
         <CommonCard
-            icon={IconFatwebSoftware}
+            icon={IconOxygenSoftware}
             title={'软件信息'}
             loading={softwareInfoData === undefined}
         >
@@ -569,7 +569,7 @@ const HardwareInfo: React.FC = () => {
 
     return (
         <CommonCard
-            icon={IconFatwebHardware}
+            icon={IconOxygenHardware}
             title={'硬件信息'}
             loading={hardwareInfoData === undefined}
         >
@@ -745,7 +745,7 @@ const CPUInfo: React.FC = () => {
     return (
         <>
             <CommonCard
-                icon={IconFatwebCpu}
+                icon={IconOxygenCpu}
                 title={'CPU 信息'}
                 loading={isLoading}
                 expand={
@@ -931,7 +931,7 @@ const StorageInfo: React.FC = () => {
     return (
         <>
             <CommonCard
-                icon={IconFatwebMemory}
+                icon={IconOxygenMemory}
                 title={'内存信息'}
                 loading={isLoading}
                 expand={
