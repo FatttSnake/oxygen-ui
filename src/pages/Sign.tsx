@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 import Icon from '@ant-design/icons'
+import { Turnstile } from '@marsidev/react-turnstile'
 import '@/assets/css/pages/sign.scss'
 import {
     COLOR_BACKGROUND,
     DATABASE_DUPLICATE_KEY,
+    H_CAPTCHA_SITE_KEY,
     PERMISSION_ACCOUNT_NEED_INIT,
     PERMISSION_FORGET_SUCCESS,
     PERMISSION_LOGIN_SUCCESS,
@@ -15,7 +17,8 @@ import {
     PERMISSION_RETRIEVE_SUCCESS,
     PERMISSION_USER_DISABLE,
     PERMISSION_USER_NOT_FOUND,
-    PERMISSION_USERNAME_NOT_FOUND
+    PERMISSION_USERNAME_NOT_FOUND,
+    SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants.ts'
 import { getLoginStatus, getUserInfo, requestUserInfo, setToken } from '@/util/auth'
 import { AppContext } from '@/App'
@@ -67,22 +70,9 @@ const SignUp: React.FC = () => {
                 const response = res.data
                 switch (response.code) {
                     case PERMISSION_REGISTER_SUCCESS:
-                        void r_auth_login({
-                            account: registerParam.email,
-                            password: registerParam.password
-                        }).then((res_) => {
-                            const response_ = res_.data
-                            switch (response_.code) {
-                                case PERMISSION_LOGIN_SUCCESS:
-                                    setToken(response_.data?.token ?? '')
-                                    void message.success('恭喜，您快要完成注册了')
-                                    setIsFinish(true)
-                                    break
-                                default:
-                                    void message.success('出错了，请稍后重试')
-                                    setIsSigningUp(false)
-                            }
-                        })
+                        setToken(response.data?.token ?? '')
+                        void message.success('恭喜，您快要完成注册了')
+                        setIsFinish(true)
                         break
                     case DATABASE_DUPLICATE_KEY:
                         void message.error('用户名或邮箱已被注册，请重试')
@@ -632,6 +622,11 @@ const SignIn: React.FC = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const [isSigningIn, setIsSigningIn] = useState(false)
+    const [captchaCode, setCaptchaCode] = useState('')
+
+    const handleOnTurnstileSuccess = (token: string) => {
+        setCaptchaCode(token)
+    }
 
     const handleOnFinish = (loginParam: LoginParam) => {
         if (isSigningIn) {
@@ -639,7 +634,17 @@ const SignIn: React.FC = () => {
         }
         setIsSigningIn(true)
 
-        void r_auth_login({ account: loginParam.account, password: loginParam.password })
+        if (!captchaCode) {
+            void message.warning('请先通过验证')
+            setIsSigningIn(false)
+            return
+        }
+
+        void r_auth_login({
+            account: loginParam.account,
+            password: loginParam.password,
+            captchaCode
+        })
             .then((res) => {
                 const response = res.data
                 const { code, data } = response
@@ -696,6 +701,9 @@ const SignIn: React.FC = () => {
                         )
                         setIsSigningIn(false)
                         break
+                    case SYSTEM_INVALID_CAPTCHA_CODE:
+                        void message.error('验证码有误，请刷新重试')
+                        break
                     default:
                         void message.error(
                             <>
@@ -737,6 +745,13 @@ const SignIn: React.FC = () => {
                                 prefix={<Icon component={IconOxygenPassword} />}
                                 placeholder={'密码'}
                                 disabled={isSigningIn}
+                            />
+                        </AntdForm.Item>
+                        <AntdForm.Item>
+                            <Turnstile
+                                siteKey={H_CAPTCHA_SITE_KEY}
+                                options={{ theme: 'light' }}
+                                onSuccess={handleOnTurnstileSuccess}
                             />
                         </AntdForm.Item>
                         <FlexBox direction={'horizontal'} className={'addition'}>
