@@ -5,7 +5,8 @@ import {
     PERMISSION_TOKEN_HAS_EXPIRED,
     PERMISSION_TOKEN_ILLEGAL,
     PERMISSION_TOKEN_RENEW_SUCCESS,
-    PERMISSION_UNAUTHORIZED
+    PERMISSION_UNAUTHORIZED,
+    SYSTEM_REQUEST_TOO_FREQUENT
 } from '@/constants/common.constants'
 import { getRedirectUrl } from '@/util/route'
 import { getToken, setToken, removeToken } from '@/util/auth'
@@ -94,6 +95,13 @@ service.interceptors.response.use(
                 void message.error(
                     <>
                         <strong>暂无权限操作</strong>
+                    </>
+                )
+                throw response?.data
+            case SYSTEM_REQUEST_TOO_FREQUENT:
+                void message.warning(
+                    <>
+                        <strong>请求过于频繁，请稍后重试</strong>
                     </>
                 )
                 throw response?.data

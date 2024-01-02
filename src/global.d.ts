@@ -62,6 +62,7 @@ interface RegisterParam {
     username: string
     email: string
     password: string
+    captchaCode: string
 }
 
 interface VerifyParam {
@@ -72,11 +73,13 @@ interface VerifyParam {
 
 interface ForgetParam {
     email: string
+    captchaCode: string
 }
 
 interface RetrieveParam {
     code: string
     password: string
+    captchaCode: string
 }
 
 interface LoginParam {

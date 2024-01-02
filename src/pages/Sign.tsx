@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 import Icon from '@ant-design/icons'
-import { Turnstile } from '@marsidev/react-turnstile'
+import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import '@/assets/css/pages/sign.scss'
 import {
     COLOR_BACKGROUND,
@@ -41,9 +41,11 @@ import { r_api_avatar_random_base64 } from '@/services/api/avatar.tsx'
 const SignUp: React.FC = () => {
     const location = useLocation()
     const navigate = useNavigate()
+    const turnstileRef = useRef<TurnstileInstance>()
     const [isSigningUp, setIsSigningUp] = useState(false)
     const [isFinish, setIsFinish] = useState(false)
     const [isSending, setIsSending] = useState(false)
+    const [captchaCode, setCaptchaCode] = useState('')
 
     useUpdatedEffect(() => {
         if (location.pathname !== '/register') {
@@ -54,6 +56,9 @@ const SignUp: React.FC = () => {
                 replace: true
             })
         }
+        setTimeout(() => {
+            turnstileRef.current?.execute()
+        }, 200)
     }, [location.pathname])
 
     const handleOnFinish = (registerParam: RegisterParam) => {
@@ -61,10 +66,18 @@ const SignUp: React.FC = () => {
             return
         }
         setIsSigningUp(true)
+
+        if (!captchaCode) {
+            void message.warning('请先通过验证')
+            setIsSigningUp(false)
+            return
+        }
+
         void r_auth_register({
             username: registerParam.username,
             email: registerParam.email,
-            password: registerParam.password
+            password: registerParam.password,
+            captchaCode
         })
             .then((res) => {
                 const response = res.data
@@ -77,6 +90,9 @@ const SignUp: React.FC = () => {
                     case DATABASE_DUPLICATE_KEY:
                         void message.error('用户名或邮箱已被注册，请重试')
                         setIsSigningUp(false)
+                        break
+                    case SYSTEM_INVALID_CAPTCHA_CODE:
+                        void message.error('验证码有误，请刷新重试')
                         break
                     default:
                         void message.error('服务器出错了，请稍后重试')
@@ -97,7 +113,6 @@ const SignUp: React.FC = () => {
         void r_auth_resend()
             .then((res) => {
                 const response = res.data
-                message.destroy('sending')
                 if (response.success) {
                     void message.success('已发送验证邮件，请查收')
                 } else {
@@ -105,6 +120,7 @@ const SignUp: React.FC = () => {
                 }
             })
             .finally(() => {
+                message.destroy('sending')
                 setIsSending(false)
             })
     }
@@ -187,6 +203,15 @@ const SignUp: React.FC = () => {
                                         prefix={<Icon component={IconOxygenPassword} />}
                                         placeholder={'确认密码'}
                                         disabled={isSigningUp}
+                                    />
+                                </AntdForm.Item>
+                                <AntdForm.Item>
+                                    <Turnstile
+                                        id={'sign-up-turnstile'}
+                                        ref={turnstileRef}
+                                        siteKey={H_CAPTCHA_SITE_KEY}
+                                        options={{ theme: 'light', execution: 'execute' }}
+                                        onSuccess={setCaptchaCode}
                                     />
                                 </AntdForm.Item>
                                 <AntdForm.Item>
@@ -286,7 +311,6 @@ const Verify: React.FC = () => {
         void r_auth_resend()
             .then((res) => {
                 const response = res.data
-                message.destroy('sending')
                 if (response.success) {
                     void message.success('已发送验证邮件，请查收')
                 } else {
@@ -294,6 +318,7 @@ const Verify: React.FC = () => {
                 }
             })
             .finally(() => {
+                message.destroy('sending')
                 setIsSending(false)
             })
     }
@@ -435,10 +460,28 @@ const Verify: React.FC = () => {
 const Forget: React.FC = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
+    const turnstileRef = useRef<TurnstileInstance>()
+    const retrieveTurnstileRef = useRef<TurnstileInstance>()
     const [isSending, setIsSending] = useState(false)
     const [isSent, setIsSent] = useState(false)
     const [isChanging, setIsChanging] = useState(false)
     const [isChanged, setIsChanged] = useState(false)
+    const [captchaCode, setCaptchaCode] = useState('')
+    const [retrieveCpatchaCode, setRetrieveCpatchaCode] = useState('')
+
+    useUpdatedEffect(() => {
+        if (location.pathname !== '/forget') {
+            return
+        }
+
+        setTimeout(() => {
+            if (!searchParams.get('code')) {
+                turnstileRef.current?.execute()
+            } else {
+                retrieveTurnstileRef.current?.execute()
+            }
+        }, 200)
+    }, [location.pathname])
 
     const handleOnSend = (forgetParam: ForgetParam) => {
         if (isSending) {
@@ -446,28 +489,40 @@ const Forget: React.FC = () => {
         }
         setIsSending(true)
 
-        void r_auth_forget(forgetParam)
-            .then((res) => {
-                const response = res.data
-                switch (response.code) {
-                    case PERMISSION_FORGET_SUCCESS:
-                        void message.success('已发送验证邮件，请查收')
-                        setIsSent(true)
-                        break
-                    case PERMISSION_USER_NOT_FOUND:
-                        void message.error('用户不存在')
-                        break
-                    default:
-                        void message.error('出错了，请稍后重试')
-                }
-            })
-            .finally(() => {
-                setIsSending(false)
-            })
+        if (!captchaCode) {
+            void message.warning('请先通过验证')
+            setIsSending(false)
+            return
+        }
+
+        void r_auth_forget({ email: forgetParam.email, captchaCode }).then((res) => {
+            const response = res.data
+            switch (response.code) {
+                case PERMISSION_FORGET_SUCCESS:
+                    void message.success('已发送验证邮件，请查收')
+                    setIsSent(true)
+                    setIsSending(false)
+                    break
+                case PERMISSION_USER_NOT_FOUND:
+                    void message.error('用户不存在')
+                    setIsSending(false)
+                    break
+                case SYSTEM_INVALID_CAPTCHA_CODE:
+                    void message.error('验证码有误，请刷新重试')
+                    break
+                default:
+                    void message.error('出错了，请稍后重试')
+                    setIsSending(false)
+            }
+        })
     }
 
     const handleOnRetry = () => {
         setIsSent(false)
+
+        setTimeout(() => {
+            turnstileRef.current?.execute()
+        }, 200)
     }
 
     const handleOnChange = (retrieveParam: RetrieveParam) => {
@@ -478,26 +533,29 @@ const Forget: React.FC = () => {
 
         void r_auth_retrieve({
             code: searchParams.get('code') ?? '',
-            password: retrieveParam.password
-        })
-            .then((res) => {
-                const response = res.data
+            password: retrieveParam.password,
+            captchaCode: retrieveCpatchaCode
+        }).then((res) => {
+            const response = res.data
 
-                switch (response.code) {
-                    case PERMISSION_RETRIEVE_SUCCESS:
-                        void message.success('密码已更新')
-                        setIsChanged(true)
-                        break
-                    case PERMISSION_RETRIEVE_CODE_ERROR_OR_EXPIRED:
-                        void message.error('验证码有误，请重新获取')
-                        break
-                    default:
-                        void message.error('出错了，请稍后重试')
-                }
-            })
-            .finally(() => {
-                setIsChanging(false)
-            })
+            switch (response.code) {
+                case PERMISSION_RETRIEVE_SUCCESS:
+                    void message.success('密码已更新')
+                    setIsChanged(true)
+                    setIsChanging(false)
+                    break
+                case PERMISSION_RETRIEVE_CODE_ERROR_OR_EXPIRED:
+                    void message.error('请重新获取邮件')
+                    setIsChanging(false)
+                    break
+                case SYSTEM_INVALID_CAPTCHA_CODE:
+                    void message.error('验证码有误，请刷新重试')
+                    break
+                default:
+                    void message.error('出错了，请稍后重试')
+                    setIsChanging(false)
+            }
+        })
     }
 
     return (
@@ -524,6 +582,15 @@ const Forget: React.FC = () => {
                                                 prefix={<Icon component={IconOxygenEmail} />}
                                                 placeholder={'邮箱'}
                                                 disabled={isSending}
+                                            />
+                                        </AntdForm.Item>
+                                        <AntdForm.Item>
+                                            <Turnstile
+                                                id={'forget-turnstile'}
+                                                ref={turnstileRef}
+                                                siteKey={H_CAPTCHA_SITE_KEY}
+                                                options={{ theme: 'light', execution: 'execute' }}
+                                                onSuccess={setCaptchaCode}
                                             />
                                         </AntdForm.Item>
                                         <AntdForm.Item>
@@ -590,6 +657,15 @@ const Forget: React.FC = () => {
                                         />
                                     </AntdForm.Item>
                                     <AntdForm.Item>
+                                        <Turnstile
+                                            id={'retrieve-turnstile'}
+                                            ref={retrieveTurnstileRef}
+                                            siteKey={H_CAPTCHA_SITE_KEY}
+                                            options={{ theme: 'light', execution: 'execute' }}
+                                            onSuccess={setRetrieveCpatchaCode}
+                                        />
+                                    </AntdForm.Item>
+                                    <AntdForm.Item>
                                         <AntdButton
                                             style={{ width: '100%' }}
                                             type={'primary'}
@@ -621,12 +697,18 @@ const SignIn: React.FC = () => {
     const { refreshRouter } = useContext(AppContext)
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
+    const turnstileRef = useRef<TurnstileInstance>()
     const [isSigningIn, setIsSigningIn] = useState(false)
     const [captchaCode, setCaptchaCode] = useState('')
 
-    const handleOnTurnstileSuccess = (token: string) => {
-        setCaptchaCode(token)
-    }
+    useUpdatedEffect(() => {
+        if (location.pathname !== '/login') {
+            return
+        }
+        setTimeout(() => {
+            turnstileRef.current?.execute()
+        }, 200)
+    }, [location.pathname])
 
     const handleOnFinish = (loginParam: LoginParam) => {
         if (isSigningIn) {
@@ -749,9 +831,11 @@ const SignIn: React.FC = () => {
                         </AntdForm.Item>
                         <AntdForm.Item>
                             <Turnstile
+                                id={'sign-in-turnstile'}
+                                ref={turnstileRef}
                                 siteKey={H_CAPTCHA_SITE_KEY}
-                                options={{ theme: 'light' }}
-                                onSuccess={handleOnTurnstileSuccess}
+                                options={{ theme: 'light', execution: 'execute' }}
+                                onSuccess={setCaptchaCode}
                             />
                         </AntdForm.Item>
                         <FlexBox direction={'horizontal'} className={'addition'}>
