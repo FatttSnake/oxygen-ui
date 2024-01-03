@@ -1,55 +1,13 @@
 import React from 'react'
 import Icon from '@ant-design/icons'
-import '@/assets/css/pages/system/settings.scss'
 import { useUpdatedEffect } from '@/util/hooks'
 import { hasPermission } from '@/util/auth'
 import {
-    r_sys_settings_base_get,
-    r_sys_settings_base_update,
     r_sys_settings_mail_get,
     r_sys_settings_mail_send,
     r_sys_settings_mail_update
 } from '@/services/system'
-import FitFullscreen from '@/components/common/FitFullscreen'
-import HideScrollbar from '@/components/common/HideScrollbar'
-import Card from '@/components/common/Card'
-import FlexBox from '@/components/common/FlexBox'
-import LoadingMask from '@/components/common/LoadingMask'
-import Permission from '@/components/common/Permission'
-
-interface SettingsCardProps extends React.PropsWithChildren {
-    icon: IconComponent
-    title: string
-    loading?: boolean
-    modifyOperationCode?: string
-    expand?: React.ReactNode
-    onReset?: () => void
-    onSave?: () => void
-}
-const SettingsCard: React.FC<SettingsCardProps> = (props) => {
-    return (
-        <Card>
-            <FlexBox className={'settings-card'}>
-                <FlexBox direction={'horizontal'} className={'head'}>
-                    <Icon component={props.icon} className={'icon'} />
-                    <div className={'title'}>{props.title}</div>
-                    {!props.loading ? (
-                        <Permission operationCode={props.modifyOperationCode}>
-                            {props.expand}
-                            <AntdButton onClick={props.onReset} title={'重置'}>
-                                <Icon component={IconOxygenBack} />
-                            </AntdButton>
-                            <AntdButton className={'bt-save'} onClick={props.onSave} title={'保存'}>
-                                <Icon component={IconOxygenSave} />
-                            </AntdButton>
-                        </Permission>
-                    ) : undefined}
-                </FlexBox>
-                <LoadingMask hidden={!props.loading}>{props.children}</LoadingMask>
-            </FlexBox>
-        </Card>
-    )
-}
+import { SettingsCard } from '@/pages/system/settings'
 
 const MailSettings: React.FC = () => {
     const [modal, contextHolder] = AntdModal.useModal()
@@ -194,99 +152,4 @@ const MailSettings: React.FC = () => {
     )
 }
 
-const BaseSettings: React.FC = () => {
-    const [baseForm] = AntdForm.useForm<BaseSettingsParam>()
-    const baseFormValues = AntdForm.useWatch([], baseForm)
-    const [loading, setLoading] = useState(false)
-
-    const handleOnReset = () => {
-        getBaseSettings()
-    }
-
-    const handleOnSave = () => {
-        void r_sys_settings_base_update(baseFormValues).then((res) => {
-            const response = res.data
-            if (response.success) {
-                void message.success('保存设置成功')
-                getBaseSettings()
-            } else {
-                void message.error('保存设置失败，请稍后重试')
-            }
-        })
-    }
-
-    const getBaseSettings = () => {
-        if (loading) {
-            return
-        }
-
-        setLoading(true)
-        void r_sys_settings_base_get().then((res) => {
-            const response = res.data
-            if (response.success) {
-                const data = response.data
-                data && baseForm.setFieldsValue(data)
-                setLoading(false)
-            }
-        })
-    }
-
-    useUpdatedEffect(() => {
-        getBaseSettings()
-    }, [])
-
-    return (
-        <>
-            <SettingsCard
-                icon={IconOxygenEmail}
-                title={'基础'}
-                loading={loading}
-                onReset={handleOnReset}
-                onSave={handleOnSave}
-                modifyOperationCode={'system:settings:modify:base'}
-            >
-                <AntdForm
-                    form={baseForm}
-                    labelCol={{ flex: '7em' }}
-                    disabled={!hasPermission('system:settings:modify:base')}
-                >
-                    <AntdForm.Item label={'应用名称'} name={'appName'}>
-                        <AntdInput />
-                    </AntdForm.Item>
-                    <AntdForm.Item label={'应用 URL'} name={'appUrl'}>
-                        <AntdInput />
-                    </AntdForm.Item>
-                    <AntdForm.Item label={'验证邮箱 URL'} name={'verifyUrl'}>
-                        <AntdInput placeholder={'验证码使用 ${verifyCode} 代替'} />
-                    </AntdForm.Item>
-                    <AntdForm.Item label={'找回密码 URL'} name={'retrieveUrl'}>
-                        <AntdInput placeholder={'验证码使用 ${retrieveCode} 代替'} />
-                    </AntdForm.Item>
-                </AntdForm>
-            </SettingsCard>
-        </>
-    )
-}
-
-const Settings: React.FC = () => {
-    return (
-        <>
-            <FitFullscreen data-component={'system-settings'}>
-                <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
-                    <FlexBox className={'root-content'}>
-                        <FlexBox direction={'horizontal'} className={'root-row'}>
-                            <Permission operationCode={'system:settings:query:base'}>
-                                <BaseSettings />
-                            </Permission>
-                            <Permission operationCode={'system:settings:query:mail'}>
-                                <MailSettings />
-                            </Permission>
-                        </FlexBox>
-                    </FlexBox>
-                </HideScrollbar>
-            </FitFullscreen>
-        </>
-    )
-}
-
-export default Settings
+export default MailSettings

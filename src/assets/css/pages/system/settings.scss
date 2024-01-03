@@ -5,8 +5,12 @@
     padding: 30px;
     gap: 20px;
 
-    .root-row {
+    .root-col {
       gap: 20px;
+
+      > * {
+        flex: 0 0 auto;
+      }
 
       .settings-card {
         padding: 20px;
