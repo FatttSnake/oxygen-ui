@@ -15,7 +15,7 @@ const system: RouteJsonObject[] = [
         path: 'statistics',
         absolutePath: '/system/statistics',
         id: 'system-statistics',
-        component: React.lazy(() => import('@/pages/system/Statistics')),
+        component: React.lazy(() => import('@/pages/system/statistics')),
         name: '系统概况',
         icon: React.lazy(() => import('~icons/oxygen/chart.jsx')),
         menu: true,
