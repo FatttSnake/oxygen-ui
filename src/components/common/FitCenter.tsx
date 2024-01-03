@@ -6,14 +6,13 @@ interface FitCenterProps
     vertical?: boolean
 }
 
-const FitCenter: React.FC<FitCenterProps> = (props) => {
-    const { className, vertical, ..._props } = props
+const FitCenter: React.FC<FitCenterProps> = ({ className, vertical, ...props }) => {
     return (
         <div
             className={`fit-center${className ? ` ${className}` : ''}${
                 vertical ? ' flex-vertical' : ' flex-horizontal'
             }`}
-            {..._props}
+            {...props}
         />
     )
 }

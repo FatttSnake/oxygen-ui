@@ -6,7 +6,7 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
-import Permission from '@/components/common/Permission.tsx'
+import Permission from '@/components/common/Permission'
 
 interface CommonCardProps
     extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -16,11 +16,10 @@ interface CommonCardProps
     url?: string
 }
 
-const CommonCard = forwardRef<HTMLDivElement, CommonCardProps>((props) => {
-    const navigate = useNavigate()
-    const cardRef = useRef<HTMLDivElement>(null)
-    const {
+const CommonCard = forwardRef<HTMLDivElement, CommonCardProps>(
+    ({
         style,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         ref,
         icon,
         description,
@@ -32,32 +31,35 @@ const CommonCard = forwardRef<HTMLDivElement, CommonCardProps>((props) => {
         },
         url,
         children,
-        ..._props
-    } = props
+        ...props
+    }) => {
+        const navigate = useNavigate()
+        const cardRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
-        cardRef.current && VanillaTilt.init(cardRef.current, options)
-    }, [options])
+        useEffect(() => {
+            cardRef.current && VanillaTilt.init(cardRef.current, options)
+        }, [options])
 
-    const handleCardOnClick = () => {
-        url && navigate(url)
+        const handleCardOnClick = () => {
+            url && navigate(url)
+        }
+
+        return (
+            <Card
+                style={{ overflow: 'visible', ...style }}
+                ref={cardRef}
+                {...props}
+                onClick={handleCardOnClick}
+            >
+                <FlexBox className={'common-card'}>
+                    <Icon component={icon} className={'icon'} />
+                    <div className={'text'}>{children}</div>
+                    <div className={'description'}>{description}</div>
+                </FlexBox>
+            </Card>
+        )
     }
-
-    return (
-        <Card
-            style={{ overflow: 'visible', ...style }}
-            ref={cardRef}
-            {..._props}
-            onClick={handleCardOnClick}
-        >
-            <FlexBox className={'common-card'}>
-                <Icon component={icon} className={'icon'} />
-                <div className={'text'}>{children}</div>
-                <div className={'description'}>{description}</div>
-            </FlexBox>
-        </Card>
-    )
-})
+)
 
 const System: React.FC = () => {
     return (

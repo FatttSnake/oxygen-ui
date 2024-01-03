@@ -7,18 +7,19 @@ interface FlexBoxProps
     gap?: number
 }
 
-const FlexBox = forwardRef<HTMLDivElement, FlexBoxProps>((props, ref) => {
-    const { className, direction, gap, style, ..._props } = props
-    return (
-        <div
-            className={`flex-box ${
-                direction === 'horizontal' ? 'flex-horizontal' : 'flex-vertical'
-            }${className ? ` ${className}` : ''}`}
-            style={{ gap, ...style }}
-            {..._props}
-            ref={ref}
-        />
-    )
-})
+const FlexBox = forwardRef<HTMLDivElement, FlexBoxProps>(
+    ({ className, direction, gap, style, ...props }, ref) => {
+        return (
+            <div
+                className={`flex-box ${
+                    direction === 'horizontal' ? 'flex-horizontal' : 'flex-vertical'
+                }${className ? ` ${className}` : ''}`}
+                style={{ gap, ...style }}
+                {...props}
+                ref={ref}
+            />
+        )
+    }
+)
 
 export default FlexBox

@@ -25,7 +25,7 @@ const system: RouteJsonObject[] = [
         path: 'settings',
         absolutePath: '/system/settings',
         id: 'system-settings',
-        component: React.lazy(() => import('@/pages/system/Settings')),
+        component: React.lazy(() => import('@/pages/system/settings')),
         name: '系统设置',
         icon: React.lazy(() => import('~icons/oxygen/option.jsx')),
         menu: true,

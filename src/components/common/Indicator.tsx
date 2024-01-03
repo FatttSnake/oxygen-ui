@@ -8,9 +8,7 @@ interface IndicatorProps {
     onSwitch?: (index: number) => void
 }
 
-const Indicator: React.FC<IndicatorProps> = (props) => {
-    const { total, current, onSwitch } = props
-
+const Indicator: React.FC<IndicatorProps> = ({ total, current, onSwitch }) => {
     const handleClick = (index: number) => {
         return () => {
             onSwitch && onSwitch(index)
