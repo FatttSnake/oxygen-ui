@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import Icon from '@ant-design/icons'
 import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import {
@@ -18,7 +18,27 @@ const Forget: React.FC = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const turnstileRef = useRef<TurnstileInstance>()
+    const turnstileRefCallback = useCallback(
+        (node: TurnstileInstance) => {
+            turnstileRef.current = node
+
+            if (location.pathname === '/forget' && !searchParams.get('code')) {
+                turnstileRef.current?.execute()
+            }
+        },
+        [location.pathname, searchParams]
+    )
     const retrieveTurnstileRef = useRef<TurnstileInstance>()
+    const retrieveTurnstileRefCallback = useCallback(
+        (node: TurnstileInstance) => {
+            retrieveTurnstileRef.current = node
+
+            if (location.pathname === '/forget' && searchParams.get('code')) {
+                retrieveTurnstileRef.current?.execute()
+            }
+        },
+        [location.pathname, searchParams]
+    )
     const [isSending, setIsSending] = useState(false)
     const [isSent, setIsSent] = useState(false)
     const [isChanging, setIsChanging] = useState(false)
@@ -41,20 +61,6 @@ const Forget: React.FC = () => {
             retrieveTurnstileRef.current?.execute()
         }
     }, [isChanging])
-
-    useUpdatedEffect(() => {
-        if (location.pathname !== '/forget') {
-            return
-        }
-
-        setTimeout(() => {
-            if (!searchParams.get('code')) {
-                turnstileRef.current?.execute()
-            } else {
-                retrieveTurnstileRef.current?.execute()
-            }
-        }, 500)
-    }, [location.pathname])
 
     const handleOnSend = (forgetParam: ForgetParam) => {
         if (isSending) {
@@ -93,10 +99,6 @@ const Forget: React.FC = () => {
 
     const handleOnRetry = () => {
         setIsSent(false)
-
-        setTimeout(() => {
-            turnstileRef.current?.execute()
-        }, 500)
     }
 
     const handleOnChange = (retrieveParam: RetrieveParam) => {
@@ -162,7 +164,7 @@ const Forget: React.FC = () => {
                                         <AntdForm.Item>
                                             <Turnstile
                                                 id={'forget-turnstile'}
-                                                ref={turnstileRef}
+                                                ref={turnstileRefCallback}
                                                 siteKey={H_CAPTCHA_SITE_KEY}
                                                 options={{ theme: 'light', execution: 'execute' }}
                                                 onSuccess={setCaptchaCode}
@@ -234,7 +236,7 @@ const Forget: React.FC = () => {
                                     <AntdForm.Item>
                                         <Turnstile
                                             id={'retrieve-turnstile'}
-                                            ref={retrieveTurnstileRef}
+                                            ref={retrieveTurnstileRefCallback}
                                             siteKey={H_CAPTCHA_SITE_KEY}
                                             options={{ theme: 'light', execution: 'execute' }}
                                             onSuccess={setRetrieveCaptchaCode}

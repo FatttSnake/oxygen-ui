@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import Icon from '@ant-design/icons'
 import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import {
@@ -22,6 +22,15 @@ const SignIn: React.FC = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const turnstileRef = useRef<TurnstileInstance>()
+    const turnstileRefCallback = useCallback(
+        (node: TurnstileInstance) => {
+            turnstileRef.current = node
+            if (location.pathname === '/login') {
+                turnstileRef.current?.execute()
+            }
+        },
+        [location.pathname]
+    )
     const [isSigningIn, setIsSigningIn] = useState(false)
     const [captchaCode, setCaptchaCode] = useState('')
 
@@ -32,15 +41,6 @@ const SignIn: React.FC = () => {
             turnstileRef.current?.execute()
         }
     }, [isSigningIn])
-
-    useUpdatedEffect(() => {
-        if (location.pathname !== '/login') {
-            return
-        }
-        setTimeout(() => {
-            turnstileRef.current?.execute()
-        }, 500)
-    }, [turnstileRef])
 
     const handleOnFinish = (loginParam: LoginParam) => {
         if (isSigningIn) {
@@ -165,7 +165,7 @@ const SignIn: React.FC = () => {
                         <AntdForm.Item>
                             <Turnstile
                                 id={'sign-in-turnstile'}
-                                ref={turnstileRef}
+                                ref={turnstileRefCallback}
                                 siteKey={H_CAPTCHA_SITE_KEY}
                                 options={{ theme: 'light', execution: 'execute' }}
                                 onSuccess={setCaptchaCode}

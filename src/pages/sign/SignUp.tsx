@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import Icon from '@ant-design/icons'
 import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import {
@@ -17,6 +17,16 @@ const SignUp: React.FC = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const turnstileRef = useRef<TurnstileInstance>()
+    const turnstileRefCallback = useCallback(
+        (node: TurnstileInstance) => {
+            turnstileRef.current = node
+
+            if (location.pathname === '/register') {
+                turnstileRef.current?.execute()
+            }
+        },
+        [location.pathname]
+    )
     const [isSigningUp, setIsSigningUp] = useState(false)
     const [isFinish, setIsFinish] = useState(false)
     const [isSending, setIsSending] = useState(false)
@@ -39,9 +49,6 @@ const SignUp: React.FC = () => {
                 replace: true
             })
         }
-        setTimeout(() => {
-            turnstileRef.current?.execute()
-        }, 500)
     }, [location.pathname])
 
     const handleOnFinish = (registerParam: RegisterParam) => {
@@ -192,7 +199,7 @@ const SignUp: React.FC = () => {
                                 <AntdForm.Item>
                                     <Turnstile
                                         id={'sign-up-turnstile'}
-                                        ref={turnstileRef}
+                                        ref={turnstileRefCallback}
                                         siteKey={H_CAPTCHA_SITE_KEY}
                                         options={{ theme: 'light', execution: 'execute' }}
                                         onSuccess={setCaptchaCode}
