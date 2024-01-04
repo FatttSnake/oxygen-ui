@@ -357,6 +357,23 @@ interface MailSendParam {
     to: string
 }
 
+interface SensitiveWordVo {
+    id: string
+    word: string
+    useFor: string[]
+    enable: boolean
+}
+
+interface SensitiveWordAddParam {
+    word: string
+    useFor?: string[]
+    enable?: boolean
+}
+
+interface SensitiveWordUpdateParam {
+    ids: string[]
+}
+
 interface SoftwareInfoVo {
     os: string
     bitness: number

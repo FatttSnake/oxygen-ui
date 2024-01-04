@@ -2,7 +2,9 @@ import React from 'react'
 import {
     COLOR_BACKGROUND,
     PERMISSION_ACCOUNT_NEED_INIT,
-    PERMISSION_NO_VERIFICATION_REQUIRED
+    PERMISSION_NO_VERIFICATION_REQUIRED,
+    PERMISSION_VERIFY_SUCCESS,
+    SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
 import { useUpdatedEffect } from '@/util/hooks'
 import { getLoginStatus, getUserInfo, requestUserInfo } from '@/util/auth'
@@ -115,21 +117,27 @@ const Verify: React.FC = () => {
             nickname: verifyParam.nickname
         }).then((res) => {
             const response = res.data
-            if (response.success) {
-                void message.success('恭喜你，完成了')
-                setTimeout(() => {
-                    void requestUserInfo().then(() => {
-                        refreshRouter()
-                        if (searchParams.has('redirect')) {
-                            navigate(searchParams.get('redirect') ?? '/')
-                        } else {
-                            navigate('/')
-                        }
-                    })
-                }, 1500)
-            } else {
-                void message.error('出错了，请稍后重试')
-                setIsVerifying(false)
+            switch (response.code) {
+                case PERMISSION_VERIFY_SUCCESS:
+                    void message.success('恭喜你，完成了')
+                    setTimeout(() => {
+                        void requestUserInfo().then(() => {
+                            refreshRouter()
+                            if (searchParams.has('redirect')) {
+                                navigate(searchParams.get('redirect') ?? '/')
+                            } else {
+                                navigate('/')
+                            }
+                        })
+                    }, 1500)
+                    break
+                case SYSTEM_MATCH_SENSITIVE_WORD:
+                    void message.error('昵称包含敏感词，请重试')
+                    setIsVerifying(false)
+                    break
+                default:
+                    void message.error('出错了，请稍后重试')
+                    setIsVerifying(false)
             }
         })
     }

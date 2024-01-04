@@ -15,7 +15,8 @@ import {
     URL_SYS_STATISTICS_STORAGE,
     URL_SYS_STATISTICS_ONLINE,
     URL_SYS_STATISTICS_ACTIVE,
-    URL_SYS_SETTINGS_BASE
+    URL_SYS_SETTINGS_BASE,
+    URL_SYS_SETTINGS_SENSITIVE
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -84,6 +85,18 @@ export const r_sys_settings_mail_update = (param: MailSettingsParam) =>
 
 export const r_sys_settings_mail_send = (param: MailSendParam) =>
     request.post(URL_SYS_SETTINGS_MAIL, param)
+
+export const r_sys_settings_sensitive_get = () =>
+    request.get<SensitiveWordVo[]>(URL_SYS_SETTINGS_SENSITIVE)
+
+export const r_sys_settings_sensitive_add = (param: SensitiveWordAddParam) =>
+    request.post(URL_SYS_SETTINGS_SENSITIVE, param)
+
+export const r_sys_settings_sensitive_update = (param: SensitiveWordUpdateParam) =>
+    request.put(URL_SYS_SETTINGS_SENSITIVE, param)
+
+export const r_sys_settings_sensitive_delete = (id: string) =>
+    request.delete(`${URL_SYS_SETTINGS_SENSITIVE}/${id}`)
 
 export const r_sys_statistics_software = () =>
     request.get<SoftwareInfoVo>(URL_SYS_STATISTICS_SOFTWARE)

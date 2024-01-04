@@ -9,6 +9,7 @@ import LoadingMask from '@/components/common/LoadingMask'
 import Permission from '@/components/common/Permission'
 import BaseSettings from '@/pages/system/settings/BaseSettings'
 import MailSettings from '@/pages/system/settings/MailSettings'
+import SensitiveWordSettings from '@/pages/system/settings/SensitiveWordSettings'
 
 interface SettingsCardProps extends React.PropsWithChildren {
     icon: IconComponent
@@ -38,7 +39,12 @@ export const SettingsCard: React.FC<SettingsCardProps> = (props) => {
                         </Permission>
                     ) : undefined}
                 </FlexBox>
-                <LoadingMask hidden={!props.loading}>{props.children}</LoadingMask>
+                <LoadingMask
+                    maskContent={<AntdSkeleton active paragraph={{ rows: 6 }} />}
+                    hidden={!props.loading}
+                >
+                    {props.children}
+                </LoadingMask>
             </FlexBox>
         </Card>
     )
@@ -53,6 +59,9 @@ const Settings: React.FC = () => {
                         <FlexBox className={'root-col'}>
                             <Permission operationCode={'system:settings:query:base'}>
                                 <BaseSettings />
+                            </Permission>
+                            <Permission operationCode={'system:settings:query:sensitive'}>
+                                <SensitiveWordSettings />
                             </Permission>
                         </FlexBox>
                         <FlexBox className={'root-col'}>

@@ -5,7 +5,8 @@ import {
     DATABASE_DUPLICATE_KEY,
     H_CAPTCHA_SITE_KEY,
     PERMISSION_REGISTER_SUCCESS,
-    SYSTEM_INVALID_CAPTCHA_CODE
+    SYSTEM_INVALID_CAPTCHA_CODE,
+    SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
 import { useUpdatedEffect } from '@/util/hooks'
 import { getLoginStatus, setToken } from '@/util/auth'
@@ -83,6 +84,10 @@ const SignUp: React.FC = () => {
                         break
                     case SYSTEM_INVALID_CAPTCHA_CODE:
                         void message.error('验证码有误，请重试')
+                        setIsSigningUp(false)
+                        break
+                    case SYSTEM_MATCH_SENSITIVE_WORD:
+                        void message.error('用户名包含敏感词，请重试')
                         setIsSigningUp(false)
                         break
                     default:

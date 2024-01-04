@@ -29,8 +29,8 @@ const BaseSettings: React.FC = () => {
         if (loading) {
             return
         }
-
         setLoading(true)
+
         void r_sys_settings_base_get().then((res) => {
             const response = res.data
             if (response.success) {
