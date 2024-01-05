@@ -8,8 +8,8 @@ import {
     barDefaultSeriesOption,
     barEChartsBaseOption,
     EChartsOption
-} from '@/pages/system_/statistics_/shared'
-import { CommonCard } from '@/pages/system_/statistics_'
+} from '@/pages/System/Statistics/shared'
+import { CommonCard } from '@/pages/System/Statistics'
 
 const CPUInfo: React.FC = () => {
     const keyDivRef = useRef<HTMLDivElement>(null)

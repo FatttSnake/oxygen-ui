@@ -5,7 +5,7 @@ import user from '@/router/user'
 import tools from '@/router/tools'
 import { getAuthRoute, mapJsonToRoute, setTitle } from '@/util/route'
 
-const lazySignPage = React.lazy(() => import('src/pages/sign_'))
+const lazySignPage = React.lazy(() => import('@/pages/Sign'))
 
 const root: RouteJsonObject[] = [
     {

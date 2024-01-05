@@ -6,7 +6,7 @@ import { useUpdatedEffect } from '@/util/hooks'
 import { getAvatar, getLoginStatus, getNickname, removeToken } from '@/util/auth'
 import { r_auth_logout } from '@/services/auth'
 
-const SidebarFooter: React.FC = () => {
+const Footer: React.FC = () => {
     const matches = useMatches()
     const lastMatch = matches.reduce((_, second) => second)
     const location = useLocation()
@@ -94,4 +94,4 @@ const SidebarFooter: React.FC = () => {
     )
 }
 
-export default SidebarFooter
+export default Footer

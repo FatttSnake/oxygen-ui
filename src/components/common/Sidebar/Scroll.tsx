@@ -5,7 +5,7 @@ export interface SidebarScrollElement {
     refreshLayout(): void
 }
 
-const SidebarScroll = forwardRef<SidebarScrollElement, React.PropsWithChildren>((props, ref) => {
+const Scroll = forwardRef<SidebarScrollElement, React.PropsWithChildren>((props, ref) => {
     useImperativeHandle<SidebarScrollElement, SidebarScrollElement>(ref, () => {
         return {
             refreshLayout() {
@@ -30,4 +30,4 @@ const SidebarScroll = forwardRef<SidebarScrollElement, React.PropsWithChildren>(
     )
 })
 
-export default SidebarScroll
+export default Scroll

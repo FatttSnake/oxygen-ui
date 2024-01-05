@@ -1,6 +1,6 @@
 import React from 'react'
 import Icon from '@ant-design/icons'
-import SidebarSubmenu from '@/components/common/sidebar_/SidebarSubmenu'
+import Submenu from '@/components/common/Sidebar/Submenu'
 
 type ItemProps = {
     icon?: IconComponent
@@ -10,7 +10,7 @@ type ItemProps = {
     end?: boolean
 }
 
-const SidebarItem: React.FC<ItemProps> = (props) => {
+const Item: React.FC<ItemProps> = (props) => {
     const [submenuTop, setSubmenuTop] = useState(0)
     const [submenuLeft, setSubmenuLeft] = useState(0)
 
@@ -50,12 +50,12 @@ const SidebarItem: React.FC<ItemProps> = (props) => {
                 </NavLink>
             </div>
             {props.children ? (
-                <SidebarSubmenu submenuTop={submenuTop} submenuLeft={submenuLeft}>
+                <Submenu submenuTop={submenuTop} submenuLeft={submenuLeft}>
                     {props.children}
-                </SidebarSubmenu>
+                </Submenu>
             ) : undefined}
         </li>
     )
 }
 
-export default SidebarItem
+export default Item

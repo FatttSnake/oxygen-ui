@@ -3,9 +3,7 @@ import '@/assets/css/pages/user-framework.scss'
 import user from '@/router/user'
 import { hasPathPermission } from '@/util/auth'
 import FitFullscreen from '@/components/common/FitFullscreen'
-import Sidebar from 'src/components/common/sidebar_'
-import SidebarItemList from '@/components/common/sidebar_/SidebarItemList'
-import SidebarItem from '@/components/common/sidebar_/SidebarItem'
+import Sidebar from '@/components/common/Sidebar'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 const ToolsFramework: React.FC = () => {
@@ -16,22 +14,26 @@ const ToolsFramework: React.FC = () => {
                     <Sidebar
                         title={'个人中心'}
                         bottomFixed={
-                            <SidebarItemList>
+                            <Sidebar.ItemList>
                                 {hasPathPermission('/system') ? (
-                                    <SidebarItem
+                                    <Sidebar.Item
                                         path={'/system'}
                                         icon={IconOxygenSetting}
                                         text={'系统配置'}
                                     />
                                 ) : undefined}
-                                <SidebarItem path={'/'} icon={IconOxygenBack} text={'回到氧工具'} />
-                            </SidebarItemList>
+                                <Sidebar.Item
+                                    path={'/'}
+                                    icon={IconOxygenBack}
+                                    text={'回到氧工具'}
+                                />
+                            </Sidebar.ItemList>
                         }
                     >
-                        <SidebarItemList>
+                        <Sidebar.ItemList>
                             {user.map((value) => {
                                 return value.menu ? (
-                                    <SidebarItem
+                                    <Sidebar.Item
                                         end={value.id === 'user' ? true : undefined}
                                         path={value.absolutePath}
                                         icon={value.icon}
@@ -40,7 +42,7 @@ const ToolsFramework: React.FC = () => {
                                     />
                                 ) : undefined
                             })}
-                        </SidebarItemList>
+                        </Sidebar.ItemList>
                     </Sidebar>
                 </div>
                 <div className={'right-panel'}>

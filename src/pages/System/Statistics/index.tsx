@@ -7,12 +7,12 @@ import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import LoadingMask from '@/components/common/LoadingMask'
 import Permission from '@/components/common/Permission'
-import OnlineInfo from '@/pages/system_/statistics_/OnlineInfo'
-import ActiveInfo from '@/pages/system_/statistics_/ActiveInfo'
-import SoftwareInfo from '@/pages/system_/statistics_/SoftwareInfo'
-import HardwareInfo from '@/pages/system_/statistics_/HardwareInfo'
-import CPUInfo from '@/pages/system_/statistics_/CPUInfo'
-import StorageInfo from '@/pages/system_/statistics_/StorageInfo'
+import OnlineInfo from '@/pages/System/Statistics/OnlineInfo'
+import ActiveInfo from '@/pages/System/Statistics/ActiveInfo'
+import SoftwareInfo from '@/pages/System/Statistics/SoftwareInfo'
+import HardwareInfo from '@/pages/System/Statistics/HardwareInfo'
+import CPUInfo from '@/pages/System/Statistics/CPUInfo'
+import StorageInfo from '@/pages/System/Statistics/StorageInfo'
 
 interface CommonCardProps extends React.PropsWithChildren {
     icon: IconComponent

@@ -3,7 +3,7 @@ import { useUpdatedEffect } from '@/util/hooks'
 import { utcToLocalTime } from '@/util/datetime'
 import { r_sys_statistics_software } from '@/services/system'
 import FlexBox from '@/components/common/FlexBox'
-import { CommonCard } from '@/pages/system_/statistics_'
+import { CommonCard } from '@/pages/System/Statistics'
 
 const SoftwareInfo: React.FC = () => {
     const [softwareInfoData, setSoftwareInfoData] = useState<SoftwareInfoVo>()

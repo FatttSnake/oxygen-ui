@@ -8,9 +8,9 @@ import {
     r_sys_settings_sensitive_get,
     r_sys_settings_sensitive_update
 } from '@/services/system'
-import { SettingsCard } from '@/pages/system_/settings_'
+import { SettingsCard } from '@/pages/System/Settings'
 
-const SensitiveWordSettings: React.FC = () => {
+const SensitiveWord: React.FC = () => {
     const [dataSource, setDataSource] = useState<SensitiveWordVo[]>()
     const [targetKeys, setTargetKeys] = useState<string[]>([])
     const [selectedKeys, setSelectedKeys] = useState<string[]>([])
@@ -160,4 +160,4 @@ const SensitiveWordSettings: React.FC = () => {
     )
 }
 
-export default SensitiveWordSettings
+export default SensitiveWord

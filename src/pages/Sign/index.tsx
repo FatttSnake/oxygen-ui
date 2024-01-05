@@ -4,10 +4,10 @@ import { useUpdatedEffect } from '@/util/hooks'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
-import SignUp from '@/pages/sign_/SignUp'
-import Verify from '@/pages/sign_/Verify'
-import Forget from '@/pages/sign_/Forget'
-import SignIn from '@/pages/sign_/SignIn'
+import SignUp from '@/pages/Sign/SignUp'
+import Verify from '@/pages/Sign/Verify'
+import Forget from '@/pages/Sign/Forget'
+import SignIn from '@/pages/Sign/SignIn'
 
 const Sign: React.FC = () => {
     const lastPage = useRef('none')

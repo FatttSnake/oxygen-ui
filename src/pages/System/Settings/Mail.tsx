@@ -7,9 +7,9 @@ import {
     r_sys_settings_mail_send,
     r_sys_settings_mail_update
 } from '@/services/system'
-import { SettingsCard } from '@/pages/system_/settings_'
+import { SettingsCard } from '@/pages/System/Settings'
 
-const MailSettings: React.FC = () => {
+const Mail: React.FC = () => {
     const [modal, contextHolder] = AntdModal.useModal()
     const [mailForm] = AntdForm.useForm<MailSettingsParam>()
     const mailFormValues = AntdForm.useWatch([], mailForm)
@@ -152,4 +152,4 @@ const MailSettings: React.FC = () => {
     )
 }
 
-export default MailSettings
+export default Mail

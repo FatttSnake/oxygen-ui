@@ -7,9 +7,9 @@ import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import LoadingMask from '@/components/common/LoadingMask'
 import Permission from '@/components/common/Permission'
-import BaseSettings from '@/pages/system_/settings_/BaseSettings'
-import MailSettings from '@/pages/system_/settings_/MailSettings'
-import SensitiveWordSettings from '@/pages/system_/settings_/SensitiveWordSettings'
+import Base from '@/pages/System/Settings/Base'
+import Mail from '@/pages/System/Settings/Mail'
+import SensitiveWord from '@/pages/System/Settings/SensitiveWord'
 
 interface SettingsCardProps extends React.PropsWithChildren {
     icon: IconComponent
@@ -58,15 +58,15 @@ const Settings: React.FC = () => {
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         <FlexBox className={'root-col'}>
                             <Permission operationCode={'system:settings:query:base'}>
-                                <BaseSettings />
+                                <Base />
                             </Permission>
                             <Permission operationCode={'system:settings:query:sensitive'}>
-                                <SensitiveWordSettings />
+                                <SensitiveWord />
                             </Permission>
                         </FlexBox>
                         <FlexBox className={'root-col'}>
                             <Permission operationCode={'system:settings:query:mail'}>
-                                <MailSettings />
+                                <Mail />
                             </Permission>
                         </FlexBox>
                     </FlexBox>

@@ -2,9 +2,7 @@ import React from 'react'
 import '@/assets/css/pages/system-framework.scss'
 import { getSystemRouteJson } from '@/router/system'
 import FitFullscreen from '@/components/common/FitFullscreen'
-import Sidebar from 'src/components/common/sidebar_'
-import SidebarItemList from '@/components/common/sidebar_/SidebarItemList'
-import SidebarItem from '@/components/common/sidebar_/SidebarItem'
+import Sidebar from '@/components/common/Sidebar'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 const SystemFramework: React.FC = () => {
@@ -13,10 +11,10 @@ const SystemFramework: React.FC = () => {
             <FitFullscreen data-component={'system-framework'} className={'flex-horizontal'}>
                 <div className={'left-panel'}>
                     <Sidebar title={'系统配置'}>
-                        <SidebarItemList>
+                        <Sidebar.ItemList>
                             {getSystemRouteJson().map((value) => {
                                 return value.menu ? (
-                                    <SidebarItem
+                                    <Sidebar.Item
                                         end={value.id === 'system' ? true : undefined}
                                         path={value.absolutePath}
                                         icon={value.icon}
@@ -25,7 +23,7 @@ const SystemFramework: React.FC = () => {
                                     />
                                 ) : undefined
                             })}
-                        </SidebarItemList>
+                        </Sidebar.ItemList>
                     </Sidebar>
                 </div>
                 <div className={'right-panel'}>

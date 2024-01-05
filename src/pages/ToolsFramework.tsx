@@ -2,11 +2,8 @@ import React from 'react'
 import '@/assets/css/pages/tools-framework.scss'
 import { tools } from '@/router/tools'
 import FitFullscreen from '@/components/common/FitFullscreen'
-import SidebarScroll, { SidebarScrollElement } from '@/components/common/sidebar_/SidebarScroll'
-import Sidebar from 'src/components/common/sidebar_'
-import SidebarItemList from '@/components/common/sidebar_/SidebarItemList'
-import SidebarItem from '@/components/common/sidebar_/SidebarItem'
-import SidebarSeparate from '@/components/common/sidebar_/SidebarSeparate'
+import Sidebar from '@/components/common/Sidebar'
+import { SidebarScrollElement } from '@/components/common/Sidebar/Scroll'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 const ToolsFramework: React.FC = () => {
@@ -23,23 +20,23 @@ const ToolsFramework: React.FC = () => {
             <FitFullscreen data-component={'tools-framework'} className={'flex-horizontal'}>
                 <div className={'left-panel'}>
                     <Sidebar title={'氧工具'} onSidebarSwitch={handleOnSidebarSwitch}>
-                        <SidebarItemList>
-                            <SidebarItem end path={''} icon={tools[0].icon} text={tools[0].name} />
-                            <SidebarItem
+                        <Sidebar.ItemList>
+                            <Sidebar.Item end path={''} icon={tools[0].icon} text={tools[0].name} />
+                            <Sidebar.Item
                                 end
                                 path={'all'}
                                 icon={tools[1].icon}
                                 text={tools[1].name}
                             />
-                        </SidebarItemList>
-                        <SidebarSeparate style={{ marginBottom: 0 }} />
-                        <SidebarScroll ref={sidebarScrollRef}>
-                            <SidebarItemList>
+                        </Sidebar.ItemList>
+                        <Sidebar.Separate style={{ marginBottom: 0 }} />
+                        <Sidebar.Scroll ref={sidebarScrollRef}>
+                            <Sidebar.ItemList>
                                 {tools.map((tool) => {
                                     return tool.menu &&
                                         tool.id !== 'tools' &&
                                         tool.id !== 'tools-all' ? (
-                                        <SidebarItem
+                                        <Sidebar.Item
                                             path={tool.absolutePath}
                                             icon={tool.icon}
                                             text={tool.name}
@@ -48,7 +45,7 @@ const ToolsFramework: React.FC = () => {
                                             {tool.children
                                                 ? tool.children.map((subTool) => {
                                                       return (
-                                                          <SidebarItem
+                                                          <Sidebar.Item
                                                               path={subTool.absolutePath}
                                                               text={subTool.name}
                                                               key={subTool.id}
@@ -56,11 +53,11 @@ const ToolsFramework: React.FC = () => {
                                                       )
                                                   })
                                                 : undefined}
-                                        </SidebarItem>
+                                        </Sidebar.Item>
                                     ) : undefined
                                 })}
-                            </SidebarItemList>
-                        </SidebarScroll>
+                            </Sidebar.ItemList>
+                        </Sidebar.Scroll>
                     </Sidebar>
                 </div>
                 <div className={'right-panel'}>

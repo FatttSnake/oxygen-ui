@@ -5,7 +5,7 @@ interface SidebarSubmenuProps extends React.PropsWithChildren {
     submenuLeft: number
 }
 
-const SidebarSubmenu: React.FC<SidebarSubmenuProps> = (props) => {
+const Submenu: React.FC<SidebarSubmenuProps> = (props) => {
     return (
         <ul
             className={'submenu'}
@@ -19,4 +19,4 @@ const SidebarSubmenu: React.FC<SidebarSubmenuProps> = (props) => {
     )
 }
 
-export default SidebarSubmenu
+export default Submenu
