@@ -63,6 +63,13 @@ const root: RouteJsonObject[] = [
                 permission: true
             },
             {
+                path: 'online-editor',
+                absolutePath: '/online-editor',
+                id: 'online-editor',
+                component: React.lazy(() => import('@/pages/OnlineEditor')),
+                name: '在线编辑器'
+            },
+            {
                 path: '',
                 absolutePath: '/',
                 id: 'toolsFramework',
