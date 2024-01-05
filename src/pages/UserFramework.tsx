@@ -3,9 +3,9 @@ import '@/assets/css/pages/user-framework.scss'
 import user from '@/router/user'
 import { hasPathPermission } from '@/util/auth'
 import FitFullscreen from '@/components/common/FitFullscreen'
-import Sidebar from '@/components/common/sidebar'
-import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
-import SidebarItem from '@/components/common/sidebar/SidebarItem'
+import Sidebar from 'src/components/common/sidebar_'
+import SidebarItemList from '@/components/common/sidebar_/SidebarItemList'
+import SidebarItem from '@/components/common/sidebar_/SidebarItem'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 const ToolsFramework: React.FC = () => {

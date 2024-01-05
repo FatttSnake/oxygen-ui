@@ -5,8 +5,8 @@ import { useUpdatedEffect } from '@/util/hooks'
 import { getTimesBetweenTwoTimes } from '@/util/datetime'
 import { r_sys_statistics_online } from '@/services/system'
 import FlexBox from '@/components/common/FlexBox'
-import { getTooltipTimeFormatter, lineEChartsBaseOption } from '@/pages/system/statistics/shared'
-import { CommonCard } from '@/pages/system/statistics'
+import { getTooltipTimeFormatter, lineEChartsBaseOption } from '@/pages/system_/statistics_/shared'
+import { CommonCard } from '@/pages/system_/statistics_'
 
 const OnlineInfo: React.FC = () => {
     const onlineInfoDivRef = useRef<HTMLDivElement>(null)

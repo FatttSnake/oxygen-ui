@@ -2,9 +2,9 @@ import React from 'react'
 import '@/assets/css/pages/system-framework.scss'
 import { getSystemRouteJson } from '@/router/system'
 import FitFullscreen from '@/components/common/FitFullscreen'
-import Sidebar from '@/components/common/sidebar'
-import SidebarItemList from '@/components/common/sidebar/SidebarItemList'
-import SidebarItem from '@/components/common/sidebar/SidebarItem'
+import Sidebar from 'src/components/common/sidebar_'
+import SidebarItemList from '@/components/common/sidebar_/SidebarItemList'
+import SidebarItem from '@/components/common/sidebar_/SidebarItem'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 const SystemFramework: React.FC = () => {

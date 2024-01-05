@@ -7,7 +7,7 @@ import {
     r_sys_settings_mail_send,
     r_sys_settings_mail_update
 } from '@/services/system'
-import { SettingsCard } from '@/pages/system/settings'
+import { SettingsCard } from '@/pages/system_/settings_'
 
 const MailSettings: React.FC = () => {
     const [modal, contextHolder] = AntdModal.useModal()

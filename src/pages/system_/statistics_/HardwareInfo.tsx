@@ -2,7 +2,7 @@ import React from 'react'
 import { useUpdatedEffect } from '@/util/hooks'
 import { r_sys_statistics_hardware } from '@/services/system'
 import FlexBox from '@/components/common/FlexBox'
-import { CommonCard } from '@/pages/system/statistics'
+import { CommonCard } from '@/pages/system_/statistics_'
 
 const HardwareInfo: React.FC = () => {
     const [hardwareInfoData, setHardwareInfoData] = useState<HardwareInfoVo>()

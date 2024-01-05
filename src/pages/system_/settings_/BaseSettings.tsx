@@ -2,7 +2,7 @@ import React from 'react'
 import { useUpdatedEffect } from '@/util/hooks'
 import { hasPermission } from '@/util/auth'
 import { r_sys_settings_base_get, r_sys_settings_base_update } from '@/services/system'
-import { SettingsCard } from '@/pages/system/settings'
+import { SettingsCard } from '@/pages/system_/settings_'
 
 const BaseSettings: React.FC = () => {
     const [baseForm] = AntdForm.useForm<BaseSettingsParam>()

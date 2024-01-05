@@ -1,6 +1,6 @@
 import React from 'react'
 import Icon from '@ant-design/icons'
-import SidebarSubmenu from '@/components/common/sidebar/SidebarSubmenu'
+import SidebarSubmenu from '@/components/common/sidebar_/SidebarSubmenu'
 
 type ItemProps = {
     icon?: IconComponent

@@ -2,8 +2,8 @@ import React from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/components/common/sidebar.scss'
 import { getLocalStorage, setLocalStorage } from '@/util/browser'
-import SidebarSeparate from '@/components/common/sidebar/SidebarSeparate'
-import SidebarFooter from '@/components/common/sidebar/SidebarFooter'
+import SidebarSeparate from '@/components/common/sidebar_/SidebarSeparate'
+import SidebarFooter from '@/components/common/sidebar_/SidebarFooter'
 
 interface SidebarProps extends React.PropsWithChildren {
     title: string
