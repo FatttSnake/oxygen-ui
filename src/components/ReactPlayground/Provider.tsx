@@ -1,11 +1,11 @@
 import React from 'react'
 import { IFiles, IPlaygroundContext, ITheme } from '@/components/ReactPlayground/shared.ts'
-import { MAIN_FILE_NAME } from '@/components/files.ts'
+import { MAIN_FILE_NAME } from '@/components/ReactPlayground/files.ts'
 import {
     fileNameToLanguage,
     setPlaygroundTheme,
     strToBase64
-} from '@/components/ReactPlayground/Utils.ts'
+} from '@/components/ReactPlayground/utils.ts'
 
 const initialContext: Partial<IPlaygroundContext> = {
     selectedFileName: MAIN_FILE_NAME

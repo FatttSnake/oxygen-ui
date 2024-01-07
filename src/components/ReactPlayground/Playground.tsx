@@ -1,3 +1,4 @@
+/*
 import React from 'react'
 import { IPlayground } from '@/components/ReactPlayground/shared.ts'
 import { PlaygroundContext } from '@/components/ReactPlayground/Provider.tsx'
@@ -6,7 +7,7 @@ import {
     getCustomActiveFile,
     getMergedCustomFiles,
     getPlaygroundTheme
-} from '@/components/ReactPlayground/Utils.ts'
+} from '@/components/ReactPlayground/utils.ts'
 
 const defaultCodeSandboxOptions = {
     theme: 'dark',
@@ -67,7 +68,8 @@ const Playground: React.FC<IPlayground> = (props) => {
         }
     }, [])
 
-    return files[ENTRY_FILE_NAME] ? <></> : undefined
+    return files[ENTRY_FILE_NAME] ? <div></div> : undefined
 }
 
 export default Playground
+*/

@@ -4,7 +4,7 @@ import { editor } from 'monaco-editor'
 export interface IFile {
     name: string
     value: string
-    language: string
+    language: 'javascript' | 'typescript' | 'json' | 'css'
     active?: boolean
     hidden?: boolean
 }
@@ -13,7 +13,7 @@ export interface IFiles {
     [key: string]: IFile
 }
 
-export type ITheme = 'light' | 'dark'
+export type ITheme = 'light' | 'vs-dark'
 
 export type IImportMap = { imports: Record<string, string> }
 
@@ -26,7 +26,7 @@ export interface ICustomFiles {
               hidden?: boolean
           }
 }
-export type IEditorOptions = editor.IStandaloneEditorConstructionOptions & any
+export type IEditorOptions = editor.IStandaloneEditorConstructionOptions
 export interface IEditorContainer {
     showFileSelector?: boolean
     fileSelectorReadOnly?: boolean

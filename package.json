@@ -16,6 +16,8 @@
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "@marsidev/react-turnstile": "^0.4.0",
+    "@monaco-editor/react": "^4.6.0",
+    "@typescript/ata": "^0.9.4",
     "antd": "^5.12.1",
     "axios": "^1.6.2",
     "dayjs": "^1.11.10",
@@ -28,6 +30,7 @@
     "match-sorter": "^6.3.1",
     "moment": "^2.29.4",
     "monaco-editor": "^0.45.0",
+    "monaco-jsx-syntax-highlight": "^1.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.20.1",

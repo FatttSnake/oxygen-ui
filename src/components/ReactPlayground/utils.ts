@@ -1,6 +1,6 @@
-import { ICustomFiles, IFiles, IImportMap, ITheme } from '@/components/ReactPlayground/shared.ts'
 import { strFromU8, strToU8, unzlibSync, zlibSync } from 'fflate'
-import { IMPORT_MAP_FILE_NAME, reactTemplateFiles } from '@/components/files.ts'
+import { ICustomFiles, IFiles, IImportMap, ITheme } from '@/components/ReactPlayground/shared'
+import { IMPORT_MAP_FILE_NAME, reactTemplateFiles } from '@/components/ReactPlayground/files'
 
 export const strToBase64 = (str: string) => {
     const buffer = strToU8(str)
@@ -22,19 +22,10 @@ export const base64ToStr = (base64: string) => {
     return ''
 }
 
-export const fileNameToLanguage = (name: string) => {
-    const suffix = name.split('.').pop() || ''
-    if (['js', 'jsx'].includes(suffix)) return 'javascript'
-    if (['ts', 'tsx'].includes(suffix)) return 'typescript'
-    if (['json'].includes(suffix)) return 'json'
-    if (['css'].includes(suffix)) return 'css'
-    return 'javascript'
-}
-
 const STORAGE_DARK_THEME = 'react-playground-prefer-dark'
 
 export const setPlaygroundTheme = (theme: ITheme) => {
-    localStorage.setItem(STORAGE_DARK_THEME, String(theme === 'dark'))
+    localStorage.setItem(STORAGE_DARK_THEME, String(theme === 'vs-dark'))
     document
         .querySelectorAll('div[data-id="react-playground"]')
         ?.forEach((item) => item.setAttribute('class', theme))
@@ -42,7 +33,7 @@ export const setPlaygroundTheme = (theme: ITheme) => {
 
 export const getPlaygroundTheme = () => {
     const isDarkTheme = JSON.parse(localStorage.getItem(STORAGE_DARK_THEME) || 'false')
-    return isDarkTheme ? 'dark' : 'light'
+    return isDarkTheme ? 'vs-dark' : 'light'
 }
 
 const transformCustomFiles = (files: ICustomFiles) => {
@@ -69,6 +60,17 @@ const transformCustomFiles = (files: ICustomFiles) => {
     return newFiles
 }
 
+export const getCustomActiveFile = (files?: ICustomFiles) => {
+    if (!files) return null
+    return Object.keys(files).find((key) => {
+        const tempFile = files[key]
+        if (typeof tempFile !== 'string' && tempFile.active) {
+            return key
+        }
+        return null
+    })
+}
+
 export const getMergedCustomFiles = (files?: ICustomFiles, importMap?: IImportMap) => {
     if (!files) return null
     if (importMap) {
@@ -89,16 +91,6 @@ export const getMergedCustomFiles = (files?: ICustomFiles, importMap?: IImportMa
     }
 }
 
-export const getCustomActiveFile = (files?: ICustomFiles) => {
-    if (!files) return null
-    return Object.keys(files).find((key) => {
-        const tempFile = files[key]
-        if (typeof tempFile !== 'string' && tempFile.active) {
-            return key
-        }
-        return null
-    })
-}
 export const getFilesFromUrl = () => {
     let files: IFiles | undefined
     try {
@@ -110,4 +102,13 @@ export const getFilesFromUrl = () => {
         console.error(error)
     }
     return files
+}
+
+export const fileNameToLanguage = (name: string) => {
+    const suffix = name.split('.').pop() || ''
+    if (['js', 'jsx'].includes(suffix)) return 'javascript'
+    if (['ts', 'tsx'].includes(suffix)) return 'typescript'
+    if (['json'].includes(suffix)) return 'json'
+    if (['css'].includes(suffix)) return 'css'
+    return 'javascript'
 }
