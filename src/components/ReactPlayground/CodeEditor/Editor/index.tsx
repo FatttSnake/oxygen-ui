@@ -2,23 +2,30 @@ import React from 'react'
 import { editor, Selection } from 'monaco-editor'
 import MonacoEditor, { Monaco } from '@monaco-editor/react'
 import '@/components/ReactPlayground/CodeEditor/Editor/editor.scss'
-import { IEditorOptions, IFile, IFiles, ITheme } from '@/components/ReactPlayground/shared'
+import { IEditorOptions, IFiles, ITheme } from '@/components/ReactPlayground/shared'
 import { MonacoEditorConfig } from '@/components/ReactPlayground/CodeEditor/Editor/monacoConfig'
 import { fileNameToLanguage } from '@/components/ReactPlayground/utils'
-import { useEditor } from '@/components/ReactPlayground/CodeEditor/Editor/hooks'
+import { useEditor, useTypesProgress } from '@/components/ReactPlayground/CodeEditor/Editor/hooks'
 
 interface EditorProps {
-    file: IFile
+    files?: IFiles
+    selectedFileName?: string
     onChange?: (code: string | undefined) => void
     options?: IEditorOptions
     theme?: ITheme
-    files?: IFiles
     onJumpFile?: (fileName: string) => void
 }
 
-const Editor: React.FC<EditorProps> = ({ file, files, theme, onChange, options, onJumpFile }) => {
+const Editor: React.FC<EditorProps> = ({
+    files = {},
+    selectedFileName = '',
+    theme,
+    onChange,
+    options,
+    onJumpFile
+}) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>()
-    const { doOpenEditor, loadJsxSyntaxHighlight } = useEditor()
+    const { doOpenEditor, loadJsxSyntaxHighlight, autoLoadExtraLib } = useEditor()
     const jsxSyntaxHighlightRef = useRef<{
         highlighter: (code?: string | undefined) => void
         dispose: () => void
@@ -26,6 +33,8 @@ const Editor: React.FC<EditorProps> = ({ file, files, theme, onChange, options, 
         highlighter: () => undefined,
         dispose: () => undefined
     })
+    const { onWatch } = useTypesProgress()
+    const file = files[selectedFileName] ?? { name: 'Untitled' }
 
     const handleOnEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         editorRef.current = editor
@@ -64,6 +73,8 @@ const Editor: React.FC<EditorProps> = ({ file, files, theme, onChange, options, 
         }
 
         jsxSyntaxHighlightRef.current = loadJsxSyntaxHighlight(editor, monaco)
+
+        void autoLoadExtraLib(editor, monaco, file.value, onWatch)
     }
 
     useEffect(() => {

@@ -1,5 +1,11 @@
 import { strFromU8, strToU8, unzlibSync, zlibSync } from 'fflate'
-import { ICustomFiles, IFiles, IImportMap, ITheme } from '@/components/ReactPlayground/shared'
+import {
+    ICustomFiles,
+    IFiles,
+    IImportMap,
+    ILanguage,
+    ITheme
+} from '@/components/ReactPlayground/shared'
 import { IMPORT_MAP_FILE_NAME, reactTemplateFiles } from '@/components/ReactPlayground/files'
 
 export const strToBase64 = (str: string) => {
@@ -31,8 +37,8 @@ export const setPlaygroundTheme = (theme: ITheme) => {
         ?.forEach((item) => item.setAttribute('class', theme))
 }
 
-export const getPlaygroundTheme = () => {
-    const isDarkTheme = JSON.parse(localStorage.getItem(STORAGE_DARK_THEME) || 'false')
+export const getPlaygroundTheme = (): ITheme => {
+    const isDarkTheme = JSON.parse(localStorage.getItem(STORAGE_DARK_THEME) || 'false') as ITheme
     return isDarkTheme ? 'vs-dark' : 'light'
 }
 
@@ -96,7 +102,7 @@ export const getFilesFromUrl = () => {
     try {
         if (typeof window !== 'undefined') {
             const hash = window.location.hash
-            if (hash) files = JSON.parse(base64ToStr(hash?.split('#')[1]))
+            if (hash) files = JSON.parse(base64ToStr(hash?.split('#')[1])) as IFiles
         }
     } catch (error) {
         console.error(error)
@@ -104,7 +110,7 @@ export const getFilesFromUrl = () => {
     return files
 }
 
-export const fileNameToLanguage = (name: string) => {
+export const fileNameToLanguage = (name: string): ILanguage => {
     const suffix = name.split('.').pop() || ''
     if (['js', 'jsx'].includes(suffix)) return 'javascript'
     if (['ts', 'tsx'].includes(suffix)) return 'typescript'

@@ -18,31 +18,46 @@ const delegateListener = createDelegate()
 
 type InferSet<T> = T extends Set<infer U> ? U : never
 
-export const createATA = async () => {
-    // @ts-ignore
+export interface TypeHelper {
+    dispose: () => void
+    acquireType: (code: string) => void
+    removeListener: <T extends keyof DelegateListener>(
+        event: T,
+        handler: InferSet<DelegateListener[T]>
+    ) => void
+    addListener: <T extends keyof DelegateListener>(
+        event: T,
+        handler: InferSet<DelegateListener[T]>
+    ) => void
+}
+
+export const createATA = async (): Promise<TypeHelper> => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const ts = await import('https://esm.sh/typescript@5.3.3')
     const ata = setupTypeAcquisition({
         projectName: 'monaco-ts',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         typescript: ts,
         logger: console,
         fetcher: (input, init) => {
-            let result: any
             try {
-                result = fetch(input, init)
+                return fetch(input, init)
             } catch (error) {
                 console.error('Error fetching data:', error)
             }
-            return result
+            return new Promise(() => {})
         },
         delegate: {
             receivedFile: (code, path) => {
                 delegateListener.receivedFile.forEach((fn) => fn(code, path))
             },
-            progress: (downloaded, estimatedTotal) => {
-                delegateListener.progress.forEach((fn) => fn(downloaded, estimatedTotal))
-            },
             started: () => {
                 delegateListener.started.forEach((fn) => fn())
+            },
+            progress: (downloaded, estimatedTotal) => {
+                delegateListener.progress.forEach((fn) => fn(downloaded, estimatedTotal))
             },
             finished: (files) => {
                 delegateListener.finished.forEach((fn) => fn(files))
@@ -56,7 +71,8 @@ export const createATA = async () => {
         event: T,
         handler: InferSet<DelegateListener[T]>
     ) => {
-        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         delegateListener[event].add(handler)
     }
 
@@ -64,7 +80,8 @@ export const createATA = async () => {
         event: T,
         handler: InferSet<DelegateListener[T]>
     ) => {
-        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         delegateListener[event].delete(handler)
     }
 

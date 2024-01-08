@@ -1,10 +1,12 @@
 import React from 'react'
 import { editor } from 'monaco-editor'
 
+export type ILanguage = 'javascript' | 'typescript' | 'json' | 'css'
+
 export interface IFile {
     name: string
     value: string
-    language: 'javascript' | 'typescript' | 'json' | 'css'
+    language: ILanguage
     active?: boolean
     hidden?: boolean
 }

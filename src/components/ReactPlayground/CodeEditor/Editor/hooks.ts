@@ -2,7 +2,7 @@ import { editor, IPosition, Selection } from 'monaco-editor'
 import ScrollType = editor.ScrollType
 import { Monaco } from '@monaco-editor/react'
 import { getWorker, MonacoJsxSyntaxHighlight } from 'monaco-jsx-syntax-highlight'
-import { createATA } from '@/components/ReactPlayground/CodeEditor/Editor/ata.ts'
+import { createATA, TypeHelper } from '@/components/ReactPlayground/CodeEditor/Editor/ata.ts'
 
 export const useEditor = () => {
     const doOpenEditor = (
@@ -44,7 +44,7 @@ export const useEditor = () => {
         editor: editor.IStandaloneCodeEditor,
         monaco: Monaco,
         defaultValue: string,
-        onWatch: any
+        onWatch: (typeHelper: TypeHelper) => () => void
     ) => {
         const typeHelper = await createATA()
 
@@ -68,5 +68,42 @@ export const useEditor = () => {
         doOpenEditor,
         loadJsxSyntaxHighlight,
         autoLoadExtraLib
+    }
+}
+
+export const useTypesProgress = () => {
+    const [progress, setProgress] = useState(0)
+    const [total, setTotal] = useState(0)
+    const [finished, setFinished] = useState(false)
+
+    const onWatch = (typeHelper: TypeHelper) => {
+        const handleStarted = () => {
+            setFinished(false)
+        }
+        typeHelper.addListener('started', handleStarted)
+
+        const handleProgress = (progress: number, total: number) => {
+            setProgress(progress)
+            setTotal(total)
+        }
+        typeHelper.addListener('progress', handleProgress)
+
+        const handleFinished = () => {
+            setFinished(true)
+        }
+        typeHelper.addListener('progress', handleFinished)
+
+        return () => {
+            typeHelper.removeListener('started', handleStarted)
+            typeHelper.removeListener('progress', handleProgress)
+            typeHelper.removeListener('finished', handleFinished)
+        }
+    }
+
+    return {
+        progress,
+        total,
+        finished,
+        onWatch
     }
 }
