@@ -29,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> & {
     const switchSidebar = () => {
         setLocalStorage('HIDE_SIDEBAR', !hideSidebar ? 'true' : 'false')
         setHideSidebar(!hideSidebar)
-        props.onSidebarSwitch && props.onSidebarSwitch(hideSidebar)
+        props.onSidebarSwitch?.(hideSidebar)
     }
 
     return (

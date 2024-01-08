@@ -16,7 +16,7 @@ const Item: React.FC<ItemProps> = (props) => {
 
     const showSubmenu = (e: React.MouseEvent) => {
         const parentElement = e.currentTarget.parentElement
-        if (parentElement && parentElement.childElementCount === 2) {
+        if (parentElement?.childElementCount === 2) {
             const parentClientRect = parentElement.getBoundingClientRect()
             if (parentClientRect.top <= screen.height / 2) {
                 setSubmenuTop(parentClientRect.top)
@@ -42,18 +42,16 @@ const Item: React.FC<ItemProps> = (props) => {
                     }
                 >
                     <div className={'icon-box'}>
-                        {props.icon ? (
-                            <Icon className={'icon'} component={props.icon} />
-                        ) : undefined}
+                        {props.icon && <Icon className={'icon'} component={props.icon} />}
                     </div>
                     <span className={'text'}>{props.text}</span>
                 </NavLink>
             </div>
-            {props.children ? (
+            {props.children && (
                 <Submenu submenuTop={submenuTop} submenuLeft={submenuLeft}>
                     {props.children}
                 </Submenu>
-            ) : undefined}
+            )}
         </li>
     )
 }

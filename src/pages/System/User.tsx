@@ -169,22 +169,20 @@ const User: React.FC = () => {
                         <AntdTag color={'green'}>正常</AntdTag>
                     ) : (
                         <>
-                            {record.verify ? (
+                            {record.verify && (
                                 <>
                                     <AntdPopover content={record.verify} trigger={'click'}>
                                         <AntdTag style={{ cursor: 'pointer' }}>未验证</AntdTag>
                                     </AntdPopover>
                                 </>
-                            ) : undefined}
-                            {record.locking ? <AntdTag>锁定</AntdTag> : undefined}
-                            {record.expiration && isPastTime(record.expiration) ? (
+                            )}
+                            {record.locking && <AntdTag>锁定</AntdTag>}
+                            {record.expiration && isPastTime(record.expiration) && (
                                 <AntdTag>过期</AntdTag>
-                            ) : undefined}
+                            )}
                             {record.credentialsExpiration &&
-                            isPastTime(record.credentialsExpiration) ? (
-                                <AntdTag>改密</AntdTag>
-                            ) : undefined}
-                            {!record.enable ? <AntdTag>禁用</AntdTag> : undefined}
+                                isPastTime(record.credentialsExpiration) && <AntdTag>改密</AntdTag>}
+                            {!record.enable && <AntdTag>禁用</AntdTag>}
                         </>
                     )}
                 </AntdTooltip>
@@ -215,14 +213,14 @@ const User: React.FC = () => {
                             </a>
                         </Permission>
                         <Permission operationCode={'system:user:delete:one'}>
-                            {record.id !== '0' ? (
+                            {record.id !== '0' && (
                                 <a
                                     style={{ color: COLOR_PRODUCTION }}
                                     onClick={handleOnDeleteBtnClick(record)}
                                 >
                                     删除
                                 </a>
-                            ) : undefined}
+                            )}
                         </Permission>
                     </AntdSpace>
                 </>
@@ -378,7 +376,7 @@ const User: React.FC = () => {
                         >
                             <AntdInput.Password />
                         </AntdForm.Item>
-                        {value.id !== '0' ? (
+                        {value.id !== '0' && (
                             <AntdForm.Item
                                 name={'needChangePassword'}
                                 label={'需改密'}
@@ -387,7 +385,7 @@ const User: React.FC = () => {
                             >
                                 <AntdSwitch />
                             </AntdForm.Item>
-                        ) : undefined}
+                        )}
                     </AntdForm>
                 ),
                 onOk: () =>
@@ -803,7 +801,7 @@ const User: React.FC = () => {
             >
                 <AntdInput allowClear />
             </AntdForm.Item>
-            {!isDrawerEdit ? (
+            {!isDrawerEdit && (
                 <>
                     <AntdForm.Item
                         name={'password'}
@@ -813,7 +811,7 @@ const User: React.FC = () => {
                         <AntdInput.Password allowClear />
                     </AntdForm.Item>
                 </>
-            ) : undefined}
+            )}
             <AntdForm.Item name={'nickname'} label={'昵称'} rules={[{ whitespace: false }]}>
                 <AntdInput allowClear />
             </AntdForm.Item>
@@ -824,7 +822,7 @@ const User: React.FC = () => {
             >
                 <AntdInput type={'email'} allowClear />
             </AntdForm.Item>
-            {formValues?.id !== '0' ? (
+            {formValues?.id !== '0' && (
                 <>
                     <AntdForm.Item name={'roleIds'} label={'角色'}>
                         <AntdSelect
@@ -900,7 +898,7 @@ const User: React.FC = () => {
                         <AntdSwitch />
                     </AntdForm.Item>
                 </>
-            ) : undefined}
+            )}
         </AntdForm>
     )
 
@@ -943,9 +941,9 @@ const User: React.FC = () => {
                     }
                     suffix={
                         <>
-                            {!isRegexLegal ? (
+                            {!isRegexLegal && (
                                 <span style={{ color: COLOR_ERROR_SECONDARY }}>非法表达式</span>
-                            ) : undefined}
+                            )}
                             <AntdCheckbox checked={isUseRegex} onChange={handleOnUseRegexChange}>
                                 <AntdTooltip title={'正则表达式'}>.*</AntdTooltip>
                             </AntdCheckbox>

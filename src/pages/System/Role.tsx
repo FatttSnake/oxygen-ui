@@ -538,9 +538,9 @@ const Role: React.FC = () => {
                     }
                     suffix={
                         <>
-                            {!isRegexLegal ? (
+                            {!isRegexLegal && (
                                 <span style={{ color: COLOR_ERROR_SECONDARY }}>非法表达式</span>
-                            ) : undefined}
+                            )}
                             <AntdCheckbox checked={isUseRegex} onChange={handleOnUseRegexChange}>
                                 <AntdTooltip title={'正则表达式'}>.*</AntdTooltip>
                             </AntdCheckbox>

@@ -15,13 +15,13 @@ const ToolsFramework: React.FC = () => {
                         title={'个人中心'}
                         bottomFixed={
                             <Sidebar.ItemList>
-                                {hasPathPermission('/system') ? (
+                                {hasPathPermission('/system') && (
                                     <Sidebar.Item
                                         path={'/system'}
                                         icon={IconOxygenSetting}
                                         text={'系统配置'}
                                     />
-                                ) : undefined}
+                                )}
                                 <Sidebar.Item
                                     path={'/'}
                                     icon={IconOxygenBack}
@@ -32,15 +32,17 @@ const ToolsFramework: React.FC = () => {
                     >
                         <Sidebar.ItemList>
                             {user.map((value) => {
-                                return value.menu ? (
-                                    <Sidebar.Item
-                                        end={value.id === 'user' ? true : undefined}
-                                        path={value.absolutePath}
-                                        icon={value.icon}
-                                        text={value.name}
-                                        key={value.id}
-                                    />
-                                ) : undefined
+                                return (
+                                    value.menu && (
+                                        <Sidebar.Item
+                                            end={value.id === 'user' && true}
+                                            path={value.absolutePath}
+                                            icon={value.icon}
+                                            text={value.name}
+                                            key={value.id}
+                                        />
+                                    )
+                                )
                             })}
                         </Sidebar.ItemList>
                     </Sidebar>

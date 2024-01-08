@@ -27,7 +27,7 @@ export const SettingsCard: React.FC<SettingsCardProps> = (props) => {
                 <FlexBox direction={'horizontal'} className={'head'}>
                     <Icon component={props.icon} className={'icon'} />
                     <div className={'title'}>{props.title}</div>
-                    {!props.loading ? (
+                    {!props.loading && (
                         <Permission operationCode={props.modifyOperationCode}>
                             {props.expand}
                             <AntdButton onClick={props.onReset} title={'重置'}>
@@ -37,7 +37,7 @@ export const SettingsCard: React.FC<SettingsCardProps> = (props) => {
                                 <Icon component={IconOxygenSave} />
                             </AntdButton>
                         </Permission>
-                    ) : undefined}
+                    )}
                 </FlexBox>
                 <LoadingMask
                     maskContent={<AntdSkeleton active paragraph={{ rows: 6 }} />}

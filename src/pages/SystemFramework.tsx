@@ -13,15 +13,17 @@ const SystemFramework: React.FC = () => {
                     <Sidebar title={'系统配置'}>
                         <Sidebar.ItemList>
                             {getSystemRouteJson().map((value) => {
-                                return value.menu ? (
-                                    <Sidebar.Item
-                                        end={value.id === 'system' ? true : undefined}
-                                        path={value.absolutePath}
-                                        icon={value.icon}
-                                        text={value.name}
-                                        key={value.id}
-                                    />
-                                ) : undefined
+                                return (
+                                    value.menu && (
+                                        <Sidebar.Item
+                                            end={value.id === 'system' ? true : undefined}
+                                            path={value.absolutePath}
+                                            icon={value.icon}
+                                            text={value.name}
+                                            key={value.id}
+                                        />
+                                    )
+                                )
                             })}
                         </Sidebar.ItemList>
                     </Sidebar>

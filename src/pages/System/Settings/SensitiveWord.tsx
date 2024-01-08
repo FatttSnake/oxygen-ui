@@ -123,7 +123,7 @@ const SensitiveWord: React.FC = () => {
                                 justifyContent: 'flex-end'
                             }}
                         >
-                            {selectedKeys?.length === 1 ? (
+                            {selectedKeys?.length === 1 && (
                                 <AntdTooltip title={'删除选中项'}>
                                     <Icon
                                         style={{ fontSize: '1.2em' }}
@@ -131,7 +131,7 @@ const SensitiveWord: React.FC = () => {
                                         onClick={handleOnDelete}
                                     />
                                 </AntdTooltip>
-                            ) : undefined}
+                            )}
                             备选
                         </span>,
                         '拦截'

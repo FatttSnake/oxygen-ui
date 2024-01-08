@@ -42,17 +42,16 @@ const ToolsFramework: React.FC = () => {
                                             text={tool.name}
                                             key={tool.id}
                                         >
-                                            {tool.children
-                                                ? tool.children.map((subTool) => {
-                                                      return (
-                                                          <Sidebar.Item
-                                                              path={subTool.absolutePath}
-                                                              text={subTool.name}
-                                                              key={subTool.id}
-                                                          />
-                                                      )
-                                                  })
-                                                : undefined}
+                                            {tool.children &&
+                                                tool.children.map((subTool) => {
+                                                    return (
+                                                        <Sidebar.Item
+                                                            path={subTool.absolutePath}
+                                                            text={subTool.name}
+                                                            key={subTool.id}
+                                                        />
+                                                    )
+                                                })}
                                         </Sidebar.Item>
                                     ) : undefined
                                 })}

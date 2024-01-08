@@ -11,7 +11,7 @@ interface IndicatorProps {
 const Indicator: React.FC<IndicatorProps> = ({ total, current, onSwitch }) => {
     const handleClick = (index: number) => {
         return () => {
-            onSwitch && onSwitch(index)
+            onSwitch?.(index)
         }
     }
 
