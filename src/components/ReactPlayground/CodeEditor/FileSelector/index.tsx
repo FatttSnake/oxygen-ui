@@ -1,19 +1,15 @@
 import React from 'react'
 import '@/components/ReactPlayground/CodeEditor/FileSelector/file-selector.scss'
-import { IFiles } from '@/components/ReactPlayground/shared.ts'
-import {
-    ENTRY_FILE_NAME,
-    IMPORT_MAP_FILE_NAME,
-    MAIN_FILE_NAME
-} from '@/components/ReactPlayground/files.ts'
-import Item from '@/components/ReactPlayground/CodeEditor/FileSelector/Item.tsx'
+import { IFiles } from '@/components/ReactPlayground/shared'
+import { ENTRY_FILE_NAME, IMPORT_MAP_FILE_NAME } from '@/components/ReactPlayground/files'
+import Item from '@/components/ReactPlayground/CodeEditor/FileSelector/Item'
 
 interface FileSelectorProps {
     files?: IFiles
     onChange?: (fileName: string) => void
     onError?: (msg: string) => void
     readonly?: boolean
-    readonlyFiles?: string[]
+    notRemovableFiles?: string[]
     onRemoveFile?: (fileName: string) => void
     onAddFile?: (fileName: string) => void
     onUpdateFileName?: (newFileName: string, oldFileName: string) => void
@@ -25,7 +21,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     onChange,
     onError,
     readonly = false,
-    readonlyFiles = [],
+    notRemovableFiles = [],
     onRemoveFile,
     onAddFile,
     onUpdateFileName,
@@ -33,6 +29,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
 }) => {
     const [tabs, setTabs] = useState<string[]>([])
     const [creating, setCreating] = useState(false)
+    const [hasEditing, setHasEditing] = useState(false)
 
     const getMaxSequenceTabName = (filesName: string[]) => {
         const result = filesName.reduce((max, filesName) => {
@@ -79,7 +76,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
             onAddFile?.(value)
             setCreating(false)
         } else {
-            onUpdateFileName?.(item, value)
+            onUpdateFileName?.(value, item)
         }
 
         setTimeout(() => {
@@ -106,7 +103,14 @@ const FileSelector: React.FC<FileSelectorProps> = ({
 
     const handleOnRemove = (fileName: string) => {
         onRemoveFile?.(fileName)
-        handleOnClickTab(Object.keys(files)[Object.keys(files).length - 1])
+        if (fileName === selectedFileName) {
+            const index = Object.keys(files).indexOf(fileName) - 1
+            if (index >= 0) {
+                handleOnClickTab(Object.keys(files)[index])
+            } else {
+                handleOnClickTab(Object.keys(files)[1])
+            }
+        }
     }
 
     useEffect(() => {
@@ -133,9 +137,9 @@ const FileSelector: React.FC<FileSelectorProps> = ({
                         value={item}
                         active={selectedFileName == item}
                         creating={creating}
-                        readonly={
-                            readonly || readonlyFiles.includes(item) || MAIN_FILE_NAME == item
-                        }
+                        readonly={readonly || notRemovableFiles.includes(item)}
+                        hasEditing={hasEditing}
+                        setHasEditing={setHasEditing}
                         onValidate={handleOnValidateTab}
                         onOk={(name) => handleOnSaveTab(name, item)}
                         onCancel={handleOnCancel}

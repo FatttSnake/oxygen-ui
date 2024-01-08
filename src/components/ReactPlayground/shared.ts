@@ -1,7 +1,7 @@
 import React from 'react'
 import { editor } from 'monaco-editor'
 
-export type ILanguage = 'javascript' | 'typescript' | 'json' | 'css'
+export type ILanguage = 'javascript' | 'typescript' | 'json' | 'css' | 'xml'
 
 export interface IFile {
     name: string

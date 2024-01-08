@@ -3,13 +3,14 @@ import { editor, Selection } from 'monaco-editor'
 import MonacoEditor, { Monaco } from '@monaco-editor/react'
 import '@/components/ReactPlayground/CodeEditor/Editor/editor.scss'
 import { IEditorOptions, IFiles, ITheme } from '@/components/ReactPlayground/shared'
-import { MonacoEditorConfig } from '@/components/ReactPlayground/CodeEditor/Editor/monacoConfig'
 import { fileNameToLanguage } from '@/components/ReactPlayground/utils'
 import { useEditor, useTypesProgress } from '@/components/ReactPlayground/CodeEditor/Editor/hooks'
+import { MonacoEditorConfig } from '@/components/ReactPlayground/CodeEditor/Editor/monacoConfig'
 
 interface EditorProps {
     files?: IFiles
     selectedFileName?: string
+    readonly?: boolean
     onChange?: (code: string | undefined) => void
     options?: IEditorOptions
     theme?: ITheme
@@ -19,6 +20,7 @@ interface EditorProps {
 const Editor: React.FC<EditorProps> = ({
     files = {},
     selectedFileName = '',
+    readonly,
     theme,
     onChange,
     options,
@@ -92,7 +94,12 @@ const Editor: React.FC<EditorProps> = ({
                 value={file.value}
                 onChange={onChange}
                 onMount={handleOnEditorDidMount}
-                options={{ ...MonacoEditorConfig, ...options, theme: undefined }}
+                options={{
+                    ...MonacoEditorConfig,
+                    ...options,
+                    theme: undefined,
+                    readOnly: readonly
+                }}
             />
         </>
     )

@@ -5,6 +5,8 @@ interface ItemProps {
     creating?: boolean
     value: string
     active?: boolean
+    hasEditing?: boolean
+    setHasEditing?: React.Dispatch<React.SetStateAction<boolean>>
     onOk?: (fileName: string) => void
     onCancel?: () => void
     onRemove?: (fileName: string) => void
@@ -16,6 +18,8 @@ const Item: React.FC<ItemProps> = ({
     readonly = false,
     value,
     active = false,
+    hasEditing,
+    setHasEditing,
     onOk,
     onCancel,
     onRemove,
@@ -26,6 +30,14 @@ const Item: React.FC<ItemProps> = ({
     const inputRef = useRef<HTMLInputElement>(null)
     const [fileName, setFileName] = useState(value)
     const [creating, setCreating] = useState(prop.creating)
+
+    const handleOnClick = () => {
+        if (hasEditing) {
+            return
+        }
+
+        onClick?.()
+    }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
@@ -39,30 +51,35 @@ const Item: React.FC<ItemProps> = ({
 
     const finishNameFile = () => {
         if (!creating || onValidate ? !onValidate?.(fileName, value) : false) {
+            inputRef.current?.focus()
             return
         }
 
         if (fileName === value && active) {
             setCreating(false)
+            setHasEditing?.(false)
             return
         }
 
         onOk?.(fileName)
         setCreating(false)
+        setHasEditing?.(false)
     }
 
     const cancelNameFile = () => {
         setFileName(value)
         setCreating(false)
+        setHasEditing?.(false)
         onCancel?.()
     }
 
     const handleOnDoubleClick = () => {
-        if (readonly) {
+        if (readonly || creating || hasEditing) {
             return
         }
 
         setCreating(true)
+        setHasEditing?.(true)
         setFileName(value)
         setTimeout(() => {
             inputRef.current?.focus()
@@ -75,6 +92,9 @@ const Item: React.FC<ItemProps> = ({
 
     const handleOnDelete = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation()
+        if (hasEditing) {
+            return
+        }
         if (confirm(`确定删除文件 ${value} ？`)) {
             onRemove?.(value)
         }
@@ -85,7 +105,7 @@ const Item: React.FC<ItemProps> = ({
     }, [])
 
     return (
-        <div className={`tab-item${active ? ' active' : ''}`} onClick={onClick}>
+        <div className={`tab-item${active ? ' active' : ''}`} onClick={handleOnClick}>
             {creating ? (
                 <div className={'tab-item-input'}>
                     <input

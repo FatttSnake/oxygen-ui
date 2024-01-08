@@ -1,20 +1,23 @@
-import React, { useState } from 'react'
+import React from 'react'
+import _ from 'lodash'
+import { IEditorOptions, IFiles, ITheme } from '@/components/ReactPlayground/shared'
+import { fileNameToLanguage } from '@/components/ReactPlayground/utils'
 import FileSelector from '@/components/ReactPlayground/CodeEditor/FileSelector'
 import Editor from '@/components/ReactPlayground/CodeEditor/Editor'
-import { IEditorOptions, IFiles, ITheme } from '@/components/ReactPlayground/shared.ts'
-import FitFullscreen from '@/components/common/FitFullscreen.tsx'
-import FlexBox from '@/components/common/FlexBox.tsx'
-import _ from 'lodash'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import FlexBox from '@/components/common/FlexBox'
 
 interface CodeEditorProps {
     theme: ITheme
     files: IFiles
     readonly?: boolean
     readonlyFiles?: string[]
+    notRemovable?: string[]
     selectedFileName: string
     options?: IEditorOptions
     onSelectedFileChange?: (fileName: string) => void
     onRemoveFile?: (fileName: string, files: IFiles) => void
+    onRenameFile?: (newFileName: string, oldFileName: string, files: IFiles) => void
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -22,9 +25,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     files,
     readonly,
     readonlyFiles,
+    notRemovable,
     options,
     onSelectedFileChange,
     onRemoveFile,
+    onRenameFile,
     ...props
 }) => {
     const [selectedFileName, setSelectedFileName] = useState(props.selectedFileName)
@@ -43,6 +48,24 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         onRemoveFile?.(fileName, clone)
     }
 
+    const handleOnUpdateFileName = (newFileName: string, oldFileName: string) => {
+        if (!files[oldFileName] || !newFileName) {
+            return
+        }
+
+        const { [oldFileName]: value, ...rest } = files
+        const newFile: IFiles = {
+            [newFileName]: {
+                ...value,
+                language: fileNameToLanguage(newFileName),
+                name: newFileName
+            }
+        }
+        const newFiles: IFiles = { ...rest, ...newFile }
+
+        onRenameFile?.(newFileName, oldFileName, newFiles)
+    }
+
     return (
         <>
             <FitFullscreen>
@@ -50,18 +73,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                     <FileSelector
                         files={files}
                         readonly={readonly}
-                        readonlyFiles={readonlyFiles}
+                        notRemovableFiles={notRemovable}
                         selectedFileName={
                             onSelectedFileChange ? props.selectedFileName : selectedFileName
                         }
                         onChange={handleOnChangeSelectedFile}
                         onRemoveFile={handleOnRemoveFile}
+                        onUpdateFileName={handleOnUpdateFileName}
                     />
                     <Editor
                         theme={theme}
                         selectedFileName={selectedFileName}
                         files={files}
                         options={options}
+                        readonly={readonly || readonlyFiles?.includes(selectedFileName)}
                     />
                 </FlexBox>
             </FitFullscreen>

@@ -116,5 +116,6 @@ export const fileNameToLanguage = (name: string): ILanguage => {
     if (['ts', 'tsx'].includes(suffix)) return 'typescript'
     if (['json'].includes(suffix)) return 'json'
     if (['css'].includes(suffix)) return 'css'
+    if (['svg'].includes(suffix)) return 'xml'
     return 'javascript'
 }
