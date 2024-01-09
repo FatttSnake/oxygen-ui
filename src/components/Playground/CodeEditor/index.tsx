@@ -5,7 +5,6 @@ import { IEditorOptions, IFiles, ITheme } from '@/components/Playground/shared'
 import { fileNameToLanguage } from '@/components/Playground/files'
 import FileSelector from '@/components/Playground/CodeEditor/FileSelector'
 import Editor from '@/components/Playground/CodeEditor/Editor'
-import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 
 interface CodeEditorProps {
@@ -21,6 +20,7 @@ interface CodeEditorProps {
     onRemoveFile?: (fileName: string, files: IFiles) => void
     onRenameFile?: (newFileName: string, oldFileName: string, files: IFiles) => void
     onChangeFileContent?: (content: string, fileName: string, files: IFiles) => void
+    onError?: (msg: string) => void
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -35,9 +35,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     onRemoveFile,
     onRenameFile,
     onChangeFileContent,
+    onError,
     ...props
 }) => {
     const [selectedFileName, setSelectedFileName] = useState(props.selectedFileName)
+    const [errorMsg, setErrorMsg] = useState('')
 
     const handleOnChangeSelectedFile = (fileName: string) => {
         if (onSelectedFileChange) {
@@ -82,7 +84,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         onRenameFile?.(newFileName, oldFileName, newFiles)
     }
 
-    const handleOnChangeFileContent = (code = '') => {
+    const handleOnError = (msg: string) => {
+        if (onError) {
+            onError(msg)
+        } else {
+            setErrorMsg(msg)
+        }
+    }
+
+    const handleOnChangeFileContent = _.debounce((code = '') => {
         if (!files[onSelectedFileChange ? props.selectedFileName : selectedFileName]) {
             return
         }
@@ -93,42 +103,42 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             onSelectedFileChange ? props.selectedFileName : selectedFileName,
             clone
         )
-    }
+    }, 250)
 
     return (
         <>
-            <FitFullscreen data-component={'playground-code-editor'}>
-                <FlexBox style={{ height: '100%' }}>
-                    <FileSelector
-                        files={files}
-                        readonly={readonly}
-                        notRemovableFiles={notRemovable}
-                        selectedFileName={
+            <FlexBox data-component={'playground-code-editor'}>
+                <FileSelector
+                    files={files}
+                    readonly={readonly}
+                    notRemovableFiles={notRemovable}
+                    selectedFileName={
+                        onSelectedFileChange ? props.selectedFileName : selectedFileName
+                    }
+                    onChange={handleOnChangeSelectedFile}
+                    onRemoveFile={handleOnRemoveFile}
+                    onUpdateFileName={handleOnUpdateFileName}
+                    onAddFile={handleOnAddFile}
+                    onError={handleOnError}
+                />
+                <Editor
+                    theme={theme}
+                    selectedFileName={
+                        onSelectedFileChange ? props.selectedFileName : selectedFileName
+                    }
+                    files={files}
+                    options={options}
+                    readonly={
+                        readonly ||
+                        readonlyFiles?.includes(
                             onSelectedFileChange ? props.selectedFileName : selectedFileName
-                        }
-                        onChange={handleOnChangeSelectedFile}
-                        onRemoveFile={handleOnRemoveFile}
-                        onUpdateFileName={handleOnUpdateFileName}
-                        onAddFile={handleOnAddFile}
-                    />
-                    <Editor
-                        theme={theme}
-                        selectedFileName={
-                            onSelectedFileChange ? props.selectedFileName : selectedFileName
-                        }
-                        files={files}
-                        options={options}
-                        readonly={
-                            readonly ||
-                            readonlyFiles?.includes(
-                                onSelectedFileChange ? props.selectedFileName : selectedFileName
-                            ) ||
-                            !files[onSelectedFileChange ? props.selectedFileName : selectedFileName]
-                        }
-                        onChange={handleOnChangeFileContent}
-                    />
-                </FlexBox>
-            </FitFullscreen>
+                        ) ||
+                        !files[onSelectedFileChange ? props.selectedFileName : selectedFileName]
+                    }
+                    onChange={handleOnChangeFileContent}
+                />
+                {errorMsg && <div className={'playground-code-editor-message'}>{errorMsg}</div>}
+            </FlexBox>
         </>
     )
 }

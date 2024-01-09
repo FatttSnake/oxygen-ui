@@ -3,7 +3,7 @@ import importMap from '@/components/Playground/template/import-map.json?raw'
 import AppCss from '@/components/Playground/template/src/App.css?raw'
 import App from '@/components/Playground/template/src/App.tsx?raw'
 import main from '@/components/Playground/template/src/main.tsx?raw'
-import { ICustomFiles, IFiles, IImportMap } from '@/components/Playground/shared'
+import { IFiles } from '@/components/Playground/shared'
 
 export const MAIN_FILE_NAME = 'App.tsx'
 export const IMPORT_MAP_FILE_NAME = 'import-map.json'
@@ -36,61 +36,6 @@ export const base64ToStr = (base64: string) => {
     }
 
     return ''
-}
-
-const transformCustomFiles = (files: ICustomFiles) => {
-    const newFiles: IFiles = {}
-    Object.keys(files).forEach((key) => {
-        const tempFile = files[key]
-        if (typeof tempFile === 'string') {
-            newFiles[key] = {
-                name: key,
-                language: fileNameToLanguage(key),
-                value: tempFile
-            }
-        } else {
-            newFiles[key] = {
-                name: key,
-                language: fileNameToLanguage(key),
-                value: tempFile.code,
-                hidden: tempFile.hidden,
-                active: tempFile.active
-            }
-        }
-    })
-
-    return newFiles
-}
-
-export const getCustomActiveFile = (files?: ICustomFiles) => {
-    if (!files) return null
-    return Object.keys(files).find((key) => {
-        const tempFile = files[key]
-        if (typeof tempFile !== 'string' && tempFile.active) {
-            return key
-        }
-        return null
-    })
-}
-
-export const getMergedCustomFiles = (files?: ICustomFiles, importMap?: IImportMap) => {
-    if (!files) return null
-    if (importMap) {
-        return {
-            ...reactTemplateFiles,
-            ...transformCustomFiles(files),
-            [IMPORT_MAP_FILE_NAME]: {
-                name: IMPORT_MAP_FILE_NAME,
-                language: 'json',
-                value: JSON.stringify(importMap, null, 2)
-            }
-        }
-    } else {
-        return {
-            ...reactTemplateFiles,
-            ...transformCustomFiles(files)
-        }
-    }
 }
 
 export const getFilesFromUrl = () => {

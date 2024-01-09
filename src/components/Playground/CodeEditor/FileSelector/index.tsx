@@ -48,6 +48,10 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     }
 
     const addTab = () => {
+        if (hasEditing) {
+            return
+        }
+
         setTabs([...tabs, getMaxSequenceTabName(tabs)])
         setCreating(true)
         setTimeout(() => {
@@ -74,6 +78,10 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     }
 
     const editImportMap = () => {
+        if (hasEditing) {
+            return
+        }
+
         onChange?.(IMPORT_MAP_FILE_NAME)
     }
 
@@ -104,17 +112,23 @@ const FileSelector: React.FC<FileSelectorProps> = ({
             return false
         }
 
+        onError?.('')
+
         return true
     }
 
     const handleOnRemove = (fileName: string) => {
         onRemoveFile?.(fileName)
         if (fileName === selectedFileName) {
-            const index = Object.keys(files).indexOf(fileName) - 1
+            const keys = Object.keys(files).filter(
+                (item) =>
+                    ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) && !files[item].hidden
+            )
+            const index = keys.indexOf(fileName) - 1
             if (index >= 0) {
-                handleOnClickTab(Object.keys(files)[index])
+                handleOnClickTab(keys[index])
             } else {
-                handleOnClickTab(Object.keys(files)[1])
+                handleOnClickTab(keys[1])
             }
         }
     }
