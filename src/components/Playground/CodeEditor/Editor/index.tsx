@@ -36,7 +36,7 @@ const Editor: React.FC<EditorProps> = ({
         highlighter: () => undefined,
         dispose: () => undefined
     })
-    const { onWatch } = useTypesProgress()
+    const { total, finished, onWatch } = useTypesProgress()
     const file = files[selectedFileName] ?? { name: 'Untitled' }
 
     const handleOnEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
@@ -87,21 +87,24 @@ const Editor: React.FC<EditorProps> = ({
 
     return (
         <>
-            <MonacoEditor
-                theme={theme}
-                path={file.name}
-                className={`monaco-editor-${theme ?? 'light'}`}
-                language={file.language}
-                value={file.value}
-                onChange={onChange}
-                onMount={handleOnEditorDidMount}
-                options={{
-                    ...MonacoEditorConfig,
-                    ...options,
-                    theme: undefined,
-                    readOnly: readonly
-                }}
-            />
+            <div data-component={'playground-code-editor-editor'}>
+                <MonacoEditor
+                    theme={theme}
+                    path={file.name}
+                    className={`monaco-editor-${theme ?? 'light'}`}
+                    language={file.language}
+                    value={file.value}
+                    onChange={onChange}
+                    onMount={handleOnEditorDidMount}
+                    options={{
+                        ...MonacoEditorConfig,
+                        ...options,
+                        theme: undefined,
+                        readOnly: readonly
+                    }}
+                />
+                {total > 0 && !finished && <div className={'playground-code-editor-loading'} />}
+            </div>
         </>
     )
 }
