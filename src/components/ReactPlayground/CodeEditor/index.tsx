@@ -83,6 +83,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     }
 
     const handleOnChangeFileContent = (code = '') => {
+        if (!files[onSelectedFileChange ? props.selectedFileName : selectedFileName]) {
+            return
+        }
         const clone = _.cloneDeep(files)
         clone[onSelectedFileChange ? props.selectedFileName : selectedFileName].value = code ?? ''
         onChangeFileContent?.(
@@ -119,7 +122,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                             readonly ||
                             readonlyFiles?.includes(
                                 onSelectedFileChange ? props.selectedFileName : selectedFileName
-                            )
+                            ) ||
+                            !files[onSelectedFileChange ? props.selectedFileName : selectedFileName]
                         }
                         onChange={handleOnChangeFileContent}
                     />

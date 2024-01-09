@@ -120,14 +120,15 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     }
 
     useEffect(() => {
-        Object.keys(files).length &&
-            setTabs(
-                Object.keys(files).filter(
-                    (item) =>
-                        ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) &&
-                        !files[item].hidden
-                )
-            )
+        Object.keys(files).length
+            ? setTabs(
+                  Object.keys(files).filter(
+                      (item) =>
+                          ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) &&
+                          !files[item].hidden
+                  )
+              )
+            : setTabs([])
     }, [files])
 
     return (
@@ -166,14 +167,16 @@ const FileSelector: React.FC<FileSelectorProps> = ({
                         </FlexBox>
                     </HideScrollbar>
                 </div>
-                <div className={'sticky'}>
-                    <Item
-                        value={'Import Map'}
-                        active={selectedFileName === IMPORT_MAP_FILE_NAME}
-                        onClick={editImportMap}
-                        readonly
-                    />
-                </div>
+                {files[IMPORT_MAP_FILE_NAME] && (
+                    <div className={'sticky'}>
+                        <Item
+                            value={'Import Map'}
+                            active={selectedFileName === IMPORT_MAP_FILE_NAME}
+                            onClick={editImportMap}
+                            readonly
+                        />
+                    </div>
+                )}
             </div>
         </>
     )
