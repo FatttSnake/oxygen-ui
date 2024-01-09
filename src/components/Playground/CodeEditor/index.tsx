@@ -2,7 +2,11 @@ import React from 'react'
 import _ from 'lodash'
 import '@/components/Playground/CodeEditor/code-editor.scss'
 import { IEditorOptions, IFiles, ITheme } from '@/components/Playground/shared'
-import { fileNameToLanguage } from '@/components/Playground/files'
+import {
+    ENTRY_FILE_NAME,
+    fileNameToLanguage,
+    IMPORT_MAP_FILE_NAME
+} from '@/components/Playground/files'
 import FileSelector from '@/components/Playground/CodeEditor/FileSelector'
 import Editor from '@/components/Playground/CodeEditor/Editor'
 import FlexBox from '@/components/common/FlexBox'
@@ -13,7 +17,7 @@ interface CodeEditorProps {
     readonly?: boolean
     readonlyFiles?: string[]
     notRemovable?: string[]
-    selectedFileName: string
+    selectedFileName?: string
     options?: IEditorOptions
     onSelectedFileChange?: (fileName: string) => void
     onAddFile?: (fileName: string, files: IFiles) => void
@@ -38,7 +42,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     onError,
     ...props
 }) => {
-    const [selectedFileName, setSelectedFileName] = useState(props.selectedFileName)
+    const filteredFilesName = Object.keys(files).filter(
+        (item) => ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) && !files[item].hidden
+    )
+    const propsSelectedFileName =
+        props.selectedFileName ?? (filteredFilesName.length ? filteredFilesName[0] : '')
+    const [selectedFileName, setSelectedFileName] = useState(propsSelectedFileName)
     const [errorMsg, setErrorMsg] = useState('')
 
     const handleOnChangeSelectedFile = (fileName: string) => {
@@ -93,14 +102,14 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     }
 
     const handleOnChangeFileContent = _.debounce((code = '') => {
-        if (!files[onSelectedFileChange ? props.selectedFileName : selectedFileName]) {
+        if (!files[onSelectedFileChange ? propsSelectedFileName : selectedFileName]) {
             return
         }
         const clone = _.cloneDeep(files)
-        clone[onSelectedFileChange ? props.selectedFileName : selectedFileName].value = code ?? ''
+        clone[onSelectedFileChange ? propsSelectedFileName : selectedFileName].value = code ?? ''
         onChangeFileContent?.(
             code,
-            onSelectedFileChange ? props.selectedFileName : selectedFileName,
+            onSelectedFileChange ? propsSelectedFileName : selectedFileName,
             clone
         )
     }, 250)
@@ -113,7 +122,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                     readonly={readonly}
                     notRemovableFiles={notRemovable}
                     selectedFileName={
-                        onSelectedFileChange ? props.selectedFileName : selectedFileName
+                        onSelectedFileChange ? propsSelectedFileName : selectedFileName
                     }
                     onChange={handleOnChangeSelectedFile}
                     onRemoveFile={handleOnRemoveFile}
@@ -124,18 +133,19 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 <Editor
                     theme={theme}
                     selectedFileName={
-                        onSelectedFileChange ? props.selectedFileName : selectedFileName
+                        onSelectedFileChange ? propsSelectedFileName : selectedFileName
                     }
                     files={files}
                     options={options}
                     readonly={
                         readonly ||
                         readonlyFiles?.includes(
-                            onSelectedFileChange ? props.selectedFileName : selectedFileName
+                            onSelectedFileChange ? propsSelectedFileName : selectedFileName
                         ) ||
-                        !files[onSelectedFileChange ? props.selectedFileName : selectedFileName]
+                        !files[onSelectedFileChange ? propsSelectedFileName : selectedFileName]
                     }
                     onChange={handleOnChangeFileContent}
+                    onJumpFile={handleOnChangeSelectedFile}
                 />
                 {errorMsg && <div className={'playground-code-editor-message'}>{errorMsg}</div>}
             </FlexBox>

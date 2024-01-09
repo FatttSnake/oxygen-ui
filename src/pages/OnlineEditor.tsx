@@ -10,7 +10,6 @@ const OnlineEditor: React.FC = () => {
         <>
             <CodeEditor
                 files={files}
-                selectedFileName={'App.css'}
                 onAddFile={(_, files) => setFiles(files)}
                 onRemoveFile={(_, files) => setFiles(files)}
                 onRenameFile={(_, __, files) => setFiles(files)}
