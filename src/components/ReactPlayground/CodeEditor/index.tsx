@@ -1,14 +1,15 @@
 import React from 'react'
 import _ from 'lodash'
+import '@/components/ReactPlayground/CodeEditor/code-editor.scss'
 import { IEditorOptions, IFiles, ITheme } from '@/components/ReactPlayground/shared'
-import { fileNameToLanguage } from '@/components/ReactPlayground/utils'
+import { fileNameToLanguage } from '@/components/ReactPlayground/files'
 import FileSelector from '@/components/ReactPlayground/CodeEditor/FileSelector'
 import Editor from '@/components/ReactPlayground/CodeEditor/Editor'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 
 interface CodeEditorProps {
-    theme: ITheme
+    theme?: ITheme
     files: IFiles
     readonly?: boolean
     readonlyFiles?: string[]
@@ -16,8 +17,10 @@ interface CodeEditorProps {
     selectedFileName: string
     options?: IEditorOptions
     onSelectedFileChange?: (fileName: string) => void
+    onAddFile?: (fileName: string, files: IFiles) => void
     onRemoveFile?: (fileName: string, files: IFiles) => void
     onRenameFile?: (newFileName: string, oldFileName: string, files: IFiles) => void
+    onChangeFileContent?: (content: string, fileName: string, files: IFiles) => void
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -28,8 +31,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     notRemovable,
     options,
     onSelectedFileChange,
+    onAddFile,
     onRemoveFile,
     onRenameFile,
+    onChangeFileContent,
     ...props
 }) => {
     const [selectedFileName, setSelectedFileName] = useState(props.selectedFileName)
@@ -46,6 +51,17 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         const clone = _.cloneDeep(files)
         delete clone[fileName]
         onRemoveFile?.(fileName, clone)
+    }
+
+    const handleOnAddFile = (fileName: string) => {
+        const clone = _.cloneDeep(files)
+        clone[fileName] = {
+            name: fileName,
+            language: fileNameToLanguage(fileName),
+            value: ''
+        }
+        onAddFile?.(fileName, clone)
+        handleOnChangeSelectedFile(fileName)
     }
 
     const handleOnUpdateFileName = (newFileName: string, oldFileName: string) => {
@@ -66,9 +82,19 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         onRenameFile?.(newFileName, oldFileName, newFiles)
     }
 
+    const handleOnChangeFileContent = (code = '') => {
+        const clone = _.cloneDeep(files)
+        clone[onSelectedFileChange ? props.selectedFileName : selectedFileName].value = code ?? ''
+        onChangeFileContent?.(
+            code,
+            onSelectedFileChange ? props.selectedFileName : selectedFileName,
+            clone
+        )
+    }
+
     return (
         <>
-            <FitFullscreen>
+            <FitFullscreen data-component={'playground-code-editor'}>
                 <FlexBox style={{ height: '100%' }}>
                     <FileSelector
                         files={files}
@@ -80,13 +106,22 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                         onChange={handleOnChangeSelectedFile}
                         onRemoveFile={handleOnRemoveFile}
                         onUpdateFileName={handleOnUpdateFileName}
+                        onAddFile={handleOnAddFile}
                     />
                     <Editor
                         theme={theme}
-                        selectedFileName={selectedFileName}
+                        selectedFileName={
+                            onSelectedFileChange ? props.selectedFileName : selectedFileName
+                        }
                         files={files}
                         options={options}
-                        readonly={readonly || readonlyFiles?.includes(selectedFileName)}
+                        readonly={
+                            readonly ||
+                            readonlyFiles?.includes(
+                                onSelectedFileChange ? props.selectedFileName : selectedFileName
+                            )
+                        }
+                        onChange={handleOnChangeFileContent}
                     />
                 </FlexBox>
             </FitFullscreen>

@@ -3,6 +3,8 @@ import '@/components/ReactPlayground/CodeEditor/FileSelector/file-selector.scss'
 import { IFiles } from '@/components/ReactPlayground/shared'
 import { ENTRY_FILE_NAME, IMPORT_MAP_FILE_NAME } from '@/components/ReactPlayground/files'
 import Item from '@/components/ReactPlayground/CodeEditor/FileSelector/Item'
+import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
+import FlexBox from '@/components/common/FlexBox'
 
 interface FileSelectorProps {
     files?: IFiles
@@ -27,6 +29,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     onUpdateFileName,
     selectedFileName = ''
 }) => {
+    const hideScrollbarRef = useRef<HideScrollbarElement>(null)
     const [tabs, setTabs] = useState<string[]>([])
     const [creating, setCreating] = useState(false)
     const [hasEditing, setHasEditing] = useState(false)
@@ -47,6 +50,9 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     const addTab = () => {
         setTabs([...tabs, getMaxSequenceTabName(tabs)])
         setCreating(true)
+        setTimeout(() => {
+            hideScrollbarRef.current?.scrollRight(1000)
+        })
     }
 
     const handleOnCancel = () => {
@@ -126,27 +132,48 @@ const FileSelector: React.FC<FileSelectorProps> = ({
 
     return (
         <>
-            <div
-                data-component={'playground-file-selector'}
-                className={'tab'}
-                style={{ flex: '0 0 auto' }}
-            >
-                {tabs.map((item, index) => (
+            <div data-component={'playground-file-selector'} className={'tab'}>
+                <div className={'multiple'}>
+                    <HideScrollbar ref={hideScrollbarRef}>
+                        <FlexBox direction={'horizontal'} className={'tab-content'}>
+                            {tabs.map((item, index) => (
+                                <Item
+                                    key={index + item}
+                                    value={item}
+                                    active={selectedFileName === item}
+                                    creating={creating}
+                                    readonly={readonly || notRemovableFiles.includes(item)}
+                                    hasEditing={hasEditing}
+                                    setHasEditing={setHasEditing}
+                                    onValidate={handleOnValidateTab}
+                                    onOk={(name) => handleOnSaveTab(name, item)}
+                                    onCancel={handleOnCancel}
+                                    onRemove={handleOnRemove}
+                                    onClick={() => handleOnClickTab(item)}
+                                />
+                            ))}
+                            {!readonly && (
+                                <Item
+                                    className={'tab-item-add'}
+                                    value={'+'}
+                                    onClick={addTab}
+                                    readonly
+                                />
+                            )}
+                            <div className={'tabs-margin-right'}>
+                                <div />
+                            </div>
+                        </FlexBox>
+                    </HideScrollbar>
+                </div>
+                <div className={'sticky'}>
                     <Item
-                        key={index + item}
-                        value={item}
-                        active={selectedFileName == item}
-                        creating={creating}
-                        readonly={readonly || notRemovableFiles.includes(item)}
-                        hasEditing={hasEditing}
-                        setHasEditing={setHasEditing}
-                        onValidate={handleOnValidateTab}
-                        onOk={(name) => handleOnSaveTab(name, item)}
-                        onCancel={handleOnCancel}
-                        onRemove={handleOnRemove}
-                        onClick={() => handleOnClickTab(item)}
+                        value={'Import Map'}
+                        active={selectedFileName === IMPORT_MAP_FILE_NAME}
+                        onClick={editImportMap}
+                        readonly
                     />
-                ))}
+                </div>
             </div>
         </>
     )

@@ -1,6 +1,7 @@
 import React from 'react'
 
 interface ItemProps {
+    className?: string
     readonly?: boolean
     creating?: boolean
     value: string
@@ -15,6 +16,7 @@ interface ItemProps {
 }
 
 const Item: React.FC<ItemProps> = ({
+    className,
     readonly = false,
     value,
     active = false,
@@ -105,7 +107,10 @@ const Item: React.FC<ItemProps> = ({
     }, [])
 
     return (
-        <div className={`tab-item${active ? ' active' : ''}`} onClick={handleOnClick}>
+        <div
+            className={`tab-item${active ? ' active' : ''}${className ? ` ${className}` : ''}`}
+            onClick={handleOnClick}
+        >
             {creating ? (
                 <div className={'tab-item-input'}>
                     <input

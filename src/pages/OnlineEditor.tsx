@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import CodeEditor from '@/components/ReactPlayground/CodeEditor'
-import { fileNameToLanguage } from '@/components/ReactPlayground/utils.ts'
-import { IFiles } from '@/components/ReactPlayground/shared.ts'
+import { fileNameToLanguage } from '@/components/ReactPlayground/files'
+import { IFiles } from '@/components/ReactPlayground/shared'
 
 const OnlineEditor: React.FC = () => {
     const [files, setFiles] = useState<IFiles>({
@@ -45,13 +45,14 @@ const OnlineEditor: React.FC = () => {
     return (
         <>
             <CodeEditor
-                theme={'vs-dark'}
                 files={files}
                 selectedFileName={'App.css'}
-                notRemovable={['App.css']}
+                notRemovable={['App.css', 'fgh']}
                 readonlyFiles={['App.tsx']}
+                onAddFile={(_, files) => setFiles(files)}
                 onRemoveFile={(_, files) => setFiles(files)}
                 onRenameFile={(_, __, files) => setFiles(files)}
+                onChangeFileContent={(_, __, files) => setFiles(files)}
             />
         </>
     )

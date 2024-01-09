@@ -3,7 +3,7 @@ import { editor, Selection } from 'monaco-editor'
 import MonacoEditor, { Monaco } from '@monaco-editor/react'
 import '@/components/ReactPlayground/CodeEditor/Editor/editor.scss'
 import { IEditorOptions, IFiles, ITheme } from '@/components/ReactPlayground/shared'
-import { fileNameToLanguage } from '@/components/ReactPlayground/utils'
+import { fileNameToLanguage } from '@/components/ReactPlayground/files'
 import { useEditor, useTypesProgress } from '@/components/ReactPlayground/CodeEditor/Editor/hooks'
 import { MonacoEditorConfig } from '@/components/ReactPlayground/CodeEditor/Editor/monacoConfig'
 

@@ -1,16 +1,8 @@
 import React from 'react'
-import Provider from '@/components/ReactPlayground/Provider.tsx'
-import { IPlayground } from '@/components/ReactPlayground/shared.ts'
-import Playground from '@/components/ReactPlayground/Playground.tsx'
+import { IPlayground } from '@/components/ReactPlayground/shared'
 
-const ReactPlayground: React.FC<IPlayground> = (props) => {
-    return (
-        <>
-            <Provider saveOnUrl={props.saveOnUrl}>
-                <Playground {...props} />
-            </Provider>
-        </>
-    )
+const ReactPlayground: React.FC<IPlayground> = () => {
+    return <></>
 }
 
 export default ReactPlayground
