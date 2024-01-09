@@ -1,4 +1,4 @@
-import { ITheme } from '@/components/ReactPlayground/shared'
+import { ITheme } from '@/components/Playground/shared'
 
 const STORAGE_DARK_THEME = 'react-playground-prefer-dark'
 

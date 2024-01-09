@@ -2,7 +2,7 @@ import { editor, IPosition, Selection } from 'monaco-editor'
 import ScrollType = editor.ScrollType
 import { Monaco } from '@monaco-editor/react'
 import { getWorker, MonacoJsxSyntaxHighlight } from 'monaco-jsx-syntax-highlight'
-import { createATA, TypeHelper } from '@/components/ReactPlayground/CodeEditor/Editor/ata'
+import { createATA, TypeHelper } from '@/components/Playground/CodeEditor/Editor/ata'
 
 export const useEditor = () => {
     const doOpenEditor = (

@@ -1,7 +1,7 @@
 import React from 'react'
-import CodeEditor from '@/components/ReactPlayground/CodeEditor'
-import { initFiles } from '@/components/ReactPlayground/files'
-import { IFiles } from '@/components/ReactPlayground/shared'
+import CodeEditor from '@/components/Playground/CodeEditor'
+import { initFiles } from '@/components/Playground/files'
+import { IFiles } from '@/components/Playground/shared'
 
 const OnlineEditor: React.FC = () => {
     const [files, setFiles] = useState<IFiles>(initFiles)

@@ -1,11 +1,11 @@
 import React from 'react'
 import { editor, Selection } from 'monaco-editor'
 import MonacoEditor, { Monaco } from '@monaco-editor/react'
-import '@/components/ReactPlayground/CodeEditor/Editor/editor.scss'
-import { IEditorOptions, IFiles, ITheme } from '@/components/ReactPlayground/shared'
-import { fileNameToLanguage } from '@/components/ReactPlayground/files'
-import { useEditor, useTypesProgress } from '@/components/ReactPlayground/CodeEditor/Editor/hooks'
-import { MonacoEditorConfig } from '@/components/ReactPlayground/CodeEditor/Editor/monacoConfig'
+import '@/components/Playground/CodeEditor/Editor/editor.scss'
+import { IEditorOptions, IFiles, ITheme } from '@/components/Playground/shared'
+import { fileNameToLanguage } from '@/components/Playground/files'
+import { useEditor, useTypesProgress } from '@/components/Playground/CodeEditor/Editor/hooks'
+import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
 
 interface EditorProps {
     files?: IFiles

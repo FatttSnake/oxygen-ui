@@ -1,8 +1,8 @@
 import React from 'react'
-import '@/components/ReactPlayground/CodeEditor/FileSelector/file-selector.scss'
-import { IFiles } from '@/components/ReactPlayground/shared'
-import { ENTRY_FILE_NAME, IMPORT_MAP_FILE_NAME } from '@/components/ReactPlayground/files'
-import Item from '@/components/ReactPlayground/CodeEditor/FileSelector/Item'
+import '@/components/Playground/CodeEditor/FileSelector/file-selector.scss'
+import { IFiles } from '@/components/Playground/shared'
+import { ENTRY_FILE_NAME, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
+import Item from '@/components/Playground/CodeEditor/FileSelector/Item'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 
