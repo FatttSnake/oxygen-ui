@@ -9,9 +9,7 @@ class Compiler {
             void esbuild.initialize({ worker: true, wasmURL: wasm }).then(() => {
                 this.init = true
             })
-        } catch (e) {
-            throw e
-        }
+        } catch (e) {}
     }
 
     transform = (code: string, loader: Loader) =>

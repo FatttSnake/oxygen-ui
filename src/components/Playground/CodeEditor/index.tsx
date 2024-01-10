@@ -46,7 +46,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         (item) => ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) && !files[item].hidden
     )
     const propsSelectedFileName =
-        props.selectedFileName ?? (filteredFilesName.length ? filteredFilesName[0] : '')
+        props.selectedFileName || (filteredFilesName.length ? filteredFilesName[0] : '')
     const [selectedFileName, setSelectedFileName] = useState(propsSelectedFileName)
     const [errorMsg, setErrorMsg] = useState('')
 

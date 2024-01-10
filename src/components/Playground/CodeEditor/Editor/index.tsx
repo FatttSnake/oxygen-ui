@@ -37,7 +37,7 @@ const Editor: React.FC<EditorProps> = ({
         dispose: () => undefined
     })
     const { total, finished, onWatch } = useTypesProgress()
-    const file = files[selectedFileName] ?? { name: 'Untitled' }
+    const file = files[selectedFileName] || { name: 'Untitled' }
 
     const handleOnEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         editorRef.current = editor

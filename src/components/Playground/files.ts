@@ -3,18 +3,19 @@ import importMap from '@/components/Playground/template/import-map.json?raw'
 import AppCss from '@/components/Playground/template/src/App.css?raw'
 import App from '@/components/Playground/template/src/App.tsx?raw'
 import main from '@/components/Playground/template/src/main.tsx?raw'
-import { IFile, IFiles } from '@/components/Playground/shared'
+import { IFile, IFiles, ILanguage } from '@/components/Playground/shared'
 
 export const MAIN_FILE_NAME = 'App.tsx'
 export const IMPORT_MAP_FILE_NAME = 'import-map.json'
 export const ENTRY_FILE_NAME = 'main.tsx'
 
-export const fileNameToLanguage = (name: string) => {
+export const fileNameToLanguage = (name: string): ILanguage => {
     const suffix = name.split('.').pop() || ''
     if (['js', 'jsx'].includes(suffix)) return 'javascript'
     if (['ts', 'tsx'].includes(suffix)) return 'typescript'
     if (['json'].includes(suffix)) return 'json'
     if (['css'].includes(suffix)) return 'css'
+    if (['svg'].includes(suffix)) return 'xml'
     return 'javascript'
 }
 
@@ -62,27 +63,30 @@ export const getModuleFile = (files: IFiles, moduleName: string) => {
     return files[_moduleName]
 }
 
+export const jsToBlob = (code: string) => {
+    return URL.createObjectURL(new Blob([code], { type: 'application/javascript' }))
+}
+
 export const jsonToJs = (file: IFile) => {
-    const js = `export default ${file.value}`
-    return URL.createObjectURL(new Blob([js], { type: 'application/javascript' }))
+    return `export default ${file.value}`
 }
 
 export const cssToJs = (file: IFile) => {
     const randomId = new Date().getTime()
-    const js = `
-                  (() => {
-                    let stylesheet = document.getElementById('style_${randomId}_${file.name}');
-                    if (!stylesheet) {
-                      stylesheet = document.createElement('style')
-                      stylesheet.setAttribute('id', 'style_${randomId}_${file.name}')
-                      document.head.appendChild(stylesheet)
-                    }
-                    const styles = document.createTextNode(\`${file.value}\`)
-                    stylesheet.innerHTML = ''
-                    stylesheet.appendChild(styles)
-                  })()
-                  `
-    return URL.createObjectURL(new Blob([js], { type: 'application/javascript' }))
+    return `(() => {
+  let stylesheet = document.getElementById('style_${randomId}_${file.name}');
+  if (!stylesheet) {
+    stylesheet = document.createElement('style')
+    stylesheet.setAttribute('id', 'style_${randomId}_${file.name}')
+    document.head.appendChild(stylesheet)
+  }
+  const styles = document.createTextNode(
+\`${file.value}\`
+    )
+  stylesheet.innerHTML = ''
+  stylesheet.appendChild(styles)
+})()
+`
 }
 
 export const initFiles: IFiles = getFilesFromUrl() || {
