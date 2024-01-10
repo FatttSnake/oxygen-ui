@@ -3,7 +3,7 @@ import importMap from '@/components/Playground/template/import-map.json?raw'
 import AppCss from '@/components/Playground/template/src/App.css?raw'
 import App from '@/components/Playground/template/src/App.tsx?raw'
 import main from '@/components/Playground/template/src/main.tsx?raw'
-import { IFiles } from '@/components/Playground/shared'
+import { IFile, IFiles } from '@/components/Playground/shared'
 
 export const MAIN_FILE_NAME = 'App.tsx'
 export const IMPORT_MAP_FILE_NAME = 'import-map.json'
@@ -49,6 +49,40 @@ export const getFilesFromUrl = () => {
         console.error(error)
     }
     return files
+}
+
+export const getModuleFile = (files: IFiles, moduleName: string) => {
+    let _moduleName = moduleName.split('./').pop() || ''
+    if (!_moduleName.includes('.')) {
+        const realModuleName = Object.keys(files).find((key) =>
+            key.split('.').includes(_moduleName)
+        )
+        if (realModuleName) _moduleName = realModuleName
+    }
+    return files[_moduleName]
+}
+
+export const jsonToJs = (file: IFile) => {
+    const js = `export default ${file.value}`
+    return URL.createObjectURL(new Blob([js], { type: 'application/javascript' }))
+}
+
+export const cssToJs = (file: IFile) => {
+    const randomId = new Date().getTime()
+    const js = `
+                  (() => {
+                    let stylesheet = document.getElementById('style_${randomId}_${file.name}');
+                    if (!stylesheet) {
+                      stylesheet = document.createElement('style')
+                      stylesheet.setAttribute('id', 'style_${randomId}_${file.name}')
+                      document.head.appendChild(stylesheet)
+                    }
+                    const styles = document.createTextNode(\`${file.value}\`)
+                    stylesheet.innerHTML = ''
+                    stylesheet.appendChild(styles)
+                  })()
+                  `
+    return URL.createObjectURL(new Blob([js], { type: 'application/javascript' }))
 }
 
 export const initFiles: IFiles = getFilesFromUrl() || {
