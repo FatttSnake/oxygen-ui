@@ -1,7 +1,11 @@
 import React from 'react'
 import '@/components/Playground/CodeEditor/FileSelector/file-selector.scss'
 import { IFiles } from '@/components/Playground/shared'
-import { ENTRY_FILE_NAME, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
+import {
+    ENTRY_FILE_NAME,
+    getFileNameList,
+    IMPORT_MAP_FILE_NAME
+} from '@/components/Playground/files'
 import Item from '@/components/Playground/CodeEditor/FileSelector/Item'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
@@ -120,7 +124,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     const handleOnRemove = (fileName: string) => {
         onRemoveFile?.(fileName)
         if (fileName === selectedFileName) {
-            const keys = Object.keys(files).filter(
+            const keys = getFileNameList(files).filter(
                 (item) =>
                     ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) && !files[item].hidden
             )
@@ -134,9 +138,9 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     }
 
     useEffect(() => {
-        Object.keys(files).length
+        getFileNameList(files).length
             ? setTabs(
-                  Object.keys(files).filter(
+                  getFileNameList(files).filter(
                       (item) =>
                           ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) &&
                           !files[item].hidden

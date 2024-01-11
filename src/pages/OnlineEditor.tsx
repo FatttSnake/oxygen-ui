@@ -23,7 +23,7 @@ const OnlineEditor: React.FC = () => {
                         onRenameFile={(_, __, files) => setFiles(files)}
                         onChangeFileContent={(_, __, files) => setFiles(files)}
                     />
-                    <Transform file={files[selectedFileName]} />
+                    <Transform files={files} selectedFileName={selectedFileName} />
                 </FlexBox>
             </FitFullscreen>
         </>

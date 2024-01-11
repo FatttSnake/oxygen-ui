@@ -9,6 +9,8 @@ export const MAIN_FILE_NAME = 'App.tsx'
 export const IMPORT_MAP_FILE_NAME = 'import-map.json'
 export const ENTRY_FILE_NAME = 'main.tsx'
 
+export const getFileNameList = (files: IFiles) => Object.keys(files)
+
 export const fileNameToLanguage = (name: string): ILanguage => {
     const suffix = name.split('.').pop() || ''
     if (['js', 'jsx'].includes(suffix)) return 'javascript'
@@ -55,7 +57,7 @@ export const getFilesFromUrl = () => {
 export const getModuleFile = (files: IFiles, moduleName: string) => {
     let _moduleName = moduleName.split('./').pop() || ''
     if (!_moduleName.includes('.')) {
-        const realModuleName = Object.keys(files).find((key) =>
+        const realModuleName = getFileNameList(files).find((key) =>
             key.split('.').includes(_moduleName)
         )
         if (realModuleName) _moduleName = realModuleName

@@ -2,18 +2,19 @@ import React from 'react'
 import MonacoEditor from '@monaco-editor/react'
 import { Loader } from 'esbuild-wasm'
 import { useUpdatedEffect } from '@/util/hooks'
-import { IFile, ITheme } from '@/components/Playground/shared'
+import { IFiles, IImportMap, ITheme } from '@/components/Playground/shared'
 import Compiler from '@/components/Playground/compiler'
 import { cssToJs, jsonToJs } from '@/components/Playground/files'
 import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
 import { addReactImport } from '@/components/Playground/utils.ts'
 
 interface OutputProps {
-    file: IFile
+    files: IFiles
+    selectedFileName: string
     theme?: ITheme
 }
 
-const Preview: React.FC<OutputProps> = ({ file, theme }) => {
+const Preview: React.FC<OutputProps> = ({ files, selectedFileName, theme }) => {
     const compiler = useRef<Compiler>()
     const [compileCode, setCompileCode] = useState('')
 
@@ -37,14 +38,25 @@ const Preview: React.FC<OutputProps> = ({ file, theme }) => {
             .catch((e) => {
                 console.error('编译失败', e)
             })
+
+        compiler.current
+            ?.compile(files, {
+                imports: {
+                    react: 'https://esm.sh/react@18.2.0',
+                    'react-dom/client': 'https://esm.sh/react-dom@18.2.0'
+                }
+            })
+            .then((r) => {
+                console.log(r)
+            })
     }
 
     useUpdatedEffect(() => {
-        if (file) {
+        if (files[selectedFileName]) {
             try {
-                const code = file.value
+                const code = files[selectedFileName].value
 
-                switch (file.language) {
+                switch (files[selectedFileName].language) {
                     case 'typescript':
                         compile(code, 'tsx')
                         break
@@ -52,10 +64,10 @@ const Preview: React.FC<OutputProps> = ({ file, theme }) => {
                         compile(code, 'jsx')
                         break
                     case 'css':
-                        setCompileCode(cssToJs(file))
+                        setCompileCode(cssToJs(files[selectedFileName]))
                         break
                     case 'json':
-                        setCompileCode(jsonToJs(file))
+                        setCompileCode(jsonToJs(files[selectedFileName]))
                         break
                     case 'xml':
                         setCompileCode(code)
@@ -66,7 +78,7 @@ const Preview: React.FC<OutputProps> = ({ file, theme }) => {
         } else {
             setCompileCode('')
         }
-    }, [file])
+    }, [files[selectedFileName]])
 
     return (
         <>

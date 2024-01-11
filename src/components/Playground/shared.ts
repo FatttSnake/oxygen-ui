@@ -13,6 +13,10 @@ export interface IFiles {
     [key: string]: IFile
 }
 
+export interface IImportMap {
+    imports: Record<string, string>
+}
+
 export type ITheme = 'light' | 'vs-dark'
 
 export type IEditorOptions = editor.IStandaloneEditorConstructionOptions

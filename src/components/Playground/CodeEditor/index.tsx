@@ -5,6 +5,7 @@ import { IEditorOptions, IFiles, ITheme } from '@/components/Playground/shared'
 import {
     ENTRY_FILE_NAME,
     fileNameToLanguage,
+    getFileNameList,
     IMPORT_MAP_FILE_NAME
 } from '@/components/Playground/files'
 import FileSelector from '@/components/Playground/CodeEditor/FileSelector'
@@ -42,7 +43,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     onError,
     ...props
 }) => {
-    const filteredFilesName = Object.keys(files).filter(
+    const filteredFilesName = getFileNameList(files).filter(
         (item) => ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) && !files[item].hidden
     )
     const propsSelectedFileName =
