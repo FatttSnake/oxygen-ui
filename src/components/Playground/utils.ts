@@ -13,3 +13,10 @@ export const getPlaygroundTheme = (): ITheme => {
     const isDarkTheme = JSON.parse(localStorage.getItem(STORAGE_DARK_THEME) || 'false') as ITheme
     return isDarkTheme ? 'vs-dark' : 'light'
 }
+
+export const addReactImport = (code: string) => {
+    if (!/import\s+React/g.test(code)) {
+        return `import React from 'react';\n${code}`
+    }
+    return code
+}

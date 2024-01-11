@@ -6,6 +6,7 @@ import { IFile, ITheme } from '@/components/Playground/shared'
 import Compiler from '@/components/Playground/compiler'
 import { cssToJs, jsonToJs } from '@/components/Playground/files'
 import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
+import { addReactImport } from '@/components/Playground/utils.ts'
 
 interface OutputProps {
     file: IFile
@@ -23,8 +24,13 @@ const Preview: React.FC<OutputProps> = ({ file, theme }) => {
     }, [])
 
     const compile = (code: string, loader: Loader) => {
+        let _code = code
+        if (['jsx', 'tsx'].includes(loader)) {
+            _code = addReactImport(code)
+        }
+
         compiler.current
-            ?.transform(code, loader)
+            ?.transform(_code, loader)
             .then((value) => {
                 setCompileCode(value.code)
             })

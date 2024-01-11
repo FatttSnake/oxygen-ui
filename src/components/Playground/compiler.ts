@@ -9,11 +9,17 @@ class Compiler {
             void esbuild.initialize({ worker: true, wasmURL: wasm }).then(() => {
                 this.init = true
             })
-        } catch (e) {}
+        } catch (e) {
+            /* empty */
+        }
     }
 
     transform = (code: string, loader: Loader) =>
         new Promise<boolean>((resolve) => {
+            if (this.init) {
+                resolve(true)
+                return
+            }
             const timer = setInterval(() => {
                 if (this.init) {
                     clearInterval(timer)
