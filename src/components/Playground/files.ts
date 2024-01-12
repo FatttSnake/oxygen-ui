@@ -90,6 +90,13 @@ export const cssToJs = (file: IFile) => {
 `
 }
 
+export const addReactImport = (code: string) => {
+    if (!/import\s+React/g.test(code)) {
+        return `import React from 'react';\n${code}`
+    }
+    return code
+}
+
 export const initFiles: IFiles = getFilesFromUrl() || {
     [ENTRY_FILE_NAME]: {
         name: ENTRY_FILE_NAME,

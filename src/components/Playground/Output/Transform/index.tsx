@@ -4,8 +4,7 @@ import { Loader } from 'esbuild-wasm'
 import '@/components/Playground/Output/Transform/transform.scss'
 import { useUpdatedEffect } from '@/util/hooks'
 import { IFile, ITheme } from '@/components/Playground/shared'
-import { addReactImport } from '@/components/Playground/utils'
-import { cssToJs, jsonToJs } from '@/components/Playground/files'
+import { cssToJs, jsonToJs, addReactImport } from '@/components/Playground/files'
 import Compiler from '@/components/Playground/compiler'
 import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
 
@@ -29,7 +28,7 @@ const Transform: React.FC<OutputProps> = ({ file, theme }) => {
                 setCompiledCode(value.code)
                 setErrorMsg('')
             })
-            .catch((e) => {
+            .catch((e: Error) => {
                 setErrorMsg(`编译失败：${e.message}`)
             })
     }

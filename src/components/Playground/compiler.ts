@@ -2,8 +2,7 @@ import esbuild, { Loader, OnLoadArgs, Plugin, PluginBuild } from 'esbuild-wasm'
 import localforage from 'localforage'
 import axios from 'axios'
 import { IFiles, IImportMap } from '@/components/Playground/shared'
-import { cssToJs, ENTRY_FILE_NAME, jsonToJs } from '@/components/Playground/files'
-import { addReactImport } from '@/components/Playground/utils'
+import { cssToJs, ENTRY_FILE_NAME, jsonToJs, addReactImport } from '@/components/Playground/files'
 
 class Compiler {
     private init = false
@@ -71,7 +70,7 @@ class Compiler {
         return {
             name: 'file-resolver-plugin',
             setup: (build: PluginBuild) => {
-                build.onResolve({ filter: /.*/ }, async (args: esbuild.OnResolveArgs) => {
+                build.onResolve({ filter: /.*/ }, (args: esbuild.OnResolveArgs) => {
                     if (args.path === ENTRY_FILE_NAME) {
                         return {
                             namespace: 'OxygenToolbox',
@@ -142,7 +141,7 @@ class Compiler {
                     }
                 })
 
-                build.onLoad({ filter: /.*\.css$/ }, async (args: OnLoadArgs) => {
+                build.onLoad({ filter: /.*\.css$/ }, (args: OnLoadArgs) => {
                     const contents = cssToJs(files[args.path])
                     return {
                         loader: 'js',
@@ -150,7 +149,7 @@ class Compiler {
                     }
                 })
 
-                build.onLoad({ filter: /.*\.json$/ }, async (args: OnLoadArgs) => {
+                build.onLoad({ filter: /.*\.json$/ }, (args: OnLoadArgs) => {
                     const contents = jsonToJs(files[args.path])
                     return {
                         loader: 'js',
@@ -198,11 +197,11 @@ class Compiler {
                         return cached
                     }
 
-                    const { data, request } = await axios.get(args.path)
+                    const axiosResponse = await axios.get<string>(args.path)
                     const result: esbuild.OnLoadResult = {
                         loader: 'jsx',
-                        contents: data,
-                        resolveDir: request.responseURL
+                        contents: axiosResponse.data,
+                        resolveDir: (axiosResponse.request as XMLHttpRequest).responseURL
                     }
 
                     await this.fileCache.setItem(args.path, result)

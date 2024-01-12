@@ -18,7 +18,7 @@ const Playground: React.FC<PlaygroundProps> = ({ initFiles, initImportMap }) => 
 
     const handleOnChangeFileContent = (content: string, fileName: string, files: IFiles) => {
         if (fileName === IMPORT_MAP_FILE_NAME) {
-            setImportMap(JSON.parse(content))
+            setImportMap(JSON.parse(content) as IImportMap)
         } else {
             delete files[IMPORT_MAP_FILE_NAME]
             setFiles(files)
