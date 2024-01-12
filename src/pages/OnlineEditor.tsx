@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import CodeEditor from '@/components/Playground/CodeEditor'
-import { initFiles, MAIN_FILE_NAME } from '@/components/Playground/files'
+import { IMPORT_MAP_FILE_NAME, initFiles, MAIN_FILE_NAME } from '@/components/Playground/files'
 import { IFiles } from '@/components/Playground/shared'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
-import Transform from '@/components/Playground/Transform'
+import Preview from '@/components/Playground/Preview'
 
 const OnlineEditor: React.FC = () => {
     const [files, setFiles] = useState<IFiles>(initFiles)
@@ -23,7 +23,7 @@ const OnlineEditor: React.FC = () => {
                         onRenameFile={(_, __, files) => setFiles(files)}
                         onChangeFileContent={(_, __, files) => setFiles(files)}
                     />
-                    <Transform files={files} selectedFileName={selectedFileName} />
+                    <Preview iframeKey={files[IMPORT_MAP_FILE_NAME].value} files={files} />
                 </FlexBox>
             </FitFullscreen>
         </>

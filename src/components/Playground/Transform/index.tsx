@@ -2,27 +2,19 @@ import React from 'react'
 import MonacoEditor from '@monaco-editor/react'
 import { Loader } from 'esbuild-wasm'
 import { useUpdatedEffect } from '@/util/hooks'
-import { IFiles, IImportMap, ITheme } from '@/components/Playground/shared'
+import { IFile, ITheme } from '@/components/Playground/shared'
 import Compiler from '@/components/Playground/compiler'
 import { cssToJs, jsonToJs } from '@/components/Playground/files'
 import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
-import { addReactImport } from '@/components/Playground/utils.ts'
+import { addReactImport } from '@/components/Playground/utils'
 
 interface OutputProps {
-    files: IFiles
-    selectedFileName: string
+    file: IFile
     theme?: ITheme
 }
 
-const Preview: React.FC<OutputProps> = ({ files, selectedFileName, theme }) => {
-    const compiler = useRef<Compiler>()
-    const [compileCode, setCompileCode] = useState('')
-
-    useUpdatedEffect(() => {
-        if (!compiler.current) {
-            compiler.current = new Compiler()
-        }
-    }, [])
+const Transform: React.FC<OutputProps> = ({ file, theme }) => {
+    const [compiledCode, setCompiledCode] = useState('')
 
     const compile = (code: string, loader: Loader) => {
         let _code = code
@@ -30,33 +22,21 @@ const Preview: React.FC<OutputProps> = ({ files, selectedFileName, theme }) => {
             _code = addReactImport(code)
         }
 
-        compiler.current
-            ?.transform(_code, loader)
+        Compiler?.transform(_code, loader)
             .then((value) => {
-                setCompileCode(value.code)
+                setCompiledCode(value.code)
             })
             .catch((e) => {
                 console.error('编译失败', e)
             })
-
-        compiler.current
-            ?.compile(files, {
-                imports: {
-                    react: 'https://esm.sh/react@18.2.0',
-                    'react-dom/client': 'https://esm.sh/react-dom@18.2.0'
-                }
-            })
-            .then((r) => {
-                console.log(r)
-            })
     }
 
     useUpdatedEffect(() => {
-        if (files[selectedFileName]) {
+        if (file) {
             try {
-                const code = files[selectedFileName].value
+                const code = file.value
 
-                switch (files[selectedFileName].language) {
+                switch (file.language) {
                     case 'typescript':
                         compile(code, 'tsx')
                         break
@@ -64,32 +44,33 @@ const Preview: React.FC<OutputProps> = ({ files, selectedFileName, theme }) => {
                         compile(code, 'jsx')
                         break
                     case 'css':
-                        setCompileCode(cssToJs(files[selectedFileName]))
+                        setCompiledCode(cssToJs(file))
                         break
                     case 'json':
-                        setCompileCode(jsonToJs(files[selectedFileName]))
+                        setCompiledCode(jsonToJs(file))
                         break
                     case 'xml':
-                        setCompileCode(code)
+                        setCompiledCode(code)
                 }
             } catch (e) {
-                setCompileCode('')
+                console.log(e)
+                setCompiledCode('')
             }
         } else {
-            setCompileCode('')
+            setCompiledCode('')
         }
-    }, [files[selectedFileName]])
+    }, [file, Compiler])
 
     return (
         <>
             <MonacoEditor
                 theme={theme}
                 language={'javascript'}
-                value={compileCode}
-                options={{ ...MonacoEditorConfig, readOnly: false }}
+                value={compiledCode}
+                options={{ ...MonacoEditorConfig, readOnly: true }}
             />
         </>
     )
 }
 
-export default Preview
+export default Transform

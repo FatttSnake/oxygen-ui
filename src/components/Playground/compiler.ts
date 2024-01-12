@@ -1,9 +1,9 @@
 import esbuild, { Loader, OnLoadArgs, Plugin, PluginBuild } from 'esbuild-wasm'
-import wasm from 'esbuild-wasm/esbuild.wasm?url'
 import { IFiles, IImportMap } from '@/components/Playground/shared.ts'
 import { cssToJs, ENTRY_FILE_NAME, jsonToJs } from '@/components/Playground/files.ts'
 import localforage from 'localforage'
 import axios from 'axios'
+import { addReactImport } from '@/components/Playground/utils.ts'
 
 class Compiler {
     private init = false
@@ -14,11 +14,13 @@ class Compiler {
 
     constructor() {
         try {
-            void esbuild.initialize({ worker: true, wasmURL: wasm }).then(() => {
-                this.init = true
-            })
+            void esbuild
+                .initialize({ worker: true, wasmURL: 'https://esm.sh/esbuild-wasm/esbuild.wasm' })
+                .finally(() => {
+                    this.init = true
+                })
         } catch (e) {
-            /* empty */
+            this.init = true
         }
     }
 
@@ -107,6 +109,24 @@ class Compiler {
                         }
                     }
 
+                    if (/^https?:\/\/.*/.test(args.path)) {
+                        return {
+                            namespace: 'default',
+                            path: args.path
+                        }
+                    }
+
+                    if (
+                        args.path.includes('./') ||
+                        args.path.includes('../') ||
+                        args.path.startsWith('/')
+                    ) {
+                        return {
+                            namespace: 'default',
+                            path: new URL(args.path, args.resolveDir.substring(1)).href
+                        }
+                    }
+
                     const path = importMap.imports[args.path]
 
                     if (!path) {
@@ -147,12 +167,12 @@ class Compiler {
                     if (args.path === ENTRY_FILE_NAME) {
                         return {
                             loader: 'tsx',
-                            contents: files[ENTRY_FILE_NAME].value
+                            contents: addReactImport(files[ENTRY_FILE_NAME].value)
                         }
                     }
 
                     if (files[args.path]) {
-                        const contents = files[args.path].value
+                        const contents = addReactImport(files[args.path].value)
                         if (args.path.endsWith('.jsx')) {
                             return {
                                 loader: 'jsx',
@@ -187,10 +207,10 @@ class Compiler {
                     const result: esbuild.OnLoadResult = {
                         loader: 'jsx',
                         contents: data,
-                        resolveDir: new URL('./', request.responseURL).pathname
+                        resolveDir: request.responseURL
                     }
 
-                    await this.fileCache.setItem(args.path, request)
+                    await this.fileCache.setItem(args.path, result)
 
                     return result
                 })
@@ -199,4 +219,4 @@ class Compiler {
     }
 }
 
-export default Compiler
+export default new Compiler()
