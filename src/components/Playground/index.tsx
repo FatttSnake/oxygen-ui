@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import '@/components/Playground/playground.scss'
+import { IFiles, IImportMap } from '@/components/Playground/shared'
+import { IMPORT_MAP_FILE_NAME, MAIN_FILE_NAME } from '@/components/Playground/files'
 import FlexBox from '@/components/common/FlexBox'
 import CodeEditor from '@/components/Playground/CodeEditor'
 import Output from '@/components/Playground/Output'
-import { IFiles, IImportMap } from '@/components/Playground/shared.ts'
-import { IMPORT_MAP_FILE_NAME, MAIN_FILE_NAME } from '@/components/Playground/files.ts'
 
 interface PlaygroundProps {
     initFiles: IFiles

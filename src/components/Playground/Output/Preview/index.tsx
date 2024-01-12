@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react'
-import { IFiles, IImportMap } from '@/components/Playground/shared'
-import iframeRaw from '@/components/Playground/Output/Preview/iframe.html?raw'
 import { useUpdatedEffect } from '@/util/hooks'
-import Compiler from '@/components/Playground/compiler'
 import '@/components/Playground/Output/Preview/preview.scss'
+import { IFiles, IImportMap } from '@/components/Playground/shared'
+import Compiler from '@/components/Playground/compiler'
+import iframeRaw from '@/components/Playground/Output/Preview/iframe.html?raw'
 
 interface PreviewProps {
     iframeKey: string

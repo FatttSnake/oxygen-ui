@@ -1,9 +1,9 @@
 import esbuild, { Loader, OnLoadArgs, Plugin, PluginBuild } from 'esbuild-wasm'
-import { IFiles, IImportMap } from '@/components/Playground/shared.ts'
-import { cssToJs, ENTRY_FILE_NAME, jsonToJs } from '@/components/Playground/files.ts'
 import localforage from 'localforage'
 import axios from 'axios'
-import { addReactImport } from '@/components/Playground/utils.ts'
+import { IFiles, IImportMap } from '@/components/Playground/shared'
+import { cssToJs, ENTRY_FILE_NAME, jsonToJs } from '@/components/Playground/files'
+import { addReactImport } from '@/components/Playground/utils'
 
 class Compiler {
     private init = false
@@ -108,6 +108,9 @@ class Compiler {
                             path: `${args.path.substring(2)}.js`
                         }
                     }
+                    if (/\.\/.*\.css/.test(args.path) && !args.resolveDir) {
+                        throw Error(`Css '${args.path}' not found`)
+                    }
 
                     if (/^https?:\/\/.*/.test(args.path)) {
                         return {
@@ -151,14 +154,6 @@ class Compiler {
                     const contents = jsonToJs(files[args.path])
                     return {
                         loader: 'js',
-                        contents
-                    }
-                })
-
-                build.onLoad({ filter: /.*\.svg$/ }, async (args: OnLoadArgs) => {
-                    const contents = files[args.path].value
-                    return {
-                        loader: 'text',
                         contents
                     }
                 })

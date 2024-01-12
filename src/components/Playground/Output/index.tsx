@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import FlexBox from '@/components/common/FlexBox.tsx'
+import React from 'react'
+import FlexBox from '@/components/common/FlexBox'
+import { IFiles, IImportMap } from '@/components/Playground/shared'
 import FileSelector from '@/components/Playground/CodeEditor/FileSelector'
 import Transform from '@/components/Playground/Output/Transform'
-import { IFiles, IImportMap } from '@/components/Playground/shared.ts'
 import Preview from '@/components/Playground/Output/Preview'
 
 interface OutputProps {

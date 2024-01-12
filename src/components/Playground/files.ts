@@ -1,9 +1,9 @@
 import { strFromU8, strToU8, unzlibSync, zlibSync } from 'fflate'
+import { IFile, IFiles, IImportMap, ILanguage } from '@/components/Playground/shared'
 import importMap from '@/components/Playground/template/import-map.json?raw'
 import AppCss from '@/components/Playground/template/src/App.css?raw'
 import App from '@/components/Playground/template/src/App.tsx?raw'
 import main from '@/components/Playground/template/src/main.tsx?raw'
-import { IFile, IFiles, IImportMap, ILanguage } from '@/components/Playground/shared'
 
 export const MAIN_FILE_NAME = 'App.tsx'
 export const IMPORT_MAP_FILE_NAME = 'import-map.json'
@@ -17,7 +17,6 @@ export const fileNameToLanguage = (name: string): ILanguage => {
     if (['ts', 'tsx'].includes(suffix)) return 'typescript'
     if (['json'].includes(suffix)) return 'json'
     if (['css'].includes(suffix)) return 'css'
-    if (['svg'].includes(suffix)) return 'xml'
     return 'javascript'
 }
 
@@ -95,7 +94,8 @@ export const initFiles: IFiles = getFilesFromUrl() || {
     [ENTRY_FILE_NAME]: {
         name: ENTRY_FILE_NAME,
         language: fileNameToLanguage(ENTRY_FILE_NAME),
-        value: main
+        value: main,
+        hidden: true
     },
     [MAIN_FILE_NAME]: {
         name: MAIN_FILE_NAME,

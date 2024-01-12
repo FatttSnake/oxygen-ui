@@ -1,14 +1,10 @@
 import React from 'react'
 import '@/components/Playground/CodeEditor/FileSelector/file-selector.scss'
-import { IFiles } from '@/components/Playground/shared'
-import {
-    ENTRY_FILE_NAME,
-    getFileNameList,
-    IMPORT_MAP_FILE_NAME
-} from '@/components/Playground/files'
-import Item from '@/components/Playground/CodeEditor/FileSelector/Item'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
+import { IFiles } from '@/components/Playground/shared'
+import { getFileNameList, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
+import Item from '@/components/Playground/CodeEditor/FileSelector/Item'
 
 interface FileSelectorProps {
     files?: IFiles
@@ -103,10 +99,8 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     }
 
     const handleOnValidateTab = (newFileName: string, oldFileName: string) => {
-        if (!/\.(jsx|tsx|js|ts|css|json|svg)$/.test(newFileName)) {
-            onError?.(
-                'Playground only supports *.jsx, *.tsx, *.js, *.ts, *.css, *.json, *.svg files.'
-            )
+        if (!/\.(jsx|tsx|js|ts|css|json)$/.test(newFileName)) {
+            onError?.('Playground only supports *.jsx, *.tsx, *.js, *.ts, *.css, *.json files.')
 
             return false
         }
@@ -128,8 +122,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
         onRemoveFile?.(fileName)
         if (fileName === selectedFileName) {
             const keys = getFileNameList(files).filter(
-                (item) =>
-                    ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) && !files[item].hidden
+                (item) => ![IMPORT_MAP_FILE_NAME].includes(item) && !files[item].hidden
             )
             const index = keys.indexOf(fileName) - 1
             if (index >= 0) {
@@ -144,9 +137,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
         getFileNameList(files).length
             ? setTabs(
                   getFileNameList(files).filter(
-                      (item) =>
-                          ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) &&
-                          !files[item].hidden
+                      (item) => ![IMPORT_MAP_FILE_NAME].includes(item) && !files[item].hidden
                   )
               )
             : setTabs([])

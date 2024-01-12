@@ -1,6 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
 import '@/components/Playground/CodeEditor/code-editor.scss'
+import FlexBox from '@/components/common/FlexBox'
 import { IEditorOptions, IFiles, ITheme } from '@/components/Playground/shared'
 import {
     fileNameToLanguage,
@@ -9,7 +10,6 @@ import {
 } from '@/components/Playground/files'
 import FileSelector from '@/components/Playground/CodeEditor/FileSelector'
 import Editor from '@/components/Playground/CodeEditor/Editor'
-import FlexBox from '@/components/common/FlexBox'
 
 interface CodeEditorProps {
     theme?: ITheme
