@@ -64,10 +64,10 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     }
 
     const handleOnCancel = () => {
+        onError?.('')
         if (!creating) {
             return
         }
-
         tabs.pop()
         setTabs([...tabs])
         setCreating(false)
@@ -111,7 +111,10 @@ const FileSelector: React.FC<FileSelectorProps> = ({
             return false
         }
 
-        if (tabs.includes(newFileName) && newFileName !== oldFileName) {
+        if (
+            tabs.map((item) => item.toLowerCase()).includes(newFileName.toLowerCase()) &&
+            newFileName.toLowerCase() !== oldFileName.toLowerCase()
+        ) {
             onError?.(`File "${newFileName}" already exists.`)
             return false
         }

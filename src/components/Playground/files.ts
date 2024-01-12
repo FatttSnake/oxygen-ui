@@ -3,7 +3,7 @@ import importMap from '@/components/Playground/template/import-map.json?raw'
 import AppCss from '@/components/Playground/template/src/App.css?raw'
 import App from '@/components/Playground/template/src/App.tsx?raw'
 import main from '@/components/Playground/template/src/main.tsx?raw'
-import { IFile, IFiles, ILanguage } from '@/components/Playground/shared'
+import { IFile, IFiles, IImportMap, ILanguage } from '@/components/Playground/shared'
 
 export const MAIN_FILE_NAME = 'App.tsx'
 export const IMPORT_MAP_FILE_NAME = 'import-map.json'
@@ -106,11 +106,13 @@ export const initFiles: IFiles = getFilesFromUrl() || {
         name: 'App.css',
         language: 'css',
         value: AppCss
-    },
-    [IMPORT_MAP_FILE_NAME]: {
-        name: IMPORT_MAP_FILE_NAME,
-        language: fileNameToLanguage(IMPORT_MAP_FILE_NAME),
-        value: importMap
+    }
+}
+
+export const initImportMap: IImportMap = {
+    imports: {
+        react: 'https://esm.sh/react@18.2.0',
+        'react-dom/client': 'https://esm.sh/react-dom@18.2.0'
     }
 }
 

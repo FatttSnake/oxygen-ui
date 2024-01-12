@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import MonacoEditor from '@monaco-editor/react'
 import { Loader } from 'esbuild-wasm'
-import { useUpdatedEffect } from '@/util/hooks'
-import { IFile, ITheme } from '@/components/Playground/shared'
-import Compiler from '@/components/Playground/compiler'
-import { cssToJs, jsonToJs } from '@/components/Playground/files'
-import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
-import { addReactImport } from '@/components/Playground/utils'
+import '@/components/Playground/Output/Transform/transform.scss'
+import { useUpdatedEffect } from '@/util/hooks.tsx'
+import { IFile, ITheme } from '@/components/Playground/shared.ts'
+import Compiler from '@/components/Playground/compiler.ts'
+import { cssToJs, jsonToJs } from '@/components/Playground/files.ts'
+import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig.ts'
+import { addReactImport } from '@/components/Playground/utils.ts'
 
 interface OutputProps {
     file: IFile
@@ -15,6 +16,7 @@ interface OutputProps {
 
 const Transform: React.FC<OutputProps> = ({ file, theme }) => {
     const [compiledCode, setCompiledCode] = useState('')
+    const [errorMsg, setErrorMsg] = useState('')
 
     const compile = (code: string, loader: Loader) => {
         let _code = code
@@ -25,9 +27,10 @@ const Transform: React.FC<OutputProps> = ({ file, theme }) => {
         Compiler?.transform(_code, loader)
             .then((value) => {
                 setCompiledCode(value.code)
+                setErrorMsg('')
             })
             .catch((e) => {
-                console.error('编译失败', e)
+                setErrorMsg(`编译失败：${e.message}`)
             })
     }
 
@@ -62,14 +65,15 @@ const Transform: React.FC<OutputProps> = ({ file, theme }) => {
     }, [file, Compiler])
 
     return (
-        <>
+        <div data-component={'playground-transform'}>
             <MonacoEditor
                 theme={theme}
                 language={'javascript'}
                 value={compiledCode}
                 options={{ ...MonacoEditorConfig, readOnly: true }}
             />
-        </>
+            {errorMsg && <div className={'playground-error-message'}>{errorMsg}</div>}
+        </div>
     )
 }
 

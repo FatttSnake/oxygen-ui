@@ -9,11 +9,11 @@
 <body>
 <script>
   window.addEventListener("error", (e) => {
-    window.parent.postMessage({ type: "ERROR", message: e.message });
+    window.parent.postMessage({ type: "ERROR", msg: e.message });
   });
 
   window.addEventListener("load", () => {
-    window.parent.postMessage({ type: "LOADED", message: "" });
+    window.parent.postMessage({ type: "LOADED", msg: "" });
   });
 
   window.addEventListener("message", ({ data }) => {
@@ -43,7 +43,7 @@
       };
       document.body.appendChild(script);
       URL.revokeObjectURL(oldSrc);
-      window.parent.postMessage({ type: "DONE", message: "" });
+      window.parent.postMessage({ type: "DONE", msg: "" });
     }
   });
 </script>

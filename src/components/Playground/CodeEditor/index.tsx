@@ -3,7 +3,6 @@ import _ from 'lodash'
 import '@/components/Playground/CodeEditor/code-editor.scss'
 import { IEditorOptions, IFiles, ITheme } from '@/components/Playground/shared'
 import {
-    ENTRY_FILE_NAME,
     fileNameToLanguage,
     getFileNameList,
     IMPORT_MAP_FILE_NAME
@@ -44,7 +43,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     ...props
 }) => {
     const filteredFilesName = getFileNameList(files).filter(
-        (item) => ![IMPORT_MAP_FILE_NAME, ENTRY_FILE_NAME].includes(item) && !files[item].hidden
+        (item) => ![IMPORT_MAP_FILE_NAME].includes(item) && !files[item].hidden
     )
     const propsSelectedFileName =
         props.selectedFileName || (filteredFilesName.length ? filteredFilesName[0] : '')
@@ -148,7 +147,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                     onChange={handleOnChangeFileContent}
                     onJumpFile={handleOnChangeSelectedFile}
                 />
-                {errorMsg && <div className={'playground-code-editor-message'}>{errorMsg}</div>}
+                {errorMsg && <div className={'playground-error-message'}>{errorMsg}</div>}
             </FlexBox>
         </>
     )

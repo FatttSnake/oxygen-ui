@@ -1,14 +1,14 @@
 import React, { useRef, useState } from 'react'
-import { IFiles } from '@/components/Playground/shared'
-import iframeRaw from '@/components/Playground/Preview/iframe.html?raw'
+import { IFiles, IImportMap } from '@/components/Playground/shared'
+import iframeRaw from '@/components/Playground/Output/Preview/iframe.html?raw'
 import { useUpdatedEffect } from '@/util/hooks'
-import { IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
 import Compiler from '@/components/Playground/compiler'
-import '@/components/Playground/Preview/preview.scss'
+import '@/components/Playground/Output/Preview/preview.scss'
 
 interface PreviewProps {
     iframeKey: string
     files: IFiles
+    importMap: IImportMap
 }
 
 interface IMessage {
@@ -34,7 +34,7 @@ const getIframeUrl = (iframeRaw: string) => {
 
 const iframeUrl = getIframeUrl(iframeRaw)
 
-const Preview: React.FC<PreviewProps> = ({ iframeKey, files }) => {
+const Preview: React.FC<PreviewProps> = ({ iframeKey, files, importMap }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const [errorMsg, setErrorMsg] = useState('')
     const [loaded, setLoaded] = useState(false)
@@ -48,14 +48,10 @@ const Preview: React.FC<PreviewProps> = ({ iframeKey, files }) => {
             case 'ERROR':
                 setErrorMsg(msg)
                 break
-            default:
+            case 'DONE':
                 setErrorMsg('')
         }
     }
-
-    useEffect(() => {
-        console.error(errorMsg)
-    }, [errorMsg])
 
     useUpdatedEffect(() => {
         window.addEventListener('message', handleMessage)
@@ -66,7 +62,7 @@ const Preview: React.FC<PreviewProps> = ({ iframeKey, files }) => {
     }, [])
 
     useUpdatedEffect(() => {
-        Compiler.compile(files, JSON.parse(files[IMPORT_MAP_FILE_NAME].value))
+        Compiler.compile(files, importMap)
             .then((result) => {
                 if (loaded) {
                     iframeRef.current?.contentWindow?.postMessage({
@@ -76,7 +72,7 @@ const Preview: React.FC<PreviewProps> = ({ iframeKey, files }) => {
                 }
             })
             .catch((e) => {
-                setErrorMsg(e)
+                setErrorMsg(`编译失败：${e.message}`)
             })
     }, [files, Compiler, loaded])
 
@@ -88,6 +84,7 @@ const Preview: React.FC<PreviewProps> = ({ iframeKey, files }) => {
                 src={iframeUrl}
                 sandbox="allow-popups-to-escape-sandbox allow-scripts allow-popups allow-forms allow-pointer-lock allow-top-navigation allow-modals allow-same-origin"
             />
+            {errorMsg && <div className={'playground-error-message'}>{errorMsg}</div>}
         </div>
     )
 }

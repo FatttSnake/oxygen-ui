@@ -1,5 +1,6 @@
 [data-component=playground-preview] {
   display: flex;
+  position: relative;
   iframe {
     border: none;
     flex: 1;
