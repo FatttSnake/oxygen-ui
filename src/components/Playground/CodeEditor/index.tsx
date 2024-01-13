@@ -2,17 +2,19 @@ import React from 'react'
 import _ from 'lodash'
 import '@/components/Playground/CodeEditor/code-editor.scss'
 import FlexBox from '@/components/common/FlexBox'
-import { IEditorOptions, IFiles, ITheme } from '@/components/Playground/shared'
+import { IEditorOptions, IFiles, ITheme, ITsConfig } from '@/components/Playground/shared'
 import {
     fileNameToLanguage,
     getFileNameList,
-    IMPORT_MAP_FILE_NAME
+    IMPORT_MAP_FILE_NAME,
+    TS_CONFIG_FILE_NAME
 } from '@/components/Playground/files'
 import FileSelector from '@/components/Playground/CodeEditor/FileSelector'
 import Editor from '@/components/Playground/CodeEditor/Editor'
 
 interface CodeEditorProps {
     theme?: ITheme
+    tsConfig?: ITsConfig
     files: IFiles
     readonly?: boolean
     readonlyFiles?: string[]
@@ -29,6 +31,7 @@ interface CodeEditorProps {
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
     theme,
+    tsConfig,
     files,
     readonly,
     readonlyFiles,
@@ -43,7 +46,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     ...props
 }) => {
     const filteredFilesName = getFileNameList(files).filter(
-        (item) => ![IMPORT_MAP_FILE_NAME].includes(item) && !files[item].hidden
+        (item) => ![IMPORT_MAP_FILE_NAME, TS_CONFIG_FILE_NAME].includes(item) && !files[item].hidden
     )
     const propsSelectedFileName =
         props.selectedFileName || (filteredFilesName.length ? filteredFilesName[0] : '')
@@ -101,7 +104,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         }
     }
 
-    const handleOnChangeFileContent = _.debounce((code = '') => {
+    const handleOnChangeFileContent = _.debounce((code: string = '') => {
         if (!files[onSelectedFileChange ? propsSelectedFileName : selectedFileName]) {
             return
         }
@@ -131,6 +134,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                     onError={handleOnError}
                 />
                 <Editor
+                    tsConfig={tsConfig}
                     theme={theme}
                     selectedFileName={
                         onSelectedFileChange ? propsSelectedFileName : selectedFileName

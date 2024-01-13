@@ -3,7 +3,11 @@ import '@/components/Playground/CodeEditor/FileSelector/file-selector.scss'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import { IFiles } from '@/components/Playground/shared'
-import { getFileNameList, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
+import {
+    getFileNameList,
+    IMPORT_MAP_FILE_NAME,
+    TS_CONFIG_FILE_NAME
+} from '@/components/Playground/files'
 import Item from '@/components/Playground/CodeEditor/FileSelector/Item'
 
 interface FileSelectorProps {
@@ -85,6 +89,14 @@ const FileSelector: React.FC<FileSelectorProps> = ({
         onChange?.(IMPORT_MAP_FILE_NAME)
     }
 
+    const editTsConfig = () => {
+        if (hasEditing) {
+            return
+        }
+
+        onChange?.(TS_CONFIG_FILE_NAME)
+    }
+
     const handleOnSaveTab = (value: string, item: string) => {
         if (creating) {
             onAddFile?.(value)
@@ -122,7 +134,9 @@ const FileSelector: React.FC<FileSelectorProps> = ({
         onRemoveFile?.(fileName)
         if (fileName === selectedFileName) {
             const keys = getFileNameList(files).filter(
-                (item) => ![IMPORT_MAP_FILE_NAME].includes(item) && !files[item].hidden
+                (item) =>
+                    ![IMPORT_MAP_FILE_NAME, TS_CONFIG_FILE_NAME].includes(item) &&
+                    !files[item].hidden
             )
             const index = keys.indexOf(fileName) - 1
             if (index >= 0) {
@@ -137,7 +151,9 @@ const FileSelector: React.FC<FileSelectorProps> = ({
         getFileNameList(files).length
             ? setTabs(
                   getFileNameList(files).filter(
-                      (item) => ![IMPORT_MAP_FILE_NAME].includes(item) && !files[item].hidden
+                      (item) =>
+                          ![IMPORT_MAP_FILE_NAME, TS_CONFIG_FILE_NAME].includes(item) &&
+                          !files[item].hidden
                   )
               )
             : setTabs([])
@@ -179,14 +195,24 @@ const FileSelector: React.FC<FileSelectorProps> = ({
                         </FlexBox>
                     </HideScrollbar>
                 </div>
-                {files[IMPORT_MAP_FILE_NAME] && (
+                {(files[IMPORT_MAP_FILE_NAME] || files[TS_CONFIG_FILE_NAME]) && (
                     <div className={'sticky'}>
-                        <Item
-                            value={'Import Map'}
-                            active={selectedFileName === IMPORT_MAP_FILE_NAME}
-                            onClick={editImportMap}
-                            readonly
-                        />
+                        {files[TS_CONFIG_FILE_NAME] && (
+                            <Item
+                                value={'tsconfig.json'}
+                                active={selectedFileName === TS_CONFIG_FILE_NAME}
+                                onClick={editTsConfig}
+                                readonly
+                            />
+                        )}
+                        {files[IMPORT_MAP_FILE_NAME] && (
+                            <Item
+                                value={'Import Map'}
+                                active={selectedFileName === IMPORT_MAP_FILE_NAME}
+                                onClick={editImportMap}
+                                readonly
+                            />
+                        )}
                     </div>
                 )}
             </div>

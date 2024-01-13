@@ -85,6 +85,7 @@ const Item: React.FC<ItemProps> = ({
         setFileName(value)
         setTimeout(() => {
             inputRef.current?.focus()
+            inputRef.current?.setSelectionRange(0, inputRef.current?.value.lastIndexOf('.'))
         })
     }
 
@@ -119,6 +120,7 @@ const Item: React.FC<ItemProps> = ({
                         onChange={handleOnChange}
                         onBlur={finishNameFile}
                         onKeyDown={handleKeyDown}
+                        spellCheck={'false'}
                     />
                     <span className={'tab-item-input-mask'}>{fileName}</span>
                 </div>

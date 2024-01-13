@@ -3,12 +3,13 @@ import { editor, Selection } from 'monaco-editor'
 import MonacoEditor, { Monaco } from '@monaco-editor/react'
 import '@/components/Playground/CodeEditor/Editor/editor.scss'
 import '@/components/Playground/CodeEditor/Editor/loader'
-import { IEditorOptions, IFiles, ITheme } from '@/components/Playground/shared'
-import { fileNameToLanguage } from '@/components/Playground/files'
+import { IEditorOptions, IFiles, ITheme, ITsConfig } from '@/components/Playground/shared'
+import { fileNameToLanguage, tsconfigJsonDiagnosticsOptions } from '@/components/Playground/files'
 import { useEditor, useTypesProgress } from '@/components/Playground/CodeEditor/Editor/hooks'
 import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
 
 interface EditorProps {
+    tsConfig?: ITsConfig
     files?: IFiles
     selectedFileName?: string
     readonly?: boolean
@@ -19,6 +20,7 @@ interface EditorProps {
 }
 
 const Editor: React.FC<EditorProps> = ({
+    tsConfig,
     files = {},
     selectedFileName = '',
     readonly,
@@ -28,6 +30,7 @@ const Editor: React.FC<EditorProps> = ({
     onJumpFile
 }) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>()
+    const monacoRef = useRef<Monaco>()
     const { doOpenEditor, loadJsxSyntaxHighlight, autoLoadExtraLib } = useEditor()
     const jsxSyntaxHighlightRef = useRef<{
         highlighter: (code?: string | undefined) => void
@@ -39,16 +42,12 @@ const Editor: React.FC<EditorProps> = ({
     const { total, finished, onWatch } = useTypesProgress()
     const file = files[selectedFileName] || { name: 'Untitled' }
 
-    const handleOnEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-        editorRef.current = editor
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-            void editor.getAction('editor.action.formatDocument')?.run()
-        })
-
-        monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-            jsx: monaco.languages.typescript.JsxEmit.Preserve,
-            esModuleInterop: true
-        })
+    const handleOnEditorWillMount = (monaco: Monaco) => {
+        monaco.languages.json.jsonDefaults.setDiagnosticsOptions(tsconfigJsonDiagnosticsOptions)
+        tsConfig &&
+            monaco.languages.typescript.typescriptDefaults.setCompilerOptions(
+                tsConfig.compilerOptions
+            )
 
         files &&
             Object.entries(files).forEach(([key]) => {
@@ -60,6 +59,15 @@ const Editor: React.FC<EditorProps> = ({
                     )
                 }
             })
+    }
+
+    const handleOnEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+        editorRef.current = editor
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+            void editor.getAction('editor.action.formatDocument')?.run()
+        })
+
+        monacoRef.current = monaco
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
@@ -85,6 +93,13 @@ const Editor: React.FC<EditorProps> = ({
         jsxSyntaxHighlightRef?.current?.highlighter?.()
     }, [file.name])
 
+    useEffect(() => {
+        tsConfig &&
+            monacoRef.current?.languages.typescript.typescriptDefaults.setCompilerOptions(
+                tsConfig.compilerOptions
+            )
+    }, [tsConfig])
+
     return (
         <>
             <div data-component={'playground-code-editor-editor'}>
@@ -95,6 +110,7 @@ const Editor: React.FC<EditorProps> = ({
                     language={file.language}
                     value={file.value}
                     onChange={onChange}
+                    beforeMount={handleOnEditorWillMount}
                     onMount={handleOnEditorDidMount}
                     options={{
                         ...MonacoEditorConfig,

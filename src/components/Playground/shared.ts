@@ -1,4 +1,5 @@
-import { editor } from 'monaco-editor'
+import { editor, languages } from 'monaco-editor'
+import CompilerOptions = languages.typescript.CompilerOptions
 
 export type ILanguage = 'javascript' | 'typescript' | 'json' | 'css' | 'xml'
 
@@ -15,6 +16,10 @@ export interface IFiles {
 
 export interface IImportMap {
     imports: Record<string, string>
+}
+
+export interface ITsConfig {
+    compilerOptions: CompilerOptions
 }
 
 export type ITheme = 'light' | 'vs-dark'

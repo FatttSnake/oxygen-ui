@@ -1,10 +1,18 @@
 import { strFromU8, strToU8, unzlibSync, zlibSync } from 'fflate'
-import { IFile, IFiles, IImportMap, ILanguage } from '@/components/Playground/shared'
-import importMap from '@/components/Playground/template/import-map.json?raw'
+import { IFile, IFiles, IImportMap, ILanguage, ITsConfig } from '@/components/Playground/shared'
 import AppCss from '@/components/Playground/template/src/App.css?raw'
 import App from '@/components/Playground/template/src/App.tsx?raw'
 import main from '@/components/Playground/template/src/main.tsx?raw'
+import tsconfigSchema from '@/components/Playground/tsconfig-schema.json'
+import importMapSchema from '@/components/Playground/import-map-schema.json'
+import { languages } from 'monaco-editor'
+import DiagnosticsOptions = languages.json.DiagnosticsOptions
+import ScriptTarget = languages.typescript.ScriptTarget
+import ModuleKind = languages.typescript.ModuleKind
+import ModuleResolutionKind = languages.typescript.ModuleResolutionKind
+import JsxEmit = languages.typescript.JsxEmit
 
+export const TS_CONFIG_FILE_NAME = 'tsconfig.json'
 export const MAIN_FILE_NAME = 'App.tsx'
 export const IMPORT_MAP_FILE_NAME = 'import-map.json'
 export const ENTRY_FILE_NAME = 'main.tsx'
@@ -97,6 +105,28 @@ export const addReactImport = (code: string) => {
     return code
 }
 
+export const tsconfigJsonDiagnosticsOptions: DiagnosticsOptions = {
+    validate: true,
+    schemas: [
+        {
+            uri: 'tsconfig.json',
+            fileMatch: ['tsconfig.json'],
+            schema: {
+                type: 'object',
+                properties: tsconfigSchema
+            }
+        },
+        {
+            uri: 'import-map.json',
+            fileMatch: ['import-map.json'],
+            schema: {
+                type: 'object',
+                properties: importMapSchema
+            }
+        }
+    ]
+}
+
 export const initFiles: IFiles = getFilesFromUrl() || {
     [ENTRY_FILE_NAME]: {
         name: ENTRY_FILE_NAME,
@@ -123,15 +153,24 @@ export const initImportMap: IImportMap = {
     }
 }
 
-export const reactTemplateFiles = {
-    [ENTRY_FILE_NAME]: {
-        name: ENTRY_FILE_NAME,
-        language: fileNameToLanguage(ENTRY_FILE_NAME),
-        value: main
-    },
-    [IMPORT_MAP_FILE_NAME]: {
-        name: IMPORT_MAP_FILE_NAME,
-        language: fileNameToLanguage(IMPORT_MAP_FILE_NAME),
-        value: importMap
+export const initTsConfig: ITsConfig = {
+    compilerOptions: {
+        target: ScriptTarget.ES2020,
+        useDefineForClassFields: true,
+        module: ModuleKind.ESNext,
+        skipLibCheck: true,
+        moduleResolution: ModuleResolutionKind.NodeJs,
+        allowImportingTsExtensions: true,
+        resolveJsonModule: true,
+        isolatedModules: true,
+        noEmit: true,
+        jsx: JsxEmit.ReactJSX,
+        strict: true,
+        noUnusedLocals: true,
+        noUnusedParameters: true,
+        noFallthroughCasesInSwitch: true,
+        composite: true,
+        types: ['node'],
+        allowSyntheticDefaultImports: true
     }
 }
