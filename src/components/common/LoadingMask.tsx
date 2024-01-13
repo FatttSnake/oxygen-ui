@@ -1,13 +1,13 @@
-import React from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/components/common/loading-mask.scss'
 import { COLOR_FONT_MAIN } from '@/constants/common.constants'
 
-interface LoadingMaskProps extends React.PropsWithChildren {
+interface LoadingMaskProps extends PropsWithChildren {
     hidden?: boolean
-    maskContent?: React.ReactNode
+    maskContent?: ReactNode
 }
-const LoadingMask: React.FC<LoadingMaskProps> = (props) => {
+const LoadingMask = (props: LoadingMaskProps) => {
     const loadingIcon = (
         <>
             <Icon

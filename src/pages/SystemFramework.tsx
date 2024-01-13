@@ -1,11 +1,10 @@
-import React from 'react'
 import '@/assets/css/pages/system-framework.scss'
 import { getSystemRouteJson } from '@/router/system'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Sidebar from '@/components/common/Sidebar'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
-const SystemFramework: React.FC = () => {
+const SystemFramework = () => {
     return (
         <>
             <FitFullscreen data-component={'system-framework'} className={'flex-horizontal'}>

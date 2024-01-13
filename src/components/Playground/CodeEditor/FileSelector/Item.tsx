@@ -1,4 +1,4 @@
-import React from 'react'
+import { Dispatch, SetStateAction, KeyboardEvent, ChangeEvent, MouseEvent } from 'react'
 
 interface ItemProps {
     className?: string
@@ -7,7 +7,7 @@ interface ItemProps {
     value: string
     active?: boolean
     hasEditing?: boolean
-    setHasEditing?: React.Dispatch<React.SetStateAction<boolean>>
+    setHasEditing?: Dispatch<SetStateAction<boolean>>
     onOk?: (fileName: string) => void
     onCancel?: () => void
     onRemove?: (fileName: string) => void
@@ -15,7 +15,7 @@ interface ItemProps {
     onValidate?: (newFileName: string, oldFileName: string) => boolean
 }
 
-const Item: React.FC<ItemProps> = ({
+const Item = ({
     className,
     readonly = false,
     value,
@@ -28,7 +28,7 @@ const Item: React.FC<ItemProps> = ({
     onClick,
     onValidate,
     ...prop
-}) => {
+}: ItemProps) => {
     const inputRef = useRef<HTMLInputElement>(null)
     const [fileName, setFileName] = useState(value)
     const [creating, setCreating] = useState(prop.creating)
@@ -41,7 +41,7 @@ const Item: React.FC<ItemProps> = ({
         onClick?.()
     }
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             event.preventDefault()
             finishNameFile()
@@ -89,11 +89,11 @@ const Item: React.FC<ItemProps> = ({
         })
     }
 
-    const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
         setFileName(e.target.value)
     }
 
-    const handleOnDelete = (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleOnDelete = (e: MouseEvent<HTMLDivElement>) => {
         e.stopPropagation()
         if (hasEditing) {
             return

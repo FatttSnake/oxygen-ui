@@ -1,4 +1,3 @@
-import React from 'react'
 import { editor, Selection } from 'monaco-editor'
 import MonacoEditor, { Monaco } from '@monaco-editor/react'
 import '@/components/Playground/CodeEditor/Editor/editor.scss'
@@ -19,7 +18,7 @@ interface EditorProps {
     onJumpFile?: (fileName: string) => void
 }
 
-const Editor: React.FC<EditorProps> = ({
+const Editor = ({
     tsConfig,
     files = {},
     selectedFileName = '',
@@ -28,7 +27,7 @@ const Editor: React.FC<EditorProps> = ({
     onChange,
     options,
     onJumpFile
-}) => {
+}: EditorProps) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>()
     const monacoRef = useRef<Monaco>()
     const { doOpenEditor, loadJsxSyntaxHighlight, autoLoadExtraLib } = useEditor()

@@ -1,4 +1,3 @@
-import React from 'react'
 import '@/components/Playground/CodeEditor/FileSelector/file-selector.scss'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
@@ -22,7 +21,7 @@ interface FileSelectorProps {
     selectedFileName?: string
 }
 
-const FileSelector: React.FC<FileSelectorProps> = ({
+const FileSelector = ({
     files = {},
     onChange,
     onError,
@@ -32,7 +31,7 @@ const FileSelector: React.FC<FileSelectorProps> = ({
     onAddFile,
     onUpdateFileName,
     selectedFileName = ''
-}) => {
+}: FileSelectorProps) => {
     const hideScrollbarRef = useRef<HideScrollbarElement>(null)
     const [tabs, setTabs] = useState<string[]>([])
     const [creating, setCreating] = useState(false)

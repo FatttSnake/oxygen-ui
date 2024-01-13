@@ -1,8 +1,9 @@
-import React from 'react'
+import { DetailedHTMLProps, HTMLAttributes } from 'react'
 
-const Separate: React.FC<
-    React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
-> = ({ className, ...props }) => {
+const Separate = ({
+    className,
+    ...props
+}: DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>) => {
     return <div className={`separate ${className ? ` ${className}` : ''}`} {...props} />
 }
 

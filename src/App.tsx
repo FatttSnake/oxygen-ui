@@ -1,4 +1,3 @@
-import React from 'react'
 import { getRouter } from '@/router'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
@@ -6,7 +5,7 @@ export const AppContext = createContext<{ refreshRouter: () => void }>({
     refreshRouter: () => undefined
 })
 
-const App: React.FC = () => {
+const App = () => {
     const [routerState, setRouterState] = useState(getRouter)
 
     return (

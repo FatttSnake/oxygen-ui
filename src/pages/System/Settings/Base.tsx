@@ -1,10 +1,9 @@
-import React from 'react'
 import { useUpdatedEffect } from '@/util/hooks'
 import { hasPermission } from '@/util/auth'
 import { r_sys_settings_base_get, r_sys_settings_base_update } from '@/services/system'
 import { SettingsCard } from '@/pages/System/Settings'
 
-const Base: React.FC = () => {
+const Base = () => {
     const [baseForm] = AntdForm.useForm<BaseSettingsParam>()
     const baseFormValues = AntdForm.useWatch([], baseForm)
     const [loading, setLoading] = useState(false)

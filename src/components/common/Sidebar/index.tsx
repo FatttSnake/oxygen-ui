@@ -1,4 +1,4 @@
-import React from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/components/common/sidebar.scss'
 import { getLocalStorage, setLocalStorage } from '@/util/browser'
@@ -9,21 +9,14 @@ import Separate from '@/components/common/Sidebar/Separate'
 import Submenu from '@/components/common/Sidebar/Submenu'
 import Footer from '@/components/common/Sidebar/Footer'
 
-interface SidebarProps extends React.PropsWithChildren {
+interface SidebarProps extends PropsWithChildren {
     title: string
     width?: string
     onSidebarSwitch?: (hidden: boolean) => void
-    bottomFixed?: React.ReactNode
+    bottomFixed?: ReactNode
 }
 
-const Sidebar: React.FC<SidebarProps> & {
-    Item: typeof Item
-    ItemList: typeof ItemList
-    Scroll: typeof Scroll
-    Separate: typeof Separate
-    Submenu: typeof Submenu
-    Footer: typeof Footer
-} = (props) => {
+const Sidebar = (props: SidebarProps) => {
     const [hideSidebar, setHideSidebar] = useState(getLocalStorage('HIDE_SIDEBAR') === 'true')
 
     const switchSidebar = () => {

@@ -1,4 +1,3 @@
-import React, { useRef, useState } from 'react'
 import { useUpdatedEffect } from '@/util/hooks'
 import '@/components/Playground/Output/Preview/preview.scss'
 import { IFiles, IImportMap } from '@/components/Playground/shared'
@@ -34,7 +33,7 @@ const getIframeUrl = (iframeRaw: string) => {
 
 const iframeUrl = getIframeUrl(iframeRaw)
 
-const Preview: React.FC<PreviewProps> = ({ iframeKey, files, importMap }) => {
+const Preview = ({ iframeKey, files, importMap }: PreviewProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const [errorMsg, setErrorMsg] = useState('')
     const [loaded, setLoaded] = useState(false)

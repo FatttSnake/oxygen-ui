@@ -1,4 +1,4 @@
-import React from 'react'
+import { ChangeEvent, Key, KeyboardEvent } from 'react'
 import Icon from '@ant-design/icons'
 import {
     COLOR_ERROR_SECONDARY,
@@ -28,7 +28,7 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 
-const Group: React.FC = () => {
+const Group = () => {
     const [modal, contextHolder] = AntdModal.useModal()
     const [form] = AntdForm.useForm<GroupAddEditParam>()
     const formValues = AntdForm.useWatch([], form)
@@ -55,7 +55,7 @@ const Group: React.FC = () => {
     const [roleData, setRoleData] = useState<RoleVo[]>([])
     const [isLoadingRole, setIsLoadingRole] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [tableSelectedItem, setTableSelectedItem] = useState<React.Key[]>([])
+    const [tableSelectedItem, setTableSelectedItem] = useState<Key[]>([])
 
     const dataColumns: _ColumnsType<GroupWithRoleGetVo> = [
         {
@@ -172,7 +172,7 @@ const Group: React.FC = () => {
         }
     }
 
-    const handleOnTableSelectChange = (selectedRowKeys: React.Key[]) => {
+    const handleOnTableSelectChange = (selectedRowKeys: Key[]) => {
         setTableSelectedItem(selectedRowKeys)
     }
 
@@ -331,7 +331,7 @@ const Group: React.FC = () => {
         }
     }
 
-    const handleOnSearchNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleOnSearchNameChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchName(e.target.value)
 
         if (isUseRegex) {
@@ -346,7 +346,7 @@ const Group: React.FC = () => {
         }
     }
 
-    const handleOnSearchNameKeyDown = (e: React.KeyboardEvent) => {
+    const handleOnSearchNameKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             getGroup()
         }

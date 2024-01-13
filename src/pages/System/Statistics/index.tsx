@@ -1,4 +1,4 @@
-import React from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/pages/system/statistics.scss'
 import Card from '@/components/common/Card'
@@ -14,14 +14,14 @@ import HardwareInfo from '@/pages/System/Statistics/HardwareInfo'
 import CPUInfo from '@/pages/System/Statistics/CPUInfo'
 import StorageInfo from '@/pages/System/Statistics/StorageInfo'
 
-interface CommonCardProps extends React.PropsWithChildren {
+interface CommonCardProps extends PropsWithChildren {
     icon: IconComponent
-    title: React.ReactNode
+    title: ReactNode
     loading?: boolean
-    expand?: React.ReactNode
+    expand?: ReactNode
 }
 
-export const CommonCard: React.FC<CommonCardProps> = (props) => {
+export const CommonCard = (props: CommonCardProps) => {
     return (
         <Card style={{ overflow: 'visible' }}>
             <FlexBox className={'common-card'}>
@@ -41,7 +41,7 @@ export const CommonCard: React.FC<CommonCardProps> = (props) => {
     )
 }
 
-const Statistics: React.FC = () => {
+const Statistics = () => {
     return (
         <>
             <FitFullscreen data-component={'system-statistics'}>

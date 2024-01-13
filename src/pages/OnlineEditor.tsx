@@ -1,9 +1,8 @@
-import React from 'react'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Playground from '@/components/Playground'
 import { initFiles, initImportMap, initTsConfig } from '@/components/Playground/files'
 
-const OnlineEditor: React.FC = () => {
+const OnlineEditor = () => {
     return (
         <>
             <FitFullscreen>

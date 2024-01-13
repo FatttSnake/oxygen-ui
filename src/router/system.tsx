@@ -1,4 +1,3 @@
-import React from 'react'
 import { getAuthRoute } from '@/util/route'
 
 const system: RouteJsonObject[] = [
@@ -6,18 +5,18 @@ const system: RouteJsonObject[] = [
         path: '',
         absolutePath: '/system',
         id: 'system',
-        component: React.lazy(() => import('@/pages/System')),
+        component: lazy(() => import('@/pages/System')),
         name: '系统管理',
-        icon: React.lazy(() => import('~icons/oxygen/setting')),
+        icon: lazy(() => import('~icons/oxygen/setting')),
         menu: true
     },
     {
         path: 'statistics',
         absolutePath: '/system/statistics',
         id: 'system-statistics',
-        component: React.lazy(() => import('@/pages/System/Statistics')),
+        component: lazy(() => import('@/pages/System/Statistics')),
         name: '系统概况',
-        icon: React.lazy(() => import('~icons/oxygen/chart')),
+        icon: lazy(() => import('~icons/oxygen/chart')),
         menu: true,
         autoHide: true
     },
@@ -25,9 +24,9 @@ const system: RouteJsonObject[] = [
         path: 'settings',
         absolutePath: '/system/settings',
         id: 'system-settings',
-        component: React.lazy(() => import('@/pages/System/Settings')),
+        component: lazy(() => import('@/pages/System/Settings')),
         name: '系统设置',
-        icon: React.lazy(() => import('~icons/oxygen/option')),
+        icon: lazy(() => import('~icons/oxygen/option')),
         menu: true,
         autoHide: true
     },
@@ -35,9 +34,9 @@ const system: RouteJsonObject[] = [
         path: 'user',
         absolutePath: '/system/user',
         id: 'system-user',
-        component: React.lazy(() => import('@/pages/System/User')),
+        component: lazy(() => import('@/pages/System/User')),
         name: '用户管理',
-        icon: React.lazy(() => import('~icons/oxygen/user')),
+        icon: lazy(() => import('~icons/oxygen/user')),
         menu: true,
         autoHide: true
     },
@@ -45,9 +44,9 @@ const system: RouteJsonObject[] = [
         path: 'role',
         absolutePath: '/system/role',
         id: 'system-role',
-        component: React.lazy(() => import('@/pages/System/Role')),
+        component: lazy(() => import('@/pages/System/Role')),
         name: '角色管理',
-        icon: React.lazy(() => import('~icons/oxygen/role')),
+        icon: lazy(() => import('~icons/oxygen/role')),
         menu: true,
         autoHide: true
     },
@@ -55,9 +54,9 @@ const system: RouteJsonObject[] = [
         path: 'group',
         absolutePath: '/system/group',
         id: 'system-group',
-        component: React.lazy(() => import('@/pages/System/Group')),
+        component: lazy(() => import('@/pages/System/Group')),
         name: '群组管理',
-        icon: React.lazy(() => import('~icons/oxygen/group')),
+        icon: lazy(() => import('~icons/oxygen/group')),
         menu: true,
         autoHide: true
     },
@@ -65,9 +64,9 @@ const system: RouteJsonObject[] = [
         path: 'log',
         absolutePath: '/system/log',
         id: 'system-log',
-        component: React.lazy(() => import('@/pages/System/Log')),
+        component: lazy(() => import('@/pages/System/Log')),
         name: '系统日志',
-        icon: React.lazy(() => import('~icons/oxygen/log')),
+        icon: lazy(() => import('~icons/oxygen/log')),
         menu: true,
         autoHide: true
     },

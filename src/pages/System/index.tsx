@@ -1,4 +1,4 @@
-import React from 'react'
+import { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import '@/assets/css/pages/system/index.scss'
@@ -9,9 +9,9 @@ import Card from '@/components/common/Card'
 import Permission from '@/components/common/Permission'
 
 interface CommonCardProps
-    extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+    extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     icon: IconComponent
-    description?: React.ReactNode
+    description?: ReactNode
     options?: TiltOptions
     url?: string
 }
@@ -61,7 +61,7 @@ const CommonCard = forwardRef<HTMLDivElement, CommonCardProps>(
     }
 )
 
-const System: React.FC = () => {
+const System = () => {
     return (
         <>
             <FitFullscreen data-component={'system'}>

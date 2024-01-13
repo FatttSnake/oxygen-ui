@@ -1,4 +1,3 @@
-import React from 'react'
 import '@/assets/css/pages/tools-framework.scss'
 import { tools } from '@/router/tools'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -6,7 +5,7 @@ import Sidebar from '@/components/common/Sidebar'
 import { SidebarScrollElement } from '@/components/common/Sidebar/Scroll'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
-const ToolsFramework: React.FC = () => {
+const ToolsFramework = () => {
     const sidebarScrollRef = useRef<SidebarScrollElement>(null)
 
     const handleOnSidebarSwitch = () => {

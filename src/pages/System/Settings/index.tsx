@@ -1,4 +1,4 @@
-import React from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/pages/system/settings.scss'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -11,16 +11,16 @@ import Base from '@/pages/System/Settings/Base'
 import Mail from '@/pages/System/Settings/Mail'
 import SensitiveWord from '@/pages/System/Settings/SensitiveWord'
 
-interface SettingsCardProps extends React.PropsWithChildren {
+interface SettingsCardProps extends PropsWithChildren {
     icon: IconComponent
     title: string
     loading?: boolean
     modifyOperationCode?: string
-    expand?: React.ReactNode
+    expand?: ReactNode
     onReset?: () => void
     onSave?: () => void
 }
-export const SettingsCard: React.FC<SettingsCardProps> = (props) => {
+export const SettingsCard = (props: SettingsCardProps) => {
     return (
         <Card>
             <FlexBox className={'settings-card'}>
@@ -50,7 +50,7 @@ export const SettingsCard: React.FC<SettingsCardProps> = (props) => {
     )
 }
 
-const Settings: React.FC = () => {
+const Settings = () => {
     return (
         <>
             <FitFullscreen data-component={'system-settings'}>

@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import Icon from '@ant-design/icons'
 import { COLOR_ERROR } from '@/constants/common.constants'
 import { getRedirectUrl } from '@/util/route'
@@ -6,7 +5,7 @@ import { useUpdatedEffect } from '@/util/hooks'
 import { getAvatar, getLoginStatus, getNickname, removeToken } from '@/util/auth'
 import { r_auth_logout } from '@/services/auth'
 
-const Footer: React.FC = () => {
+const Footer = () => {
     const matches = useMatches()
     const lastMatch = matches.reduce((_, second) => second)
     const location = useLocation()

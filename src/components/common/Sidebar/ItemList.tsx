@@ -1,6 +1,6 @@
-import React from 'react'
+import { PropsWithChildren } from 'react'
 
-const ItemList: React.FC<React.PropsWithChildren> = (props) => {
+const ItemList = (props: PropsWithChildren) => {
     return <ul>{props.children}</ul>
 }
 

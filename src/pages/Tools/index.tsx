@@ -1,6 +1,4 @@
-import React from 'react'
-
-const Tools: React.FC = () => {
+const Tools = () => {
     return <></>
 }
 

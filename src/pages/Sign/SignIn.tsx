@@ -1,4 +1,3 @@
-import React, { useCallback } from 'react'
 import Icon from '@ant-design/icons'
 import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import {
@@ -17,7 +16,7 @@ import { AppContext } from '@/App'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
 
-const SignIn: React.FC = () => {
+const SignIn = () => {
     const { refreshRouter } = useContext(AppContext)
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()

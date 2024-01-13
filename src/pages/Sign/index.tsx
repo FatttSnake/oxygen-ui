@@ -1,4 +1,3 @@
-import React from 'react'
 import '@/assets/css/pages/sign.scss'
 import { useUpdatedEffect } from '@/util/hooks'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -9,7 +8,7 @@ import Verify from '@/pages/Sign/Verify'
 import Forget from '@/pages/Sign/Forget'
 import SignIn from '@/pages/Sign/SignIn'
 
-const Sign: React.FC = () => {
+const Sign = () => {
     const lastPage = useRef('none')
     const currentPage = useRef('none')
     const match = useMatches().reduce((_, second) => second)

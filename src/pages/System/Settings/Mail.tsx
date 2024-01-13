@@ -1,4 +1,3 @@
-import React from 'react'
 import Icon from '@ant-design/icons'
 import { useUpdatedEffect } from '@/util/hooks'
 import { hasPermission } from '@/util/auth'
@@ -9,7 +8,7 @@ import {
 } from '@/services/system'
 import { SettingsCard } from '@/pages/System/Settings'
 
-const Mail: React.FC = () => {
+const Mail = () => {
     const [modal, contextHolder] = AntdModal.useModal()
     const [mailForm] = AntdForm.useForm<MailSettingsParam>()
     const mailFormValues = AntdForm.useWatch([], mailForm)

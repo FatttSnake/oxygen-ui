@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { ComponentType, ForwardRefExoticComponent, Key, SVGProps } from 'react'
 import { CustomIconComponentProps } from '@ant-design/icons/es/components/Icon'
 import { TablePaginationConfig } from 'antd/lib'
 import { ColumnsType, FilterValue, SorterResult, SortOrder } from 'antd/es/table/interface'
@@ -7,8 +7,8 @@ import type { DataNode } from 'antd/es/tree'
 
 declare global {
     type IconComponent =
-        | React.ComponentType<CustomIconComponentProps | React.SVGProps<SVGSVGElement>>
-        | React.ForwardRefExoticComponent<CustomIconComponentProps>
+        | ComponentType<CustomIconComponentProps | SVGProps<SVGSVGElement>>
+        | ForwardRefExoticComponent<CustomIconComponentProps>
 
     type _TablePaginationConfig = TablePaginationConfig
 
@@ -18,7 +18,7 @@ declare global {
     type _SortOrder = SortOrder
     type _CheckboxChangeEvent = CheckboxChangeEvent
     interface _DataNode extends DataNode {
-        value: React.Key
+        value: Key
         fullTitle?: string
         parentId?: number
         children?: _DataNode[]

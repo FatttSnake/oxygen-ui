@@ -1,12 +1,12 @@
-import React from 'react'
+import { PropsWithChildren } from 'react'
 import { hasPathPermission, hasPermission } from '@/util/auth'
 
-interface PermissionProps extends React.PropsWithChildren {
+interface PermissionProps extends PropsWithChildren {
     operationCode?: string
     path?: string
 }
 
-const Permission: React.FC<PermissionProps> = (props) => {
+const Permission = (props: PermissionProps) => {
     if (
         (!props.operationCode || hasPermission(props.operationCode)) &&
         (!props.path || hasPathPermission(props.path))

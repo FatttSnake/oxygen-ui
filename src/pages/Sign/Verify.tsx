@@ -1,4 +1,3 @@
-import React from 'react'
 import {
     COLOR_BACKGROUND,
     PERMISSION_ACCOUNT_NEED_INIT,
@@ -15,7 +14,7 @@ import { AppContext } from '@/App'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
 
-const Verify: React.FC = () => {
+const Verify = () => {
     const { refreshRouter } = useContext(AppContext)
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()

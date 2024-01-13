@@ -1,4 +1,4 @@
-import React from 'react'
+import { ReactNode, MouseEvent } from 'react'
 import Icon from '@ant-design/icons'
 import Submenu from '@/components/common/Sidebar/Submenu'
 
@@ -6,15 +6,15 @@ type ItemProps = {
     icon?: IconComponent
     text?: string
     path: string
-    children?: React.ReactNode
+    children?: ReactNode
     end?: boolean
 }
 
-const Item: React.FC<ItemProps> = (props) => {
+const Item = (props: ItemProps) => {
     const [submenuTop, setSubmenuTop] = useState(0)
     const [submenuLeft, setSubmenuLeft] = useState(0)
 
-    const showSubmenu = (e: React.MouseEvent) => {
+    const showSubmenu = (e: MouseEvent) => {
         const parentElement = e.currentTarget.parentElement
         if (parentElement?.childElementCount === 2) {
             const parentClientRect = parentElement.getBoundingClientRect()

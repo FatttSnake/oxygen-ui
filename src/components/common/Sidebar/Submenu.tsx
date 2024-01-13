@@ -1,11 +1,11 @@
-import React from 'react'
+import { PropsWithChildren } from 'react'
 
-interface SidebarSubmenuProps extends React.PropsWithChildren {
+interface SidebarSubmenuProps extends PropsWithChildren {
     submenuTop: number
     submenuLeft: number
 }
 
-const Submenu: React.FC<SidebarSubmenuProps> = (props) => {
+const Submenu = (props: SidebarSubmenuProps) => {
     return (
         <ul
             className={'submenu'}

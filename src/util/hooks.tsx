@@ -1,9 +1,6 @@
-import React from 'react'
+import { DependencyList, EffectCallback } from 'react'
 
-export const useUpdatedEffect = (
-    effect: React.EffectCallback,
-    dependencies: React.DependencyList
-) => {
+export const useUpdatedEffect = (effect: EffectCallback, dependencies: DependencyList) => {
     const isFirstRender = useRef(true)
 
     useEffect(() => {

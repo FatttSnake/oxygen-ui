@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { ChangeEvent, Key, KeyboardEvent } from 'react'
 import Icon from '@ant-design/icons'
 import dayjs from 'dayjs'
 import {
@@ -36,7 +36,7 @@ interface ChangePasswordFields extends UserChangePasswordParam {
     needChangePassword: boolean
 }
 
-const User: React.FC = () => {
+const User = () => {
     const [modal, contextHolder] = AntdModal.useModal()
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -66,7 +66,7 @@ const User: React.FC = () => {
                 } 项 共 ${total} 项`
         }
     })
-    const [tableSelectedItem, setTableSelectedItem] = useState<React.Key[]>([])
+    const [tableSelectedItem, setTableSelectedItem] = useState<Key[]>([])
     const [userData, setUserData] = useState<UserWithRoleInfoVo[]>([])
     const [isLoadingUserData, setIsLoadingUserData] = useState(false)
 
@@ -254,7 +254,7 @@ const User: React.FC = () => {
         }
     }
 
-    const handleOnTableSelectChange = (selectedRowKeys: React.Key[]) => {
+    const handleOnTableSelectChange = (selectedRowKeys: Key[]) => {
         setTableSelectedItem(selectedRowKeys)
     }
 
@@ -570,7 +570,7 @@ const User: React.FC = () => {
         }
     }
 
-    const handleOnSearchValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleOnSearchValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchValue(e.target.value)
 
         if (isUseRegex) {
@@ -585,7 +585,7 @@ const User: React.FC = () => {
         }
     }
 
-    const handleOnSearchNameKeyDown = (e: React.KeyboardEvent) => {
+    const handleOnSearchNameKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             getUser()
         }

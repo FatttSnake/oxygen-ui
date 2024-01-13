@@ -1,4 +1,3 @@
-import React, { useCallback } from 'react'
 import Icon from '@ant-design/icons'
 import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import {
@@ -14,7 +13,7 @@ import { r_auth_forget, r_auth_retrieve } from '@/services/auth'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
 
-const Forget: React.FC = () => {
+const Forget = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const turnstileRef = useRef<TurnstileInstance>()

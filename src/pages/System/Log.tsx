@@ -1,4 +1,4 @@
-import React from 'react'
+import { ChangeEvent, KeyboardEvent } from 'react'
 import dayjs from 'dayjs'
 import { COLOR_FONT_SECONDARY, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
 import { useUpdatedEffect } from '@/util/hooks'
@@ -9,7 +9,7 @@ import Card from '@/components/common/Card'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 
-const Log: React.FC = () => {
+const Log = () => {
     const [logData, setLogData] = useState<SysLogGetVo[]>([])
     const [loading, setLoading] = useState(false)
     const [tableParams, setTableParams] = useState<TableParam>({
@@ -159,11 +159,11 @@ const Log: React.FC = () => {
         }
     }
 
-    const handleOnSearchUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleOnSearchUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchRequestUrl(e.target.value)
     }
 
-    const handleOnSearchUrlKeyDown = (e: React.KeyboardEvent) => {
+    const handleOnSearchUrlKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             getLog()
         }

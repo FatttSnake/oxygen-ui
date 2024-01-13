@@ -1,4 +1,4 @@
-import React from 'react'
+import { Key } from 'react'
 import {
     URL_SYS_USER_INFO,
     URL_SYS_USER,
@@ -34,7 +34,7 @@ export const r_sys_user_change_password = (param: UserChangePasswordParam) =>
 
 export const r_sys_user_delete = (id: string) => request.delete(`${URL_SYS_USER}/${id}`)
 
-export const r_sys_user_delete_list = (ids: React.Key[]) => request.delete(URL_SYS_USER, { ids })
+export const r_sys_user_delete_list = (ids: Key[]) => request.delete(URL_SYS_USER, { ids })
 
 export const r_sys_power_get_list = () => request.get<PowerSetVo>(URL_SYS_POWER_LIST)
 
@@ -52,7 +52,7 @@ export const r_sys_role_update = (param: RoleAddEditParam) => request.put(URL_SY
 
 export const r_sys_role_delete = (id: string) => request.delete(`${URL_SYS_ROLE}/${id}`)
 
-export const r_sys_role_delete_list = (ids: React.Key[]) => request.delete(URL_SYS_ROLE, { ids })
+export const r_sys_role_delete_list = (ids: Key[]) => request.delete(URL_SYS_ROLE, { ids })
 
 export const r_sys_group_get = (param: GroupGetParam) =>
     request.get<PageVo<GroupWithRoleGetVo>>(URL_SYS_GROUP, param)
@@ -68,7 +68,7 @@ export const r_sys_group_update = (param: GroupAddEditParam) => request.put(URL_
 
 export const r_sys_group_delete = (id: string) => request.delete(`${URL_SYS_GROUP}/${id}`)
 
-export const r_sys_group_delete_list = (ids: React.Key[]) => request.delete(URL_SYS_GROUP, { ids })
+export const r_sys_group_delete_list = (ids: Key[]) => request.delete(URL_SYS_GROUP, { ids })
 
 export const r_sys_log_get = (param: SysLogGetParam) =>
     request.get<PageVo<SysLogGetVo>>(URL_SYS_LOG, param)

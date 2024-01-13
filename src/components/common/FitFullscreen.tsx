@@ -1,8 +1,8 @@
-import React from 'react'
+import { DetailedHTMLProps, HTMLAttributes } from 'react'
 import '@/assets/css/components/common/fit-fullscreen.scss'
 
 interface FitFullscreenProps
-    extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+    extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     zIndex?: number
     backgroundColor?: string
 }

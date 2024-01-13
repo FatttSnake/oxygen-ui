@@ -1,4 +1,3 @@
-import React from 'react'
 import Icon from '@ant-design/icons'
 import * as echarts from 'echarts/core'
 import { useUpdatedEffect } from '@/util/hooks'
@@ -8,7 +7,7 @@ import FlexBox from '@/components/common/FlexBox'
 import { getTooltipTimeFormatter, lineEChartsBaseOption } from '@/pages/System/Statistics/shared'
 import { CommonCard } from '@/pages/System/Statistics'
 
-const ActiveInfo: React.FC = () => {
+const ActiveInfo = () => {
     const activeInfoDivRef = useRef<HTMLDivElement>(null)
     const activeInfoEChartsRef = useRef<echarts.EChartsType | null>(null)
     const [isLoading, setIsLoading] = useState(false)

@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react'
 import * as echarts from 'echarts/core'
 import { BarSeriesOption } from 'echarts/charts'
 import { formatByteSize } from '@/util/common'
@@ -12,7 +11,7 @@ import {
 } from '@/pages/System/Statistics/shared'
 import { CommonCard } from '@/pages/System/Statistics'
 
-const StorageInfo: React.FC = () => {
+const StorageInfo = () => {
     const keyDivRef = useRef<HTMLDivElement>(null)
     const percentDivRef = useRef<HTMLDivElement>(null)
     const storageInfoDivRef = useRef<HTMLDivElement>(null)

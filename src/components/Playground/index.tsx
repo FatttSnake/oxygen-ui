@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import '@/components/Playground/playground.scss'
 import { useUpdatedEffect } from '@/util/hooks'
 import { IFiles, IImportMap, ITsConfig } from '@/components/Playground/shared'
@@ -17,11 +16,7 @@ interface PlaygroundProps {
     initTsConfigRaw: string
 }
 
-const Playground: React.FC<PlaygroundProps> = ({
-    initFiles,
-    initImportMapRaw,
-    initTsConfigRaw
-}) => {
+const Playground = ({ initFiles, initImportMapRaw, initTsConfigRaw }: PlaygroundProps) => {
     const [files, setFiles] = useState(initFiles)
     const [selectedFileName, setSelectedFileName] = useState(MAIN_FILE_NAME)
     const [importMapRaw, setImportMapRaw] = useState<string>(initImportMapRaw)

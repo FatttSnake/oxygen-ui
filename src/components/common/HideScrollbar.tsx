@@ -1,8 +1,8 @@
-import React from 'react'
+import { TouchEvent, MouseEvent, KeyboardEvent, DetailedHTMLProps, HTMLAttributes } from 'react'
 import '@/assets/css/components/common/hide-scrollbar.scss'
 
 interface HideScrollbarProps
-    extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+    extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     isPreventScroll?: boolean
     isPreventVerticalScroll?: boolean
     isPreventHorizontalScroll?: boolean
@@ -210,7 +210,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
         }, [autoHideWaitingTime, horizontalScrollbarPosition])
 
         const handleDefaultTouchStart = useCallback(
-            (event: React.TouchEvent) => {
+            (event: TouchEvent) => {
                 if (event.touches.length !== 1 || isPreventScroll) {
                     lastTouchPositionRef.current = { x: -1, y: -1 }
                     return
@@ -223,7 +223,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
         )
 
         const handleDefaultTouchmove = useCallback(
-            (event: React.TouchEvent) => {
+            (event: TouchEvent) => {
                 if (event.touches.length !== 1 || isPreventScroll) {
                     lastTouchPositionRef.current = { x: -1, y: -1 }
                     return
@@ -252,7 +252,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
             [isPreventHorizontalScroll, isPreventScroll, isPreventVerticalScroll]
         )
 
-        const handleDefaultMouseDown = (event: React.MouseEvent) => {
+        const handleDefaultMouseDown = (event: MouseEvent) => {
             if (isPreventAnyScroll)
                 if (event.button === 1) {
                     event.preventDefault()
@@ -260,7 +260,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
         }
 
         const handleDefaultKeyDown = useCallback(
-            (event: React.KeyboardEvent) => {
+            (event: KeyboardEvent) => {
                 if (
                     isPreventScroll &&
                     [
@@ -297,7 +297,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
         )
 
         const handleScrollbarMouseEvent = (eventFlag: string, scrollbarFlag: string) => {
-            return (event: React.MouseEvent) => {
+            return (event: MouseEvent) => {
                 switch (eventFlag) {
                     case 'down':
                         lastScrollbarClickPositionRef.current = {
@@ -348,7 +348,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
         }
 
         const handleScrollbarTouchEvent = (eventFlag: string, scrollbarFlag: string) => {
-            return (event: React.TouchEvent) => {
+            return (event: TouchEvent) => {
                 switch (eventFlag) {
                     case 'start':
                         if (event.touches.length !== 1) {

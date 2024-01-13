@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { ChangeEvent } from 'react'
 import Icon from '@ant-design/icons'
 import { DATABASE_DUPLICATE_KEY, DATABASE_INSERT_SUCCESS } from '@/constants/common.constants'
 import { useUpdatedEffect } from '@/util/hooks'
@@ -10,7 +10,7 @@ import {
 } from '@/services/system'
 import { SettingsCard } from '@/pages/System/Settings'
 
-const SensitiveWord: React.FC = () => {
+const SensitiveWord = () => {
     const [dataSource, setDataSource] = useState<SensitiveWordVo[]>()
     const [targetKeys, setTargetKeys] = useState<string[]>([])
     const [selectedKeys, setSelectedKeys] = useState<string[]>([])
@@ -64,7 +64,7 @@ const SensitiveWord: React.FC = () => {
         })
     }
 
-    const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
         setNewWord(e.target.value)
     }
 

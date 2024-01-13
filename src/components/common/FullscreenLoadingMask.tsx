@@ -1,10 +1,9 @@
-import React from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/components/common/fullscreen-loading-mask.scss'
 import { COLOR_FONT_MAIN } from '@/constants/common.constants'
 import FitFullscreen from '@/components/common/FitFullscreen'
 
-const FullscreenLoadingMask: React.FC = () => {
+const FullscreenLoadingMask = () => {
     const loadingIcon = (
         <>
             <Icon

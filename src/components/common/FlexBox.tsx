@@ -1,8 +1,7 @@
-import React from 'react'
+import { DetailedHTMLProps, HTMLAttributes } from 'react'
 import '@/assets/css/components/common/flex-box.scss'
 
-interface FlexBoxProps
-    extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+interface FlexBoxProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     direction?: 'horizontal' | 'vertical'
     gap?: number
 }

@@ -1,4 +1,3 @@
-import React from 'react'
 import * as echarts from 'echarts/core'
 import { BarSeriesOption } from 'echarts/charts'
 import { useUpdatedEffect } from '@/util/hooks'
@@ -11,7 +10,7 @@ import {
 } from '@/pages/System/Statistics/shared'
 import { CommonCard } from '@/pages/System/Statistics'
 
-const CPUInfo: React.FC = () => {
+const CPUInfo = () => {
     const keyDivRef = useRef<HTMLDivElement>(null)
     const percentDivRef = useRef<HTMLDivElement>(null)
     const cpuInfoDivRef = useRef<HTMLDivElement>(null)

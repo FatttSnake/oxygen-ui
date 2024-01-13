@@ -1,4 +1,3 @@
-import React from 'react'
 import _ from 'lodash'
 import '@/components/Playground/CodeEditor/code-editor.scss'
 import FlexBox from '@/components/common/FlexBox'
@@ -29,7 +28,7 @@ interface CodeEditorProps {
     onError?: (msg: string) => void
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({
+const CodeEditor = ({
     theme,
     tsConfig,
     files,
@@ -44,7 +43,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     onChangeFileContent,
     onError,
     ...props
-}) => {
+}: CodeEditorProps) => {
     const filteredFilesName = getFileNameList(files).filter(
         (item) => ![IMPORT_MAP_FILE_NAME, TS_CONFIG_FILE_NAME].includes(item) && !files[item].hidden
     )

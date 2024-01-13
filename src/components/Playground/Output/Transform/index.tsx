@@ -1,4 +1,3 @@
-import React from 'react'
 import MonacoEditor from '@monaco-editor/react'
 import { Loader } from 'esbuild-wasm'
 import '@/components/Playground/Output/Transform/transform.scss'
@@ -13,7 +12,7 @@ interface OutputProps {
     theme?: ITheme
 }
 
-const Transform: React.FC<OutputProps> = ({ file, theme }) => {
+const Transform = ({ file, theme }: OutputProps) => {
     const [compiledCode, setCompiledCode] = useState('')
     const [errorMsg, setErrorMsg] = useState('')
 

@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom/client'
+import { createRoot } from 'react-dom/client'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 import { floor } from 'lodash'
 
@@ -47,7 +47,7 @@ export const showLoadingMask = (id: string) => {
         'position: fixed; width: 100vw; height: 100vh; z-index: 10000; left: 0; top: 0;'
     )
 
-    return ReactDOM.createRoot(container).render(<FullscreenLoadingMask />)
+    return createRoot(container).render(<FullscreenLoadingMask />)
 }
 
 export const removeLoadingMask = (id: string) => {

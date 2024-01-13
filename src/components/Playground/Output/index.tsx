@@ -1,4 +1,3 @@
-import React from 'react'
 import FlexBox from '@/components/common/FlexBox'
 import { IFiles, IImportMap } from '@/components/Playground/shared'
 import FileSelector from '@/components/Playground/CodeEditor/FileSelector'
@@ -11,7 +10,7 @@ interface OutputProps {
     importMap: IImportMap
 }
 
-const Output: React.FC<OutputProps> = ({ files, selectedFileName, importMap }) => {
+const Output = ({ files, selectedFileName, importMap }: OutputProps) => {
     const [selectedTab, setSelectedTab] = useState('Preview')
 
     return (

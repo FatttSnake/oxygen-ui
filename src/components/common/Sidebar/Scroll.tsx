@@ -1,11 +1,11 @@
-import React from 'react'
+import { PropsWithChildren } from 'react'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 
 export interface SidebarScrollElement {
     refreshLayout(): void
 }
 
-const Scroll = forwardRef<SidebarScrollElement, React.PropsWithChildren>((props, ref) => {
+const Scroll = forwardRef<SidebarScrollElement, PropsWithChildren>((props, ref) => {
     useImperativeHandle<SidebarScrollElement, SidebarScrollElement>(ref, () => {
         return {
             refreshLayout() {
