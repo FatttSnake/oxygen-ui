@@ -1,16 +1,13 @@
 import { strFromU8, strToU8, unzlibSync, zlibSync } from 'fflate'
-import { IFile, IFiles, IImportMap, ILanguage, ITsConfig } from '@/components/Playground/shared'
-import AppCss from '@/components/Playground/template/src/App.css?raw'
-import App from '@/components/Playground/template/src/App.tsx?raw'
-import main from '@/components/Playground/template/src/main.tsx?raw'
-import tsconfigSchema from '@/components/Playground/tsconfig-schema.json'
-import importMapSchema from '@/components/Playground/import-map-schema.json'
 import { languages } from 'monaco-editor'
 import DiagnosticsOptions = languages.json.DiagnosticsOptions
-import ScriptTarget = languages.typescript.ScriptTarget
-import ModuleKind = languages.typescript.ModuleKind
-import ModuleResolutionKind = languages.typescript.ModuleResolutionKind
-import JsxEmit = languages.typescript.JsxEmit
+import { IFile, IFiles, IImportMap, ILanguage, ITsconfig } from '@/components/Playground/shared'
+import initTsconfigFile from '@/components/Playground/templates/init/tsconfig.json'
+import initImportMapFile from '@/components/Playground/templates/init/import-map.json'
+import main from '@/components/Playground/templates/init/main.tsx?raw'
+import App from '@/components/Playground/templates/init/App.tsx?raw'
+import tsconfigSchema from '@/components/Playground/tsconfig-schema.json'
+import importMapSchema from '@/components/Playground/import-map-schema.json'
 
 export const TS_CONFIG_FILE_NAME = 'tsconfig.json'
 export const MAIN_FILE_NAME = 'App.tsx'
@@ -138,39 +135,9 @@ export const initFiles: IFiles = getFilesFromUrl() || {
         name: MAIN_FILE_NAME,
         language: fileNameToLanguage(MAIN_FILE_NAME),
         value: App
-    },
-    'App.css': {
-        name: 'App.css',
-        language: 'css',
-        value: AppCss
     }
 }
 
-export const initImportMap: IImportMap = {
-    imports: {
-        react: 'https://esm.sh/react@18.2.0',
-        'react-dom/client': 'https://esm.sh/react-dom@18.2.0'
-    }
-}
+export const initImportMap: IImportMap = initImportMapFile
 
-export const initTsConfig: ITsConfig = {
-    compilerOptions: {
-        target: ScriptTarget.ES2020,
-        useDefineForClassFields: true,
-        module: ModuleKind.ESNext,
-        skipLibCheck: true,
-        moduleResolution: ModuleResolutionKind.NodeJs,
-        allowImportingTsExtensions: true,
-        resolveJsonModule: true,
-        isolatedModules: true,
-        noEmit: true,
-        jsx: JsxEmit.ReactJSX,
-        strict: true,
-        noUnusedLocals: true,
-        noUnusedParameters: true,
-        noFallthroughCasesInSwitch: true,
-        composite: true,
-        types: ['node'],
-        allowSyntheticDefaultImports: true
-    }
-}
+export const initTsconfig: ITsconfig = initTsconfigFile

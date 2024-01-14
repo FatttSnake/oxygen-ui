@@ -2,13 +2,13 @@ import { editor, Selection } from 'monaco-editor'
 import MonacoEditor, { Monaco } from '@monaco-editor/react'
 import '@/components/Playground/CodeEditor/Editor/editor.scss'
 import '@/components/Playground/CodeEditor/Editor/loader'
-import { IEditorOptions, IFiles, ITheme, ITsConfig } from '@/components/Playground/shared'
+import { IEditorOptions, IFiles, ITheme, ITsconfig } from '@/components/Playground/shared'
 import { fileNameToLanguage, tsconfigJsonDiagnosticsOptions } from '@/components/Playground/files'
 import { useEditor, useTypesProgress } from '@/components/Playground/CodeEditor/Editor/hooks'
 import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
 
 interface EditorProps {
-    tsConfig?: ITsConfig
+    tsconfig?: ITsconfig
     files?: IFiles
     selectedFileName?: string
     readonly?: boolean
@@ -19,7 +19,7 @@ interface EditorProps {
 }
 
 const Editor = ({
-    tsConfig,
+    tsconfig,
     files = {},
     selectedFileName = '',
     readonly,
@@ -43,9 +43,9 @@ const Editor = ({
 
     const handleOnEditorWillMount = (monaco: Monaco) => {
         monaco.languages.json.jsonDefaults.setDiagnosticsOptions(tsconfigJsonDiagnosticsOptions)
-        tsConfig &&
+        tsconfig &&
             monaco.languages.typescript.typescriptDefaults.setCompilerOptions(
-                tsConfig.compilerOptions
+                tsconfig.compilerOptions
             )
 
         files &&
@@ -93,11 +93,11 @@ const Editor = ({
     }, [file.name])
 
     useEffect(() => {
-        tsConfig &&
+        tsconfig &&
             monacoRef.current?.languages.typescript.typescriptDefaults.setCompilerOptions(
-                tsConfig.compilerOptions
+                tsconfig.compilerOptions
             )
-    }, [tsConfig])
+    }, [tsconfig])
 
     return (
         <>

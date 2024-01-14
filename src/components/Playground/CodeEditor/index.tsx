@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import '@/components/Playground/CodeEditor/code-editor.scss'
 import FlexBox from '@/components/common/FlexBox'
-import { IEditorOptions, IFiles, ITheme, ITsConfig } from '@/components/Playground/shared'
+import { IEditorOptions, IFiles, ITheme, ITsconfig } from '@/components/Playground/shared'
 import {
     fileNameToLanguage,
     getFileNameList,
@@ -13,7 +13,7 @@ import Editor from '@/components/Playground/CodeEditor/Editor'
 
 interface CodeEditorProps {
     theme?: ITheme
-    tsConfig?: ITsConfig
+    tsconfig?: ITsconfig
     files: IFiles
     readonly?: boolean
     readonlyFiles?: string[]
@@ -30,7 +30,7 @@ interface CodeEditorProps {
 
 const CodeEditor = ({
     theme,
-    tsConfig,
+    tsconfig,
     files,
     readonly,
     readonlyFiles,
@@ -133,7 +133,7 @@ const CodeEditor = ({
                     onError={handleOnError}
                 />
                 <Editor
-                    tsConfig={tsConfig}
+                    tsconfig={tsconfig}
                     theme={theme}
                     selectedFileName={
                         onSelectedFileChange ? propsSelectedFileName : selectedFileName

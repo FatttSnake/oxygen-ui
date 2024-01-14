@@ -50,6 +50,8 @@ export const useEditor = () => {
 
         onWatch(typeHelper)
 
+        typeHelper.acquireType(`import React from 'react'`)
+
         editor.onDidChangeModelContent(() => {
             typeHelper.acquireType(editor.getValue())
         })

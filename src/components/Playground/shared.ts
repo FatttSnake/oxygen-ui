@@ -18,7 +18,7 @@ export interface IImportMap {
     imports: Record<string, string>
 }
 
-export interface ITsConfig {
+export interface ITsconfig {
     compilerOptions: CompilerOptions
 }
 

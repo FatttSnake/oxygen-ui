@@ -88,7 +88,7 @@ const FileSelector = ({
         onChange?.(IMPORT_MAP_FILE_NAME)
     }
 
-    const editTsConfig = () => {
+    const editTsconfig = () => {
         if (hasEditing) {
             return
         }
@@ -200,7 +200,7 @@ const FileSelector = ({
                             <Item
                                 value={'tsconfig.json'}
                                 active={selectedFileName === TS_CONFIG_FILE_NAME}
-                                onClick={editTsConfig}
+                                onClick={editTsconfig}
                                 readonly
                             />
                         )}

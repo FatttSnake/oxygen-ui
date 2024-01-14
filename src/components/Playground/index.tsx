@@ -1,6 +1,6 @@
 import '@/components/Playground/playground.scss'
 import { useUpdatedEffect } from '@/util/hooks'
-import { IFiles, IImportMap, ITsConfig } from '@/components/Playground/shared'
+import { IFiles, IImportMap, ITsconfig } from '@/components/Playground/shared'
 import {
     IMPORT_MAP_FILE_NAME,
     MAIN_FILE_NAME,
@@ -13,16 +13,16 @@ import Output from '@/components/Playground/Output'
 interface PlaygroundProps {
     initFiles: IFiles
     initImportMapRaw: string
-    initTsConfigRaw: string
+    initTsconfigRaw: string
 }
 
-const Playground = ({ initFiles, initImportMapRaw, initTsConfigRaw }: PlaygroundProps) => {
+const Playground = ({ initFiles, initImportMapRaw, initTsconfigRaw }: PlaygroundProps) => {
     const [files, setFiles] = useState(initFiles)
     const [selectedFileName, setSelectedFileName] = useState(MAIN_FILE_NAME)
     const [importMapRaw, setImportMapRaw] = useState<string>(initImportMapRaw)
     const [importMap, setImportMap] = useState<IImportMap>()
-    const [tsConfigRaw, setTsConfigRaw] = useState<string>(initTsConfigRaw)
-    const [tsConfig, setTsConfig] = useState<ITsConfig>()
+    const [tsconfigRaw, setTsconfigRaw] = useState<string>(initTsconfigRaw)
+    const [tsconfig, setTsconfig] = useState<ITsconfig>()
 
     if (!importMap) {
         try {
@@ -31,11 +31,11 @@ const Playground = ({ initFiles, initImportMapRaw, initTsConfigRaw }: Playground
             setImportMap({ imports: {} })
         }
     }
-    if (!tsConfig) {
+    if (!tsconfig) {
         try {
-            setTsConfig(JSON.parse(tsConfigRaw) as ITsConfig)
+            setTsconfig(JSON.parse(tsconfigRaw) as ITsconfig)
         } catch (e) {
-            setTsConfig({ compilerOptions: {} })
+            setTsconfig({ compilerOptions: {} })
         }
     }
 
@@ -45,7 +45,7 @@ const Playground = ({ initFiles, initImportMapRaw, initTsConfigRaw }: Playground
             return
         }
         if (fileName === TS_CONFIG_FILE_NAME) {
-            setTsConfigRaw(content)
+            setTsconfigRaw(content)
             return
         }
 
@@ -64,16 +64,16 @@ const Playground = ({ initFiles, initImportMapRaw, initTsConfigRaw }: Playground
 
     useUpdatedEffect(() => {
         try {
-            setTsConfig(JSON.parse(tsConfigRaw) as ITsConfig)
+            setTsconfig(JSON.parse(tsconfigRaw) as ITsconfig)
         } catch (e) {
             /* empty */
         }
-    }, [tsConfigRaw])
+    }, [tsconfigRaw])
 
     return (
         <FlexBox data-component={'playground'} direction={'horizontal'}>
             <CodeEditor
-                tsConfig={tsConfig}
+                tsconfig={tsconfig}
                 files={{
                     ...files,
                     'import-map.json': {
@@ -84,7 +84,7 @@ const Playground = ({ initFiles, initImportMapRaw, initTsConfigRaw }: Playground
                     'tsconfig.json': {
                         name: TS_CONFIG_FILE_NAME,
                         language: 'json',
-                        value: tsConfigRaw
+                        value: tsconfigRaw
                     }
                 }}
                 selectedFileName={selectedFileName}

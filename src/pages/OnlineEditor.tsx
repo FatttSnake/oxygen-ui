@@ -1,6 +1,6 @@
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Playground from '@/components/Playground'
-import { initFiles, initImportMap, initTsConfig } from '@/components/Playground/files'
+import { initFiles, initImportMap, initTsconfig } from '@/components/Playground/files'
 
 const OnlineEditor = () => {
     return (
@@ -9,7 +9,7 @@ const OnlineEditor = () => {
                 <Playground
                     initFiles={initFiles}
                     initImportMapRaw={JSON.stringify(initImportMap, null, 2)}
-                    initTsConfigRaw={JSON.stringify(initTsConfig, null, 2)}
+                    initTsconfigRaw={JSON.stringify(initTsconfig, null, 2)}
                 />
             </FitFullscreen>
         </>
