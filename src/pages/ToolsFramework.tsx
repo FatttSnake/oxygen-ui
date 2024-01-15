@@ -23,7 +23,7 @@ const ToolsFramework = () => {
                             <Sidebar.Item end path={''} icon={tools[0].icon} text={tools[0].name} />
                             <Sidebar.Item
                                 end
-                                path={'all'}
+                                path={'store'}
                                 icon={tools[1].icon}
                                 text={tools[1].name}
                             />
@@ -34,7 +34,7 @@ const ToolsFramework = () => {
                                 {tools.map((tool) => {
                                     return tool.menu &&
                                         tool.id !== 'tools' &&
-                                        tool.id !== 'tools-all' ? (
+                                        tool.id !== 'tools-store' ? (
                                         <Sidebar.Item
                                             path={tool.absolutePath}
                                             icon={tool.icon}

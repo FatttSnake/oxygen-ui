@@ -1,11 +1,7 @@
 import { strFromU8, strToU8, unzlibSync, zlibSync } from 'fflate'
 import { languages } from 'monaco-editor'
 import DiagnosticsOptions = languages.json.DiagnosticsOptions
-import { IFile, IFiles, IImportMap, ILanguage, ITsconfig } from '@/components/Playground/shared'
-import initTsconfigFile from '@/components/Playground/templates/init/tsconfig.json'
-import initImportMapFile from '@/components/Playground/templates/init/import-map.json'
-import main from '@/components/Playground/templates/init/main.tsx?raw'
-import App from '@/components/Playground/templates/init/App.tsx?raw'
+import { IFile, IFiles, ILanguage } from '@/components/Playground/shared'
 import tsconfigSchema from '@/components/Playground/tsconfig-schema.json'
 import importMapSchema from '@/components/Playground/import-map-schema.json'
 
@@ -123,21 +119,3 @@ export const tsconfigJsonDiagnosticsOptions: DiagnosticsOptions = {
         }
     ]
 }
-
-export const initFiles: IFiles = getFilesFromUrl() || {
-    [ENTRY_FILE_NAME]: {
-        name: ENTRY_FILE_NAME,
-        language: fileNameToLanguage(ENTRY_FILE_NAME),
-        value: main,
-        hidden: true
-    },
-    [MAIN_FILE_NAME]: {
-        name: MAIN_FILE_NAME,
-        language: fileNameToLanguage(MAIN_FILE_NAME),
-        value: App
-    }
-}
-
-export const initImportMap: IImportMap = initImportMapFile
-
-export const initTsconfig: ITsconfig = initTsconfigFile
