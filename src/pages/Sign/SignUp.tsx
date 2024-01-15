@@ -7,7 +7,6 @@ import {
     SYSTEM_INVALID_CAPTCHA_CODE,
     SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
-import { useUpdatedEffect } from '@/util/hooks'
 import { getLoginStatus, setToken } from '@/util/auth'
 import { r_auth_register, r_auth_resend } from '@/services/auth'
 import FitCenter from '@/components/common/FitCenter'
@@ -32,7 +31,7 @@ const SignUp = () => {
     const [isSending, setIsSending] = useState(false)
     const [captchaCode, setCaptchaCode] = useState('')
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         if (!isSigningUp) {
             setCaptchaCode('')
             turnstileRef.current?.reset()
@@ -40,7 +39,7 @@ const SignUp = () => {
         }
     }, [isSigningUp])
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         if (location.pathname !== '/register') {
             return
         }

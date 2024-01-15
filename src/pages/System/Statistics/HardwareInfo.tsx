@@ -1,4 +1,3 @@
-import { useUpdatedEffect } from '@/util/hooks'
 import { r_sys_statistics_hardware } from '@/services/system'
 import FlexBox from '@/components/common/FlexBox'
 import { CommonCard } from '@/pages/System/Statistics'
@@ -6,7 +5,7 @@ import { CommonCard } from '@/pages/System/Statistics'
 const HardwareInfo = () => {
     const [hardwareInfoData, setHardwareInfoData] = useState<HardwareInfoVo>()
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         void r_sys_statistics_hardware().then((res) => {
             const response = res.data
             if (response.success) {

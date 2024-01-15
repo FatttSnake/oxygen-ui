@@ -1,5 +1,4 @@
 import Icon from '@ant-design/icons'
-import { useUpdatedEffect } from '@/util/hooks'
 import { hasPermission } from '@/util/auth'
 import {
     r_sys_settings_mail_get,
@@ -95,7 +94,7 @@ const Mail = () => {
         })
     }
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         getMailSettings()
     }, [])
 

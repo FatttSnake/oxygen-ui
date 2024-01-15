@@ -1,7 +1,6 @@
 import { ChangeEvent, KeyboardEvent } from 'react'
 import dayjs from 'dayjs'
 import { COLOR_FONT_SECONDARY, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
-import { useUpdatedEffect } from '@/util/hooks'
 import { dayjsToUtc, utcToLocalTime } from '@/util/datetime'
 import { r_sys_log_get } from '@/services/system'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -223,7 +222,7 @@ const Log = () => {
             })
     }
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         getLog()
     }, [
         JSON.stringify(tableParams.filters),

@@ -10,7 +10,6 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { useUpdatedEffect } from '@/util/hooks'
 import { utcToLocalTime } from '@/util/datetime'
 import { hasPermission, powerListToPowerTree } from '@/util/auth'
 import {
@@ -493,7 +492,7 @@ const Role = () => {
         }
     }, [formValues])
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         getRole()
     }, [
         JSON.stringify(tableParams.filters),

@@ -11,7 +11,6 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { useUpdatedEffect } from '@/util/hooks'
 import { hasPermission } from '@/util/auth'
 import { utcToLocalTime, isPastTime, localTimeToUtc, dayjsToUtc, getNowUtc } from '@/util/datetime'
 import {
@@ -748,7 +747,7 @@ const User = () => {
         }
     }, [formValues])
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         getUser()
     }, [
         JSON.stringify(tableParams.filters),

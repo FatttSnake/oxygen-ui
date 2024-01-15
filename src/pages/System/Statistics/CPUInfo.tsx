@@ -1,6 +1,5 @@
 import * as echarts from 'echarts/core'
 import { BarSeriesOption } from 'echarts/charts'
-import { useUpdatedEffect } from '@/util/hooks'
 import { r_sys_statistics_cpu } from '@/services/system'
 import FlexBox from '@/components/common/FlexBox'
 import {
@@ -26,7 +25,7 @@ const CPUInfo = () => {
         }
     }
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         const chartResizeObserver = new ResizeObserver(() => {
             cpuInfoEChartsRef.current.forEach((value) => value.resize())
         })
@@ -38,7 +37,7 @@ const CPUInfo = () => {
         }
     }, [cpuInfoDivRef.current])
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         const intervalId = setInterval(getCpuInfo(), parseInt(refreshInterval) * 1000)
 
         return () => {

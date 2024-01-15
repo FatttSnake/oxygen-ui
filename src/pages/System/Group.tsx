@@ -10,7 +10,6 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { useUpdatedEffect } from '@/util/hooks'
 import { hasPermission } from '@/util/auth'
 import { utcToLocalTime } from '@/util/datetime'
 import {
@@ -484,7 +483,7 @@ const Group = () => {
         }
     }, [formValues])
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         getGroup()
     }, [
         JSON.stringify(tableParams.filters),

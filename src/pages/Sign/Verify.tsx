@@ -5,7 +5,6 @@ import {
     PERMISSION_VERIFY_SUCCESS,
     SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
-import { useUpdatedEffect } from '@/util/hooks'
 import { getLoginStatus, getUserInfo, requestUserInfo } from '@/util/auth'
 import { getRedirectUrl } from '@/util/route'
 import { r_auth_resend, r_auth_verify } from '@/services/auth'
@@ -26,7 +25,7 @@ const Verify = () => {
     const [avatar, setAvatar] = useState('')
     const [isVerifying, setIsVerifying] = useState(false)
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         if (location.pathname !== '/verify') {
             return
         }

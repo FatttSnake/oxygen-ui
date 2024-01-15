@@ -1,4 +1,3 @@
-import { useUpdatedEffect } from '@/util/hooks'
 import '@/components/Playground/Output/Preview/preview.scss'
 import { IFiles, IImportMap } from '@/components/Playground/shared'
 import Compiler from '@/components/Playground/compiler'
@@ -52,7 +51,7 @@ const Preview = ({ iframeKey, files, importMap }: PreviewProps) => {
         }
     }
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         window.addEventListener('message', handleMessage)
 
         return () => {
@@ -60,7 +59,7 @@ const Preview = ({ iframeKey, files, importMap }: PreviewProps) => {
         }
     }, [])
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         Compiler.compile(files, importMap)
             .then((result) => {
                 if (loaded) {
@@ -70,7 +69,7 @@ const Preview = ({ iframeKey, files, importMap }: PreviewProps) => {
                     } as IMessage)
                 }
             })
-            .catch((e) => {
+            .catch((e: Error) => {
                 setErrorMsg(`编译失败：${e.message}`)
             })
     }, [files, Compiler, loaded])

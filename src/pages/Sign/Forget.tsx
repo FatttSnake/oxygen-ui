@@ -8,7 +8,6 @@ import {
     PERMISSION_USER_NOT_FOUND,
     SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants'
-import { useUpdatedEffect } from '@/util/hooks'
 import { r_auth_forget, r_auth_retrieve } from '@/services/auth'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
@@ -45,7 +44,7 @@ const Forget = () => {
     const [captchaCode, setCaptchaCode] = useState('')
     const [retrieveCaptchaCode, setRetrieveCaptchaCode] = useState('')
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         if (!isSending) {
             setCaptchaCode('')
             turnstileRef.current?.reset()
@@ -53,7 +52,7 @@ const Forget = () => {
         }
     }, [isSending])
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         if (!isChanging) {
             setRetrieveCaptchaCode('')
             retrieveTurnstileRef.current?.reset()

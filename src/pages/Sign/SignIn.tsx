@@ -8,7 +8,6 @@ import {
     PERMISSION_USERNAME_NOT_FOUND,
     SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants'
-import { useUpdatedEffect } from '@/util/hooks'
 import { getUserInfo, setToken } from '@/util/auth'
 import { utcToLocalTime } from '@/util/datetime'
 import { r_auth_login } from '@/services/auth'
@@ -33,7 +32,7 @@ const SignIn = () => {
     const [isSigningIn, setIsSigningIn] = useState(false)
     const [captchaCode, setCaptchaCode] = useState('')
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         if (!isSigningIn) {
             setCaptchaCode('')
             turnstileRef.current?.reset()

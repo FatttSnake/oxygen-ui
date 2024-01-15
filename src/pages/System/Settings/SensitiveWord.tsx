@@ -1,7 +1,6 @@
 import { ChangeEvent } from 'react'
 import Icon from '@ant-design/icons'
 import { DATABASE_DUPLICATE_KEY, DATABASE_INSERT_SUCCESS } from '@/constants/common.constants'
-import { useUpdatedEffect } from '@/util/hooks'
 import {
     r_sys_settings_sensitive_add,
     r_sys_settings_sensitive_delete,
@@ -95,7 +94,7 @@ const SensitiveWord = () => {
             })
     }
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         getSensitiveWordSettings()
     }, [])
 

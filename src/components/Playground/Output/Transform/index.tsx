@@ -1,7 +1,6 @@
 import MonacoEditor from '@monaco-editor/react'
 import { Loader } from 'esbuild-wasm'
 import '@/components/Playground/Output/Transform/transform.scss'
-import { useUpdatedEffect } from '@/util/hooks'
 import { IFile, ITheme } from '@/components/Playground/shared'
 import { cssToJs, jsonToJs, addReactImport } from '@/components/Playground/files'
 import Compiler from '@/components/Playground/compiler'
@@ -32,7 +31,7 @@ const Transform = ({ file, theme }: OutputProps) => {
             })
     }
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         if (file) {
             try {
                 const code = file.value

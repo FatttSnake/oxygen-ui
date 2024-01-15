@@ -1,5 +1,4 @@
 import '@/assets/css/pages/sign.scss'
-import { useUpdatedEffect } from '@/util/hooks'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
@@ -16,7 +15,7 @@ const Sign = () => {
 
     const leftPage = ['register', 'verify', 'forget']
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         lastPage.current = currentPage.current
         currentPage.current = match.id
 

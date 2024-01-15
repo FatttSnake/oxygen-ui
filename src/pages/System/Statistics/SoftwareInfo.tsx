@@ -1,4 +1,3 @@
-import { useUpdatedEffect } from '@/util/hooks'
 import { utcToLocalTime } from '@/util/datetime'
 import { r_sys_statistics_software } from '@/services/system'
 import FlexBox from '@/components/common/FlexBox'
@@ -7,7 +6,7 @@ import { CommonCard } from '@/pages/System/Statistics'
 const SoftwareInfo = () => {
     const [softwareInfoData, setSoftwareInfoData] = useState<SoftwareInfoVo>()
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         void r_sys_statistics_software().then((res) => {
             const response = res.data
             if (response.success) {

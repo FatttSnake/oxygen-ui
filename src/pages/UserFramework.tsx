@@ -5,7 +5,7 @@ import FitFullscreen from '@/components/common/FitFullscreen'
 import Sidebar from '@/components/common/Sidebar'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
-const ToolsFramework = () => {
+const UserFramework = () => {
     return (
         <>
             <FitFullscreen data-component={'user-framework'} className={'flex-horizontal'}>
@@ -62,4 +62,4 @@ const ToolsFramework = () => {
     )
 }
 
-export default ToolsFramework
+export default UserFramework

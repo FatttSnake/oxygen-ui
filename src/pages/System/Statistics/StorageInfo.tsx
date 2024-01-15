@@ -1,7 +1,6 @@
 import * as echarts from 'echarts/core'
 import { BarSeriesOption } from 'echarts/charts'
 import { formatByteSize } from '@/util/common'
-import { useUpdatedEffect } from '@/util/hooks'
 import { r_sys_statistics_storage } from '@/services/system'
 import FlexBox from '@/components/common/FlexBox'
 import {
@@ -25,7 +24,7 @@ const StorageInfo = () => {
         tooltip: { valueFormatter: (value) => formatByteSize(value as number) }
     }
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         const chartResizeObserver = new ResizeObserver(() => {
             storageInfoEChartsRef.current.forEach((value) => value.resize())
         })
@@ -37,7 +36,7 @@ const StorageInfo = () => {
         }
     }, [storageInfoDivRef.current])
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         const intervalId = setInterval(getStorageInfo(), parseInt(refreshInterval) * 1000)
 
         return () => {

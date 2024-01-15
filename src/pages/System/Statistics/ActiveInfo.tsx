@@ -1,6 +1,5 @@
 import Icon from '@ant-design/icons'
 import * as echarts from 'echarts/core'
-import { useUpdatedEffect } from '@/util/hooks'
 import { getTimesBetweenTwoTimes } from '@/util/datetime'
 import { r_sys_statistics_active } from '@/services/system'
 import FlexBox from '@/components/common/FlexBox'
@@ -13,7 +12,7 @@ const ActiveInfo = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [scope, setScope] = useState('WEAK')
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         const chartResizeObserver = new ResizeObserver(() => {
             activeInfoEChartsRef.current?.resize()
         })
@@ -25,7 +24,7 @@ const ActiveInfo = () => {
         }
     }, [isLoading])
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         getActiveInfo()
     }, [])
 

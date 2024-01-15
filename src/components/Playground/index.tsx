@@ -1,5 +1,4 @@
 import '@/components/Playground/playground.scss'
-import { useUpdatedEffect } from '@/util/hooks'
 import { IFiles, IImportMap, ITsconfig } from '@/components/Playground/shared'
 import {
     IMPORT_MAP_FILE_NAME,
@@ -54,7 +53,7 @@ const Playground = ({ initFiles, initImportMapRaw, initTsconfigRaw }: Playground
         setFiles(files)
     }
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         try {
             setImportMap(JSON.parse(importMapRaw) as IImportMap)
         } catch (e) {
@@ -62,7 +61,7 @@ const Playground = ({ initFiles, initImportMapRaw, initTsconfigRaw }: Playground
         }
     }, [importMapRaw])
 
-    useUpdatedEffect(() => {
+    useEffect(() => {
         try {
             setTsconfig(JSON.parse(tsconfigRaw) as ITsconfig)
         } catch (e) {
@@ -76,12 +75,12 @@ const Playground = ({ initFiles, initImportMapRaw, initTsconfigRaw }: Playground
                 tsconfig={tsconfig}
                 files={{
                     ...files,
-                    'import-map.json': {
+                    [IMPORT_MAP_FILE_NAME]: {
                         name: IMPORT_MAP_FILE_NAME,
                         language: 'json',
                         value: importMapRaw
                     },
-                    'tsconfig.json': {
+                    [TS_CONFIG_FILE_NAME]: {
                         name: TS_CONFIG_FILE_NAME,
                         language: 'json',
                         value: tsconfigRaw
