@@ -31,6 +31,16 @@ const system: RouteJsonObject[] = [
         autoHide: true
     },
     {
+        path: 'tools',
+        absolutePath: '/system/tools',
+        id: 'system-tools',
+        component: lazy(() => import('@/pages/System/Tools')),
+        name: '工具配置',
+        icon: lazy(() => import('~icons/oxygen/tool')),
+        menu: true,
+        autoHide: true
+    },
+    {
         path: 'user',
         absolutePath: '/system/user',
         id: 'system-user',
