@@ -603,7 +603,7 @@ const Role = () => {
     )
 
     const addAndEditForm = (
-        <AntdForm form={form} disabled={isSubmitting}>
+        <AntdForm form={form} disabled={isSubmitting} layout={'vertical'}>
             <AntdForm.Item hidden={!isDrawerEdit} name={'id'} label={'ID'}>
                 <AntdInput disabled />
             </AntdForm.Item>
@@ -627,10 +627,10 @@ const Role = () => {
             <AntdForm.Item
                 valuePropName={'checked'}
                 name={'enable'}
-                label={'启用'}
+                label={'状态'}
                 rules={[{ required: true, type: 'boolean' }]}
             >
-                <AntdSwitch />
+                <AntdSwitch checkedChildren={'启用'} unCheckedChildren={'禁用'} />
             </AntdForm.Item>
         </AntdForm>
     )
@@ -641,7 +641,7 @@ const Role = () => {
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar
-                    autoHideWaitingTime={500}
+                    autoHideWaitingTime={1000}
                 >
                     <FlexBox gap={20}>
                         {toolbar}
@@ -651,7 +651,6 @@ const Role = () => {
             </FitFullscreen>
             <AntdDrawer
                 title={isDrawerEdit ? '编辑角色' : '添加角色'}
-                width={'36vw'}
                 onClose={handleOnDrawerClose}
                 open={isDrawerOpen}
                 closable={!isSubmitting}

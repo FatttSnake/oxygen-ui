@@ -65,7 +65,7 @@ const System = () => {
     return (
         <>
             <FitFullscreen data-component={'system'}>
-                <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
+                <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         <Permission path={'/system/statistics'}>
                             <CommonCard icon={IconOxygenAnalysis} url={'statistics'}>

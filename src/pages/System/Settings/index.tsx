@@ -54,7 +54,7 @@ const Settings = () => {
     return (
         <>
             <FitFullscreen data-component={'system-settings'}>
-                <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={500}>
+                <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         <FlexBox className={'root-col'}>
                             <Permission operationCode={'system:settings:query:base'}>

@@ -287,7 +287,7 @@ const Log = () => {
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar
-                    autoHideWaitingTime={500}
+                    autoHideWaitingTime={1000}
                 >
                     <FlexBox gap={20}>
                         {toolbar}

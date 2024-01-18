@@ -758,12 +758,7 @@ const User = () => {
     ])
 
     const addAndEditForm = (
-        <AntdForm
-            form={form}
-            disabled={isDrawerSubmitting}
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}
-        >
+        <AntdForm form={form} disabled={isDrawerSubmitting} layout={'vertical'}>
             <div
                 style={{
                     display: 'flex',
@@ -847,16 +842,11 @@ const User = () => {
                             }))}
                         />
                     </AntdForm.Item>
-                    <AntdForm.Item name={'verified'} label={'已验证'}>
-                        <AntdSwitch />
+                    <AntdForm.Item name={'verified'} label={'验证'}>
+                        <AntdSwitch checkedChildren={'已验证'} unCheckedChildren={'未验证'} />
                     </AntdForm.Item>
-                    <AntdForm.Item
-                        valuePropName={'checked'}
-                        name={'locking'}
-                        label={'锁定'}
-                        rules={[{ type: 'boolean' }]}
-                    >
-                        <AntdSwitch />
+                    <AntdForm.Item name={'locking'} label={'锁定'}>
+                        <AntdSwitch checkedChildren={'已锁定'} unCheckedChildren={'未锁定'} />
                     </AntdForm.Item>
                     <AntdForm.Item
                         name={'expiration'}
@@ -888,13 +878,8 @@ const User = () => {
                             style={{ width: '100%' }}
                         />
                     </AntdForm.Item>
-                    <AntdForm.Item
-                        valuePropName={'checked'}
-                        name={'enable'}
-                        label={'启用'}
-                        rules={[{ type: 'boolean' }]}
-                    >
-                        <AntdSwitch />
+                    <AntdForm.Item name={'enable'} label={'启用'}>
+                        <AntdSwitch checkedChildren={'启用'} unCheckedChildren={'禁用'} />
                     </AntdForm.Item>
                 </>
             )}
@@ -1012,7 +997,7 @@ const User = () => {
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar
-                    autoHideWaitingTime={500}
+                    autoHideWaitingTime={1000}
                 >
                     <FlexBox gap={20}>
                         {toolbar}
@@ -1022,7 +1007,6 @@ const User = () => {
             </FitFullscreen>
             <AntdDrawer
                 title={isDrawerEdit ? '编辑用户' : '新增用户'}
-                width={'36vw'}
                 onClose={handleOnDrawerClose}
                 open={isDrawerOpen}
                 closable={!isDrawerSubmitting}

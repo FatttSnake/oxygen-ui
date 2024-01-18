@@ -594,7 +594,7 @@ const Group = () => {
     )
 
     const addAndEditForm = (
-        <AntdForm form={form} disabled={isSubmitting}>
+        <AntdForm form={form} disabled={isSubmitting} layout={'vertical'}>
             <AntdForm.Item hidden={!isDrawerEdit} name={'id'} label={'ID'}>
                 <AntdInput disabled />
             </AntdForm.Item>
@@ -620,10 +620,10 @@ const Group = () => {
             <AntdForm.Item
                 valuePropName={'checked'}
                 name={'enable'}
-                label={'启用'}
+                label={'状态'}
                 rules={[{ required: true, type: 'boolean' }]}
             >
-                <AntdSwitch />
+                <AntdSwitch checkedChildren={'启用'} unCheckedChildren={'禁用'} />
             </AntdForm.Item>
         </AntdForm>
     )
@@ -634,7 +634,7 @@ const Group = () => {
                 <HideScrollbar
                     style={{ padding: 30 }}
                     isShowVerticalScrollbar
-                    autoHideWaitingTime={500}
+                    autoHideWaitingTime={1000}
                 >
                     <FlexBox gap={20}>
                         {toolbar}
@@ -644,7 +644,6 @@ const Group = () => {
             </FitFullscreen>
             <AntdDrawer
                 title={isDrawerEdit ? '编辑用户组' : '添加用户组'}
-                width={'36vw'}
                 onClose={handleOnDrawerClose}
                 open={isDrawerOpen}
                 closable={!isSubmitting}
