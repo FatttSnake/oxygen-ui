@@ -2,23 +2,14 @@ import '@/assets/css/pages/tools-framework.scss'
 import { tools } from '@/router/tools'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Sidebar from '@/components/common/Sidebar'
-import { SidebarScrollElement } from '@/components/common/Sidebar/Scroll'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 const ToolsFramework = () => {
-    const sidebarScrollRef = useRef<SidebarScrollElement>(null)
-
-    const handleOnSidebarSwitch = () => {
-        setTimeout(() => {
-            sidebarScrollRef.current?.refreshLayout()
-        }, 300)
-    }
-
     return (
         <>
             <FitFullscreen data-component={'tools-framework'} className={'flex-horizontal'}>
                 <div className={'left-panel'}>
-                    <Sidebar title={'氧工具'} onSidebarSwitch={handleOnSidebarSwitch}>
+                    <Sidebar title={'氧工具'}>
                         <Sidebar.ItemList>
                             <Sidebar.Item end path={''} icon={tools[0].icon} text={tools[0].name} />
                             <Sidebar.Item
@@ -29,7 +20,7 @@ const ToolsFramework = () => {
                             />
                         </Sidebar.ItemList>
                         <Sidebar.Separate style={{ marginBottom: 0 }} />
-                        <Sidebar.Scroll ref={sidebarScrollRef}>
+                        <Sidebar.Scroll>
                             <Sidebar.ItemList>
                                 {tools.map((tool) => {
                                     return tool.menu &&

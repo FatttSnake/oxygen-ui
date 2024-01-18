@@ -1,5 +1,5 @@
 const Tools = () => {
-    return <></>
+    return <>1</>
 }
 
 export default Tools

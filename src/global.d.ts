@@ -464,3 +464,63 @@ interface ActiveInfoVo {
 interface ActiveInfoGetParam {
     scope: string
 }
+
+interface ToolCategoryVo {
+    id: string
+    name: string
+    enable: boolean
+    createTime: string
+    updateTime: string
+}
+
+interface ToolCategoryAddEditParam {
+    id?: string
+    name: string
+    enable: string
+}
+
+interface ToolDataVo {
+    id: string
+    data: string
+    createTime: string
+    updateTime: string
+}
+
+interface ToolBaseVo {
+    id: string
+    name: string
+    source: ToolDataVo
+    dist: ToolDataVo
+    createTime: string
+    updateTime: string
+}
+
+interface ToolTemplateVo {
+    id: string
+    name: string
+    ver: string
+    baseId: string
+    source: ToolDataVo
+    dist: ToolDataVo
+    createTime: string
+    updateTime: string
+}
+
+interface ToolVo {
+    id: string
+    name: string
+    toolId: string
+    description: string
+    baseId: string
+    author: UserInfoVo
+    ver: string
+    privately: boolean
+    keywords: string[]
+    categories: ToolCategoryVo[]
+    source: ToolDataVo
+    dist: ToolDataVo
+    publish: boolean
+    review: number
+    createTime: string
+    updateTime: string
+}

@@ -16,7 +16,8 @@ import {
     URL_SYS_STATISTICS_ONLINE,
     URL_SYS_STATISTICS_ACTIVE,
     URL_SYS_SETTINGS_BASE,
-    URL_SYS_SETTINGS_SENSITIVE
+    URL_SYS_SETTINGS_SENSITIVE,
+    URL_SYS_TOOL_CATEGORY
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -113,3 +114,14 @@ export const r_sys_statistics_online = (param: OnlineInfoGetParam) =>
 
 export const r_sys_statistics_active = (param: ActiveInfoGetParam) =>
     request.get<ActiveInfoVo>(URL_SYS_STATISTICS_ACTIVE, param)
+
+export const r_sys_tool_category_get = () => request.get<ToolCategoryVo[]>(URL_SYS_TOOL_CATEGORY)
+
+export const r_sys_tool_category_add = (param: ToolCategoryAddEditParam) =>
+    request.post(URL_SYS_TOOL_CATEGORY, param)
+
+export const r_sys_tool_category_update = (param: ToolCategoryAddEditParam) =>
+    request.put(URL_SYS_TOOL_CATEGORY, param)
+
+export const r_sys_tool_category_delete = (id: string) =>
+    request.delete(`${URL_SYS_TOOL_CATEGORY}/${id}`)

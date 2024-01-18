@@ -10,21 +10,32 @@ const SystemFramework = () => {
             <FitFullscreen data-component={'system-framework'} className={'flex-horizontal'}>
                 <div className={'left-panel'}>
                     <Sidebar title={'系统配置'}>
-                        <Sidebar.ItemList>
-                            {getSystemRouteJson().map((value) => {
-                                return (
-                                    value.menu && (
-                                        <Sidebar.Item
-                                            end={value.id === 'system' ? true : undefined}
-                                            path={value.absolutePath}
-                                            icon={value.icon}
-                                            text={value.name}
-                                            key={value.id}
-                                        />
+                        <Sidebar.Scroll>
+                            <Sidebar.ItemList>
+                                {getSystemRouteJson().map((route) => {
+                                    return (
+                                        route.menu && (
+                                            <Sidebar.Item
+                                                end={route.id === 'system' ? true : undefined}
+                                                path={route.absolutePath}
+                                                icon={route.icon}
+                                                text={route.name}
+                                                key={route.id}
+                                            >
+                                                {route.children?.map((subRoute) => (
+                                                    <Sidebar.Item
+                                                        end
+                                                        path={subRoute.absolutePath}
+                                                        text={subRoute.name}
+                                                        key={subRoute.id}
+                                                    />
+                                                ))}
+                                            </Sidebar.Item>
+                                        )
                                     )
-                                )
-                            })}
-                        </Sidebar.ItemList>
+                                })}
+                            </Sidebar.ItemList>
+                        </Sidebar.Scroll>
                     </Sidebar>
                 </div>
                 <div className={'right-panel'}>

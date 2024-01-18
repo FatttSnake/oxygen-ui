@@ -6,7 +6,6 @@ import Preview from '@/components/Playground/Output/Preview'
 import templates from '@/components/Playground/templates.ts'
 import { useEffect } from 'react'
 import HideScrollbar from '@/components/common/HideScrollbar.tsx'
-import Icon from '@ant-design/icons'
 
 const Create = () => {
     const [form] = AntdForm.useForm<{
@@ -126,36 +125,16 @@ const Create = () => {
                                         />
                                     </AntdForm.Item>
                                     <AntdForm.Item
-                                        label={
-                                            <>
-                                                关键字
-                                                <AntdTooltip
-                                                    title={'工具搜索（每个不超过10个字符）'}
-                                                >
-                                                    <Icon
-                                                        className={'help'}
-                                                        component={IconOxygenHelp}
-                                                    />
-                                                </AntdTooltip>
-                                            </>
-                                        }
+                                        label={'关键字'}
+                                        tooltip={'工具搜索（每个不超过10个字符）'}
                                         name={'keyword'}
                                         rules={[{ required: true, message: '请输入关键字' }]}
                                     >
                                         <AntdSelect mode={'tags'} maxCount={20} />
                                     </AntdForm.Item>
                                     <AntdForm.Item
-                                        label={
-                                            <>
-                                                类别
-                                                <AntdTooltip title={'工具分类'}>
-                                                    <Icon
-                                                        className={'help'}
-                                                        component={IconOxygenHelp}
-                                                    />
-                                                </AntdTooltip>
-                                            </>
-                                        }
+                                        label={'类别'}
+                                        tooltip={'工具分类'}
                                         name={'category'}
                                         rules={[{ required: true }]}
                                     >

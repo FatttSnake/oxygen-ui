@@ -34,11 +34,48 @@ const system: RouteJsonObject[] = [
         path: 'tools',
         absolutePath: '/system/tools',
         id: 'system-tools',
-        component: lazy(() => import('@/pages/System/Tools')),
         name: '工具配置',
         icon: lazy(() => import('~icons/oxygen/tool')),
         menu: true,
-        autoHide: true
+        autoHide: true,
+        children: [
+            {
+                path: '',
+                absolutePath: '/system/tools',
+                id: 'system-tools-index',
+                component: lazy(() => import('@/pages/System/Tools')),
+                name: '工具管理',
+                menu: true,
+                autoHide: true
+            },
+            {
+                path: 'template',
+                absolutePath: '/system/tools/template',
+                id: 'system-tools-template',
+                component: lazy(() => import('@/pages/System/Tools/Template')),
+                name: '模板管理',
+                menu: true,
+                autoHide: true
+            },
+            {
+                path: 'base',
+                absolutePath: '/system/tools/base',
+                id: 'system-tools-base',
+                component: lazy(() => import('@/pages/System/Tools/Base')),
+                name: '基板管理',
+                menu: true,
+                autoHide: true
+            },
+            {
+                path: 'category',
+                absolutePath: '/system/tools/category',
+                id: 'system-tools-category',
+                component: lazy(() => import('@/pages/System/Tools/Category')),
+                name: '类别管理',
+                menu: true,
+                autoHide: true
+            }
+        ]
     },
     {
         path: 'user',

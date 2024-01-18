@@ -253,7 +253,14 @@ export const getPermissionPath = (): string[] => {
 }
 
 export const hasPathPermission = (path: string) => {
-    return getPermissionPath().indexOf(path) !== -1
+    let flag = false
+    getPermissionPath().forEach((value) => {
+        if (RegExp(value).test(path)) {
+            flag = true
+            return
+        }
+    })
+    return flag
 }
 
 export const getPermission = (): string[] => {
