@@ -17,7 +17,9 @@ import {
     URL_SYS_STATISTICS_ACTIVE,
     URL_SYS_SETTINGS_BASE,
     URL_SYS_SETTINGS_SENSITIVE,
-    URL_SYS_TOOL_CATEGORY
+    URL_SYS_TOOL_CATEGORY,
+    URL_SYS_TOOL_BASE,
+    URL_SYS_TOOL_BASE_LIST
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -125,3 +127,18 @@ export const r_sys_tool_category_update = (param: ToolCategoryAddEditParam) =>
 
 export const r_sys_tool_category_delete = (id: string) =>
     request.delete(`${URL_SYS_TOOL_CATEGORY}/${id}`)
+
+export const r_sys_tool_base_getList = () => request.get<ToolBaseVo[]>(URL_SYS_TOOL_BASE_LIST)
+
+export const r_sys_tool_base_get = () => request.get<ToolBaseVo[]>(URL_SYS_TOOL_BASE)
+
+export const r_sys_tool_base_get_one = (id: string) =>
+    request.get<ToolBaseVo>(`${URL_SYS_TOOL_BASE}/${id}`)
+
+export const r_sys_tool_base_add = (param: ToolBaseAddEditParam) =>
+    request.post(URL_SYS_TOOL_BASE, param)
+
+export const r_sys_tool_base_update = (param: ToolBaseAddEditParam) =>
+    request.put(URL_SYS_TOOL_BASE, param)
+
+export const r_sys_tool_base_delete = (id: string) => request.delete(`${URL_SYS_TOOL_BASE}/${id}`)

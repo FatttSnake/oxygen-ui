@@ -28,6 +28,7 @@ export const URL_SYS_STATISTICS_ACTIVE = `${URL_SYS_STATISTICS}/active`
 export const URL_SYS_TOOL = '/system/tool'
 export const URL_SYS_TOOL_CATEGORY = `${URL_SYS_TOOL}/category`
 export const URL_SYS_TOOL_BASE = `${URL_SYS_TOOL}/base`
+export const URL_SYS_TOOL_BASE_LIST = `${URL_SYS_TOOL_BASE}/list`
 export const URL_SYS_TOOL_TEMPLATE = `${URL_SYS_TOOL}/template`
 
 export const URL_API_V1 = '/api/v1'

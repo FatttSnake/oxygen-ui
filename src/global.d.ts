@@ -491,8 +491,17 @@ interface ToolBaseVo {
     name: string
     source: ToolDataVo
     dist: ToolDataVo
+    enable: boolean
     createTime: string
     updateTime: string
+}
+
+interface ToolBaseAddEditParam {
+    id?: string
+    name?: string
+    source?: string
+    dist?: string
+    enable?: boolean
 }
 
 interface ToolTemplateVo {
@@ -502,8 +511,19 @@ interface ToolTemplateVo {
     baseId: string
     source: ToolDataVo
     dist: ToolDataVo
+    enable: boolean
     createTime: string
     updateTime: string
+}
+
+interface ToolTemplateAddEditParam {
+    id: string
+    name: string
+    ver: string
+    baseId: string
+    source?: string
+    dist?: string
+    enable: boolean
 }
 
 interface ToolVo {

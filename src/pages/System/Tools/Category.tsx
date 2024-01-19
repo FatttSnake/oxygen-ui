@@ -38,17 +38,6 @@ const Category = () => {
         form.setFieldValue('enable', newFormValues?.enable ?? true)
     }
 
-    const handleOnEditBtnClick = (value: ToolCategoryVo) => {
-        return () => {
-            setIsDrawerEdit(true)
-            setIsDrawerOpen(true)
-            form.setFieldValue('id', value.id)
-            form.setFieldValue('name', value.name)
-            form.setFieldValue('enable', value.enable)
-            void form.validateFields()
-        }
-    }
-
     const categoryColumns: _ColumnsType<ToolCategoryVo> = [
         {
             title: 'ID',
@@ -84,7 +73,11 @@ const Category = () => {
         {
             title: (
                 <>
-                    操作 (<a onClick={handleOnAddBtnClick}>新增</a>)
+                    操作 (
+                    <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
+                        新增
+                    </a>
+                    )
                 </>
             ),
             dataIndex: 'enable',
@@ -114,6 +107,17 @@ const Category = () => {
             )
         }
     ]
+
+    const handleOnEditBtnClick = (value: ToolCategoryVo) => {
+        return () => {
+            setIsDrawerEdit(true)
+            setIsDrawerOpen(true)
+            form.setFieldValue('id', value.id)
+            form.setFieldValue('name', value.name)
+            form.setFieldValue('enable', value.enable)
+            void form.validateFields()
+        }
+    }
 
     const handleOnDeleteBtnClick = (value: ToolCategoryVo) => {
         return () => {
