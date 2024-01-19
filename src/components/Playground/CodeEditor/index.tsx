@@ -13,6 +13,7 @@ import Editor from '@/components/Playground/CodeEditor/Editor'
 
 interface CodeEditorProps {
     theme?: ITheme
+    showFileSelector?: boolean
     tsconfig?: ITsconfig
     files: IFiles
     readonly?: boolean
@@ -30,6 +31,7 @@ interface CodeEditorProps {
 
 const CodeEditor = ({
     theme,
+    showFileSelector = true,
     tsconfig,
     files,
     readonly,
@@ -119,19 +121,21 @@ const CodeEditor = ({
     return (
         <>
             <FlexBox data-component={'playground-code-editor'}>
-                <FileSelector
-                    files={files}
-                    readonly={readonly}
-                    notRemovableFiles={notRemovable}
-                    selectedFileName={
-                        onSelectedFileChange ? propsSelectedFileName : selectedFileName
-                    }
-                    onChange={handleOnChangeSelectedFile}
-                    onRemoveFile={handleOnRemoveFile}
-                    onUpdateFileName={handleOnUpdateFileName}
-                    onAddFile={handleOnAddFile}
-                    onError={handleOnError}
-                />
+                {showFileSelector && (
+                    <FileSelector
+                        files={files}
+                        readonly={readonly}
+                        notRemovableFiles={notRemovable}
+                        selectedFileName={
+                            onSelectedFileChange ? propsSelectedFileName : selectedFileName
+                        }
+                        onChange={handleOnChangeSelectedFile}
+                        onRemoveFile={handleOnRemoveFile}
+                        onUpdateFileName={handleOnUpdateFileName}
+                        onAddFile={handleOnAddFile}
+                        onError={handleOnError}
+                    />
+                )}
                 <Editor
                     tsconfig={tsconfig}
                     theme={theme}

@@ -4,6 +4,7 @@ import DiagnosticsOptions = languages.json.DiagnosticsOptions
 import { IFile, IFiles, ILanguage } from '@/components/Playground/shared'
 import tsconfigSchema from '@/components/Playground/tsconfig-schema.json'
 import importMapSchema from '@/components/Playground/import-map-schema.json'
+import { formatByteSize } from '@/util/common.tsx'
 
 export const TS_CONFIG_FILE_NAME = 'tsconfig.json'
 export const MAIN_FILE_NAME = 'App.tsx'
@@ -40,6 +41,20 @@ export const base64ToStr = (base64: string) => {
 
     return ''
 }
+
+export const getFilesSize = (files: IFiles) =>
+    formatByteSize(strToU8(JSON.stringify(files)).byteLength)
+
+export const base64ToFiles = (base64: string): IFiles => {
+    try {
+        return JSON.parse(base64ToStr(base64)) as IFiles
+    } catch (e) {
+        console.error(e)
+        return {}
+    }
+}
+
+export const filesToBase64 = (files: IFiles): string => strToBase64(JSON.stringify(files))
 
 export const getFilesFromUrl = () => {
     let files: IFiles | undefined

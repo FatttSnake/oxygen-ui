@@ -98,4 +98,7 @@ const Playground = ({ initFiles, initImportMapRaw, initTsconfigRaw }: Playground
     )
 }
 
+Playground.CodeEditor = CodeEditor
+Playground.Output = Output
+
 export default Playground

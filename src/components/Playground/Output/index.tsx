@@ -36,4 +36,7 @@ const Output = ({ files, selectedFileName, importMap }: OutputProps) => {
     )
 }
 
+Output.Preview = Preview
+Output.Transform = Transform
+
 export default Output
