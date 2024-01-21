@@ -1,8 +1,15 @@
+@use '@/assets/css/constants' as constants;
+
 [data-component=system-tools-base] {
   .root-content {
     padding: 20px;
     gap: 10px;
     height: 100%;
     width: 100%;
+
+    .has-edited::after {
+      content: '*';
+      color: constants.$font-secondary-color;
+    }
   }
 }

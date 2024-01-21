@@ -5,7 +5,7 @@ import HideScrollbar from '@/components/common/HideScrollbar.tsx'
 import Card from '@/components/common/Card.tsx'
 import CodeEditor from '@/components/Playground/CodeEditor'
 import { useState } from 'react'
-import { IFile, IFiles } from '@/components/Playground/shared.ts'
+import { IFile, IFiles, ITsconfig } from '@/components/Playground/shared.ts'
 import {
     r_sys_tool_base_add,
     r_sys_tool_base_delete,
@@ -23,26 +23,39 @@ import {
 } from '@/constants/common.constants.ts'
 import { utcToLocalTime } from '@/util/datetime.tsx'
 import Permission from '@/components/common/Permission.tsx'
-import { base64ToFiles, filesToBase64, getFilesSize } from '@/components/Playground/files.ts'
+import {
+    base64ToFiles,
+    fileNameToLanguage,
+    filesToBase64,
+    getFilesSize,
+    TS_CONFIG_FILE_NAME
+} from '@/components/Playground/files.ts'
 
 const Base = () => {
     const [modal, contextHolder] = AntdModal.useModal()
     const [form] = AntdForm.useForm<ToolBaseAddEditParam>()
     const formValues = AntdForm.useWatch([], form)
+    const [addFileForm] = AntdForm.useForm<{ fileName: string }>()
     const [newFormValues, setNewFormValues] = useState<ToolBaseAddEditParam>()
     const [isLoading, setIsLoading] = useState(false)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [isDrawerEdit, setIsDrawerEdit] = useState(false)
     const [submittable, setSubmittable] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [editingFiles, setEditingFiles] = useState<IFiles>()
+    const [editingBaseId, setEditingBaseId] = useState<string>('')
+    const [editingFiles, setEditingFiles] = useState<Record<string, IFiles>>({})
     const [editingFileName, setEditingFileName] = useState('')
-    const [hasEdited, setHasEdited] = useState(false)
+    const [hasEdited, setHasEdited] = useState<Record<string, boolean>>({})
     const [baseData, setBaseData] = useState<ToolBaseVo[]>([])
     const [baseDetailData, setBaseDetailData] = useState<Record<string, ToolBaseVo>>({})
     const [baseDetailLoading, setBaseDetailLoading] = useState<Record<string, boolean>>({})
+    const [tsconfig, setTsconfig] = useState<ITsconfig>()
 
     const handleOnAddBtnClick = () => {
+        if (Object.keys(hasEdited).length) {
+            void message.warning('新增前请保存修改')
+            return
+        }
         setIsDrawerEdit(false)
         setIsDrawerOpen(true)
         form.setFieldValue('id', undefined)
@@ -51,7 +64,14 @@ const Base = () => {
     }
 
     const baseColumns: _ColumnsType<ToolBaseVo> = [
-        { title: '名称', dataIndex: 'name' },
+        {
+            title: '名称',
+            render: (_, record) => (
+                <span className={hasEdited[record.id] ? 'has-edited' : undefined}>
+                    {record.name}
+                </span>
+            )
+        },
         {
             title: '创建时间',
             dataIndex: 'createTime',
@@ -90,6 +110,16 @@ const Base = () => {
             render: (_, record) => (
                 <>
                     <AntdSpace size={'middle'}>
+                        {hasEdited[record.id] && (
+                            <Permission operationCode={'system:tool:modify:base'}>
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnSaveBtnClick(record)}
+                                >
+                                    保存
+                                </a>
+                            </Permission>
+                        )}
                         <Permission operationCode={'system:tool:modify:base'}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
@@ -112,8 +142,42 @@ const Base = () => {
         }
     ]
 
+    const handleOnSaveBtnClick = (value: ToolBaseVo) => {
+        return () => {
+            if (isLoading) {
+                return
+            }
+            setIsLoading(true)
+
+            const source = filesToBase64(editingFiles[value.id])
+
+            void r_sys_tool_base_update({ id: value.id, source })
+                .then((res) => {
+                    const response = res.data
+                    switch (response.code) {
+                        case DATABASE_UPDATE_SUCCESS:
+                            void message.success('保存成功')
+                            delete hasEdited[value.id]
+                            setHasEdited({ ...hasEdited })
+                            getBaseDetail(value)
+                            break
+                        default:
+                            void message.error('出错了，请稍后重试')
+                    }
+                })
+                .finally(() => {
+                    setIsLoading(false)
+                })
+        }
+    }
+
     const handleOnEditBtnClick = (value: ToolBaseVo) => {
         return () => {
+            if (Object.keys(hasEdited).length) {
+                void message.warning('编辑前请保存修改')
+                return
+            }
+
             setIsDrawerEdit(true)
             setIsDrawerOpen(true)
             form.setFieldValue('id', value.id)
@@ -140,6 +204,10 @@ const Base = () => {
                                     const response = res.data
                                     if (response.code === DATABASE_DELETE_SUCCESS) {
                                         void message.success('删除成功')
+                                        setHasEdited({})
+                                        setEditingFileName('')
+                                        setEditingFiles({})
+                                        setEditingBaseId('')
                                         setTimeout(() => {
                                             getBase()
                                         })
@@ -233,14 +301,14 @@ const Base = () => {
 
     const handleOnExpand = (expanded: boolean, record: ToolBaseVo) => {
         if (!expanded) {
-            setEditingFiles(undefined)
+            setEditingFileName('')
             return
         }
         getBaseDetail(record)
     }
 
     const getBaseDetail = (record: ToolBaseVo) => {
-        if (baseDetailLoading[record.id]) {
+        if (baseDetailLoading[record.id] || hasEdited[record.id]) {
             return
         }
         setBaseDetailLoading({ ...baseDetailLoading, [record.id]: true })
@@ -270,6 +338,95 @@ const Base = () => {
             sourceFileList = Object.values(sourceFiles)
         }
 
+        const handleOnAddFile = () => {
+            if (Object.keys(hasEdited).length) {
+                void message.warning('新建文件前请先保存更改')
+                return
+            }
+
+            void modal.confirm({
+                title: '新建文件',
+                content: (
+                    <AntdForm form={addFileForm}>
+                        <AntdForm.Item
+                            name={'fileName'}
+                            label={'文件名'}
+                            style={{ marginTop: 10 }}
+                            rules={[
+                                { required: true },
+                                {
+                                    pattern: /\.(jsx|tsx|js|ts|css|json)$/,
+                                    message: '仅支持 *.jsx, *.tsx, *.js, *.ts, *.css, *.json 文件'
+                                },
+                                ({ getFieldValue }) => ({
+                                    validator() {
+                                        const newFileName = getFieldValue('fileName') as string
+                                        if (Object.keys(sourceFiles!).includes(newFileName)) {
+                                            return Promise.reject(new Error('文件已存在'))
+                                        }
+                                        return Promise.resolve()
+                                    }
+                                })
+                            ]}
+                        >
+                            <AntdInput />
+                        </AntdForm.Item>
+                    </AntdForm>
+                ),
+                onOk: () =>
+                    addFileForm.validateFields().then(
+                        () => {
+                            return new Promise((resolve) => {
+                                const newFileName = addFileForm.getFieldValue('fileName') as string
+
+                                setBaseDetailLoading({ ...baseDetailLoading, [record.id]: true })
+
+                                sourceFiles = {
+                                    ...sourceFiles,
+                                    [newFileName]: {
+                                        name: newFileName,
+                                        language: fileNameToLanguage(newFileName),
+                                        value: ''
+                                    }
+                                }
+
+                                void r_sys_tool_base_update({
+                                    id: record.id,
+                                    source: filesToBase64(sourceFiles)
+                                })
+                                    .then((res) => {
+                                        addFileForm.setFieldValue('fileName', '')
+                                        const response = res.data
+                                        switch (response.code) {
+                                            case DATABASE_UPDATE_SUCCESS:
+                                                void message.success('添加成功')
+                                                setTimeout(() => {
+                                                    getBaseDetail(record)
+                                                })
+                                                resolve(true)
+                                                break
+                                            default:
+                                                void message.error('添加失败，请稍后重试')
+                                                resolve(true)
+                                        }
+                                    })
+                                    .finally(() => {
+                                        setBaseDetailLoading({
+                                            ...baseDetailLoading,
+                                            [record.id]: false
+                                        })
+                                    })
+                            })
+                        },
+                        () => {
+                            return new Promise((_, reject) => {
+                                reject('请输入文件名')
+                            })
+                        }
+                    )
+            })
+        }
+
         const detailColumns: _ColumnsType<IFile> = [
             { title: '文件名', dataIndex: 'name' },
             {
@@ -286,18 +443,11 @@ const Base = () => {
             {
                 title: (
                     <>
-                        修改时间
-                        <br />
-                        {baseDetailVo ? utcToLocalTime(baseDetailVo.source.updateTime) : 'Unknown'}
-                    </>
-                ),
-                width: '15em',
-                align: 'center'
-            },
-            {
-                title: (
-                    <>
-                        操作 (<a style={{ color: COLOR_PRODUCTION }}>新增</a>)
+                        操作 (
+                        <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddFile}>
+                            新增
+                        </a>
+                        )
                     </>
                 ),
                 dataIndex: 'enable',
@@ -307,7 +457,10 @@ const Base = () => {
                     <>
                         <AntdSpace size={'middle'}>
                             <Permission operationCode={'system:tool:modify:category'}>
-                                <a onClick={handleOnEditFile()} style={{ color: COLOR_PRODUCTION }}>
+                                <a
+                                    onClick={handleOnEditFile(record.name)}
+                                    style={{ color: COLOR_PRODUCTION }}
+                                >
                                     编辑
                                 </a>
                             </Permission>
@@ -325,8 +478,17 @@ const Base = () => {
             }
         ]
 
-        const handleOnEditFile = () => {
-            return () => {}
+        const handleOnEditFile = (fileName: string) => {
+            return () => {
+                if (editingBaseId !== record.id) {
+                    setTsconfig(undefined)
+                }
+                if (!hasEdited[record.id]) {
+                    setEditingFiles({ ...editingFiles, [record.id]: sourceFiles! })
+                }
+                setEditingBaseId(record.id)
+                setEditingFileName(fileName)
+            }
         }
 
         const handleOnDeleteFile = (fileName: string) => {
@@ -389,6 +551,20 @@ const Base = () => {
             </Card>
         )
     }
+
+    const handleOnChangeFileContent = (_content: string, _fileName: string, files: IFiles) => {
+        setEditingFiles({ ...editingFiles, [editingBaseId]: files })
+        setHasEdited({ ...hasEdited, [editingBaseId]: true })
+    }
+
+    useEffect(() => {
+        try {
+            const tsconfigStr = editingFiles[editingBaseId][TS_CONFIG_FILE_NAME].value
+            setTsconfig(JSON.parse(tsconfigStr) as ITsconfig)
+        } catch (e) {
+            /* empty */
+        }
+    }, [editingFiles, editingBaseId])
 
     useEffect(() => {
         form.validateFields({ validateOnly: true }).then(
@@ -465,13 +641,15 @@ const Base = () => {
                             />
                         </Card>
                     </HideScrollbar>
-                    {editingFiles && (
+                    {editingFileName && (
                         <Card>
                             <CodeEditor
-                                files={editingFiles}
+                                files={editingFiles[editingBaseId]}
                                 selectedFileName={editingFileName}
                                 onSelectedFileChange={() => {}}
+                                onChangeFileContent={handleOnChangeFileContent}
                                 showFileSelector={false}
+                                tsconfig={tsconfig}
                             />
                         </Card>
                     )}
