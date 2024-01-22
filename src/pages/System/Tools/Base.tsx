@@ -13,7 +13,7 @@ import {
     r_sys_tool_base_add,
     r_sys_tool_base_delete,
     r_sys_tool_base_get_one,
-    r_sys_tool_base_getList,
+    r_sys_tool_base_get,
     r_sys_tool_base_update
 } from '@/services/system'
 import { IFile, IFiles, ITsconfig } from '@/components/Playground/shared'
@@ -307,7 +307,7 @@ const Base = () => {
         }
         setIsLoading(true)
 
-        void r_sys_tool_base_getList()
+        void r_sys_tool_base_get()
             .then((res) => {
                 const response = res.data
                 if (response.code === DATABASE_SELECT_SUCCESS) {

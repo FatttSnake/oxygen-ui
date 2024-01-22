@@ -19,7 +19,7 @@ import {
     URL_SYS_SETTINGS_SENSITIVE,
     URL_SYS_TOOL_CATEGORY,
     URL_SYS_TOOL_BASE,
-    URL_SYS_TOOL_BASE_LIST
+    URL_SYS_TOOL_TEMPLATE
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -128,8 +128,6 @@ export const r_sys_tool_category_update = (param: ToolCategoryAddEditParam) =>
 export const r_sys_tool_category_delete = (id: string) =>
     request.delete(`${URL_SYS_TOOL_CATEGORY}/${id}`)
 
-export const r_sys_tool_base_getList = () => request.get<ToolBaseVo[]>(URL_SYS_TOOL_BASE_LIST)
-
 export const r_sys_tool_base_get = () => request.get<ToolBaseVo[]>(URL_SYS_TOOL_BASE)
 
 export const r_sys_tool_base_get_one = (id: string) =>
@@ -142,3 +140,17 @@ export const r_sys_tool_base_update = (param: ToolBaseAddEditParam) =>
     request.put(URL_SYS_TOOL_BASE, param)
 
 export const r_sys_tool_base_delete = (id: string) => request.delete(`${URL_SYS_TOOL_BASE}/${id}`)
+
+export const r_sys_tool_template_get = () => request.get<ToolTemplateVo[]>(URL_SYS_TOOL_TEMPLATE)
+
+export const r_sys_tool_template_get_one = (id: string) =>
+    request.get<ToolTemplateVo>(`${URL_SYS_TOOL_TEMPLATE}/${id}`)
+
+export const r_sys_tool_template_add = (param: ToolTemplateAddEditParam) =>
+    request.post(URL_SYS_TOOL_TEMPLATE, param)
+
+export const r_sys_tool_template_update = (param: ToolTemplateAddEditParam) =>
+    request.put(URL_SYS_TOOL_TEMPLATE, param)
+
+export const r_sys_tool_template_delete = (id: string) =>
+    request.delete(`${URL_SYS_TOOL_TEMPLATE}/${id}`)
