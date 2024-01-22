@@ -49,7 +49,6 @@ export const base64ToFiles = (base64: string): IFiles => {
     try {
         return JSON.parse(base64ToStr(base64)) as IFiles
     } catch (e) {
-        console.error(e)
         return {}
     }
 }

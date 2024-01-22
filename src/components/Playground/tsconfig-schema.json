@@ -139,6 +139,7 @@
       },
       "jsx": {
         "description": "Specify what JSX code is generated.",
+        "type": "number",
         "enum": [0, 1, 2, 3, 4, 5],
         "markdownDescription": "Specify what JSX code is generated.\n\n0 = none\n\n1 = preserve\n\n2 = react\n\n3 = react-native\n\n4 = react-jsx\n\n5 = react-jsxdev"
       },
@@ -316,7 +317,7 @@
       },
       "newLine": {
         "description": "Set the newline character for emitting files.",
-        "type": "string",
+        "type": "number",
         "enum": [0, 1],
         "markdownDescription": "Set the newline character for emitting files.\n\n0 = CarriageReturnLineFeed\n\n1 = LineFeed"
       },
@@ -558,7 +559,7 @@
       "target": {
         "description": "Set the JavaScript language version for emitted JavaScript and include compatible library declarations.",
         "type": "number",
-        "default": "ES3",
+        "default": 0,
         "enum": [0, 1, 2, 3, 4, 5, 6, 7, 99, 100, 99],
         "markdownDescription": "Set the JavaScript language version for emitted JavaScript and include compatible library declarations.\n\n0 = ES3\n\n1 = ES5\n\n2 = ES2015\n\n3 = ES2016\n\n4 = ES2017\n\n5 = ES2018\n\n6 = ES2019\n\n7 = ES2020\n\n99 = ESNext\n\n100 = JSON\n\n99 = Latest"
       },

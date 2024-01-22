@@ -48,7 +48,8 @@ const Editor = ({
                 tsconfig.compilerOptions
             )
 
-        files &&
+        if (files) {
+            monaco.editor.getModels().forEach((model) => model.dispose())
             Object.entries(files).forEach(([key]) => {
                 if (!monaco.editor.getModel(monaco.Uri.parse(`file:///${key}`))) {
                     monaco.editor.createModel(
@@ -58,6 +59,7 @@ const Editor = ({
                     )
                 }
             })
+        }
     }
 
     const handleOnEditorDidMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
