@@ -2,7 +2,7 @@
 
 [data-component=system-tools-base] {
   .root-content {
-    padding: 20px;
+    padding: 30px;
     gap: 10px;
     height: 100%;
     width: 100%;
@@ -10,6 +10,32 @@
     .has-edited::after {
       content: '*';
       color: constants.$font-secondary-color;
+    }
+
+    >*:first-child {
+      height: fit-content;
+    }
+
+    > *:nth-child(2) {
+      position: sticky;
+      top: 20px;
+      height: calc(100vh - 40px);
+    }
+
+    .close-editor-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: constants.$font-secondary-color;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: white;
+      box-shadow: 2px 2px 10px 0 rgba(0,0,0,0.2);
+      cursor: pointer;
     }
   }
 }

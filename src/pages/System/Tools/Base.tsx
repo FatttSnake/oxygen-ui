@@ -1,18 +1,5 @@
+import Icon from '@ant-design/icons'
 import '@/assets/css/pages/system/tools/base.scss'
-import FitFullscreen from '@/components/common/FitFullscreen.tsx'
-import FlexBox from '@/components/common/FlexBox.tsx'
-import HideScrollbar from '@/components/common/HideScrollbar.tsx'
-import Card from '@/components/common/Card.tsx'
-import CodeEditor from '@/components/Playground/CodeEditor'
-import { useState } from 'react'
-import { IFile, IFiles, ITsconfig } from '@/components/Playground/shared.ts'
-import {
-    r_sys_tool_base_add,
-    r_sys_tool_base_delete,
-    r_sys_tool_base_get_one,
-    r_sys_tool_base_getList,
-    r_sys_tool_base_update
-} from '@/services/system.tsx'
 import {
     COLOR_PRODUCTION,
     DATABASE_DELETE_SUCCESS,
@@ -20,22 +7,40 @@ import {
     DATABASE_INSERT_SUCCESS,
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
-} from '@/constants/common.constants.ts'
+} from '@/constants/common.constants'
 import { utcToLocalTime } from '@/util/datetime.tsx'
-import Permission from '@/components/common/Permission.tsx'
+import {
+    r_sys_tool_base_add,
+    r_sys_tool_base_delete,
+    r_sys_tool_base_get_one,
+    r_sys_tool_base_getList,
+    r_sys_tool_base_update
+} from '@/services/system'
+import { IFile, IFiles, ITsconfig } from '@/components/Playground/shared'
 import {
     base64ToFiles,
     fileNameToLanguage,
     filesToBase64,
     getFilesSize,
     TS_CONFIG_FILE_NAME
-} from '@/components/Playground/files.ts'
+} from '@/components/Playground/files'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import FlexBox from '@/components/common/FlexBox'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import Card from '@/components/common/Card'
+import CodeEditor from '@/components/Playground/CodeEditor'
+import Permission from '@/components/common/Permission'
 
 const Base = () => {
+    const blocker = useBlocker(
+        ({ currentLocation, nextLocation }) =>
+            currentLocation.pathname !== nextLocation.pathname && Object.keys(hasEdited).length > 0
+    )
     const [modal, contextHolder] = AntdModal.useModal()
     const [form] = AntdForm.useForm<ToolBaseAddEditParam>()
     const formValues = AntdForm.useWatch([], form)
     const [addFileForm] = AntdForm.useForm<{ fileName: string }>()
+    const [renameFileForm] = AntdForm.useForm<{ fileName: string }>()
     const [newFormValues, setNewFormValues] = useState<ToolBaseAddEditParam>()
     const [isLoading, setIsLoading] = useState(false)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -50,6 +55,19 @@ const Base = () => {
     const [baseDetailData, setBaseDetailData] = useState<Record<string, ToolBaseVo>>({})
     const [baseDetailLoading, setBaseDetailLoading] = useState<Record<string, boolean>>({})
     const [tsconfig, setTsconfig] = useState<ITsconfig>()
+
+    useBeforeUnload(
+        useCallback(
+            (event) => {
+                if (Object.keys(hasEdited).length) {
+                    event.preventDefault()
+                    event.returnValue = ''
+                }
+            },
+            [hasEdited]
+        ),
+        { capture: true }
+    )
 
     const handleOnAddBtnClick = () => {
         if (Object.keys(hasEdited).length) {
@@ -275,6 +293,10 @@ const Base = () => {
         }
     }
 
+    const handleOnCloseBtnClick = () => {
+        setEditingFileName('')
+    }
+
     const handleOnDrawerClose = () => {
         setIsDrawerOpen(false)
     }
@@ -301,7 +323,6 @@ const Base = () => {
 
     const handleOnExpand = (expanded: boolean, record: ToolBaseVo) => {
         if (!expanded) {
-            setEditingFileName('')
             return
         }
         getBaseDetail(record)
@@ -361,7 +382,11 @@ const Base = () => {
                                 ({ getFieldValue }) => ({
                                     validator() {
                                         const newFileName = getFieldValue('fileName') as string
-                                        if (Object.keys(sourceFiles!).includes(newFileName)) {
+                                        if (
+                                            Object.keys(sourceFiles!)
+                                                .map((item) => item.toLowerCase())
+                                                .includes(newFileName.toLowerCase())
+                                        ) {
                                             return Promise.reject(new Error('文件已存在'))
                                         }
                                         return Promise.resolve()
@@ -451,7 +476,7 @@ const Base = () => {
                     </>
                 ),
                 dataIndex: 'enable',
-                width: '10em',
+                width: '12em',
                 align: 'center',
                 render: (_, record) => (
                     <>
@@ -462,6 +487,14 @@ const Base = () => {
                                     style={{ color: COLOR_PRODUCTION }}
                                 >
                                     编辑
+                                </a>
+                            </Permission>
+                            <Permission operationCode={'system:tool:modify:category'}>
+                                <a
+                                    onClick={handleOnRenameFile(record.name)}
+                                    style={{ color: COLOR_PRODUCTION }}
+                                >
+                                    重命名
                                 </a>
                             </Permission>
                             <Permission operationCode={'system:tool:delete:category'}>
@@ -491,9 +524,114 @@ const Base = () => {
             }
         }
 
+        const handleOnRenameFile = (fileName: string) => {
+            return () => {
+                if (Object.keys(hasEdited).length) {
+                    void message.warning('重命名文件前请先保存更改')
+                    return
+                }
+                renameFileForm.setFieldValue('fileName', fileName)
+                void modal.confirm({
+                    title: '重命名文件',
+                    content: (
+                        <AntdForm form={renameFileForm}>
+                            <AntdForm.Item
+                                name={'fileName'}
+                                label={'新文件名'}
+                                style={{ marginTop: 10 }}
+                                rules={[
+                                    { required: true },
+                                    {
+                                        pattern: /\.(jsx|tsx|js|ts|css|json)$/,
+                                        message:
+                                            '仅支持 *.jsx, *.tsx, *.js, *.ts, *.css, *.json 文件'
+                                    },
+                                    ({ getFieldValue }) => ({
+                                        validator() {
+                                            const newFileName = getFieldValue('fileName') as string
+                                            if (
+                                                Object.keys(sourceFiles!)
+                                                    .map((item) => item.toLowerCase())
+                                                    .includes(newFileName?.toLowerCase()) &&
+                                                newFileName.toLowerCase() !== fileName.toLowerCase()
+                                            ) {
+                                                return Promise.reject(new Error('文件已存在'))
+                                            }
+
+                                            return Promise.resolve()
+                                        }
+                                    })
+                                ]}
+                            >
+                                <AntdInput />
+                            </AntdForm.Item>
+                        </AntdForm>
+                    ),
+                    onOk: () =>
+                        renameFileForm.validateFields().then(
+                            () => {
+                                return new Promise((resolve) => {
+                                    const newFileName = renameFileForm.getFieldValue(
+                                        'fileName'
+                                    ) as string
+                                    const temp = sourceFiles![fileName].value
+                                    delete sourceFiles![fileName]
+
+                                    sourceFiles = {
+                                        ...sourceFiles,
+                                        [newFileName]: {
+                                            name: newFileName,
+                                            language: fileNameToLanguage(newFileName),
+                                            value: temp
+                                        }
+                                    }
+
+                                    void r_sys_tool_base_update({
+                                        id: record.id,
+                                        source: filesToBase64(sourceFiles)
+                                    })
+                                        .then((res) => {
+                                            const response = res.data
+                                            switch (response.code) {
+                                                case DATABASE_UPDATE_SUCCESS:
+                                                    void message.success('重命名成功')
+                                                    if (
+                                                        editingBaseId === record.id &&
+                                                        editingFileName === fileName
+                                                    ) {
+                                                        setEditingFileName('')
+                                                    }
+                                                    setTimeout(() => {
+                                                        getBaseDetail(record)
+                                                    })
+                                                    break
+                                                default:
+                                                    void message.error('重命名失败，请稍后重试')
+                                            }
+                                        })
+                                        .finally(() => {
+                                            setBaseDetailLoading({
+                                                ...baseDetailLoading,
+                                                [record.id]: false
+                                            })
+                                        })
+
+                                    resolve(true)
+                                })
+                            },
+                            () => {
+                                return new Promise((_, reject) => {
+                                    reject('请输入文件名')
+                                })
+                            }
+                        )
+                })
+            }
+        }
+
         const handleOnDeleteFile = (fileName: string) => {
             return () => {
-                if (hasEdited) {
+                if (Object.keys(hasEdited).length) {
                     void message.warning('删除文件前请先保存更改')
                     return
                 }
@@ -519,6 +657,12 @@ const Base = () => {
                                         switch (response.code) {
                                             case DATABASE_UPDATE_SUCCESS:
                                                 void message.success('删除成功')
+                                                if (
+                                                    editingBaseId === record.id &&
+                                                    editingFileName === fileName
+                                                ) {
+                                                    setEditingFileName('')
+                                                }
                                                 setTimeout(() => {
                                                     getBaseDetail(record)
                                                 })
@@ -547,6 +691,7 @@ const Base = () => {
                     dataSource={sourceFileList}
                     columns={detailColumns}
                     pagination={false}
+                    rowKey={(record) => record.name}
                 />
             </Card>
         )
@@ -625,8 +770,8 @@ const Base = () => {
     return (
         <>
             <FitFullscreen data-component={'system-tools-base'}>
-                <FlexBox direction={'horizontal'} className={'root-content'}>
-                    <HideScrollbar>
+                <HideScrollbar>
+                    <FlexBox direction={'horizontal'} className={'root-content'}>
                         <Card>
                             <AntdTable
                                 dataSource={baseData}
@@ -640,20 +785,23 @@ const Base = () => {
                                 }}
                             />
                         </Card>
-                    </HideScrollbar>
-                    {editingFileName && (
-                        <Card>
-                            <CodeEditor
-                                files={editingFiles[editingBaseId]}
-                                selectedFileName={editingFileName}
-                                onSelectedFileChange={() => {}}
-                                onChangeFileContent={handleOnChangeFileContent}
-                                showFileSelector={false}
-                                tsconfig={tsconfig}
-                            />
-                        </Card>
-                    )}
-                </FlexBox>
+                        {editingFileName && (
+                            <Card>
+                                <CodeEditor
+                                    files={editingFiles[editingBaseId]}
+                                    selectedFileName={editingFileName}
+                                    onSelectedFileChange={() => {}}
+                                    onChangeFileContent={handleOnChangeFileContent}
+                                    showFileSelector={false}
+                                    tsconfig={tsconfig}
+                                />
+                                <div className={'close-editor-btn'} onClick={handleOnCloseBtnClick}>
+                                    <Icon component={IconOxygenClose} />
+                                </div>
+                            </Card>
+                        )}
+                    </FlexBox>
+                </HideScrollbar>
                 <AntdDrawer
                     title={isDrawerEdit ? '编辑基板' : '添加基板'}
                     onClose={handleOnDrawerClose}
@@ -666,6 +814,14 @@ const Base = () => {
                 </AntdDrawer>
             </FitFullscreen>
             {contextHolder}
+            <AntdModal
+                open={blocker.state === 'blocked'}
+                title={'未保存'}
+                onOk={() => blocker.proceed?.()}
+                onCancel={() => blocker.reset?.()}
+            >
+                离开此页面将丢失所有未保存数据，是否继续？
+            </AntdModal>
         </>
     )
 }
