@@ -512,6 +512,7 @@ interface ToolTemplateVo {
     enable: boolean
     createTime: string
     updateTime: string
+    base: ToolBaseVo
 }
 
 interface ToolTemplateAddEditParam {

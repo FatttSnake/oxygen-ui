@@ -212,7 +212,7 @@ const Template = () => {
             setIsDrawerOpen(true)
             form.setFieldValue('id', value.id)
             form.setFieldValue('name', value.name)
-            form.setFieldValue('baseId', value.baseId)
+            form.setFieldValue('baseId', value.base.id)
             form.setFieldValue('enable', value.enable)
             if (!baseData || !baseData.length) {
                 getBaseData()
@@ -774,6 +774,7 @@ const Template = () => {
         if (!isDrawerEdit && formValues) {
             setNewFormValues({
                 name: formValues.name,
+                baseId: formValues.baseId,
                 enable: formValues.enable
             })
         }
