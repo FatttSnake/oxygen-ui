@@ -105,7 +105,7 @@ const CodeEditor = ({
         }
     }
 
-    const handleOnChangeFileContent = _.debounce((code: string = '') => {
+    const handleOnChangeFileContent = (code: string = '') => {
         if (!files[onSelectedFileChange ? propsSelectedFileName : selectedFileName]) {
             return
         }
@@ -116,7 +116,7 @@ const CodeEditor = ({
             onSelectedFileChange ? propsSelectedFileName : selectedFileName,
             clone
         )
-    }, 250)
+    }
 
     return (
         <>

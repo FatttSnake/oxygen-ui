@@ -26,14 +26,13 @@ import {
     strToBase64,
     TS_CONFIG_FILE_NAME
 } from '@/components/Playground/files'
+import compiler from '@/components/Playground/compiler'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import Card from '@/components/common/Card'
 import CodeEditor from '@/components/Playground/CodeEditor'
 import Permission from '@/components/common/Permission'
-import { useState } from 'react'
-import compiler from '@/components/Playground/compiler.ts'
 
 const Base = () => {
     const blocker = useBlocker(
@@ -292,6 +291,7 @@ const Base = () => {
                                                     key: 'uploading',
                                                     duration: 0
                                                 })
+                                                // TODO Remove debug
                                                 console.debug(result.outputFiles[0].text)
                                                 void r_sys_tool_base_update({
                                                     id: value.id,
@@ -882,7 +882,9 @@ const Base = () => {
 
     const handleOnChangeFileContent = (_content: string, _fileName: string, files: IFiles) => {
         setEditingFiles({ ...editingFiles, [editingBaseId]: files })
-        setHasEdited({ ...hasEdited, [editingBaseId]: true })
+        if (!hasEdited[editingBaseId]) {
+            setHasEdited({ ...hasEdited, [editingBaseId]: true })
+        }
     }
 
     useEffect(() => {
