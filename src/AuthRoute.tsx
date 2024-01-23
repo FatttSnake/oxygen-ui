@@ -4,6 +4,7 @@ import { getLoginStatus, getVerifyStatus_async } from '@/util/auth'
 import { Navigate } from 'react-router'
 
 const AuthRoute = () => {
+    const [searchParams] = useSearchParams()
     const matches = useMatches()
     const lastMatch = matches.reduce((_, second) => second)
     const handle = lastMatch.handle as RouteHandle
@@ -30,7 +31,11 @@ const AuthRoute = () => {
             }
         }
         if (isLogin && ['/login', '/forget'].includes(lastMatch.pathname)) {
-            return <Navigate to={'/'} />
+            if (searchParams.has('redirect')) {
+                return <Navigate to={searchParams.get('redirect') ?? '/'} />
+            } else {
+                return <Navigate to={'/'} />
+            }
         }
 
         if (location.pathname.length > 1 && location.pathname.endsWith('/')) {
