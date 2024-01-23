@@ -136,7 +136,6 @@ const Base = () => {
                     )}
                 </>
             ),
-            dataIndex: 'enable',
             width: '12em',
             align: 'center',
             render: (_, record) => (

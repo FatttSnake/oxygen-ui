@@ -74,10 +74,6 @@ const Template = () => {
     )
 
     const handleOnAddBtnClick = () => {
-        if (Object.keys(hasEdited).length) {
-            void message.warning('新增前请保存修改')
-            return
-        }
         setIsDrawerEdit(false)
         setIsDrawerOpen(true)
         form.setFieldValue('id', undefined)
@@ -105,21 +101,21 @@ const Template = () => {
         {
             title: '创建时间',
             dataIndex: 'createTime',
-            width: '20%',
+            width: '0',
             align: 'center',
             render: (value: string) => utcToLocalTime(value)
         },
         {
             title: '修改时间',
             dataIndex: 'updateTime',
-            width: '20%',
+            width: '0',
             align: 'center',
             render: (value: string) => utcToLocalTime(value)
         },
         {
             title: '状态',
             dataIndex: 'enable',
-            width: '5%',
+            width: '0',
             align: 'center',
             render: (value) =>
                 value ? <AntdTag color={'success'}>启用</AntdTag> : <AntdTag>禁用</AntdTag>
@@ -127,15 +123,20 @@ const Template = () => {
         {
             title: (
                 <>
-                    操作 (
-                    <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
-                        新增
-                    </a>
-                    )
+                    操作
+                    {!Object.keys(hasEdited).length && (
+                        <>
+                            {' '}
+                            (
+                            <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
+                                新增
+                            </a>
+                            )
+                        </>
+                    )}
                 </>
             ),
-            dataIndex: 'enable',
-            width: '15em',
+            width: '8em',
             align: 'center',
             render: (_, record) => (
                 <>
@@ -150,14 +151,16 @@ const Template = () => {
                                 </a>
                             </Permission>
                         )}
-                        <Permission operationCode={'system:tool:modify:base'}>
-                            <a
-                                style={{ color: COLOR_PRODUCTION }}
-                                onClick={handleOnEditBtnClick(record)}
-                            >
-                                编辑
-                            </a>
-                        </Permission>
+                        {!Object.keys(hasEdited).length && (
+                            <Permission operationCode={'system:tool:modify:base'}>
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnEditBtnClick(record)}
+                                >
+                                    编辑
+                                </a>
+                            </Permission>
+                        )}
                         <Permission operationCode={'system:tool:delete:base'}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
@@ -203,11 +206,6 @@ const Template = () => {
 
     const handleOnEditBtnClick = (value: ToolTemplateVo) => {
         return () => {
-            if (Object.keys(hasEdited).length) {
-                void message.warning('编辑前请保存修改')
-                return
-            }
-
             setIsDrawerEdit(true)
             setIsDrawerOpen(true)
             form.setFieldValue('id', value.id)
@@ -362,6 +360,16 @@ const Template = () => {
                             ...templateDetailData,
                             [record.id]: response.data!
                         })
+                        setTemplateData(
+                            templateData.map((value) =>
+                                value.id === response.data!.id
+                                    ? {
+                                          ...response.data!,
+                                          source: { id: response.data!.source.id }
+                                      }
+                                    : value
+                            )
+                        )
                         break
                     default:
                         void message.error(`获取模板 ${record.name} 文件内容失败，请稍后重试`)
@@ -382,11 +390,6 @@ const Template = () => {
         }
 
         const handleOnAddFile = () => {
-            if (Object.keys(hasEdited).length) {
-                void message.warning('新建文件前请先保存更改')
-                return
-            }
-
             void modal.confirm({
                 title: '新建文件',
                 content: (
@@ -493,11 +496,17 @@ const Template = () => {
             {
                 title: (
                     <>
-                        操作 (
-                        <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddFile}>
-                            新增
-                        </a>
-                        )
+                        操作
+                        {!Object.keys(hasEdited).length && (
+                            <>
+                                {' '}
+                                (
+                                <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddFile}>
+                                    新增
+                                </a>
+                                )
+                            </>
+                        )}
                     </>
                 ),
                 dataIndex: 'enable',
@@ -514,22 +523,26 @@ const Template = () => {
                                     编辑
                                 </a>
                             </Permission>
-                            <Permission operationCode={'system:tool:modify:category'}>
-                                <a
-                                    onClick={handleOnRenameFile(record.name)}
-                                    style={{ color: COLOR_PRODUCTION }}
-                                >
-                                    重命名
-                                </a>
-                            </Permission>
-                            <Permission operationCode={'system:tool:delete:category'}>
-                                <a
-                                    onClick={handleOnDeleteFile(record.name)}
-                                    style={{ color: COLOR_PRODUCTION }}
-                                >
-                                    删除
-                                </a>
-                            </Permission>
+                            {!Object.keys(hasEdited).length && (
+                                <Permission operationCode={'system:tool:modify:category'}>
+                                    <a
+                                        onClick={handleOnRenameFile(record.name)}
+                                        style={{ color: COLOR_PRODUCTION }}
+                                    >
+                                        重命名
+                                    </a>
+                                </Permission>
+                            )}
+                            {!Object.keys(hasEdited).length && (
+                                <Permission operationCode={'system:tool:delete:category'}>
+                                    <a
+                                        onClick={handleOnDeleteFile(record.name)}
+                                        style={{ color: COLOR_PRODUCTION }}
+                                    >
+                                        删除
+                                    </a>
+                                </Permission>
+                            )}
                         </AntdSpace>
                     </>
                 )
@@ -551,10 +564,6 @@ const Template = () => {
 
         const handleOnRenameFile = (fileName: string) => {
             return () => {
-                if (Object.keys(hasEdited).length) {
-                    void message.warning('重命名文件前请先保存更改')
-                    return
-                }
                 renameFileForm.setFieldValue('fileName', fileName)
                 void modal.confirm({
                     title: '重命名文件',
@@ -655,11 +664,6 @@ const Template = () => {
 
         const handleOnDeleteFile = (fileName: string) => {
             return () => {
-                if (Object.keys(hasEdited).length) {
-                    void message.warning('删除文件前请先保存更改')
-                    return
-                }
-
                 modal
                     .confirm({
                         title: '确定删除',
@@ -726,7 +730,9 @@ const Template = () => {
 
     const handleOnChangeFileContent = (_content: string, _fileName: string, files: IFiles) => {
         setEditingFiles({ ...editingFiles, [editingTemplateId]: files })
-        setHasEdited({ ...hasEdited, [editingTemplateId]: true })
+        if (!hasEdited[editingTemplateId]) {
+            setHasEdited({ ...hasEdited, [editingTemplateId]: true })
+        }
     }
 
     const getBaseData = () => {
@@ -859,6 +865,7 @@ const Template = () => {
                                     onChangeFileContent={handleOnChangeFileContent}
                                     showFileSelector={false}
                                     tsconfig={tsconfig}
+                                    readonly={isLoading || templateDetailLoading[editingTemplateId]}
                                 />
                                 <div className={'close-editor-btn'} onClick={handleOnCloseBtnClick}>
                                     <Icon component={IconOxygenClose} />
@@ -868,7 +875,7 @@ const Template = () => {
                     </FlexBox>
                 </HideScrollbar>
                 <AntdDrawer
-                    title={isDrawerEdit ? '编辑基板' : '添加基板'}
+                    title={isDrawerEdit ? '编辑模板' : '添加模板'}
                     onClose={handleOnDrawerClose}
                     open={isDrawerOpen}
                     closable={!isSubmitting}
