@@ -58,7 +58,7 @@ class Compiler {
                 format: 'esm',
                 metafile: true,
                 write: false,
-                plugins: [this.fileResolverPlugin(files, importMap)]
+                plugins: [this.fileResolverPlugin(files, importMap, entryPoints)]
             })
         })
 
@@ -66,12 +66,16 @@ class Compiler {
         esbuild.stop()
     }
 
-    private fileResolverPlugin = (files: IFiles, importMap: IImportMap): Plugin => {
+    private fileResolverPlugin = (
+        files: IFiles,
+        importMap: IImportMap,
+        entryPoints: string[]
+    ): Plugin => {
         return {
             name: 'file-resolver-plugin',
             setup: (build: PluginBuild) => {
                 build.onResolve({ filter: /.*/ }, (args: esbuild.OnResolveArgs) => {
-                    if (args.path === ENTRY_FILE_NAME) {
+                    if (entryPoints.includes(args.path)) {
                         return {
                             namespace: 'OxygenToolbox',
                             path: args.path
