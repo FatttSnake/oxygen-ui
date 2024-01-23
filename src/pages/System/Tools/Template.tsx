@@ -377,7 +377,7 @@ const Template = () => {
         let sourceFiles: IFiles | undefined = undefined
         let sourceFileList: IFile[] = []
         if (templateDetailVo) {
-            sourceFiles = base64ToFiles(templateDetailVo.source.data)
+            sourceFiles = base64ToFiles(templateDetailVo.source.data!)
             sourceFileList = Object.values(sourceFiles)
         }
 
@@ -423,7 +423,7 @@ const Template = () => {
                 onOk: () =>
                     addFileForm.validateFields().then(
                         () => {
-                            return new Promise((resolve) => {
+                            return new Promise<void>((resolve) => {
                                 const newFileName = addFileForm.getFieldValue('fileName') as string
 
                                 setTemplateDetailLoading({
@@ -453,11 +453,11 @@ const Template = () => {
                                                 setTimeout(() => {
                                                     getTemplateDetail(record)
                                                 })
-                                                resolve(true)
+                                                resolve()
                                                 break
                                             default:
                                                 void message.error('添加失败，请稍后重试')
-                                                resolve(true)
+                                                resolve()
                                         }
                                     })
                                     .finally(() => {
@@ -595,7 +595,7 @@ const Template = () => {
                     onOk: () =>
                         renameFileForm.validateFields().then(
                             () => {
-                                return new Promise((resolve) => {
+                                return new Promise<void>((resolve) => {
                                     const newFileName = renameFileForm.getFieldValue(
                                         'fileName'
                                     ) as string
@@ -640,8 +640,7 @@ const Template = () => {
                                                 [record.id]: false
                                             })
                                         })
-
-                                    resolve(true)
+                                    resolve()
                                 })
                             },
                             () => {

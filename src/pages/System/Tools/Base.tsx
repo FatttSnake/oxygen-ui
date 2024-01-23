@@ -16,12 +16,14 @@ import {
     r_sys_tool_base_get,
     r_sys_tool_base_update
 } from '@/services/system'
-import { IFile, IFiles, ITsconfig } from '@/components/Playground/shared'
+import { IFile, IFiles, IImportMap, ITsconfig } from '@/components/Playground/shared'
 import {
     base64ToFiles,
     fileNameToLanguage,
     filesToBase64,
     getFilesSize,
+    IMPORT_MAP_FILE_NAME,
+    strToBase64,
     TS_CONFIG_FILE_NAME
 } from '@/components/Playground/files'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -30,6 +32,8 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import Card from '@/components/common/Card'
 import CodeEditor from '@/components/Playground/CodeEditor'
 import Permission from '@/components/common/Permission'
+import { useState } from 'react'
+import compiler from '@/components/Playground/compiler.ts'
 
 const Base = () => {
     const blocker = useBlocker(
@@ -55,6 +59,8 @@ const Base = () => {
     const [baseDetailData, setBaseDetailData] = useState<Record<string, ToolBaseVo>>({})
     const [baseDetailLoading, setBaseDetailLoading] = useState<Record<string, boolean>>({})
     const [tsconfig, setTsconfig] = useState<ITsconfig>()
+    const [compiling, setCompiling] = useState(false)
+    const [compileForm] = AntdForm.useForm<{ entryFileName: string }>()
 
     useBeforeUnload(
         useCallback(
@@ -70,10 +76,6 @@ const Base = () => {
     )
 
     const handleOnAddBtnClick = () => {
-        if (Object.keys(hasEdited).length) {
-            void message.warning('新增前请保存修改')
-            return
-        }
         setIsDrawerEdit(false)
         setIsDrawerOpen(true)
         form.setFieldValue('id', undefined)
@@ -93,41 +95,62 @@ const Base = () => {
         {
             title: '创建时间',
             dataIndex: 'createTime',
-            width: '20%',
+            width: '15em',
             align: 'center',
             render: (value: string) => utcToLocalTime(value)
         },
         {
             title: '修改时间',
             dataIndex: 'updateTime',
-            width: '20%',
+            width: '15em',
             align: 'center',
             render: (value: string) => utcToLocalTime(value)
         },
         {
             title: '状态',
-            dataIndex: 'enable',
-            width: '5%',
+            width: '10em',
             align: 'center',
-            render: (value) =>
-                value ? <AntdTag color={'success'}>启用</AntdTag> : <AntdTag>禁用</AntdTag>
+            render: (_, record) => (
+                <>
+                    {record.enable ? (
+                        <AntdTag color={'success'}>启用</AntdTag>
+                    ) : (
+                        <AntdTag>禁用</AntdTag>
+                    )}
+                    {!record.compiled && <AntdTag>未编译</AntdTag>}
+                </>
+            )
         },
         {
             title: (
                 <>
-                    操作 (
-                    <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
-                        新增
-                    </a>
-                    )
+                    操作
+                    {!Object.keys(hasEdited).length && (
+                        <>
+                            {' '}
+                            (
+                            <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
+                                新增
+                            </a>
+                            )
+                        </>
+                    )}
                 </>
             ),
             dataIndex: 'enable',
-            width: '15em',
+            width: '12em',
             align: 'center',
             render: (_, record) => (
                 <>
                     <AntdSpace size={'middle'}>
+                        {!record.compiled && !Object.keys(hasEdited).length && (
+                            <a
+                                style={{ color: COLOR_PRODUCTION }}
+                                onClick={handleOnCompileBtnClick(record)}
+                            >
+                                编译
+                            </a>
+                        )}
                         {hasEdited[record.id] && (
                             <Permission operationCode={'system:tool:modify:base'}>
                                 <a
@@ -138,14 +161,16 @@ const Base = () => {
                                 </a>
                             </Permission>
                         )}
-                        <Permission operationCode={'system:tool:modify:base'}>
-                            <a
-                                style={{ color: COLOR_PRODUCTION }}
-                                onClick={handleOnEditBtnClick(record)}
-                            >
-                                编辑
-                            </a>
-                        </Permission>
+                        {!Object.keys(hasEdited).length && (
+                            <Permission operationCode={'system:tool:modify:base'}>
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnEditBtnClick(record)}
+                                >
+                                    编辑
+                                </a>
+                            </Permission>
+                        )}
                         <Permission operationCode={'system:tool:delete:base'}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
@@ -159,6 +184,163 @@ const Base = () => {
             )
         }
     ]
+
+    const handleOnCompileBtnClick = (value: ToolBaseVo) => {
+        return () => {
+            if (compiling || isLoading) {
+                return
+            }
+            setCompiling(true)
+            setIsLoading(true)
+            void message.loading({ content: '加载文件中', key: 'compile-loading', duration: 0 })
+
+            if (!baseDetailLoading[value.id]) {
+                getBaseDetail(value)
+            }
+
+            void new Promise<void>((resolve, reject) => {
+                const timer = setInterval(() => {
+                    let loading
+                    let data
+                    setBaseDetailLoading((prevState) => {
+                        loading = prevState[value.id]
+                        return prevState
+                    })
+                    setBaseDetailData((prevState) => {
+                        data = prevState[value.id]
+                        return prevState
+                    })
+                    if (!loading && data) {
+                        clearInterval(timer)
+                        resolve()
+                    }
+                    if (loading !== undefined && !loading && !data) {
+                        clearInterval(timer)
+                        reject()
+                    }
+                }, 100)
+            })
+                .then(() => {
+                    let baseDetail: ToolBaseVo
+                    setBaseDetailData((prevState) => {
+                        baseDetail = prevState[value.id]
+                        return prevState
+                    })
+                    message.destroy('compile-loading')
+                    const files = base64ToFiles(baseDetail!.source.data!)
+                    if (!Object.keys(files).includes(IMPORT_MAP_FILE_NAME)) {
+                        void message.warning(`编译中止：未包含 ${IMPORT_MAP_FILE_NAME} 文件`)
+                        setCompiling(false)
+                        setIsLoading(false)
+                        return
+                    }
+                    let importMap: IImportMap
+                    try {
+                        importMap = JSON.parse(files[IMPORT_MAP_FILE_NAME].value) as IImportMap
+                    } catch (e) {
+                        void message.warning(`编译中止：Import Map 文件转换失败`)
+                        setCompiling(false)
+                        setIsLoading(false)
+                        return
+                    }
+
+                    compileForm.setFieldValue('entryFileName', undefined)
+                    void modal.confirm({
+                        title: '编译',
+                        content: (
+                            <>
+                                <AntdForm form={compileForm}>
+                                    <AntdForm.Item
+                                        name={'entryFileName'}
+                                        label={'入口文件'}
+                                        style={{ marginTop: 10 }}
+                                        rules={[{ required: true, message: '请选择入口文件' }]}
+                                    >
+                                        <AntdSelect
+                                            options={Object.keys(files)
+                                                .filter(
+                                                    (value) =>
+                                                        ![
+                                                            IMPORT_MAP_FILE_NAME,
+                                                            TS_CONFIG_FILE_NAME
+                                                        ].includes(value)
+                                                )
+                                                .map((value) => ({ value, label: value }))}
+                                        />
+                                    </AntdForm.Item>
+                                </AntdForm>
+                            </>
+                        ),
+                        onOk: () =>
+                            compileForm.validateFields().then(
+                                () => {
+                                    return new Promise<void>((resolve) => {
+                                        resolve()
+                                        void message.loading({
+                                            content: '编译中',
+                                            key: 'compiling',
+                                            duration: 0
+                                        })
+                                        void compiler
+                                            .compile(files, importMap, [
+                                                compileForm.getFieldValue('entryFileName') as string
+                                            ])
+                                            .then((result) => {
+                                                void message.destroy('compiling')
+                                                void message.loading({
+                                                    content: '上传中',
+                                                    key: 'uploading',
+                                                    duration: 0
+                                                })
+                                                console.debug(result.outputFiles[0].text)
+                                                void r_sys_tool_base_update({
+                                                    id: value.id,
+                                                    dist: strToBase64(result.outputFiles[0].text)
+                                                })
+                                                    .then((res) => {
+                                                        const response = res.data
+                                                        switch (response.code) {
+                                                            case DATABASE_UPDATE_SUCCESS:
+                                                                void message.success('编译成功')
+                                                                getBase()
+                                                                break
+                                                            default:
+                                                                void message.error('上传失败')
+                                                        }
+                                                    })
+                                                    .finally(() => {
+                                                        void message.destroy('uploading')
+                                                        setCompiling(false)
+                                                        setIsLoading(false)
+                                                    })
+                                            })
+                                            .catch((e: Error) => {
+                                                void message.error(`编译失败：${e.message}`)
+                                                void message.destroy('compiling')
+                                                setCompiling(false)
+                                                setIsLoading(false)
+                                            })
+                                    })
+                                },
+                                () => {
+                                    return new Promise((_, reject) => {
+                                        reject('请选择入口文件')
+                                    })
+                                }
+                            ),
+                        onCancel: () => {
+                            setCompiling(false)
+                            setIsLoading(false)
+                        }
+                    })
+                })
+                .catch(() => {
+                    setCompiling(false)
+                    setIsLoading(false)
+                    message.destroy('compile-loading')
+                })
+        }
+    }
 
     const handleOnSaveBtnClick = (value: ToolBaseVo) => {
         return () => {
@@ -191,11 +373,6 @@ const Base = () => {
 
     const handleOnEditBtnClick = (value: ToolBaseVo) => {
         return () => {
-            if (Object.keys(hasEdited).length) {
-                void message.warning('编辑前请保存修改')
-                return
-            }
-
             setIsDrawerEdit(true)
             setIsDrawerOpen(true)
             form.setFieldValue('id', value.id)
@@ -340,6 +517,17 @@ const Base = () => {
                 switch (response.code) {
                     case DATABASE_SELECT_SUCCESS:
                         setBaseDetailData({ ...baseDetailData, [record.id]: response.data! })
+                        setBaseData(
+                            baseData.map((value) =>
+                                value.id === response.data!.id
+                                    ? {
+                                          ...response.data!,
+                                          source: { id: response.data!.source.id },
+                                          dist: { id: response.data!.dist.id }
+                                      }
+                                    : value
+                            )
+                        )
                         break
                     default:
                         void message.error(`获取基板 ${record.name} 文件内容失败，请稍后重试`)
@@ -355,16 +543,11 @@ const Base = () => {
         let sourceFiles: IFiles | undefined = undefined
         let sourceFileList: IFile[] = []
         if (baseDetailVo) {
-            sourceFiles = base64ToFiles(baseDetailVo.source.data)
+            sourceFiles = base64ToFiles(baseDetailVo.source.data!)
             sourceFileList = Object.values(sourceFiles)
         }
 
         const handleOnAddFile = () => {
-            if (Object.keys(hasEdited).length) {
-                void message.warning('新建文件前请先保存更改')
-                return
-            }
-
             void modal.confirm({
                 title: '新建文件',
                 content: (
@@ -401,7 +584,7 @@ const Base = () => {
                 onOk: () =>
                     addFileForm.validateFields().then(
                         () => {
-                            return new Promise((resolve) => {
+                            return new Promise<void>((resolve) => {
                                 const newFileName = addFileForm.getFieldValue('fileName') as string
 
                                 setBaseDetailLoading({ ...baseDetailLoading, [record.id]: true })
@@ -428,11 +611,11 @@ const Base = () => {
                                                 setTimeout(() => {
                                                     getBaseDetail(record)
                                                 })
-                                                resolve(true)
+                                                resolve()
                                                 break
                                             default:
                                                 void message.error('添加失败，请稍后重试')
-                                                resolve(true)
+                                                resolve()
                                         }
                                     })
                                     .finally(() => {
@@ -468,11 +651,17 @@ const Base = () => {
             {
                 title: (
                     <>
-                        操作 (
-                        <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddFile}>
-                            新增
-                        </a>
-                        )
+                        操作
+                        {!Object.keys(hasEdited).length && (
+                            <>
+                                {' '}
+                                (
+                                <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddFile}>
+                                    新增
+                                </a>
+                                )
+                            </>
+                        )}
                     </>
                 ),
                 dataIndex: 'enable',
@@ -489,22 +678,26 @@ const Base = () => {
                                     编辑
                                 </a>
                             </Permission>
-                            <Permission operationCode={'system:tool:modify:category'}>
-                                <a
-                                    onClick={handleOnRenameFile(record.name)}
-                                    style={{ color: COLOR_PRODUCTION }}
-                                >
-                                    重命名
-                                </a>
-                            </Permission>
-                            <Permission operationCode={'system:tool:delete:category'}>
-                                <a
-                                    onClick={handleOnDeleteFile(record.name)}
-                                    style={{ color: COLOR_PRODUCTION }}
-                                >
-                                    删除
-                                </a>
-                            </Permission>
+                            {!Object.keys(hasEdited).length && (
+                                <Permission operationCode={'system:tool:modify:category'}>
+                                    <a
+                                        onClick={handleOnRenameFile(record.name)}
+                                        style={{ color: COLOR_PRODUCTION }}
+                                    >
+                                        重命名
+                                    </a>
+                                </Permission>
+                            )}
+                            {!Object.keys(hasEdited).length && (
+                                <Permission operationCode={'system:tool:delete:category'}>
+                                    <a
+                                        onClick={handleOnDeleteFile(record.name)}
+                                        style={{ color: COLOR_PRODUCTION }}
+                                    >
+                                        删除
+                                    </a>
+                                </Permission>
+                            )}
                         </AntdSpace>
                     </>
                 )
@@ -526,10 +719,6 @@ const Base = () => {
 
         const handleOnRenameFile = (fileName: string) => {
             return () => {
-                if (Object.keys(hasEdited).length) {
-                    void message.warning('重命名文件前请先保存更改')
-                    return
-                }
                 renameFileForm.setFieldValue('fileName', fileName)
                 void modal.confirm({
                     title: '重命名文件',
@@ -570,7 +759,7 @@ const Base = () => {
                     onOk: () =>
                         renameFileForm.validateFields().then(
                             () => {
-                                return new Promise((resolve) => {
+                                return new Promise<void>((resolve) => {
                                     const newFileName = renameFileForm.getFieldValue(
                                         'fileName'
                                     ) as string
@@ -615,8 +804,7 @@ const Base = () => {
                                                 [record.id]: false
                                             })
                                         })
-
-                                    resolve(true)
+                                    resolve()
                                 })
                             },
                             () => {
@@ -631,11 +819,6 @@ const Base = () => {
 
         const handleOnDeleteFile = (fileName: string) => {
             return () => {
-                if (Object.keys(hasEdited).length) {
-                    void message.warning('删除文件前请先保存更改')
-                    return
-                }
-
                 modal
                     .confirm({
                         title: '确定删除',
@@ -794,6 +977,7 @@ const Base = () => {
                                     onChangeFileContent={handleOnChangeFileContent}
                                     showFileSelector={false}
                                     tsconfig={tsconfig}
+                                    readonly={isLoading || baseDetailLoading[editingBaseId]}
                                 />
                                 <div className={'close-editor-btn'} onClick={handleOnCloseBtnClick}>
                                     <Icon component={IconOxygenClose} />

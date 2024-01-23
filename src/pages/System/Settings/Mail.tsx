@@ -37,7 +37,7 @@ const Mail = () => {
             onOk: () =>
                 mailSendForm.validateFields().then(
                     () => {
-                        return new Promise((resolve) => {
+                        return new Promise<void>((resolve) => {
                             void r_sys_settings_mail_send({
                                 to: mailSendForm.getFieldValue('to') as string
                             }).then((res) => {
@@ -45,10 +45,10 @@ const Mail = () => {
 
                                 if (response.success) {
                                     void message.success('发送成功')
-                                    resolve(true)
+                                    resolve()
                                 } else {
                                     void message.error('发送失败，请检查配置后重试')
-                                    resolve(true)
+                                    resolve()
                                 }
                             })
                         })

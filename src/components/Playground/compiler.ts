@@ -39,7 +39,7 @@ class Compiler {
             return esbuild.transform(code, { loader })
         })
 
-    compile = (files: IFiles, importMap: IImportMap) =>
+    compile = (files: IFiles, importMap: IImportMap, entryPoints: string[]) =>
         new Promise<void>((resolve) => {
             if (this.init) {
                 resolve()
@@ -54,7 +54,7 @@ class Compiler {
         }).then(() => {
             return esbuild.build({
                 bundle: true,
-                entryPoints: [ENTRY_FILE_NAME],
+                entryPoints: entryPoints,
                 format: 'esm',
                 metafile: true,
                 write: false,

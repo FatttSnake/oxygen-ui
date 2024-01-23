@@ -481,9 +481,9 @@ interface ToolCategoryAddEditParam {
 
 interface ToolDataVo {
     id: string
-    data: string
-    createTime: string
-    updateTime: string
+    data?: string
+    createTime?: string
+    updateTime?: string
 }
 
 interface ToolBaseVo {
@@ -491,6 +491,7 @@ interface ToolBaseVo {
     name: string
     source: ToolDataVo
     dist: ToolDataVo
+    compiled: boolean
     enable: boolean
     createTime: string
     updateTime: string

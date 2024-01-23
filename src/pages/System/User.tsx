@@ -392,7 +392,7 @@ const User = () => {
                         .validateFields()
                         .then(
                             () => {
-                                return new Promise((resolve, reject) => {
+                                return new Promise<void>((resolve, reject) => {
                                     void r_sys_user_change_password({
                                         id: changePasswordForm.getFieldValue('id') as string,
                                         password: changePasswordForm.getFieldValue(
@@ -407,7 +407,7 @@ const User = () => {
                                         const response = res.data
                                         if (response.success) {
                                             void message.success('修改密码成功')
-                                            resolve(true)
+                                            resolve()
                                         } else {
                                             reject(response.msg)
                                         }

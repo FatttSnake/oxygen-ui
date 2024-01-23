@@ -2,6 +2,7 @@ import '@/components/Playground/Output/Preview/preview.scss'
 import { IFiles, IImportMap } from '@/components/Playground/shared'
 import Compiler from '@/components/Playground/compiler'
 import iframeRaw from '@/components/Playground/Output/Preview/iframe.html?raw'
+import { ENTRY_FILE_NAME } from '@/components/Playground/files.ts'
 
 interface PreviewProps {
     iframeKey: string
@@ -60,7 +61,7 @@ const Preview = ({ iframeKey, files, importMap }: PreviewProps) => {
     }, [])
 
     useEffect(() => {
-        Compiler.compile(files, importMap)
+        Compiler.compile(files, importMap, [ENTRY_FILE_NAME])
             .then((result) => {
                 if (loaded) {
                     iframeRef.current?.contentWindow?.postMessage({
