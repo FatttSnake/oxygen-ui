@@ -195,7 +195,7 @@ const User = () => {
             render: (_, record) => (
                 <>
                     <AntdSpace size={'middle'}>
-                        <Permission operationCode={'system:user:modify:password'}>
+                        <Permission operationCode={['system:user:modify:password']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnChangePasswordBtnClick(record)}
@@ -203,7 +203,7 @@ const User = () => {
                                 修改密码
                             </a>
                         </Permission>
-                        <Permission operationCode={'system:user:modify:one'}>
+                        <Permission operationCode={['system:user:modify:one']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnEditBtnClick(record)}
@@ -211,7 +211,7 @@ const User = () => {
                                 编辑
                             </a>
                         </Permission>
-                        <Permission operationCode={'system:user:delete:one'}>
+                        <Permission operationCode={['system:user:delete:one']}>
                             {record.id !== '0' && (
                                 <a
                                     style={{ color: COLOR_PRODUCTION }}
@@ -888,7 +888,7 @@ const User = () => {
 
     const toolbar = (
         <FlexBox direction={'horizontal'} gap={10}>
-            <Permission operationCode={'system:user:add:one'}>
+            <Permission operationCode={['system:user:add:one']}>
                 <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
                     <AntdButton
                         type={'primary'}

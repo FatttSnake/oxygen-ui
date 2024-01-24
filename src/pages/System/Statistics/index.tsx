@@ -47,15 +47,15 @@ const Statistics = () => {
             <FitFullscreen data-component={'system-statistics'}>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
-                        <Permission operationCode={'system:statistics:query:usage'}>
+                        <Permission operationCode={['system:statistics:query:usage']}>
                             <OnlineInfo />
                             <ActiveInfo />
                         </Permission>
-                        <Permission operationCode={'system:statistics:query:base'}>
+                        <Permission operationCode={['system:statistics:query:base']}>
                             <HardwareInfo />
                             <SoftwareInfo />
                         </Permission>
-                        <Permission operationCode={'system:statistics:query:real'}>
+                        <Permission operationCode={['system:statistics:query:real']}>
                             <CPUInfo />
                             <StorageInfo />
                         </Permission>

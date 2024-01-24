@@ -73,11 +73,15 @@ const Category = () => {
         {
             title: (
                 <>
-                    操作 (
-                    <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
-                        新增
-                    </a>
-                    )
+                    操作
+                    <Permission operationCode={['system:tool:add:category']}>
+                        {' '}
+                        (
+                        <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
+                            新增
+                        </a>
+                        )
+                    </Permission>
                 </>
             ),
             dataIndex: 'enable',
@@ -86,7 +90,7 @@ const Category = () => {
             render: (_, record) => (
                 <>
                     <AntdSpace size={'middle'}>
-                        <Permission operationCode={'system:tool:modify:category'}>
+                        <Permission operationCode={['system:tool:modify:category']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnEditBtnClick(record)}
@@ -94,7 +98,7 @@ const Category = () => {
                                 编辑
                             </a>
                         </Permission>
-                        <Permission operationCode={'system:tool:delete:category'}>
+                        <Permission operationCode={['system:tool:delete:category']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnDeleteBtnClick(record)}

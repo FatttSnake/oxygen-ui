@@ -8,7 +8,8 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { utcToLocalTime } from '@/util/datetime.tsx'
+import { utcToLocalTime } from '@/util/datetime'
+import { hasPermission } from '@/util/auth'
 import {
     r_sys_tool_template_update,
     r_sys_tool_template_delete,
@@ -31,7 +32,6 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import Card from '@/components/common/Card'
 import CodeEditor from '@/components/Playground/CodeEditor'
 import Permission from '@/components/common/Permission'
-import { useState } from 'react'
 
 const Template = () => {
     const blocker = useBlocker(
@@ -125,14 +125,14 @@ const Template = () => {
                 <>
                     操作
                     {!Object.keys(hasEdited).length && (
-                        <>
+                        <Permission operationCode={['system:tool:add:template']}>
                             {' '}
                             (
                             <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
                                 新增
                             </a>
                             )
-                        </>
+                        </Permission>
                     )}
                 </>
             ),
@@ -142,7 +142,7 @@ const Template = () => {
                 <>
                     <AntdSpace size={'middle'}>
                         {hasEdited[record.id] && (
-                            <Permission operationCode={'system:tool:modify:base'}>
+                            <Permission operationCode={['system:tool:modify:template']}>
                                 <a
                                     style={{ color: COLOR_PRODUCTION }}
                                     onClick={handleOnSaveBtnClick(record)}
@@ -152,7 +152,7 @@ const Template = () => {
                             </Permission>
                         )}
                         {!Object.keys(hasEdited).length && (
-                            <Permission operationCode={'system:tool:modify:base'}>
+                            <Permission operationCode={['system:tool:modify:template']}>
                                 <a
                                     style={{ color: COLOR_PRODUCTION }}
                                     onClick={handleOnEditBtnClick(record)}
@@ -161,7 +161,7 @@ const Template = () => {
                                 </a>
                             </Permission>
                         )}
-                        <Permission operationCode={'system:tool:delete:base'}>
+                        <Permission operationCode={['system:tool:delete:template']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnDeleteBtnClick(record)}
@@ -498,14 +498,14 @@ const Template = () => {
                     <>
                         操作
                         {!Object.keys(hasEdited).length && (
-                            <>
+                            <Permission operationCode={['system:tool:modify:template']}>
                                 {' '}
                                 (
                                 <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddFile}>
                                     新增
                                 </a>
                                 )
-                            </>
+                            </Permission>
                         )}
                     </>
                 ),
@@ -515,16 +515,21 @@ const Template = () => {
                 render: (_, record) => (
                     <>
                         <AntdSpace size={'middle'}>
-                            <Permission operationCode={'system:tool:modify:category'}>
+                            <Permission
+                                operationCode={[
+                                    'system:tool:query:template',
+                                    'system:tool:modify:template'
+                                ]}
+                            >
                                 <a
                                     onClick={handleOnEditFile(record.name)}
                                     style={{ color: COLOR_PRODUCTION }}
                                 >
-                                    编辑
+                                    {hasPermission('system:tool:modify:template') ? '编辑' : '查看'}
                                 </a>
                             </Permission>
                             {!Object.keys(hasEdited).length && (
-                                <Permission operationCode={'system:tool:modify:category'}>
+                                <Permission operationCode={['system:tool:modify:template']}>
                                     <a
                                         onClick={handleOnRenameFile(record.name)}
                                         style={{ color: COLOR_PRODUCTION }}
@@ -534,7 +539,7 @@ const Template = () => {
                                 </Permission>
                             )}
                             {!Object.keys(hasEdited).length && (
-                                <Permission operationCode={'system:tool:delete:category'}>
+                                <Permission operationCode={['system:tool:delete:template']}>
                                     <a
                                         onClick={handleOnDeleteFile(record.name)}
                                         style={{ color: COLOR_PRODUCTION }}
@@ -729,6 +734,9 @@ const Template = () => {
     }
 
     const handleOnChangeFileContent = (_content: string, _fileName: string, files: IFiles) => {
+        if (!hasPermission('system:tool:modify:template')) {
+            return
+        }
         setEditingFiles({ ...editingFiles, [editingTemplateId]: files })
         if (!hasEdited[editingTemplateId]) {
             setHasEdited({ ...hasEdited, [editingTemplateId]: true })
@@ -865,7 +873,11 @@ const Template = () => {
                                     onChangeFileContent={handleOnChangeFileContent}
                                     showFileSelector={false}
                                     tsconfig={tsconfig}
-                                    readonly={isLoading || templateDetailLoading[editingTemplateId]}
+                                    readonly={
+                                        isLoading ||
+                                        templateDetailLoading[editingTemplateId] ||
+                                        !hasPermission('system:tool:modify:template')
+                                    }
                                 />
                                 <div className={'close-editor-btn'} onClick={handleOnCloseBtnClick}>
                                     <Icon component={IconOxygenClose} />

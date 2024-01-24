@@ -98,7 +98,7 @@ const Role = () => {
             render: (value, record) => (
                 <>
                     <AntdSpace size={'middle'}>
-                        <Permission operationCode={'system:role:modify:status'}>
+                        <Permission operationCode={['system:role:modify:status']}>
                             {value ? (
                                 <a
                                     style={{ color: COLOR_PRODUCTION }}
@@ -115,7 +115,7 @@ const Role = () => {
                                 </a>
                             )}
                         </Permission>
-                        <Permission operationCode={'system:role:modify:one'}>
+                        <Permission operationCode={['system:role:modify:one']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnEditBtnClick(record)}
@@ -123,7 +123,7 @@ const Role = () => {
                                 编辑
                             </a>
                         </Permission>
-                        <Permission operationCode={'system:role:delete:one'}>
+                        <Permission operationCode={['system:role:delete:one']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnDeleteBtnClick(record)}
@@ -504,7 +504,7 @@ const Role = () => {
 
     const toolbar = (
         <FlexBox direction={'horizontal'} gap={10}>
-            <Permission operationCode={'system:role:add:one'}>
+            <Permission operationCode={['system:role:add:one']}>
                 <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
                     <AntdButton
                         type={'primary'}

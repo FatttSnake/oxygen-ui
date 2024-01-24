@@ -106,7 +106,7 @@ const SensitiveWord = () => {
                 loading={loading}
                 onReset={handleOnReset}
                 onSave={handleOnSave}
-                modifyOperationCode={'system:settings:modify:sensitive'}
+                modifyOperationCode={['system:settings:modify:sensitive']}
             >
                 <AntdTransfer
                     listStyle={{ width: '100%', height: 400 }}

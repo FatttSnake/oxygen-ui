@@ -106,7 +106,7 @@ const Mail = () => {
                 loading={loading}
                 onReset={handleOnReset}
                 onSave={handleOnSave}
-                modifyOperationCode={'system:settings:modify:mail'}
+                modifyOperationCode={['system:settings:modify:mail']}
                 expand={
                     <AntdButton onClick={handleOnTest} title={'测试'}>
                         <Icon component={IconOxygenTest} />

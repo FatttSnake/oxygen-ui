@@ -106,7 +106,7 @@ const Group = () => {
             render: (value, record) => (
                 <>
                     <AntdSpace size={'middle'}>
-                        <Permission operationCode={'system:group:modify:status'}>
+                        <Permission operationCode={['system:group:modify:status']}>
                             {value ? (
                                 <a
                                     style={{ color: COLOR_PRODUCTION }}
@@ -123,7 +123,7 @@ const Group = () => {
                                 </a>
                             )}
                         </Permission>
-                        <Permission operationCode={'system:group:modify:one'}>
+                        <Permission operationCode={['system:group:modify:one']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnEditBtnClick(record)}
@@ -131,7 +131,7 @@ const Group = () => {
                                 编辑
                             </a>
                         </Permission>
-                        <Permission operationCode={'system:group:delete:one'}>
+                        <Permission operationCode={['system:group:delete:one']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnDeleteBtnClick(record)}
@@ -495,7 +495,7 @@ const Group = () => {
 
     const toolbar = (
         <FlexBox direction={'horizontal'} gap={10}>
-            <Permission operationCode={'system:group:add:one'}>
+            <Permission operationCode={['system:group:add:one']}>
                 <Card style={{ overflow: 'inherit', flex: '0 0 auto' }}>
                     <AntdButton
                         type={'primary'}

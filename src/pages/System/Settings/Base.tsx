@@ -51,7 +51,7 @@ const Base = () => {
                 loading={loading}
                 onReset={handleOnReset}
                 onSave={handleOnSave}
-                modifyOperationCode={'system:settings:modify:base'}
+                modifyOperationCode={['system:settings:modify:base']}
             >
                 <AntdForm
                     form={baseForm}

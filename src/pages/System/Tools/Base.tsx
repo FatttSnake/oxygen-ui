@@ -8,7 +8,8 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { utcToLocalTime } from '@/util/datetime.tsx'
+import { utcToLocalTime } from '@/util/datetime'
+import { hasPermission } from '@/util/auth'
 import {
     r_sys_tool_base_add,
     r_sys_tool_base_delete,
@@ -125,14 +126,14 @@ const Base = () => {
                 <>
                     操作
                     {!Object.keys(hasEdited).length && (
-                        <>
+                        <Permission operationCode={['system:tool:add:base']}>
                             {' '}
                             (
                             <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
                                 新增
                             </a>
                             )
-                        </>
+                        </Permission>
                     )}
                 </>
             ),
@@ -142,15 +143,17 @@ const Base = () => {
                 <>
                     <AntdSpace size={'middle'}>
                         {!record.compiled && !Object.keys(hasEdited).length && (
-                            <a
-                                style={{ color: COLOR_PRODUCTION }}
-                                onClick={handleOnCompileBtnClick(record)}
-                            >
-                                编译
-                            </a>
+                            <Permission operationCode={['system:tool:modify:base']}>
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnCompileBtnClick(record)}
+                                >
+                                    编译
+                                </a>
+                            </Permission>
                         )}
                         {hasEdited[record.id] && (
-                            <Permission operationCode={'system:tool:modify:base'}>
+                            <Permission operationCode={['system:tool:modify:base']}>
                                 <a
                                     style={{ color: COLOR_PRODUCTION }}
                                     onClick={handleOnSaveBtnClick(record)}
@@ -160,7 +163,7 @@ const Base = () => {
                             </Permission>
                         )}
                         {!Object.keys(hasEdited).length && (
-                            <Permission operationCode={'system:tool:modify:base'}>
+                            <Permission operationCode={['system:tool:modify:base']}>
                                 <a
                                     style={{ color: COLOR_PRODUCTION }}
                                     onClick={handleOnEditBtnClick(record)}
@@ -169,7 +172,7 @@ const Base = () => {
                                 </a>
                             </Permission>
                         )}
-                        <Permission operationCode={'system:tool:delete:base'}>
+                        <Permission operationCode={['system:tool:delete:base']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnDeleteBtnClick(record)}
@@ -652,14 +655,14 @@ const Base = () => {
                     <>
                         操作
                         {!Object.keys(hasEdited).length && (
-                            <>
+                            <Permission operationCode={['system:tool:modify:base']}>
                                 {' '}
                                 (
                                 <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddFile}>
                                     新增
                                 </a>
                                 )
-                            </>
+                            </Permission>
                         )}
                     </>
                 ),
@@ -669,16 +672,21 @@ const Base = () => {
                 render: (_, record) => (
                     <>
                         <AntdSpace size={'middle'}>
-                            <Permission operationCode={'system:tool:modify:category'}>
+                            <Permission
+                                operationCode={[
+                                    'system:tool:query:base',
+                                    'system:tool:modify:base'
+                                ]}
+                            >
                                 <a
                                     onClick={handleOnEditFile(record.name)}
                                     style={{ color: COLOR_PRODUCTION }}
                                 >
-                                    编辑
+                                    {hasPermission('system:tool:modify:base') ? '编辑' : '查看'}
                                 </a>
                             </Permission>
                             {!Object.keys(hasEdited).length && (
-                                <Permission operationCode={'system:tool:modify:category'}>
+                                <Permission operationCode={['system:tool:modify:base']}>
                                     <a
                                         onClick={handleOnRenameFile(record.name)}
                                         style={{ color: COLOR_PRODUCTION }}
@@ -688,7 +696,7 @@ const Base = () => {
                                 </Permission>
                             )}
                             {!Object.keys(hasEdited).length && (
-                                <Permission operationCode={'system:tool:delete:category'}>
+                                <Permission operationCode={['system:tool:delete:base']}>
                                     <a
                                         onClick={handleOnDeleteFile(record.name)}
                                         style={{ color: COLOR_PRODUCTION }}
@@ -880,6 +888,9 @@ const Base = () => {
     }
 
     const handleOnChangeFileContent = (_content: string, _fileName: string, files: IFiles) => {
+        if (!hasPermission('system:tool:modify:base')) {
+            return
+        }
         setEditingFiles({ ...editingFiles, [editingBaseId]: files })
         if (!hasEdited[editingBaseId]) {
             setHasEdited({ ...hasEdited, [editingBaseId]: true })
@@ -978,7 +989,11 @@ const Base = () => {
                                     onChangeFileContent={handleOnChangeFileContent}
                                     showFileSelector={false}
                                     tsconfig={tsconfig}
-                                    readonly={isLoading || baseDetailLoading[editingBaseId]}
+                                    readonly={
+                                        isLoading ||
+                                        baseDetailLoading[editingBaseId] ||
+                                        !hasPermission('system:tool:modify:base')
+                                    }
                                 />
                                 <div className={'close-editor-btn'} onClick={handleOnCloseBtnClick}>
                                     <Icon component={IconOxygenClose} />

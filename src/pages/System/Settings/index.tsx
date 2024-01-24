@@ -15,7 +15,7 @@ interface SettingsCardProps extends PropsWithChildren {
     icon: IconComponent
     title: string
     loading?: boolean
-    modifyOperationCode?: string
+    modifyOperationCode?: string[]
     expand?: ReactNode
     onReset?: () => void
     onSave?: () => void
@@ -57,15 +57,15 @@ const Settings = () => {
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         <FlexBox className={'root-col'}>
-                            <Permission operationCode={'system:settings:query:base'}>
+                            <Permission operationCode={['system:settings:query:base']}>
                                 <Base />
                             </Permission>
-                            <Permission operationCode={'system:settings:query:sensitive'}>
+                            <Permission operationCode={['system:settings:query:sensitive']}>
                                 <SensitiveWord />
                             </Permission>
                         </FlexBox>
                         <FlexBox className={'root-col'}>
-                            <Permission operationCode={'system:settings:query:mail'}>
+                            <Permission operationCode={['system:settings:query:mail']}>
                                 <Mail />
                             </Permission>
                         </FlexBox>
