@@ -45,6 +45,7 @@ const system: RouteJsonObject[] = [
                 id: 'system-tools-index',
                 component: lazy(() => import('@/pages/System/Tools')),
                 name: '工具管理',
+                operationCode: 'system:tool:query:tool',
                 menu: true,
                 autoHide: true
             },
@@ -54,6 +55,7 @@ const system: RouteJsonObject[] = [
                 id: 'system-tools-template',
                 component: lazy(() => import('@/pages/System/Tools/Template')),
                 name: '模板管理',
+                operationCode: 'system:tool:query:template',
                 menu: true,
                 autoHide: true
             },
@@ -63,6 +65,7 @@ const system: RouteJsonObject[] = [
                 id: 'system-tools-base',
                 component: lazy(() => import('@/pages/System/Tools/Base')),
                 name: '基板管理',
+                operationCode: 'system:tool:query:base',
                 menu: true,
                 autoHide: true
             },
@@ -72,6 +75,7 @@ const system: RouteJsonObject[] = [
                 id: 'system-tools-category',
                 component: lazy(() => import('@/pages/System/Tools/Category')),
                 name: '类别管理',
+                operationCode: 'system:tool:query:category',
                 menu: true,
                 autoHide: true
             }

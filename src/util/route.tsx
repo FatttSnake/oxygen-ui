@@ -1,5 +1,4 @@
-import { RouteObject } from 'react-router'
-import { hasPathPermission } from '@/util/auth'
+import { hasPathPermission, hasPermission } from '@/util/auth'
 
 export const getRedirectUrl = (path: string, redirectUrl: string): string => {
     return `${path}?redirect=${encodeURIComponent(redirectUrl)}`
@@ -18,12 +17,13 @@ export const getAuthRoute = (
     route: RouteJsonObject[],
     parentPermission: boolean = false
 ): RouteJsonObject[] => {
-    return route
+    const temp = route
         .filter(
             (value) =>
                 value.path === '*' ||
                 !(value.permission || parentPermission) ||
-                hasPathPermission(value.absolutePath)
+                (hasPathPermission(value.absolutePath) &&
+                    (!value.operationCode || hasPermission(value.operationCode)))
         )
         .map((value) => {
             if (value.children) {
@@ -31,6 +31,12 @@ export const getAuthRoute = (
             }
             return value
         })
+    temp.push({
+        path: '',
+        absolutePath: '',
+        element: <Navigate to={temp[0].absolutePath} replace />
+    })
+    return temp
 }
 
 export const mapJsonToRoute = (jsonObject: RouteJsonObject[]): RouteObject[] => {

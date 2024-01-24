@@ -14,7 +14,8 @@ const SystemFramework = () => {
                             <Sidebar.ItemList>
                                 {getSystemRouteJson().map((route) => {
                                     return (
-                                        route.menu && (
+                                        route.menu &&
+                                        route.name && (
                                             <Sidebar.Item
                                                 end={route.id === 'system' ? true : undefined}
                                                 path={route.absolutePath}
@@ -22,14 +23,18 @@ const SystemFramework = () => {
                                                 text={route.name}
                                                 key={route.id}
                                             >
-                                                {route.children?.map((subRoute) => (
-                                                    <Sidebar.Item
-                                                        end
-                                                        path={subRoute.absolutePath}
-                                                        text={subRoute.name}
-                                                        key={subRoute.id}
-                                                    />
-                                                ))}
+                                                {route.children?.map(
+                                                    (subRoute) =>
+                                                        subRoute &&
+                                                        subRoute.name && (
+                                                            <Sidebar.Item
+                                                                end
+                                                                path={subRoute.absolutePath}
+                                                                text={subRoute.name}
+                                                                key={subRoute.id}
+                                                            />
+                                                        )
+                                                )}
                                             </Sidebar.Item>
                                         )
                                     )

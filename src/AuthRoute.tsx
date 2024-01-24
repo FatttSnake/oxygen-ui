@@ -1,7 +1,6 @@
 import { PRODUCTION_NAME } from '@/constants/common.constants'
 import { getRedirectUrl } from '@/util/route'
 import { getLoginStatus, getVerifyStatus_async } from '@/util/auth'
-import { Navigate } from 'react-router'
 
 const AuthRoute = () => {
     const [searchParams] = useSearchParams()

@@ -25,6 +25,7 @@ interface RouteJsonObject {
     menu?: boolean
     auth?: boolean
     permission?: boolean
+    operationCode?: string
     autoHide?: boolean
     children?: RouteJsonObject[]
 }
