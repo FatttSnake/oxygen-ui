@@ -121,7 +121,7 @@ const OnlineInfo = () => {
                         disabled={isLoading}
                         style={{ width: '8em' }}
                     >
-                        <AntdSelect.Option key={'DAY'}>今天</AntdSelect.Option>
+                        <AntdSelect.Option key={'DAY'}>最近24小时</AntdSelect.Option>
                         <AntdSelect.Option key={'WEAK'}>最近7天</AntdSelect.Option>
                         <AntdSelect.Option key={'MONTH'}>最近30天</AntdSelect.Option>
                         <AntdSelect.Option key={'QUARTER'}>最近3个月</AntdSelect.Option>

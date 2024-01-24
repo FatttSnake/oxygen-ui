@@ -22,6 +22,7 @@ const AuthRoute = () => {
             if (!isLogin) {
                 return (
                     <Navigate
+                        replace
                         to={getRedirectUrl('/login', `${lastMatch.pathname}${location.search}`)}
                     />
                 )
