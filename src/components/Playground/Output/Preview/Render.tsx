@@ -1,3 +1,4 @@
+import '@/components/Playground/Output/Preview/render.scss'
 import iframeRaw from '@/components/Playground/Output/Preview/iframe.html?raw'
 
 interface RenderProps {
@@ -66,6 +67,7 @@ const Render = ({ iframeKey, compiledCode, onError }: RenderProps) => {
 
     return (
         <iframe
+            data-component={'playground-output-preview-render'}
             key={iframeKey}
             ref={iframeRef}
             src={iframeUrl}

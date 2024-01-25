@@ -32,8 +32,8 @@ import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import Card from '@/components/common/Card'
-import CodeEditor from '@/components/Playground/CodeEditor'
 import Permission from '@/components/common/Permission'
+import Playground from '@/components/Playground'
 
 const Base = () => {
     const blocker = useBlocker(
@@ -283,9 +283,11 @@ const Base = () => {
                                             duration: 0
                                         })
                                         void compiler
-                                            .compile(files, importMap, [
+                                            .compile(
+                                                files,
+                                                importMap,
                                                 compileForm.getFieldValue('entryFileName') as string
-                                            ])
+                                            )
                                             .then((result) => {
                                                 void message.destroy('compiling')
                                                 void message.loading({
@@ -982,7 +984,7 @@ const Base = () => {
                         </Card>
                         {editingFileName && (
                             <Card>
-                                <CodeEditor
+                                <Playground.CodeEditor
                                     files={editingFiles[editingBaseId]}
                                     selectedFileName={editingFileName}
                                     onSelectedFileChange={() => {}}

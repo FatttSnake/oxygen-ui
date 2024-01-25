@@ -1,6 +1,7 @@
 import '@/components/Playground/playground.scss'
 import { IFiles, IImportMap, ITsconfig } from '@/components/Playground/shared'
 import {
+    ENTRY_FILE_NAME,
     IMPORT_MAP_FILE_NAME,
     MAIN_FILE_NAME,
     TS_CONFIG_FILE_NAME
@@ -13,9 +14,15 @@ interface PlaygroundProps {
     initFiles: IFiles
     initImportMapRaw: string
     initTsconfigRaw: string
+    entryPoint?: string
 }
 
-const Playground = ({ initFiles, initImportMapRaw, initTsconfigRaw }: PlaygroundProps) => {
+const Playground = ({
+    initFiles,
+    initImportMapRaw,
+    initTsconfigRaw,
+    entryPoint = ENTRY_FILE_NAME
+}: PlaygroundProps) => {
     const [files, setFiles] = useState(initFiles)
     const [selectedFileName, setSelectedFileName] = useState(MAIN_FILE_NAME)
     const [importMapRaw, setImportMapRaw] = useState<string>(initImportMapRaw)
@@ -93,7 +100,12 @@ const Playground = ({ initFiles, initImportMapRaw, initTsconfigRaw }: Playground
                 onChangeFileContent={handleOnChangeFileContent}
                 onSelectedFileChange={setSelectedFileName}
             />
-            <Output files={files} selectedFileName={selectedFileName} importMap={importMap!} />
+            <Output
+                files={files}
+                selectedFileName={selectedFileName}
+                importMap={importMap!}
+                entryPoint={entryPoint}
+            />
         </FlexBox>
     )
 }

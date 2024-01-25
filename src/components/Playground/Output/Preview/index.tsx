@@ -1,16 +1,16 @@
 import '@/components/Playground/Output/Preview/preview.scss'
 import { IFiles, IImportMap } from '@/components/Playground/shared'
 import Compiler from '@/components/Playground/compiler'
-import { ENTRY_FILE_NAME } from '@/components/Playground/files'
 import Render from '@/components/Playground/Output/Preview/Render'
 
 interface PreviewProps {
     iframeKey: string
     files: IFiles
     importMap: IImportMap
+    entryPoint: string
 }
 
-const Preview = ({ iframeKey, files, importMap }: PreviewProps) => {
+const Preview = ({ iframeKey, files, importMap, entryPoint }: PreviewProps) => {
     const [errorMsg, setErrorMsg] = useState('')
     const [compiledCode, setCompiledCode] = useState('')
 
@@ -19,7 +19,7 @@ const Preview = ({ iframeKey, files, importMap }: PreviewProps) => {
     }
 
     useEffect(() => {
-        Compiler.compile(files, importMap, [ENTRY_FILE_NAME])
+        Compiler.compile(files, importMap, entryPoint)
             .then((result) => {
                 setCompiledCode(result.outputFiles[0].text)
             })
@@ -35,5 +35,7 @@ const Preview = ({ iframeKey, files, importMap }: PreviewProps) => {
         </div>
     )
 }
+
+Preview.Render = Render
 
 export default Preview

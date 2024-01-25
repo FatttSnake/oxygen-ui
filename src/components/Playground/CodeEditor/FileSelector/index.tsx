@@ -110,6 +110,10 @@ const FileSelector = ({
     }
 
     const handleOnValidateTab = (newFileName: string, oldFileName: string) => {
+        if (newFileName.length > 40) {
+            onError?.('File name is too long, maximum 40 characters.')
+        }
+
         if (!/\.(jsx|tsx|js|ts|css|json)$/.test(newFileName)) {
             onError?.('Playground only supports *.jsx, *.tsx, *.js, *.ts, *.css, *.json files.')
 
@@ -218,5 +222,7 @@ const FileSelector = ({
         </>
     )
 }
+
+FileSelector.Item = Item
 
 export default FileSelector

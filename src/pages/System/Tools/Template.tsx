@@ -30,8 +30,8 @@ import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import Card from '@/components/common/Card'
-import CodeEditor from '@/components/Playground/CodeEditor'
 import Permission from '@/components/common/Permission'
+import Playground from '@/components/Playground'
 
 const Template = () => {
     const blocker = useBlocker(
@@ -866,7 +866,7 @@ const Template = () => {
                         </Card>
                         {editingFileName && (
                             <Card>
-                                <CodeEditor
+                                <Playground.CodeEditor
                                     files={editingFiles[editingTemplateId]}
                                     selectedFileName={editingFileName}
                                     onSelectedFileChange={() => {}}

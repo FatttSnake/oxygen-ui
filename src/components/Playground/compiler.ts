@@ -2,7 +2,7 @@ import esbuild, { Loader, OnLoadArgs, Plugin, PluginBuild } from 'esbuild-wasm'
 import localforage from 'localforage'
 import axios from 'axios'
 import { IFiles, IImportMap } from '@/components/Playground/shared'
-import { cssToJs, ENTRY_FILE_NAME, jsonToJs, addReactImport } from '@/components/Playground/files'
+import { cssToJs, jsonToJs, addReactImport } from '@/components/Playground/files'
 
 class Compiler {
     private init = false
@@ -42,7 +42,7 @@ class Compiler {
             return esbuild.transform(code, { loader })
         })
 
-    compile = (files: IFiles, importMap: IImportMap, entryPoints: string[]) =>
+    compile = (files: IFiles, importMap: IImportMap, entryPoint: string) =>
         new Promise<void>((resolve) => {
             if (this.init) {
                 resolve()
@@ -57,11 +57,11 @@ class Compiler {
         }).then(() => {
             return esbuild.build({
                 bundle: true,
-                entryPoints: entryPoints,
+                entryPoints: [entryPoint],
                 format: 'esm',
                 metafile: true,
                 write: false,
-                plugins: [this.fileResolverPlugin(files, importMap, entryPoints)]
+                plugins: [this.fileResolverPlugin(files, importMap, entryPoint)]
             })
         })
 
@@ -72,13 +72,13 @@ class Compiler {
     private fileResolverPlugin = (
         files: IFiles,
         importMap: IImportMap,
-        entryPoints: string[]
+        entryPoint: string
     ): Plugin => {
         return {
             name: 'file-resolver-plugin',
             setup: (build: PluginBuild) => {
                 build.onResolve({ filter: /.*/ }, (args: esbuild.OnResolveArgs) => {
-                    if (entryPoints.includes(args.path)) {
+                    if (entryPoint === args.path) {
                         return {
                             namespace: 'OxygenToolbox',
                             path: args.path
@@ -165,10 +165,10 @@ class Compiler {
                 })
 
                 build.onLoad({ filter: /.*/ }, async (args: OnLoadArgs) => {
-                    if (args.path === ENTRY_FILE_NAME) {
+                    if (entryPoint === args.path) {
                         return {
                             loader: 'tsx',
-                            contents: addReactImport(files[ENTRY_FILE_NAME].value)
+                            contents: addReactImport(files[entryPoint].value)
                         }
                     }
 

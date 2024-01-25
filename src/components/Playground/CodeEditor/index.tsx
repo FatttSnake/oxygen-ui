@@ -160,4 +160,7 @@ const CodeEditor = ({
     )
 }
 
+CodeEditor.Editor = Editor
+CodeEditor.FileSelector = FileSelector
+
 export default CodeEditor
