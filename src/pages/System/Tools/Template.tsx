@@ -509,7 +509,6 @@ const Template = () => {
                         )}
                     </>
                 ),
-                dataIndex: 'enable',
                 width: '12em',
                 align: 'center',
                 render: (_, record) => (
@@ -836,7 +835,7 @@ const Template = () => {
                     filterOption={filterOption}
                     options={baseData.map((value) => ({
                         value: value.id,
-                        label: `${value.name}${!value.enable ? '(已禁用)' : ''}`
+                        label: value.name
                     }))}
                 />
             </AntdForm.Item>

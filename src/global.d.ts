@@ -493,7 +493,6 @@ interface ToolBaseVo {
     source: ToolDataVo
     dist: ToolDataVo
     compiled: boolean
-    enable: boolean
     createTime: string
     updateTime: string
 }
@@ -503,7 +502,6 @@ interface ToolBaseAddEditParam {
     name?: string
     source?: string
     dist?: string
-    enable?: boolean
 }
 
 interface ToolTemplateVo {

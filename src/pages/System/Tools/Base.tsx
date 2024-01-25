@@ -80,7 +80,6 @@ const Base = () => {
         setIsDrawerOpen(true)
         form.setFieldValue('id', undefined)
         form.setFieldValue('name', newFormValues?.name)
-        form.setFieldValue('enable', newFormValues?.enable ?? true)
     }
 
     const baseColumns: _ColumnsType<ToolBaseVo> = [
@@ -105,21 +104,6 @@ const Base = () => {
             width: '15em',
             align: 'center',
             render: (value: string) => utcToLocalTime(value)
-        },
-        {
-            title: '状态',
-            width: '10em',
-            align: 'center',
-            render: (_, record) => (
-                <>
-                    {record.enable ? (
-                        <AntdTag color={'success'}>启用</AntdTag>
-                    ) : (
-                        <AntdTag>禁用</AntdTag>
-                    )}
-                    {!record.compiled && <AntdTag>未编译</AntdTag>}
-                </>
-            )
         },
         {
             title: (
@@ -381,7 +365,6 @@ const Base = () => {
             setIsDrawerOpen(true)
             form.setFieldValue('id', value.id)
             form.setFieldValue('name', value.name)
-            form.setFieldValue('enable', value.enable)
             void form.validateFields()
         }
     }
@@ -668,7 +651,6 @@ const Base = () => {
                         )}
                     </>
                 ),
-                dataIndex: 'enable',
                 width: '12em',
                 align: 'center',
                 render: (_, record) => (
@@ -920,8 +902,7 @@ const Base = () => {
 
         if (!isDrawerEdit && formValues) {
             setNewFormValues({
-                name: formValues.name,
-                enable: formValues.enable
+                name: formValues.name
             })
         }
     }, [formValues])
@@ -957,9 +938,6 @@ const Base = () => {
                 rules={[{ required: true, whitespace: false }]}
             >
                 <AntdInput allowClear />
-            </AntdForm.Item>
-            <AntdForm.Item name={'enable'} label={'状态'}>
-                <AntdSwitch checkedChildren={'启用'} unCheckedChildren={'禁用'} />
             </AntdForm.Item>
         </AntdForm>
     )

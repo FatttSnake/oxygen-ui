@@ -84,7 +84,6 @@ const Category = () => {
                     </Permission>
                 </>
             ),
-            dataIndex: 'enable',
             width: '15em',
             align: 'center',
             render: (_, record) => (
