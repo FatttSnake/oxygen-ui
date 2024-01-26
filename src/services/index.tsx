@@ -109,11 +109,18 @@ service.interceptors.response.use(
         return response
     },
     async (error: AxiosError) => {
-        void message.error(
-            <>
-                <strong>服务器出错</strong>，请稍后重试
-            </>
-        )
+        if (
+            error.code === 'ETIMEDOUT' ||
+            (error.code === 'ECONNABORTED' && error.message.includes('timeout'))
+        ) {
+            void message.error('请求超时，请稍后重试')
+        } else {
+            void message.error(
+                <>
+                    <strong>服务器出错</strong>，请稍后重试
+                </>
+            )
+        }
         return await Promise.reject(error?.response?.data)
     }
 )

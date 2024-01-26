@@ -509,6 +509,7 @@ interface ToolTemplateVo {
     name: string
     baseId: string
     source: ToolDataVo
+    entryPoint: string
     enable: boolean
     createTime: string
     updateTime: string
@@ -520,6 +521,7 @@ interface ToolTemplateAddEditParam {
     name?: string
     baseId?: string
     source?: string
+    entryPoint?: string
     enable?: boolean
 }
 
@@ -540,4 +542,15 @@ interface ToolVo {
     review: number
     createTime: string
     updateTime: string
+}
+
+interface ToolCreateParam {
+    name: string
+    toolId: string
+    description: string
+    ver: string
+    templateId: string
+    privately: boolean
+    keywords: string[]
+    categories: string[]
 }

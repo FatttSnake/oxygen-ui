@@ -1,39 +1,151 @@
 import '@/assets/css/pages/tools/create.scss'
-import FlexBox from '@/components/common/FlexBox.tsx'
-import Card from '@/components/common/Card.tsx'
-import FitFullscreen from '@/components/common/FitFullscreen.tsx'
-import Preview from '@/components/Playground/Output/Preview'
-import templates from '@/components/Playground/templates.ts'
-import { useEffect } from 'react'
-import HideScrollbar from '@/components/common/HideScrollbar.tsx'
+import {
+    DATABASE_DUPLICATE_KEY,
+    DATABASE_INSERT_SUCCESS,
+    DATABASE_SELECT_SUCCESS
+} from '@/constants/common.constants'
+import {
+    r_tool_category_get,
+    r_tool_create,
+    r_tool_template_get,
+    r_tool_template_get_one
+} from '@/services/tool'
+import { IImportMap } from '@/components/Playground/shared'
+import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
+import compiler from '@/components/Playground/compiler'
+import FlexBox from '@/components/common/FlexBox'
+import Card from '@/components/common/Card'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import Playground from '@/components/Playground'
 
 const Create = () => {
-    const [form] = AntdForm.useForm<{
-        name: string
-        toolId: string
-        desc: string
-        version: string
-        template: string
-        private: boolean
-        keyword: string[]
-        category: string[]
-    }>()
+    const [form] = AntdForm.useForm<ToolCreateParam>()
     const formValues = AntdForm.useWatch([], form)
-    const [template, setTemplate] = useState(templates['demo'])
+    const [templateData, setTemplateData] = useState<ToolTemplateVo[]>()
+    const [categoryData, setCategoryData] = useState<ToolCategoryVo[]>()
+    const [templateDetailData, setTemplateDetailData] = useState<Record<string, ToolTemplateVo>>({})
+    const [previewTemplate, setPreviewTemplate] = useState('')
+    const [loadingTemplate, setLoadingTemplate] = useState(false)
+    const [loadingCategory, setLoadingCategory] = useState(false)
+    const [creating, setCreating] = useState(false)
+    const [compiledCode, setCompiledCode] = useState('')
+
+    const handleOnFinish = (toolAddParam: ToolCreateParam) => {
+        setCreating(true)
+
+        void r_tool_create(toolAddParam)
+            .then((res) => {
+                const response = res.data
+                switch (response.code) {
+                    case DATABASE_INSERT_SUCCESS:
+                        void message.success(
+                            `创建工具 ${response.data!.name}<${response.data!.toolId}>:${response.data!.ver} 成功`
+                        )
+                        break
+                    case DATABASE_DUPLICATE_KEY:
+                        void message.warning('已存在相同 ID 相同版本的应用')
+                        setCreating(false)
+                        break
+                    default:
+                        void message.error('创建失败，请稍后重试')
+                        setCreating(false)
+                }
+            })
+            .catch(() => {
+                setCreating(false)
+            })
+    }
+
+    const handleOnTemplateChange = (value: string) => {
+        setPreviewTemplate(value)
+        if (templateDetailData[value]) {
+            return
+        }
+
+        setLoadingTemplate(true)
+        void r_tool_template_get_one(value)
+            .then((res) => {
+                const response = res.data
+                switch (response.code) {
+                    case DATABASE_SELECT_SUCCESS:
+                        setTemplateDetailData({ ...templateDetailData, [value]: response.data! })
+                        break
+                    default:
+                        void message.error('获取模板信息失败')
+                }
+            })
+            .finally(() => {
+                setLoadingTemplate(false)
+            })
+    }
 
     useEffect(() => {
-        formValues?.template && setTemplate(templates[formValues?.template])
-    }, [formValues?.template])
+        const template = templateDetailData[previewTemplate]
+        if (!template) {
+            return
+        }
+        try {
+            const baseDist = base64ToStr(template.base.dist.data!)
+            const files = base64ToFiles(template.source.data!)
+            const importMap = JSON.parse(files[IMPORT_MAP_FILE_NAME].value) as IImportMap
+
+            void compiler
+                .compile(files, importMap, template.entryPoint)
+                .then((result) => {
+                    const output = result.outputFiles[0].text
+                    setCompiledCode(`${output}\n${baseDist}`)
+                })
+                .catch((reason) => {
+                    void message.error(`编译失败：${reason}`)
+                })
+        } catch (e) {
+            void message.error(`载入模板 ${templateDetailData[previewTemplate].name} 失败`)
+        }
+    }, [templateDetailData, previewTemplate])
 
     useEffect(() => {
         const temp: string[] = []
-        formValues?.keyword.forEach((item) => {
+        formValues?.keywords.forEach((item) => {
             if (item.length <= 10) {
                 temp.push(item)
             }
         })
         form.setFieldValue('keyword', temp)
-    }, [form, formValues?.keyword])
+    }, [form, formValues?.keywords])
+
+    useEffect(() => {
+        setLoadingTemplate(true)
+        setLoadingCategory(true)
+        void r_tool_template_get()
+            .then((res) => {
+                const response = res.data
+                switch (response.code) {
+                    case DATABASE_SELECT_SUCCESS:
+                        setTemplateData(response.data!)
+                        break
+                    default:
+                        void message.error('获取模板列表失败，请稍后重试')
+                }
+            })
+            .finally(() => {
+                setLoadingTemplate(false)
+            })
+        void r_tool_category_get()
+            .then((res) => {
+                const response = res.data
+                switch (response.code) {
+                    case DATABASE_SELECT_SUCCESS:
+                        setCategoryData(response.data!)
+                        break
+                    default:
+                        void message.error('获取类别列表失败，请稍后重试')
+                }
+            })
+            .finally(() => {
+                setLoadingCategory(false)
+            })
+    }, [])
 
     return (
         <FitFullscreen data-component={'tools-create'}>
@@ -45,7 +157,12 @@ const Create = () => {
                     <Card className={'config'}>
                         <HideScrollbar>
                             <div className={'config-content'}>
-                                <AntdForm form={form} layout={'vertical'}>
+                                <AntdForm
+                                    form={form}
+                                    layout={'vertical'}
+                                    onFinish={handleOnFinish}
+                                    disabled={creating}
+                                >
                                     <AntdForm.Item
                                         label={'名称'}
                                         name={'name'}
@@ -75,7 +192,7 @@ const Create = () => {
                                             placeholder={'请输入工具 ID'}
                                         />
                                     </AntdForm.Item>
-                                    <AntdForm.Item label={'简介'} name={'desc'}>
+                                    <AntdForm.Item label={'简介'} name={'description'}>
                                         <AntdInput.TextArea
                                             autoSize={{ minRows: 6, maxRows: 6 }}
                                             maxLength={200}
@@ -85,7 +202,7 @@ const Create = () => {
                                     </AntdForm.Item>
                                     <AntdForm.Item
                                         label={'版本'}
-                                        name={'version'}
+                                        name={'ver'}
                                         rules={[
                                             { required: true },
                                             {
@@ -102,21 +219,23 @@ const Create = () => {
                                     </AntdForm.Item>
                                     <AntdForm.Item
                                         label={'模板'}
-                                        name={'template'}
-                                        initialValue={'demo'}
+                                        name={'templateId'}
                                         rules={[{ required: true }]}
                                     >
-                                        <AntdSelect>
-                                            {Object.keys(templates).map((item) => (
-                                                <AntdSelect.Option key={item}>
-                                                    {templates[item].name}
-                                                </AntdSelect.Option>
-                                            ))}
-                                        </AntdSelect>
+                                        <AntdSelect
+                                            placeholder={'请选择模板'}
+                                            options={templateData?.map((value) => ({
+                                                value: value.id,
+                                                label: value.name
+                                            }))}
+                                            loading={loadingTemplate}
+                                            disabled={loadingTemplate}
+                                            onChange={handleOnTemplateChange}
+                                        />
                                     </AntdForm.Item>
                                     <AntdForm.Item
                                         label={'访问权限'}
-                                        name={'private'}
+                                        name={'privately'}
                                         initialValue={false}
                                     >
                                         <AntdSwitch
@@ -127,21 +246,39 @@ const Create = () => {
                                     <AntdForm.Item
                                         label={'关键字'}
                                         tooltip={'工具搜索（每个不超过10个字符）'}
-                                        name={'keyword'}
+                                        name={'keywords'}
                                         rules={[{ required: true, message: '请输入关键字' }]}
                                     >
-                                        <AntdSelect mode={'tags'} maxCount={20} />
+                                        <AntdSelect
+                                            placeholder={'请输入关键字'}
+                                            mode={'tags'}
+                                            maxCount={20}
+                                        />
                                     </AntdForm.Item>
                                     <AntdForm.Item
                                         label={'类别'}
                                         tooltip={'工具分类'}
-                                        name={'category'}
+                                        name={'categories'}
                                         rules={[{ required: true }]}
                                     >
-                                        <AntdSelect mode={'multiple'} />
+                                        <AntdSelect
+                                            placeholder={'请选择类别'}
+                                            mode={'multiple'}
+                                            options={categoryData?.map((value) => ({
+                                                value: value.id,
+                                                label: value.name
+                                            }))}
+                                            loading={loadingCategory}
+                                            disabled={loadingCategory}
+                                        />
                                     </AntdForm.Item>
                                     <AntdForm.Item>
-                                        <AntdButton className={'create-bt'} type={'primary'}>
+                                        <AntdButton
+                                            className={'create-bt'}
+                                            type={'primary'}
+                                            htmlType={'submit'}
+                                            loading={creating}
+                                        >
                                             创建
                                         </AntdButton>
                                     </AntdForm.Item>
@@ -155,11 +292,12 @@ const Create = () => {
                         <FlexBox>预览</FlexBox>
                     </Card>
                     <Card className={'preview'}>
-                        <Preview
-                            iframeKey={JSON.stringify(template.importMap)}
-                            files={template.files}
-                            importMap={template.importMap}
-                        />
+                        {compiledCode && (
+                            <Playground.Output.Preview.Render
+                                iframeKey={previewTemplate}
+                                compiledCode={compiledCode}
+                            />
+                        )}
                     </Card>
                 </FlexBox>
             </FlexBox>

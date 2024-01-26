@@ -79,6 +79,7 @@ const Template = () => {
         form.setFieldValue('id', undefined)
         form.setFieldValue('name', newFormValues?.name)
         form.setFieldValue('baseId', newFormValues?.baseId)
+        form.setFieldValue('entryPoint', newFormValues?.entryPoint)
         form.setFieldValue('enable', newFormValues?.enable ?? true)
         if (!baseData || !baseData.length) {
             getBaseData()
@@ -97,6 +98,10 @@ const Template = () => {
         {
             title: '基板',
             dataIndex: ['base', 'name']
+        },
+        {
+            title: '入口',
+            dataIndex: 'entryPoint'
         },
         {
             title: '创建时间',
@@ -211,6 +216,7 @@ const Template = () => {
             form.setFieldValue('id', value.id)
             form.setFieldValue('name', value.name)
             form.setFieldValue('baseId', value.base.id)
+            form.setFieldValue('entryPoint', value.entryPoint)
             form.setFieldValue('enable', value.enable)
             if (!baseData || !baseData.length) {
                 getBaseData()
@@ -787,6 +793,7 @@ const Template = () => {
             setNewFormValues({
                 name: formValues.name,
                 baseId: formValues.baseId,
+                entryPoint: formValues.entryPoint,
                 enable: formValues.enable
             })
         }
@@ -839,6 +846,9 @@ const Template = () => {
                     }))}
                 />
             </AntdForm.Item>
+            <AntdForm.Item name={'entryPoint'} label={'入口'} rules={[{ required: true }]}>
+                <AntdInput allowClear />
+            </AntdForm.Item>
             <AntdForm.Item name={'enable'} label={'状态'}>
                 <AntdSwitch checkedChildren={'启用'} unCheckedChildren={'禁用'} />
             </AntdForm.Item>
@@ -857,6 +867,7 @@ const Template = () => {
                                 rowKey={(record) => record.id}
                                 loading={isLoading}
                                 pagination={false}
+                                scroll={{ x: true }}
                                 expandable={{
                                     expandedRowRender,
                                     onExpand: handleOnExpand
