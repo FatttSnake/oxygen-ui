@@ -1,3 +1,4 @@
+import Icon from '@ant-design/icons'
 import '@/assets/css/pages/tools/create.scss'
 import {
     DATABASE_DUPLICATE_KEY,
@@ -55,6 +56,27 @@ const Create = () => {
             .catch(() => {
                 setCreating(false)
             })
+    }
+
+    const handleOnIconBeforeUpload = (
+        file: Parameters<_GetProp<_UploadProps, 'beforeUpload'>>[0]
+    ) => {
+        if (file.type !== 'image/svg+xml') {
+            void message.error('仅支持 svg 文件')
+            return false
+        }
+        if (file.size / 1024 / 1024 > 2) {
+            void message.error('文件大小不能大于2MiB')
+        }
+
+        const reader = new FileReader()
+        reader.addEventListener('load', () => {
+            form.setFieldValue('icon', reader.result!.toString().split(',')[1])
+            void form.validateFields()
+        })
+        reader.readAsDataURL(file)
+
+        return false
     }
 
     const handleOnTemplateChange = (value: string) => {
@@ -163,6 +185,42 @@ const Create = () => {
                                     onFinish={handleOnFinish}
                                     disabled={creating}
                                 >
+                                    <AntdForm.Item
+                                        label={'图标'}
+                                        name={''}
+                                        rules={[
+                                            ({ getFieldValue }) => ({
+                                                validator() {
+                                                    if (!getFieldValue('icon')) {
+                                                        return Promise.reject(
+                                                            new Error('请选择图标')
+                                                        )
+                                                    }
+                                                    return Promise.resolve()
+                                                }
+                                            })
+                                        ]}
+                                    >
+                                        <AntdUpload
+                                            listType={'picture-card'}
+                                            showUploadList={false}
+                                            beforeUpload={handleOnIconBeforeUpload}
+                                            accept={'image/svg+xml'}
+                                        >
+                                            {formValues?.icon ? (
+                                                <img
+                                                    src={`data:image/svg+xml;base64,${formValues.icon}`}
+                                                    alt={'icon'}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            ) : (
+                                                <Icon component={IconOxygenPlus} />
+                                            )}
+                                        </AntdUpload>
+                                    </AntdForm.Item>
+                                    <AntdForm.Item name={'icon'}>
+                                        <AntdInput />
+                                    </AntdForm.Item>
                                     <AntdForm.Item
                                         label={'名称'}
                                         name={'name'}

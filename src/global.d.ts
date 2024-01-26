@@ -529,6 +529,7 @@ interface ToolVo {
     id: string
     name: string
     toolId: string
+    icon: string
     description: string
     baseId: string
     author: UserInfoVo
@@ -540,6 +541,7 @@ interface ToolVo {
     dist: ToolDataVo
     publish: boolean
     review: number
+    publishTime: string
     createTime: string
     updateTime: string
 }
@@ -547,6 +549,7 @@ interface ToolVo {
 interface ToolCreateParam {
     name: string
     toolId: string
+    icon: string
     description: string
     ver: string
     templateId: string

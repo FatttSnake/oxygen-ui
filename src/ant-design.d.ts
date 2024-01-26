@@ -1,6 +1,6 @@
 import { ComponentType, ForwardRefExoticComponent, Key, SVGProps } from 'react'
 import { CustomIconComponentProps } from '@ant-design/icons/es/components/Icon'
-import { TablePaginationConfig } from 'antd/lib'
+import { GetProp, TablePaginationConfig, UploadProps } from 'antd/lib'
 import { ColumnsType, FilterValue, SorterResult, SortOrder } from 'antd/es/table/interface'
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
 import type { DataNode } from 'antd/es/tree'
@@ -23,4 +23,7 @@ declare global {
         parentId?: number
         children?: _DataNode[]
     }
+
+    type _UploadProps = UploadProps
+    type _GetProp<T, PropName> = GetProp<T, PropName>
 }
