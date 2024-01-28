@@ -40,11 +40,6 @@ const Category = () => {
 
     const categoryColumns: _ColumnsType<ToolCategoryVo> = [
         {
-            title: 'ID',
-            dataIndex: 'id',
-            width: '15%'
-        },
-        {
             title: '名称',
             dataIndex: 'name'
         },
