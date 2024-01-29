@@ -23,16 +23,7 @@
 
     .left, .right {
       opacity: 1;
-      animation: 1s ease;
-      @include mixins.unique-keyframes {
-        0% {
-          opacity: 0;
-        }
-
-        100% {
-          opacity: 1;
-        }
-      }
+      transition: all 1s ease;
 
       > * {
         width: 100%;
@@ -41,16 +32,6 @@
 
       &.hidden {
         opacity: 0;
-        animation: 1s ease;
-        @include mixins.unique-keyframes {
-          0% {
-            opacity: 1;
-          }
-
-          100% {
-            opacity: 0;
-          }
-        }
       }
 
       > * {
@@ -127,16 +108,7 @@
       height: 100%;
       width: 50%;
       background-color: #F3F4F8;
-      animation: 0.8s ease;
-      @include mixins.unique-keyframes {
-        0% {
-          left: 50%;
-        }
-
-        100% {
-          left: 0;
-        }
-      }
+      transition: all 0.8s ease;
 
       .ball-box {
         position: relative;
@@ -169,17 +141,8 @@
 
     &.switch {
       .cover {
-        left: 50%;
-        animation: 0.8s ease;
-        @include mixins.unique-keyframes {
-          0% {
-            left: 0;
-          }
-
-          100% {
-            left: 50%;
-          }
-        }
+        transform: translateX(100%);
+        transition: all 0.8s ease;
       }
     }
   }
