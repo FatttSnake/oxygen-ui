@@ -1,5 +1,10 @@
 import request from '@/services/index'
-import { URL_TOOL, URL_TOOL_CATEGORY, URL_TOOL_TEMPLATE } from '@/constants/urls.constants'
+import {
+    URL_TOOL,
+    URL_TOOL_CATEGORY,
+    URL_TOOL_DETAIL,
+    URL_TOOL_TEMPLATE
+} from '@/constants/urls.constants'
 
 export const r_tool_template_get = () => request.get<ToolTemplateVo[]>(URL_TOOL_TEMPLATE)
 
@@ -9,3 +14,8 @@ export const r_tool_template_get_one = (id: string) =>
 export const r_tool_category_get = () => request.get<ToolCategoryVo[]>(URL_TOOL_CATEGORY)
 
 export const r_tool_create = (param: ToolCreateParam) => request.post<ToolVo>(URL_TOOL, param)
+
+export const r_tool_get = () => request.get<ToolVo[]>(URL_TOOL)
+
+export const r_tool_detail = (username: string, toolId: string, ver: string) =>
+    request.get<ToolVo>(`${URL_TOOL_DETAIL}/${username}/${toolId}/${ver}`)

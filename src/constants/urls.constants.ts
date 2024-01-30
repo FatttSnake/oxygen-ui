@@ -33,6 +33,7 @@ export const URL_SYS_TOOL_TEMPLATE = `${URL_SYS_TOOL}/template`
 export const URL_TOOL = '/tool'
 export const URL_TOOL_TEMPLATE = `${URL_TOOL}/template`
 export const URL_TOOL_CATEGORY = `${URL_TOOL}/category`
+export const URL_TOOL_DETAIL = `${URL_TOOL}/detail`
 
 export const URL_API_V1 = '/api/v1'
 export const URL_API_V1_AVATAR_RANDOM_BASE64 = `${URL_API_V1}/avatar/base64`

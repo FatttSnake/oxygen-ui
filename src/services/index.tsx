@@ -68,11 +68,14 @@ service.interceptors.response.use(
         switch (response.data.code) {
             case PERMISSION_UNAUTHORIZED:
                 removeToken()
-                void message.error(
-                    <>
-                        <strong>未登录</strong>
-                    </>
-                )
+                void message.error({
+                    content: (
+                        <>
+                            <strong>未登录</strong>
+                        </>
+                    ),
+                    key: 'NO_LOGIN'
+                })
                 setTimeout(() => {
                     location.reload()
                 }, 1500)
@@ -80,11 +83,14 @@ service.interceptors.response.use(
             case PERMISSION_TOKEN_ILLEGAL:
             case PERMISSION_TOKEN_HAS_EXPIRED:
                 removeToken()
-                void message.error(
-                    <>
-                        <strong>登录已过期</strong>
-                    </>
-                )
+                void message.error({
+                    content: (
+                        <>
+                            <strong>登录已过期</strong>
+                        </>
+                    ),
+                    key: 'LOGIN_HAS_EXPIRED'
+                })
                 setTimeout(() => {
                     location.replace(
                         getRedirectUrl('/login', `${location.pathname}${location.search}`)
@@ -92,18 +98,24 @@ service.interceptors.response.use(
                 }, 1500)
                 throw response?.data
             case PERMISSION_ACCESS_DENIED:
-                void message.error(
-                    <>
-                        <strong>暂无权限操作</strong>
-                    </>
-                )
+                void message.error({
+                    content: (
+                        <>
+                            <strong>暂无权限操作</strong>
+                        </>
+                    ),
+                    key: 'ACCESS_DENIED'
+                })
                 throw response?.data
             case SYSTEM_REQUEST_TOO_FREQUENT:
-                void message.warning(
-                    <>
-                        <strong>请求过于频繁，请稍后重试</strong>
-                    </>
-                )
+                void message.warning({
+                    content: (
+                        <>
+                            <strong>请求过于频繁，请稍后重试</strong>
+                        </>
+                    ),
+                    key: 'REQUEST_TOO_FREQUENT'
+                })
                 throw response?.data
         }
         return response
@@ -113,13 +125,16 @@ service.interceptors.response.use(
             error.code === 'ETIMEDOUT' ||
             (error.code === 'ECONNABORTED' && error.message.includes('timeout'))
         ) {
-            void message.error('请求超时，请稍后重试')
+            void message.error({ content: '请求超时，请稍后重试', key: 'TIMEOUT' })
         } else {
-            void message.error(
-                <>
-                    <strong>服务器出错</strong>，请稍后重试
-                </>
-            )
+            void message.error({
+                content: (
+                    <>
+                        <strong>服务器出错</strong>，请稍后重试
+                    </>
+                ),
+                key: 'SERVER_ERROR'
+            })
         }
         return await Promise.reject(error?.response?.data)
     }

@@ -177,7 +177,7 @@ const Base = () => {
             }
             setCompiling(true)
             setIsLoading(true)
-            void message.loading({ content: '加载文件中', key: 'compile-loading', duration: 0 })
+            void message.loading({ content: '加载文件中', key: 'COMPILE_LOADING', duration: 0 })
 
             if (!baseDetailLoading[value.id]) {
                 getBaseDetail(value)
@@ -211,7 +211,7 @@ const Base = () => {
                         baseDetail = prevState[value.id]
                         return prevState
                     })
-                    message.destroy('compile-loading')
+                    message.destroy('COMPILE_LOADING')
                     const files = base64ToFiles(baseDetail!.source.data!)
                     if (!Object.keys(files).includes(IMPORT_MAP_FILE_NAME)) {
                         void message.warning(`编译中止：未包含 ${IMPORT_MAP_FILE_NAME} 文件`)
@@ -263,7 +263,7 @@ const Base = () => {
                                         resolve()
                                         void message.loading({
                                             content: '编译中',
-                                            key: 'compiling',
+                                            key: 'COMPILING',
                                             duration: 0
                                         })
                                         void compiler
@@ -273,14 +273,12 @@ const Base = () => {
                                                 compileForm.getFieldValue('entryFileName') as string
                                             )
                                             .then((result) => {
-                                                void message.destroy('compiling')
+                                                message.destroy('COMPILING')
                                                 void message.loading({
                                                     content: '上传中',
-                                                    key: 'uploading',
+                                                    key: 'UPLOADING',
                                                     duration: 0
                                                 })
-                                                // TODO Remove debug
-                                                console.debug(result.outputFiles[0].text)
                                                 void r_sys_tool_base_update({
                                                     id: value.id,
                                                     dist: strToBase64(result.outputFiles[0].text)
@@ -297,14 +295,14 @@ const Base = () => {
                                                         }
                                                     })
                                                     .finally(() => {
-                                                        void message.destroy('uploading')
+                                                        message.destroy('UPLOADING')
                                                         setCompiling(false)
                                                         setIsLoading(false)
                                                     })
                                             })
                                             .catch((e: Error) => {
                                                 void message.error(`编译失败：${e.message}`)
-                                                void message.destroy('compiling')
+                                                message.destroy('COMPILING')
                                                 setCompiling(false)
                                                 setIsLoading(false)
                                             })
@@ -325,7 +323,7 @@ const Base = () => {
                 .catch(() => {
                     setCompiling(false)
                     setIsLoading(false)
-                    message.destroy('compile-loading')
+                    message.destroy('COMPILE_LOADING')
                 })
         }
     }

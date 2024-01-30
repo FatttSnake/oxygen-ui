@@ -70,7 +70,7 @@ const Verify = () => {
             return
         }
         setIsSending(true)
-        void message.loading({ content: '发送中', key: 'sending', duration: 0 })
+        void message.loading({ content: '发送中', key: 'SENDING', duration: 0 })
         void r_auth_resend()
             .then((res) => {
                 const response = res.data
@@ -81,7 +81,7 @@ const Verify = () => {
                 }
             })
             .finally(() => {
-                message.destroy('sending')
+                message.destroy('SENDING')
                 setIsSending(false)
             })
     }

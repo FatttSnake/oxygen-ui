@@ -534,14 +534,12 @@ interface ToolVo {
     baseId: string
     author: UserInfoVo
     ver: string
-    privately: boolean
     keywords: string[]
     categories: ToolCategoryVo[]
     source: ToolDataVo
     dist: ToolDataVo
-    publish: boolean
+    publish: string
     review: number
-    publishTime: string
     createTime: string
     updateTime: string
 }
@@ -553,7 +551,6 @@ interface ToolCreateParam {
     description: string
     ver: string
     templateId: string
-    privately: boolean
     keywords: string[]
     categories: string[]
 }

@@ -45,7 +45,7 @@ const Create = () => {
                         )
                         break
                     case DATABASE_DUPLICATE_KEY:
-                        void message.warning('已存在相同 ID 相同版本的应用')
+                        void message.warning('已存在相同 ID 相同版本或未发布版本的应用')
                         setCreating(false)
                         break
                     default:
@@ -71,8 +71,9 @@ const Create = () => {
 
         const reader = new FileReader()
         reader.addEventListener('load', () => {
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
             form.setFieldValue('icon', reader.result!.toString().split(',')[1])
-            void form.validateFields()
+            void form.validateFields(['icon'])
         })
         reader.readAsDataURL(file)
 
@@ -187,7 +188,7 @@ const Create = () => {
                                 >
                                     <AntdForm.Item
                                         label={'图标'}
-                                        name={''}
+                                        name={'icon'}
                                         rules={[
                                             ({ getFieldValue }) => ({
                                                 validator() {
@@ -200,6 +201,7 @@ const Create = () => {
                                                 }
                                             })
                                         ]}
+                                        getValueFromEvent={() => {}}
                                     >
                                         <AntdUpload
                                             listType={'picture-card'}
@@ -218,7 +220,7 @@ const Create = () => {
                                             )}
                                         </AntdUpload>
                                     </AntdForm.Item>
-                                    <AntdForm.Item name={'icon'}>
+                                    <AntdForm.Item name={'icon'} hidden>
                                         <AntdInput />
                                     </AntdForm.Item>
                                     <AntdForm.Item
@@ -289,16 +291,6 @@ const Create = () => {
                                             loading={loadingTemplate}
                                             disabled={loadingTemplate}
                                             onChange={handleOnTemplateChange}
-                                        />
-                                    </AntdForm.Item>
-                                    <AntdForm.Item
-                                        label={'访问权限'}
-                                        name={'privately'}
-                                        initialValue={false}
-                                    >
-                                        <AntdSwitch
-                                            checkedChildren={'私有'}
-                                            unCheckedChildren={'公开'}
                                         />
                                     </AntdForm.Item>
                                     <AntdForm.Item

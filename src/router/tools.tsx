@@ -28,8 +28,22 @@ export const tools: RouteJsonObject[] = [
         name: '创建工具',
         titlePostfix: ' - 创建新工具',
         icon: lazy(() => import('~icons/oxygen/newProject')),
-        menu: true,
+        menu: false,
         auth: true
+    },
+    {
+        path: 'view/:username/:toolId/:ver',
+        absolutePath: '/view',
+        id: 'tools-view-ver',
+        component: lazy(() => import('@/pages/Tools/View')),
+        name: '查看'
+    },
+    {
+        path: 'view/:username/:toolId',
+        absolutePath: '/view',
+        id: 'tools-view',
+        component: lazy(() => import('@/pages/Tools/View')),
+        name: '查看'
     },
     {
         path: '*',
