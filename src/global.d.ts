@@ -531,15 +531,16 @@ interface ToolVo {
     toolId: string
     icon: string
     description: string
-    baseId: string
+    base: ToolBaseVo
     author: UserInfoVo
     ver: string
     keywords: string[]
     categories: ToolCategoryVo[]
     source: ToolDataVo
     dist: ToolDataVo
+    entryPoint: string
     publish: string
-    review: number
+    review: 'NONE' | 'PASS' | 'REJECT'
     createTime: string
     updateTime: string
 }
@@ -553,4 +554,9 @@ interface ToolCreateParam {
     templateId: string
     keywords: string[]
     categories: string[]
+}
+
+interface ToolUpgradeParam {
+    toolId: string
+    ver: string
 }

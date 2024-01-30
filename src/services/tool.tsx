@@ -15,7 +15,11 @@ export const r_tool_category_get = () => request.get<ToolCategoryVo[]>(URL_TOOL_
 
 export const r_tool_create = (param: ToolCreateParam) => request.post<ToolVo>(URL_TOOL, param)
 
+export const r_tool_upgrade = (param: ToolUpgradeParam) => request.patch<ToolVo>(URL_TOOL, param)
+
 export const r_tool_get = () => request.get<ToolVo[]>(URL_TOOL)
 
 export const r_tool_detail = (username: string, toolId: string, ver: string) =>
     request.get<ToolVo>(`${URL_TOOL_DETAIL}/${username}/${toolId}/${ver}`)
+
+export const r_tool_delete = (id: string) => request.delete(`${URL_TOOL}/${id}`)

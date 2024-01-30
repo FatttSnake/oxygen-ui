@@ -1,15 +1,19 @@
-import { DetailedHTMLProps, HTMLAttributes, ReactNode, useState } from 'react'
+import { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import '@/assets/css/pages/tools/index.scss'
+import {
+    DATABASE_DELETE_SUCCESS,
+    DATABASE_SELECT_SUCCESS,
+    DATABASE_UPDATE_SUCCESS,
+    TOOL_ILLEGAL_VERSION
+} from '@/constants/common.constants'
+import { getLoginStatus } from '@/util/auth'
+import { r_tool_delete, r_tool_get, r_tool_upgrade } from '@/services/tool'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
-import { r_tool_get } from '@/services/tool.tsx'
-import { DATABASE_SELECT_SUCCESS } from '@/constants/common.constants.ts'
-import { getLoginStatus } from '@/util/auth.tsx'
-import { useNavigate } from 'react-router'
 
 interface CommonCardProps
     extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -79,13 +83,13 @@ const CommonCard = ({
                     {onEdit && (
                         <div className={'edit'}>
                             <AntdButton.Group size={'small'}>
-                                <AntdButton>编辑</AntdButton>
-                                {onPublish && <AntdButton>发布</AntdButton>}
+                                <AntdButton onClick={onEdit}>编辑</AntdButton>
+                                {onPublish && <AntdButton onClick={onPublish}>发布</AntdButton>}
                             </AntdButton.Group>
                         </div>
                     )}
                     {onDelete && (
-                        <AntdButton size={'small'} danger>
+                        <AntdButton size={'small'} danger onClick={onDelete}>
                             删除
                         </AntdButton>
                     )}
@@ -98,9 +102,11 @@ const CommonCard = ({
 
 interface ToolCardProps {
     tools: ToolVo[]
+    onDelete?: (tool: ToolVo) => void
+    onUpgrade?: (tool: ToolVo) => void
 }
 
-const ToolCard = ({ tools }: ToolCardProps) => {
+const ToolCard = ({ tools, onDelete, onUpgrade }: ToolCardProps) => {
     const navigate = useNavigate()
     const [selectedTool, setSelectedTool] = useState(tools[0])
 
@@ -112,11 +118,25 @@ const ToolCard = ({ tools }: ToolCardProps) => {
         navigate(`/view/!/${selectedTool.toolId}/${selectedTool.ver}`)
     }
 
-    const handleOnEditTool = () => {}
+    const handleOnEditTool = () => {
+        if (selectedTool.publish === '0') {
+            return () => {}
+        }
+    }
 
-    const handleOnPublishTool = () => {}
+    const handleOnPublishTool = () => {
+        if (selectedTool.publish === '0') {
+            return () => {}
+        }
+    }
 
-    const handleOnDeleteTool = () => {}
+    const handleOnDeleteTool = () => {
+        onDelete?.(selectedTool)
+    }
+
+    const handleOnUpgradeTool = () => {
+        onUpgrade?.(selectedTool)
+    }
 
     return (
         <CommonCard
@@ -124,8 +144,8 @@ const ToolCard = ({ tools }: ToolCardProps) => {
             toolName={selectedTool.name}
             toolId={selectedTool.toolId}
             onOpen={handleOnOpenTool}
-            onEdit={handleOnEditTool}
-            onPublish={handleOnPublishTool}
+            onEdit={handleOnEditTool()}
+            onPublish={handleOnPublishTool()}
             onDelete={handleOnDeleteTool}
         >
             <AntdSelect
@@ -138,13 +158,121 @@ const ToolCard = ({ tools }: ToolCardProps) => {
                     label: `${value.ver}${value.publish === '0' ? '*' : ''}`
                 }))}
             />
+            {tools.every((value) => value.publish !== '0') && (
+                <AntdTooltip title={'更新'}>
+                    <Icon
+                        component={IconOxygenUpgrade}
+                        className={'upgrade-bt'}
+                        onClick={handleOnUpgradeTool}
+                    />
+                </AntdTooltip>
+            )}
         </CommonCard>
     )
 }
 
 const Tools = () => {
+    const navigate = useNavigate()
+    const [modal, contextHolder] = AntdModal.useModal()
     const [loading, setLoading] = useState(false)
     const [toolData, setToolData] = useState<ToolVo[]>()
+    const [upgradeForm] = AntdForm.useForm<ToolUpgradeParam>()
+
+    const handleOnDeleteTool = (tool: ToolVo) => {
+        modal
+            .confirm({
+                title: '确定删除',
+                content: `确定删除工具 ${tool.name}:${tool.ver} 吗？`
+            })
+            .then(
+                (confirmed) => {
+                    if (confirmed) {
+                        setLoading(true)
+
+                        void r_tool_delete(tool.id)
+                            .then((res) => {
+                                const response = res.data
+                                if (response.code === DATABASE_DELETE_SUCCESS) {
+                                    void message.success('删除成功')
+                                    getTool()
+                                } else {
+                                    void message.error('删除失败，请稍后重试')
+                                }
+                            })
+                            .finally(() => {
+                                setLoading(false)
+                            })
+                    }
+                },
+                () => {}
+            )
+    }
+
+    const handleOnUpgradeTool = (tool: ToolVo) => {
+        void modal.confirm({
+            title: '更新应用',
+            content: (
+                <>
+                    <AntdForm form={upgradeForm}>
+                        <AntdForm.Item
+                            initialValue={tool.toolId}
+                            name={'toolId'}
+                            label={'工具 ID'}
+                            style={{ marginTop: 10 }}
+                        >
+                            <AntdInput disabled />
+                        </AntdForm.Item>
+                        <AntdForm.Item
+                            name={'ver'}
+                            label={'版本'}
+                            rules={[
+                                { required: true },
+                                {
+                                    pattern: /^\d+\.\d+\.\d+$/,
+                                    message: `格式必须为 '<数字>.<数字>.<数字>', eg. 1.0.3`
+                                }
+                            ]}
+                        >
+                            <AntdInput maxLength={10} showCount placeholder={'请输入版本'} />
+                        </AntdForm.Item>
+                    </AntdForm>
+                </>
+            ),
+            onOk: () =>
+                upgradeForm.validateFields().then(
+                    () => {
+                        return new Promise<void>((resolve, reject) => {
+                            void r_tool_upgrade({
+                                toolId: upgradeForm.getFieldValue('toolId') as string,
+                                ver: upgradeForm.getFieldValue('ver') as string
+                            }).then((res) => {
+                                const response = res.data
+                                switch (response.code) {
+                                    case DATABASE_UPDATE_SUCCESS:
+                                        void message.success('创建新版本成功')
+                                        const toolVo = response.data!
+                                        navigate(`/view/!/${toolVo.toolId}/${toolVo.ver}`)
+                                        resolve()
+                                        break
+                                    case TOOL_ILLEGAL_VERSION:
+                                        void message.error('版本有误，请重新输入')
+                                        reject()
+                                        break
+                                    default:
+                                        void message.error('更新失败，请稍后重试')
+                                        reject()
+                                }
+                            })
+                        })
+                    },
+                    () => {
+                        return new Promise((_, reject) => {
+                            reject('未输入版本')
+                        })
+                    }
+                )
+        })
+    }
 
     const getTool = () => {
         if (loading) {
@@ -195,10 +323,18 @@ const Tools = () => {
                                     result[item.toolId].push(item)
                                     return result
                                 }, {})
-                            ).map((value, index) => <ToolCard key={index} tools={value} />)}
+                            ).map((value) => (
+                                <ToolCard
+                                    key={JSON.stringify(value)}
+                                    tools={value}
+                                    onDelete={handleOnDeleteTool}
+                                    onUpgrade={handleOnUpgradeTool}
+                                />
+                            ))}
                     </FlexBox>
                 </HideScrollbar>
             </FitFullscreen>
+            {contextHolder}
         </>
     )
 }

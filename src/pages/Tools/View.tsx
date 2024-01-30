@@ -1,11 +1,39 @@
-import { r_tool_detail } from '@/services/tool.tsx'
-import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants.ts'
-import { getLoginStatus } from '@/util/auth.tsx'
+import '@/assets/css/pages/tools/view.scss'
+import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { getLoginStatus } from '@/util/auth'
+import { r_tool_detail } from '@/services/tool'
+import compiler from '@/components/Playground/compiler'
+import { IImportMap } from '@/components/Playground/shared'
+import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import Playground from '@/components/Playground'
+import Card from '@/components/common/Card'
 
 const View = () => {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
     const { username, toolId, ver } = useParams()
+    const [compiledCode, setCompiledCode] = useState('')
+
+    const render = (toolVo: ToolVo) => {
+        try {
+            const baseDist = base64ToStr(toolVo.base.dist.data!)
+            const files = base64ToFiles(toolVo.source.data!)
+            const importMap = JSON.parse(files[IMPORT_MAP_FILE_NAME].value) as IImportMap
+
+            void compiler
+                .compile(files, importMap, toolVo.entryPoint)
+                .then((result) => {
+                    const output = result.outputFiles[0].text
+                    setCompiledCode(`${output}\n${baseDist}`)
+                })
+                .catch((reason) => {
+                    void message.error(`编译失败：${reason}`)
+                })
+        } catch (e) {
+            void message.error('载入工具失败')
+        }
+    }
 
     const getTool = () => {
         if (loading) {
@@ -19,7 +47,7 @@ const View = () => {
                 const response = res.data
                 switch (response.code) {
                     case DATABASE_SELECT_SUCCESS:
-                        console.log(response.data)
+                        render(response.data!)
                         break
                     case DATABASE_NO_RECORD_FOUND:
                         void message.error('未找到指定工具')
@@ -52,9 +80,14 @@ const View = () => {
     }, [])
 
     return (
-        <>
-            {username}:{toolId}:{ver}
-        </>
+        <FitFullscreen data-component={'tools-view'}>
+            <Card>
+                <Playground.Output.Preview.Render
+                    iframeKey={`${username}:${toolId}:${ver}`}
+                    compiledCode={compiledCode}
+                />
+            </Card>
+        </FitFullscreen>
     )
 }
 

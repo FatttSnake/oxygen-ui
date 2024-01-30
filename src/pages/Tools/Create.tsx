@@ -11,9 +11,9 @@ import {
     r_tool_template_get,
     r_tool_template_get_one
 } from '@/services/tool'
+import compiler from '@/components/Playground/compiler'
 import { IImportMap } from '@/components/Playground/shared'
 import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
-import compiler from '@/components/Playground/compiler'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -21,6 +21,7 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import Playground from '@/components/Playground'
 
 const Create = () => {
+    const navigate = useNavigate()
     const [form] = AntdForm.useForm<ToolCreateParam>()
     const formValues = AntdForm.useWatch([], form)
     const [templateData, setTemplateData] = useState<ToolTemplateVo[]>()
@@ -43,9 +44,10 @@ const Create = () => {
                         void message.success(
                             `创建工具 ${response.data!.name}<${response.data!.toolId}>:${response.data!.ver} 成功`
                         )
+                        navigate(`/view/!/${response.data!.toolId}/${response.data!.ver}`)
                         break
                     case DATABASE_DUPLICATE_KEY:
-                        void message.warning('已存在相同 ID 相同版本或未发布版本的应用')
+                        void message.warning('已存在相同 ID 的应用')
                         setCreating(false)
                         break
                     default:
