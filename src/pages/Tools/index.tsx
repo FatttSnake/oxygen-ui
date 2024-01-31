@@ -25,6 +25,7 @@ interface CommonCardProps
     onOpen?: () => void
     onEdit?: () => void
     onPublish?: () => void
+    onCancelReview?: () => void
     onDelete?: () => void
 }
 
@@ -46,6 +47,7 @@ const CommonCard = ({
     onOpen,
     onEdit,
     onPublish,
+    onCancelReview,
     onDelete,
     children,
     ...props
@@ -80,13 +82,18 @@ const CommonCard = ({
                             打开
                         </AntdButton>
                     )}
-                    {onEdit && (
+                    {onEdit && onPublish && (
                         <div className={'edit'}>
                             <AntdButton.Group size={'small'}>
                                 <AntdButton onClick={onEdit}>编辑</AntdButton>
-                                {onPublish && <AntdButton onClick={onPublish}>发布</AntdButton>}
+                                <AntdButton onClick={onPublish}>发布</AntdButton>
                             </AntdButton.Group>
                         </div>
+                    )}
+                    {onCancelReview && (
+                        <AntdButton size={'small'} onClick={onCancelReview}>
+                            取消审核
+                        </AntdButton>
                     )}
                     {onDelete && (
                         <AntdButton size={'small'} danger onClick={onDelete}>
@@ -119,13 +126,21 @@ const ToolCard = ({ tools, onDelete, onUpgrade }: ToolCardProps) => {
     }
 
     const handleOnEditTool = () => {
-        if (selectedTool.publish === '0') {
-            return () => {}
+        if (selectedTool.publish === '0' && ['NONE', 'REJECT'].includes(selectedTool.review)) {
+            return () => {
+                navigate(`/edit/${tools[0].toolId}`)
+            }
         }
     }
 
     const handleOnPublishTool = () => {
-        if (selectedTool.publish === '0') {
+        if (selectedTool.publish === '0' && ['NONE', 'REJECT'].includes(selectedTool.review)) {
+            return () => {}
+        }
+    }
+
+    const handleOnCancelReview = () => {
+        if (selectedTool.publish === '0' && selectedTool.review === 'PROCESSING') {
             return () => {}
         }
     }
@@ -146,6 +161,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade }: ToolCardProps) => {
             onOpen={handleOnOpenTool}
             onEdit={handleOnEditTool()}
             onPublish={handleOnPublishTool()}
+            onCancelReview={handleOnCancelReview()}
             onDelete={handleOnDeleteTool}
         >
             <AntdSelect

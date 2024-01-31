@@ -46,6 +46,13 @@ export const tools: RouteJsonObject[] = [
         name: '查看'
     },
     {
+        path: 'edit/:toolId',
+        absolutePath: '/edit',
+        id: 'tools-edit',
+        component: lazy(() => import('@/pages/Tools/Edit')),
+        name: '查看'
+    },
+    {
         path: '*',
         absolutePath: '*',
         element: <Navigate to="/" replace />

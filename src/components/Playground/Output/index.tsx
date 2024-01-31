@@ -9,9 +9,18 @@ interface OutputProps {
     selectedFileName: string
     importMap: IImportMap
     entryPoint: string
+    preExpansionCode?: string
+    postExpansionCode?: string
 }
 
-const Output = ({ files, selectedFileName, importMap, entryPoint }: OutputProps) => {
+const Output = ({
+    files,
+    selectedFileName,
+    importMap,
+    entryPoint,
+    preExpansionCode,
+    postExpansionCode
+}: OutputProps) => {
     const [selectedTab, setSelectedTab] = useState('Preview')
 
     return (
@@ -31,6 +40,8 @@ const Output = ({ files, selectedFileName, importMap, entryPoint }: OutputProps)
                     files={files}
                     importMap={importMap}
                     entryPoint={entryPoint}
+                    preExpansionCode={preExpansionCode}
+                    postExpansionCode={postExpansionCode}
                 />
             )}
             {selectedTab === 'Transform' && <Transform file={files[selectedFileName]} />}

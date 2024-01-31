@@ -8,9 +8,18 @@ interface PreviewProps {
     files: IFiles
     importMap: IImportMap
     entryPoint: string
+    preExpansionCode?: string
+    postExpansionCode?: string
 }
 
-const Preview = ({ iframeKey, files, importMap, entryPoint }: PreviewProps) => {
+const Preview = ({
+    iframeKey,
+    files,
+    importMap,
+    entryPoint,
+    preExpansionCode = '',
+    postExpansionCode = ''
+}: PreviewProps) => {
     const [errorMsg, setErrorMsg] = useState('')
     const [compiledCode, setCompiledCode] = useState('')
 
@@ -19,14 +28,19 @@ const Preview = ({ iframeKey, files, importMap, entryPoint }: PreviewProps) => {
     }
 
     useEffect(() => {
+        if (!Object.keys(files).length || !importMap || !entryPoint.length) {
+            return
+        }
         Compiler.compile(files, importMap, entryPoint)
             .then((result) => {
-                setCompiledCode(result.outputFiles[0].text)
+                setCompiledCode(
+                    `${preExpansionCode}\n${result.outputFiles[0].text}\n${postExpansionCode}`
+                )
             })
             .catch((e: Error) => {
                 setErrorMsg(`编译失败：${e.message}`)
             })
-    }, [files, Compiler])
+    }, [files, Compiler, importMap, entryPoint])
 
     return (
         <div data-component={'playground-preview'}>

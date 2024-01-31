@@ -540,7 +540,7 @@ interface ToolVo {
     dist: ToolDataVo
     entryPoint: string
     publish: string
-    review: 'NONE' | 'PASS' | 'REJECT'
+    review: 'NONE' | 'PROCESSING' | 'PASS' | 'REJECT'
     createTime: string
     updateTime: string
 }

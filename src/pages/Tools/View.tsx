@@ -11,8 +11,8 @@ import Card from '@/components/common/Card'
 
 const View = () => {
     const navigate = useNavigate()
-    const [loading, setLoading] = useState(false)
     const { username, toolId, ver } = useParams()
+    const [loading, setLoading] = useState(false)
     const [compiledCode, setCompiledCode] = useState('')
 
     const render = (toolVo: ToolVo) => {
