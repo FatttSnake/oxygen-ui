@@ -31,11 +31,13 @@ export const getAuthRoute = (
             }
             return value
         })
-    temp.push({
-        path: '',
-        absolutePath: '',
-        element: <Navigate to={temp[0].absolutePath} replace />
-    })
+    if (temp[0]) {
+        temp.push({
+            path: '',
+            absolutePath: '',
+            element: <Navigate to={temp[0].absolutePath} replace />
+        })
+    }
     return temp
 }
 
