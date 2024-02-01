@@ -6,7 +6,9 @@ import {
     DATABASE_DELETE_SUCCESS,
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS,
-    TOOL_ILLEGAL_VERSION
+    TOOL_HAS_UNPUBLISHED_VERSION,
+    TOOL_ILLEGAL_VERSION,
+    TOOL_UNDER_REVIEW
 } from '@/constants/common.constants'
 import { getLoginStatus } from '@/util/auth'
 import { r_tool_delete, r_tool_get, r_tool_upgrade } from '@/services/tool'
@@ -266,13 +268,22 @@ const Tools = () => {
                                 switch (response.code) {
                                     case DATABASE_UPDATE_SUCCESS:
                                         void message.success('创建新版本成功')
-                                        const toolVo = response.data!
-                                        navigate(`/view/!/${toolVo.toolId}/${toolVo.ver}`)
+                                        navigate(
+                                            `/view/!/${response.data!.toolId}/${response.data!.ver}`
+                                        )
                                         resolve()
                                         break
                                     case TOOL_ILLEGAL_VERSION:
                                         void message.error('版本有误，请重新输入')
                                         reject()
+                                        break
+                                    case TOOL_UNDER_REVIEW:
+                                        void message.error('更新失败：工具审核中')
+                                        resolve()
+                                        break
+                                    case TOOL_HAS_UNPUBLISHED_VERSION:
+                                        void message.error('更新失败：存在未发布版本')
+                                        resolve()
                                         break
                                     default:
                                         void message.error('更新失败，请稍后重试')

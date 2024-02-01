@@ -458,26 +458,48 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
 
         useEffect(() => {
             rootRef.current?.removeEventListener('wheel', wheelListenerRef.current)
-            if (isPreventAnyScroll) {
-                const handleDefaultWheel = (event: WheelEvent) => {
-                    if (!event.altKey && !event.ctrlKey) {
-                        if (isPreventScroll) {
-                            event.preventDefault()
-                            return
-                        }
-                        if (isPreventVerticalScroll && !event.shiftKey && !event.deltaX) {
-                            event.preventDefault()
-                            return
-                        }
-                        if (isPreventHorizontalScroll && (event.shiftKey || !event.deltaY)) {
-                            event.preventDefault()
-                            return
-                        }
+            const handleDefaultWheel = (event: WheelEvent) => {
+                if (!event.altKey && !event.ctrlKey) {
+                    if (isPreventScroll) {
+                        event.preventDefault()
+                        return
+                    }
+                    if (
+                        isPreventVerticalScroll &&
+                        verticalScrollbarLength < 100 &&
+                        !event.shiftKey &&
+                        !event.deltaX
+                    ) {
+                        event.preventDefault()
+                        return
+                    }
+                    if (isPreventHorizontalScroll && (event.shiftKey || !event.deltaY)) {
+                        event.preventDefault()
+                        return
+                    }
+                    let length = verticalScrollbarLength
+                    setVerticalScrollbarLength((prevState) => {
+                        length = prevState
+                        return prevState
+                    })
+                    console.log(length)
+                    if (
+                        !isPreventHorizontalScroll &&
+                        length >= 100 &&
+                        !event.shiftKey &&
+                        !event.deltaX
+                    ) {
+                        event.preventDefault()
+                        rootRef.current?.scrollTo({
+                            left: rootRef.current?.scrollLeft + event.deltaY,
+                            behavior: 'smooth'
+                        })
+                        return
                     }
                 }
-                wheelListenerRef.current = handleDefaultWheel
-                rootRef.current?.addEventListener('wheel', handleDefaultWheel, { passive: false })
             }
+            wheelListenerRef.current = handleDefaultWheel
+            rootRef.current?.addEventListener('wheel', handleDefaultWheel, { passive: false })
         }, [
             isPreventAnyScroll,
             isPreventHorizontalScroll,

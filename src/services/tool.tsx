@@ -22,4 +22,6 @@ export const r_tool_get = () => request.get<ToolVo[]>(URL_TOOL)
 export const r_tool_detail = (username: string, toolId: string, ver: string) =>
     request.get<ToolVo>(`${URL_TOOL_DETAIL}/${username}/${toolId}/${ver}`)
 
+export const r_tool_update = (param: ToolUpdateParam) => request.put<ToolVo>(URL_TOOL, param)
+
 export const r_tool_delete = (id: string) => request.delete(`${URL_TOOL}/${id}`)

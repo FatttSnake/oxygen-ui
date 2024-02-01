@@ -560,3 +560,13 @@ interface ToolUpgradeParam {
     toolId: string
     ver: string
 }
+
+interface ToolUpdateParam {
+    id: string
+    name?: string
+    icon?: string
+    description?: string
+    keywords?: string[]
+    categories?: string[]
+    source?: string
+}
