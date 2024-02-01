@@ -8,14 +8,6 @@
 </head>
 <body>
 <script>
-  window.addEventListener("error", (e) => {
-    window.parent.postMessage({ type: "ERROR", msg: e.message });
-  });
-
-  window.addEventListener("load", () => {
-    window.parent.postMessage({ type: "LOADED", msg: "" });
-  });
-
   window.addEventListener("message", ({ data }) => {
     if (data?.type === "UPDATE") {
       // Record old styles that need to be removed
@@ -43,7 +35,6 @@
       };
       document.body.appendChild(script);
       URL.revokeObjectURL(oldSrc);
-      window.parent.postMessage({ type: "DONE", msg: "" });
     }
   });
 </script>

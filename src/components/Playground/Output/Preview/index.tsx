@@ -23,10 +23,6 @@ const Preview = ({
     const [errorMsg, setErrorMsg] = useState('')
     const [compiledCode, setCompiledCode] = useState('')
 
-    const handleOnError = (errorMsg: string) => {
-        setErrorMsg(errorMsg)
-    }
-
     useEffect(() => {
         if (!Object.keys(files).length || !importMap || !entryPoint.length) {
             return
@@ -36,6 +32,7 @@ const Preview = ({
                 setCompiledCode(
                     `${preExpansionCode}\n${result.outputFiles[0].text}\n${postExpansionCode}`
                 )
+                setErrorMsg('')
             })
             .catch((e: Error) => {
                 setErrorMsg(`编译失败：${e.message}`)
@@ -44,7 +41,7 @@ const Preview = ({
 
     return (
         <div data-component={'playground-preview'}>
-            <Render iframeKey={iframeKey} compiledCode={compiledCode} onError={handleOnError} />
+            <Render iframeKey={iframeKey} compiledCode={compiledCode} />
             {errorMsg && <div className={'playground-error-message'}>{errorMsg}</div>}
         </div>
     )

@@ -4,7 +4,6 @@ import iframeRaw from '@/components/Playground/Output/Preview/iframe.html?raw'
 interface RenderProps {
     iframeKey: string
     compiledCode: string
-    onError?: (errorMsg: string) => void
 }
 
 interface IMessage {
@@ -30,38 +29,19 @@ const getIframeUrl = (iframeRaw: string) => {
 
 const iframeUrl = getIframeUrl(iframeRaw)
 
-const Render = ({ iframeKey, compiledCode, onError }: RenderProps) => {
+const Render = ({ iframeKey, compiledCode }: RenderProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const [loaded, setLoaded] = useState(false)
 
-    const handleMessage = ({ data }: { data: IMessage }) => {
-        const { type, msg } = data
-        switch (type) {
-            case 'LOADED':
-                setLoaded(true)
-                break
-            case 'ERROR':
-                onError?.(msg)
-                break
-            case 'DONE':
-                onError?.('')
-        }
-    }
-
-    useEffect(() => {
-        window.addEventListener('message', handleMessage)
-
-        return () => {
-            window.removeEventListener('message', handleMessage)
-        }
-    }, [])
-
     useEffect(() => {
         if (loaded) {
-            iframeRef.current?.contentWindow?.postMessage({
-                type: 'UPDATE',
-                data: { compiledCode }
-            } as IMessage)
+            iframeRef.current?.contentWindow?.postMessage(
+                {
+                    type: 'UPDATE',
+                    data: { compiledCode }
+                } as IMessage,
+                '*'
+            )
         }
     }, [compiledCode, loaded])
 
@@ -71,7 +51,8 @@ const Render = ({ iframeKey, compiledCode, onError }: RenderProps) => {
             key={iframeKey}
             ref={iframeRef}
             src={iframeUrl}
-            sandbox="allow-popups-to-escape-sandbox allow-scripts allow-popups allow-forms allow-pointer-lock allow-top-navigation allow-modals allow-same-origin"
+            onLoad={() => setLoaded(true)}
+            sandbox="allow-downloads allow-forms allow-modals allow-scripts"
         />
     )
 }
