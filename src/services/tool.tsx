@@ -24,4 +24,8 @@ export const r_tool_detail = (username: string, toolId: string, ver: string) =>
 
 export const r_tool_update = (param: ToolUpdateParam) => request.put<ToolVo>(URL_TOOL, param)
 
+export const r_tool_submit = (id: string) => request.post(`${URL_TOOL}/${id}`)
+
+export const r_tool_cancel = (id: string) => request.put(`${URL_TOOL}/${id}`)
+
 export const r_tool_delete = (id: string) => request.delete(`${URL_TOOL}/${id}`)

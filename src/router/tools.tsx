@@ -13,7 +13,7 @@ export const tools: RouteJsonObject[] = [
         path: 'store',
         absolutePath: '/store',
         id: 'tools-store',
-        component: lazy(() => import('@/pages/Tools')),
+        component: lazy(() => import('@/pages/Tools/Store')),
         name: '工具商店',
         titlePostfix: ' - 商店',
         icon: lazy(() => import('~icons/oxygen/store')),

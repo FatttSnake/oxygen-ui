@@ -6,12 +6,22 @@ import {
     DATABASE_DELETE_SUCCESS,
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS,
+    TOOL_CANCEL_SUCCESS,
+    TOOL_HAS_BEEN_PUBLISHED,
     TOOL_HAS_UNPUBLISHED_VERSION,
     TOOL_ILLEGAL_VERSION,
+    TOOL_NOT_UNDER_REVIEW,
+    TOOL_SUBMIT_SUCCESS,
     TOOL_UNDER_REVIEW
 } from '@/constants/common.constants'
 import { getLoginStatus } from '@/util/auth'
-import { r_tool_delete, r_tool_get, r_tool_upgrade } from '@/services/tool'
+import {
+    r_tool_cancel,
+    r_tool_delete,
+    r_tool_get,
+    r_tool_submit,
+    r_tool_upgrade
+} from '@/services/tool'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
@@ -113,9 +123,11 @@ interface ToolCardProps {
     tools: ToolVo[]
     onDelete?: (tool: ToolVo) => void
     onUpgrade?: (tool: ToolVo) => void
+    onSubmit?: (tool: ToolVo) => void
+    onCancel?: (tool: ToolVo) => void
 }
 
-const ToolCard = ({ tools, onDelete, onUpgrade }: ToolCardProps) => {
+const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardProps) => {
     const navigate = useNavigate()
     const [selectedTool, setSelectedTool] = useState(tools[0])
 
@@ -137,13 +149,17 @@ const ToolCard = ({ tools, onDelete, onUpgrade }: ToolCardProps) => {
 
     const handleOnPublishTool = () => {
         if (selectedTool.publish === '0' && ['NONE', 'REJECT'].includes(selectedTool.review)) {
-            return () => {}
+            return () => {
+                onSubmit?.(selectedTool)
+            }
         }
     }
 
     const handleOnCancelReview = () => {
         if (selectedTool.publish === '0' && selectedTool.review === 'PROCESSING') {
-            return () => {}
+            return () => {
+                onCancel?.(selectedTool)
+            }
         }
     }
 
@@ -199,7 +215,7 @@ const Tools = () => {
     const handleOnDeleteTool = (tool: ToolVo) => {
         modal
             .confirm({
-                title: '确定删除',
+                title: '删除',
                 content: `确定删除工具 ${tool.name}:${tool.ver} 吗？`
             })
             .then(
@@ -228,7 +244,7 @@ const Tools = () => {
 
     const handleOnUpgradeTool = (tool: ToolVo) => {
         void modal.confirm({
-            title: '更新应用',
+            title: '更新工具',
             content: (
                 <>
                     <AntdForm form={upgradeForm}>
@@ -301,6 +317,82 @@ const Tools = () => {
         })
     }
 
+    const handleOnSubmitTool = (tool: ToolVo) => {
+        modal
+            .confirm({
+                title: '提交审核',
+                content: `确定提交审核工具 ${tool.name}:${tool.ver} 吗？`
+            })
+            .then(
+                (confirmed) => {
+                    if (confirmed) {
+                        setLoading(true)
+
+                        void r_tool_submit(tool.id)
+                            .then((res) => {
+                                const response = res.data
+                                switch (response.code) {
+                                    case TOOL_SUBMIT_SUCCESS:
+                                        void message.success('提交审核成功')
+                                        getTool()
+                                        break
+                                    case TOOL_UNDER_REVIEW:
+                                        void message.warning('工具审核中，请勿重复提交')
+                                        break
+                                    case TOOL_HAS_BEEN_PUBLISHED:
+                                        void message.warning('工具已发布，请创建新版本')
+                                        break
+                                    default:
+                                        void message.error('提交审核失败，请稍后重试')
+                                }
+                            })
+                            .finally(() => {
+                                setLoading(false)
+                            })
+                    }
+                },
+                () => {}
+            )
+    }
+
+    const handleOnCancelTool = (tool: ToolVo) => {
+        modal
+            .confirm({
+                title: '取消审核',
+                content: `确定取消审核工具 ${tool.name}:${tool.ver} 吗？`
+            })
+            .then(
+                (confirmed) => {
+                    if (confirmed) {
+                        setLoading(true)
+
+                        void r_tool_cancel(tool.id)
+                            .then((res) => {
+                                const response = res.data
+                                switch (response.code) {
+                                    case TOOL_CANCEL_SUCCESS:
+                                        void message.success('取消审核成功')
+                                        getTool()
+                                        break
+                                    case TOOL_NOT_UNDER_REVIEW:
+                                        void message.warning('工具非审核状态')
+                                        break
+                                    case TOOL_HAS_BEEN_PUBLISHED:
+                                        void message.warning('工具已发布，请创建新版本')
+                                        break
+                                    default:
+                                        void message.error('取消审核失败，请稍后重试')
+                                }
+                            })
+                            .finally(() => {
+                                setLoading(false)
+                            })
+                    }
+                },
+                () => {}
+            )
+    }
+
     const getTool = () => {
         if (loading) {
             return
@@ -356,6 +448,8 @@ const Tools = () => {
                                     tools={value}
                                     onDelete={handleOnDeleteTool}
                                     onUpgrade={handleOnUpgradeTool}
+                                    onSubmit={handleOnSubmitTool}
+                                    onCancel={handleOnCancelTool}
                                 />
                             ))}
                     </FlexBox>
