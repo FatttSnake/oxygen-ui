@@ -89,6 +89,23 @@ interface LoginParam {
     captchaCode: string
 }
 
+interface UserWithInfoVo {
+    id: string
+    username: string
+    verified: boolean
+    locking: boolean
+    expiration: string
+    credentialsExpiration: string
+    enable: boolean
+    currentLoginTime: string
+    currentLoginIp: string
+    lastLoginTime: string
+    lastLoginIp: string
+    createTime: string
+    updateTime: string
+    userInfo: UserInfoVo
+}
+
 interface UserWithPowerInfoVo {
     id: string
     username: string
@@ -532,7 +549,7 @@ interface ToolVo {
     icon: string
     description: string
     base: ToolBaseVo
-    author: UserInfoVo
+    author: UserWithInfoVo
     ver: string
     keywords: string[]
     categories: ToolCategoryVo[]
@@ -569,4 +586,10 @@ interface ToolUpdateParam {
     keywords?: string[]
     categories?: string[]
     source?: string
+}
+
+interface ToolManagementGetParam extends PageParam {
+    searchType?: string
+    searchValue?: string
+    searchRegex?: boolean
 }

@@ -96,11 +96,15 @@ const Edit = () => {
                         break
                     case TOOL_UNDER_REVIEW:
                         void message.error('保存失败：工具审核中')
-                        navigate('/')
+                        setTimeout(() => {
+                            navigate(-1)
+                        }, 3000)
                         break
                     case TOOL_HAS_BEEN_PUBLISHED:
                         void message.error('保存失败：工具已发布')
-                        navigate('/')
+                        setTimeout(() => {
+                            navigate(-1)
+                        }, 3000)
                         break
                     default:
                         void message.error('保存失败，请稍后重试')
@@ -158,11 +162,15 @@ const Edit = () => {
                         break
                     case TOOL_UNDER_REVIEW:
                         void message.error('保存失败：工具审核中')
-                        navigate('/')
+                        setTimeout(() => {
+                            navigate(-1)
+                        }, 3000)
                         break
                     case TOOL_HAS_BEEN_PUBLISHED:
                         void message.error('保存失败：工具已发布')
-                        navigate('/')
+                        setTimeout(() => {
+                            navigate(-1)
+                        }, 3000)
                         break
                     default:
                         void message.error('保存失败，请稍后重试')
@@ -215,16 +223,22 @@ const Edit = () => {
                                 break
                             case 'PROCESSING':
                                 void message.warning('工具审核中，请勿修改')
-                                navigate('/')
+                                setTimeout(() => {
+                                    navigate(-1)
+                                }, 3000)
                                 break
                             default:
                                 void message.warning('请先创建新版本后编辑工具')
-                                navigate('/')
+                                setTimeout(() => {
+                                    navigate(-1)
+                                }, 3000)
                         }
                         break
                     case DATABASE_NO_RECORD_FOUND:
                         void message.error('未找到指定工具')
-                        navigate('/')
+                        setTimeout(() => {
+                            navigate(-1)
+                        }, 3000)
                         break
                     default:
                         void message.error('获取工具信息失败，请稍后重试')

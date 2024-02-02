@@ -77,7 +77,7 @@ const User = () => {
     const dataColumns: _ColumnsType<UserWithRoleInfoVo> = [
         {
             dataIndex: 'username',
-            title: '用户',
+            title: '用户名',
             render: (value, record) => <AntdTooltip title={record.id}>{value}</AntdTooltip>,
             width: '0'
         },
@@ -249,7 +249,7 @@ const User = () => {
         }
 
         if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-            setGroupData([])
+            setUserData([])
         }
     }
 
@@ -584,7 +584,7 @@ const User = () => {
         }
     }
 
-    const handleOnSearchNameKeyDown = (e: KeyboardEvent) => {
+    const handleOnSearchValueKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             getUser()
         }
@@ -936,7 +936,7 @@ const User = () => {
                     allowClear
                     value={searchValue}
                     onChange={handleOnSearchValueChange}
-                    onKeyDown={handleOnSearchNameKeyDown}
+                    onKeyDown={handleOnSearchValueKeyDown}
                     status={isRegexLegal ? undefined : 'error'}
                 />
             </Card>

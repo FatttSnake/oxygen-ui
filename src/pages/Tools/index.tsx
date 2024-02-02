@@ -284,9 +284,7 @@ const Tools = () => {
                                 switch (response.code) {
                                     case DATABASE_UPDATE_SUCCESS:
                                         void message.success('创建新版本成功')
-                                        navigate(
-                                            `/view/!/${response.data!.toolId}/${response.data!.ver}`
-                                        )
+                                        navigate(`/edit/${response.data!.toolId}`)
                                         resolve()
                                         break
                                     case TOOL_ILLEGAL_VERSION:

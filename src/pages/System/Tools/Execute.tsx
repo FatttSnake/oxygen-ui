@@ -1,17 +1,16 @@
-import '@/assets/css/pages/tools/view.scss'
-import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
-import { getLoginStatus } from '@/util/auth'
-import { r_tool_detail } from '@/services/tool'
-import compiler from '@/components/Playground/compiler'
-import { IImportMap } from '@/components/Playground/shared'
-import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
-import FitFullscreen from '@/components/common/FitFullscreen'
+import FitFullscreen from '@/components/common/FitFullscreen.tsx'
+import '@/assets/css/pages/system/tools/execute.scss'
+import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files.ts'
+import { IImportMap } from '@/components/Playground/shared.ts'
+import compiler from '@/components/Playground/compiler.ts'
+import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants.ts'
+import { r_sys_tool_get_one } from '@/services/system.tsx'
+import Card from '@/components/common/Card.tsx'
 import Playground from '@/components/Playground'
-import Card from '@/components/common/Card'
 
-const View = () => {
+const Execute = () => {
     const navigate = useNavigate()
-    const { username, toolId, ver } = useParams()
+    const { id } = useParams()
     const [loading, setLoading] = useState(false)
     const [compiledCode, setCompiledCode] = useState('')
 
@@ -42,7 +41,7 @@ const View = () => {
         setLoading(true)
         void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
 
-        void r_tool_detail(username!, toolId!, ver || 'latest')
+        void r_sys_tool_get_one(id!)
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
@@ -66,33 +65,16 @@ const View = () => {
     }
 
     useEffect(() => {
-        if (username === '!' && !getLoginStatus()) {
-            setTimeout(() => {
-                navigate(-1)
-            }, 3000)
-            return
-        }
-        if (username !== '!' && ver) {
-            navigate(`/view/${username}/${toolId}`)
-            return
-        }
-        if (username === '!' && !ver) {
-            navigate(`/view/!/${toolId}/latest`)
-            return
-        }
         getTool()
     }, [])
 
     return (
-        <FitFullscreen data-component={'tools-view'}>
+        <FitFullscreen data-component={'system-tools-execute'}>
             <Card>
-                <Playground.Output.Preview.Render
-                    iframeKey={`${username}:${toolId}:${ver}`}
-                    compiledCode={compiledCode}
-                />
+                <Playground.Output.Preview.Render iframeKey={`${id}`} compiledCode={compiledCode} />
             </Card>
         </FitFullscreen>
     )
 }
 
-export default View
+export default Execute

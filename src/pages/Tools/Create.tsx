@@ -44,7 +44,7 @@ const Create = () => {
                         void message.success(
                             `创建工具 ${response.data!.name}<${response.data!.toolId}>:${response.data!.ver} 成功`
                         )
-                        navigate(`/view/!/${response.data!.toolId}/${response.data!.ver}`)
+                        navigate(`/edit/${response.data!.toolId}`)
                         break
                     case DATABASE_DUPLICATE_KEY:
                         void message.warning('已存在相同 ID 的应用')

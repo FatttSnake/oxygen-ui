@@ -50,6 +50,20 @@ const system: RouteJsonObject[] = [
                 autoHide: true
             },
             {
+                path: 'code/:id',
+                absolutePath: '/system/tools/code',
+                id: 'system-tools-code',
+                component: lazy(() => import('@/pages/System/Tools/Code')),
+                name: '查看工具'
+            },
+            {
+                path: 'execute/:id',
+                absolutePath: '/system/tools/execute',
+                id: 'system-tools-execute',
+                component: lazy(() => import('@/pages/System/Tools/Execute')),
+                name: '运行工具'
+            },
+            {
                 path: 'template',
                 absolutePath: '/system/tools/template',
                 id: 'system-tools-template',

@@ -19,7 +19,8 @@ import {
     URL_SYS_SETTINGS_SENSITIVE,
     URL_SYS_TOOL_CATEGORY,
     URL_SYS_TOOL_BASE,
-    URL_SYS_TOOL_TEMPLATE
+    URL_SYS_TOOL_TEMPLATE,
+    URL_SYS_TOOL
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -154,3 +155,16 @@ export const r_sys_tool_template_update = (param: ToolTemplateAddEditParam) =>
 
 export const r_sys_tool_template_delete = (id: string) =>
     request.delete(`${URL_SYS_TOOL_TEMPLATE}/${id}`)
+
+export const r_sys_tool_get = (param: ToolManagementGetParam) =>
+    request.get<PageVo<ToolVo>>(URL_SYS_TOOL, param)
+
+export const r_sys_tool_get_one = (id: string) => request.get<ToolVo>(`${URL_SYS_TOOL}/${id}`)
+
+export const r_sys_tool_pass = (id: string) => request.post<ToolVo>(`${URL_SYS_TOOL}/${id}`)
+
+export const r_sys_tool_reject = (id: string) => request.put<ToolVo>(`${URL_SYS_TOOL}/${id}`)
+
+export const r_sys_tool_off_shelve = (id: string) => request.patch<ToolVo>(`${URL_SYS_TOOL}/${id}`)
+
+export const r_sys_tool_delete = (id: string) => request.delete(`${URL_SYS_TOOL}/${id}`)

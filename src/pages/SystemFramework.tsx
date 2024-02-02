@@ -25,7 +25,7 @@ const SystemFramework = () => {
                                             >
                                                 {route.children?.map(
                                                     (subRoute) =>
-                                                        subRoute &&
+                                                        subRoute.menu &&
                                                         subRoute.name && (
                                                             <Sidebar.Item
                                                                 end
