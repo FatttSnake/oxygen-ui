@@ -425,7 +425,14 @@ const Tools = () => {
                             onChange={handleOnSearchTypeChange}
                             style={{ width: '6em' }}
                             dropdownStyle={{ textAlign: 'center' }}
-                        ></AntdSelect>
+                        >
+                            <AntdSelect.Option value={'ALL'}>全部</AntdSelect.Option>
+                            <AntdSelect.Option value={'NAME'}>名称</AntdSelect.Option>
+                            <AntdSelect.Option value={'TOOL_ID'}>工具 ID</AntdSelect.Option>
+                            <AntdSelect.Option value={'NICKNAME'}>昵称</AntdSelect.Option>
+                            <AntdSelect.Option value={'USERNAME'}>用户名</AntdSelect.Option>
+                            <AntdSelect.Option value={'KEYWORD'}>关键词</AntdSelect.Option>
+                        </AntdSelect>
                     }
                     suffix={
                         <>
