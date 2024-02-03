@@ -593,3 +593,7 @@ interface ToolManagementGetParam extends PageParam {
     searchValue?: string
     searchRegex?: boolean
 }
+
+interface ToolManagementPassParam {
+    dist: string
+}

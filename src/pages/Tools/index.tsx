@@ -370,7 +370,6 @@ const Tools = () => {
                                 switch (response.code) {
                                     case TOOL_CANCEL_SUCCESS:
                                         void message.success('取消审核成功')
-                                        getTool()
                                         break
                                     case TOOL_NOT_UNDER_REVIEW:
                                         void message.warning('工具非审核状态')
@@ -384,6 +383,7 @@ const Tools = () => {
                             })
                             .finally(() => {
                                 setLoading(false)
+                                getTool()
                             })
                     }
                 },

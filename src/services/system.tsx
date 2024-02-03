@@ -161,7 +161,8 @@ export const r_sys_tool_get = (param: ToolManagementGetParam) =>
 
 export const r_sys_tool_get_one = (id: string) => request.get<ToolVo>(`${URL_SYS_TOOL}/${id}`)
 
-export const r_sys_tool_pass = (id: string) => request.post<ToolVo>(`${URL_SYS_TOOL}/${id}`)
+export const r_sys_tool_pass = (id: string, param: ToolManagementPassParam) =>
+    request.post<ToolVo>(`${URL_SYS_TOOL}/${id}`, param)
 
 export const r_sys_tool_reject = (id: string) => request.put<ToolVo>(`${URL_SYS_TOOL}/${id}`)
 

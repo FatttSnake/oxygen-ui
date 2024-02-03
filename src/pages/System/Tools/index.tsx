@@ -2,6 +2,7 @@ import { ChangeEvent, KeyboardEvent } from 'react'
 import {
     r_sys_tool_delete,
     r_sys_tool_get,
+    r_sys_tool_get_one,
     r_sys_tool_off_shelve,
     r_sys_tool_pass,
     r_sys_tool_reject
@@ -20,6 +21,9 @@ import Card from '@/components/common/Card.tsx'
 import FitFullscreen from '@/components/common/FitFullscreen.tsx'
 import HideScrollbar from '@/components/common/HideScrollbar.tsx'
 import Icon from '@ant-design/icons'
+import compiler from '@/components/Playground/compiler.ts'
+import { base64ToFiles, IMPORT_MAP_FILE_NAME, strToBase64 } from '@/components/Playground/files.ts'
+import { IImportMap } from '@/components/Playground/shared.ts'
 
 const Tools = () => {
     const navigate = useNavigate()
@@ -205,41 +209,115 @@ const Tools = () => {
                         return new Promise<void>((resolve) => {
                             switch (form.getFieldValue('pass')) {
                                 case true:
-                                    void r_sys_tool_pass(value.id).then((res) => {
-                                        const response = res.data
-                                        switch (response.code) {
-                                            case DATABASE_UPDATE_SUCCESS:
-                                                void message.success('更新成功')
-                                                getTool()
-                                                resolve()
-                                                break
-                                            case TOOL_NOT_UNDER_REVIEW:
-                                                void message.warning('工具处于非审核状态')
-                                                resolve()
-                                                break
-                                            default:
-                                                void message.error('更新失败，请稍后重试')
-                                                resolve()
-                                        }
+                                    void message.loading({
+                                        content: '加载工具中……',
+                                        key: 'LOADING_TOOL',
+                                        duration: 0
                                     })
+                                    void r_sys_tool_get_one(value.id)
+                                        .then((res) => {
+                                            message.destroy('LOADING_TOOL')
+                                            const response = res.data
+                                            switch (response.code) {
+                                                case DATABASE_SELECT_SUCCESS:
+                                                    void message.loading({
+                                                        content: '编译中……',
+                                                        key: 'COMPILING',
+                                                        duration: 0
+                                                    })
+                                                    try {
+                                                        const toolVo = response.data!
+                                                        const files = base64ToFiles(
+                                                            toolVo.source.data!
+                                                        )
+                                                        const importMap = JSON.parse(
+                                                            files[IMPORT_MAP_FILE_NAME].value
+                                                        ) as IImportMap
+                                                        void compiler
+                                                            .compile(
+                                                                files,
+                                                                importMap,
+                                                                toolVo.entryPoint
+                                                            )
+                                                            .then((result) => {
+                                                                message.destroy('COMPILING')
+                                                                void message.loading({
+                                                                    content: '发布中……',
+                                                                    key: 'UPLOADING',
+                                                                    duration: 0
+                                                                })
+                                                                void r_sys_tool_pass(value.id, {
+                                                                    dist: strToBase64(
+                                                                        result.outputFiles[0].text
+                                                                    )
+                                                                })
+                                                                    .then((res) => {
+                                                                        message.destroy('UPLOADING')
+                                                                        const response = res.data
+                                                                        switch (response.code) {
+                                                                            case DATABASE_UPDATE_SUCCESS:
+                                                                                void message.success(
+                                                                                    '发布成功'
+                                                                                )
+                                                                                getTool()
+                                                                                break
+                                                                            case TOOL_NOT_UNDER_REVIEW:
+                                                                                void message.warning(
+                                                                                    '工具处于非审核状态'
+                                                                                )
+                                                                                break
+                                                                            default:
+                                                                                void message.error(
+                                                                                    '发布失败，请稍后重试'
+                                                                                )
+                                                                        }
+                                                                    })
+                                                                    .catch(() => {
+                                                                        message.destroy('UPLOADING')
+                                                                    })
+                                                                    .finally(() => {
+                                                                        resolve()
+                                                                    })
+                                                            })
+                                                    } catch (e) {
+                                                        resolve()
+                                                        message.destroy('COMPILING')
+                                                        void message.error(
+                                                            '编译失败，请检查代码后重试'
+                                                        )
+                                                    }
+                                                    break
+                                                default:
+                                                    resolve()
+                                                    void message.error('加载工具失败，稍后重试')
+                                            }
+                                        })
+                                        .catch(() => {
+                                            message.destroy('LOADING_TOOL')
+                                            resolve()
+                                        })
                                     break
                                 default:
-                                    void r_sys_tool_reject(value.id).then((res) => {
-                                        const response = res.data
-                                        switch (response.code) {
-                                            case DATABASE_UPDATE_SUCCESS:
-                                                void message.success('更新成功')
-                                                resolve()
-                                                break
-                                            case TOOL_NOT_UNDER_REVIEW:
-                                                void message.warning('工具处于非审核状态')
-                                                resolve()
-                                                break
-                                            default:
-                                                void message.error('更新失败，请稍后重试')
-                                                resolve()
-                                        }
-                                    })
+                                    void r_sys_tool_reject(value.id)
+                                        .then((res) => {
+                                            const response = res.data
+                                            switch (response.code) {
+                                                case DATABASE_UPDATE_SUCCESS:
+                                                    void message.success('更新成功')
+                                                    resolve()
+                                                    break
+                                                case TOOL_NOT_UNDER_REVIEW:
+                                                    void message.warning('工具处于非审核状态')
+                                                    resolve()
+                                                    break
+                                                default:
+                                                    void message.error('更新失败，请稍后重试')
+                                                    resolve()
+                                            }
+                                        })
+                                        .finally(() => {
+                                            getTool()
+                                        })
                             }
                         })
                     })
