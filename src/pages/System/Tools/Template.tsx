@@ -230,6 +230,7 @@ const Template = () => {
             modal
                 .confirm({
                     title: '确定删除',
+                    maskClosable: true,
                     content: `确定删除模板 ${value.name} 吗？`
                 })
                 .then(
@@ -398,6 +399,7 @@ const Template = () => {
         const handleOnAddFile = () => {
             void modal.confirm({
                 title: '新建文件',
+                maskClosable: true,
                 content: (
                     <AntdForm form={addFileForm}>
                         <AntdForm.Item
@@ -577,6 +579,7 @@ const Template = () => {
                 renameFileForm.setFieldValue('fileName', fileName)
                 void modal.confirm({
                     title: '重命名文件',
+                    maskClosable: true,
                     content: (
                         <AntdForm form={renameFileForm}>
                             <AntdForm.Item
@@ -677,6 +680,7 @@ const Template = () => {
                 modal
                     .confirm({
                         title: '确定删除',
+                        maskClosable: true,
                         content: `确定删除文件 ${fileName} 吗？`
                     })
                     .then(

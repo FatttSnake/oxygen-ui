@@ -286,6 +286,7 @@ const User = () => {
         modal
             .confirm({
                 title: '确定删除',
+                maskClosable: true,
                 content: `确定删除选中的 ${tableSelectedItem.length} 个用户吗？`
             })
             .then(
@@ -335,6 +336,7 @@ const User = () => {
                         修改用户 {value.username} 的密码
                     </>
                 ),
+                maskClosable: true,
                 content: (
                     <AntdForm
                         form={changePasswordForm}
@@ -466,6 +468,7 @@ const User = () => {
             modal
                 .confirm({
                     title: '确定删除',
+                    maskClosable: true,
                     content: `确定删除用户 ${value.username} 吗？`
                 })
                 .then(

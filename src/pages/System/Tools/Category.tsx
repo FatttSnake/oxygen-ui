@@ -122,6 +122,7 @@ const Category = () => {
             modal
                 .confirm({
                     title: '确定删除',
+                    maskClosable: true,
                     content: `确定删除类别 ${value.name} 吗？`
                 })
                 .then(

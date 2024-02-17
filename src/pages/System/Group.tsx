@@ -191,6 +191,7 @@ const Group = () => {
         modal
             .confirm({
                 title: '确定删除',
+                maskClosable: true,
                 content: `确定删除选中的 ${tableSelectedItem.length} 个用户组吗？`
             })
             .then(
@@ -243,6 +244,7 @@ const Group = () => {
             modal
                 .confirm({
                     title: '确定删除',
+                    maskClosable: true,
                     content: `确定删除角色 ${value.name} 吗？`
                 })
                 .then(

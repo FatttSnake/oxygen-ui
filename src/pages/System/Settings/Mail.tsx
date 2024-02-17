@@ -17,6 +17,7 @@ const Mail = () => {
     const handleOnTest = () => {
         void modal.confirm({
             title: '发送测试邮件',
+            maskClosable: true,
             content: (
                 <>
                     <AntdForm form={mailSendForm}>

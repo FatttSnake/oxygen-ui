@@ -216,6 +216,7 @@ const Tools = () => {
         modal
             .confirm({
                 title: '删除',
+                maskClosable: true,
                 content: `确定删除工具 ${tool.name}:${tool.ver} 吗？`
             })
             .then(
@@ -245,6 +246,7 @@ const Tools = () => {
     const handleOnUpgradeTool = (tool: ToolVo) => {
         void modal.confirm({
             title: '更新工具',
+            maskClosable: true,
             content: (
                 <>
                     <AntdForm form={upgradeForm}>
@@ -319,6 +321,7 @@ const Tools = () => {
         modal
             .confirm({
                 title: '提交审核',
+                maskClosable: true,
                 content: `确定提交审核工具 ${tool.name}:${tool.ver} 吗？`
             })
             .then(
@@ -357,6 +360,7 @@ const Tools = () => {
         modal
             .confirm({
                 title: '取消审核',
+                maskClosable: true,
                 content: `确定取消审核工具 ${tool.name}:${tool.ver} 吗？`
             })
             .then(

@@ -190,6 +190,7 @@ const Tools = () => {
             form.setFieldValue('pass', undefined)
             void modal.confirm({
                 title: '审核',
+                maskClosable: true,
                 content: (
                     <AntdForm form={form}>
                         <AntdForm.Item
@@ -330,6 +331,7 @@ const Tools = () => {
             modal
                 .confirm({
                     title: '确定下架',
+                    maskClosable: true,
                     content: `确定下架工具 ${value.author.username}:${value.toolId}:${value.ver} 吗？`
                 })
                 .then(
@@ -364,6 +366,7 @@ const Tools = () => {
             modal
                 .confirm({
                     title: '确定删除',
+                    maskClosable: true,
                     content: `确定删除工具 ${value.author.username}:${value.toolId}:${value.ver} 吗？`
                 })
                 .then(
