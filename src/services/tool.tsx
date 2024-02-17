@@ -3,6 +3,7 @@ import {
     URL_TOOL,
     URL_TOOL_CATEGORY,
     URL_TOOL_DETAIL,
+    URL_TOOL_STORE,
     URL_TOOL_TEMPLATE
 } from '@/constants/urls.constants'
 
@@ -29,3 +30,6 @@ export const r_tool_submit = (id: string) => request.post(`${URL_TOOL}/${id}`)
 export const r_tool_cancel = (id: string) => request.put(`${URL_TOOL}/${id}`)
 
 export const r_tool_delete = (id: string) => request.delete(`${URL_TOOL}/${id}`)
+
+export const r_tool_store_get = (param: ToolStoreGetParam) =>
+    request.get<PageVo<ToolVo>>(URL_TOOL_STORE, param)

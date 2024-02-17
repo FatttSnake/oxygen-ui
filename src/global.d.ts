@@ -597,3 +597,7 @@ interface ToolManagementGetParam extends PageParam {
 interface ToolManagementPassParam {
     dist: string
 }
+
+interface ToolStoreGetParam extends PageParam {
+    searchValue?: string
+}

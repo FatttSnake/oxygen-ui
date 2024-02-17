@@ -31,6 +31,7 @@ export const URL_SYS_TOOL_BASE = `${URL_SYS_TOOL}/base`
 export const URL_SYS_TOOL_TEMPLATE = `${URL_SYS_TOOL}/template`
 
 export const URL_TOOL = '/tool'
+export const URL_TOOL_STORE = `${URL_TOOL}/store`
 export const URL_TOOL_TEMPLATE = `${URL_TOOL}/template`
 export const URL_TOOL_CATEGORY = `${URL_TOOL}/category`
 export const URL_TOOL_DETAIL = `${URL_TOOL}/detail`
