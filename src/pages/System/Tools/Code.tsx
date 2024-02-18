@@ -1,14 +1,13 @@
-import { r_sys_tool_get_one } from '@/services/system.tsx'
-import '@/assets/css/pages/system/tools/code.scss'
-import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants.ts'
-import Playground from '@/components/Playground'
-import { useState } from 'react'
-import { IFiles } from '@/components/Playground/shared.ts'
-import { base64ToFiles } from '@/components/Playground/files.ts'
-import FitFullscreen from '@/components/common/FitFullscreen.tsx'
-import Card from '@/components/common/Card.tsx'
 import Draggable from 'react-draggable'
 import Icon from '@ant-design/icons'
+import '@/assets/css/pages/system/tools/code.scss'
+import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { r_sys_tool_get_one } from '@/services/system'
+import { IFiles } from '@/components/Playground/shared'
+import { base64ToFiles } from '@/components/Playground/files'
+import Playground from '@/components/Playground'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import Card from '@/components/common/Card'
 
 const Code = () => {
     const navigate = useNavigate()
