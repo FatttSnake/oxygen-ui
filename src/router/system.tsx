@@ -54,6 +54,7 @@ const system: RouteJsonObject[] = [
                 absolutePath: '/system/tools/code',
                 id: 'system-tools-code',
                 component: lazy(() => import('@/pages/System/Tools/Code')),
+                operationCode: 'system:tool:query:tool',
                 name: '查看工具'
             },
             {
@@ -61,6 +62,7 @@ const system: RouteJsonObject[] = [
                 absolutePath: '/system/tools/execute',
                 id: 'system-tools-execute',
                 component: lazy(() => import('@/pages/System/Tools/Execute')),
+                operationCode: 'system:tool:query:tool',
                 name: '运行工具'
             },
             {

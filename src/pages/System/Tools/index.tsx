@@ -24,6 +24,7 @@ import Icon from '@ant-design/icons'
 import compiler from '@/components/Playground/compiler.ts'
 import { base64ToFiles, IMPORT_MAP_FILE_NAME, strToBase64 } from '@/components/Playground/files.ts'
 import { IImportMap } from '@/components/Playground/shared.ts'
+import Permission from '@/components/common/Permission.tsx'
 
 const Tools = () => {
     const navigate = useNavigate()
@@ -125,28 +126,32 @@ const Tools = () => {
                         >
                             查看
                         </a>
-                        {record.review === 'PROCESSING' && (
+                        <Permission operationCode={['system:tool:modify:tool']}>
+                            {record.review === 'PROCESSING' && (
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnReviewBtnClick(record)}
+                                >
+                                    审核
+                                </a>
+                            )}
+                            {record.review === 'PASS' && (
+                                <a
+                                    style={{ color: COLOR_PRODUCTION }}
+                                    onClick={handleOnOffShelveBtnClick(record)}
+                                >
+                                    下架
+                                </a>
+                            )}
+                        </Permission>
+                        <Permission operationCode={['system:tool:delete:tool']}>
                             <a
                                 style={{ color: COLOR_PRODUCTION }}
-                                onClick={handleOnReviewBtnClick(record)}
+                                onClick={handleOnDeleteBtnClick(record)}
                             >
-                                审核
+                                删除
                             </a>
-                        )}
-                        {record.review === 'PASS' && (
-                            <a
-                                style={{ color: COLOR_PRODUCTION }}
-                                onClick={handleOnOffShelveBtnClick(record)}
-                            >
-                                下架
-                            </a>
-                        )}
-                        <a
-                            style={{ color: COLOR_PRODUCTION }}
-                            onClick={handleOnDeleteBtnClick(record)}
-                        >
-                            删除
-                        </a>
+                        </Permission>
                     </AntdSpace>{' '}
                 </>
             )
