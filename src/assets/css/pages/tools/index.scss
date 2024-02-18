@@ -20,8 +20,8 @@
         align-items: center;
 
         > * {
-          flex: 0 0 auto;
           display: block;
+          flex: 0 0 auto;
         }
 
         .version-select {

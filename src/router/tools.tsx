@@ -17,8 +17,7 @@ export const tools: RouteJsonObject[] = [
         name: '工具商店',
         titlePostfix: ' - 商店',
         icon: lazy(() => import('~icons/oxygen/store')),
-        menu: true,
-        auth: true
+        menu: true
     },
     {
         path: 'create',
@@ -50,7 +49,24 @@ export const tools: RouteJsonObject[] = [
         absolutePath: '/edit',
         id: 'tools-edit',
         component: lazy(() => import('@/pages/Tools/Edit')),
-        name: '查看'
+        name: '编辑',
+        auth: true
+    },
+    {
+        path: 'source/:username/:toolId/:ver',
+        absolutePath: '/source',
+        id: 'tools-source-ver',
+        component: lazy(() => import('@/pages/Tools/Source')),
+        name: '源码',
+        auth: true
+    },
+    {
+        path: 'source/:username/:toolId',
+        absolutePath: '/source',
+        id: 'tools-source',
+        component: lazy(() => import('@/pages/Tools/Source')),
+        name: '源码',
+        auth: true
     },
     {
         path: '*',

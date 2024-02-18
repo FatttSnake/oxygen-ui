@@ -1,18 +1,20 @@
-import { DetailedHTMLProps, HTMLAttributes, ReactNode, useEffect, useState } from 'react'
+import { DetailedHTMLProps, HTMLAttributes, MouseEvent, ReactNode } from 'react'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
-import Card from '@/components/common/Card.tsx'
-import FlexBox from '@/components/common/FlexBox.tsx'
 import Icon from '@ant-design/icons'
-import { COLOR_BACKGROUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants.ts'
-import FitFullscreen from '@/components/common/FitFullscreen.tsx'
-import HideScrollbar from '@/components/common/HideScrollbar.tsx'
-import { r_tool_store_get } from '@/services/tool.tsx'
+import '@/assets/css/pages/tools/store.scss'
+import { COLOR_BACKGROUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { r_tool_store_get } from '@/services/tool'
+import Card from '@/components/common/Card'
+import FlexBox from '@/components/common/FlexBox'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import HideScrollbar from '@/components/common/HideScrollbar'
 
 interface CommonCardProps
     extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     icon: ReactNode
     toolName: string
     toolId: string
+    toolDesc: string
     options?: TiltOptions
     url: string
     authorName: string
@@ -28,6 +30,7 @@ const CommonCard = ({
     icon,
     toolName,
     toolId,
+    toolDesc,
     options = {
         reverse: true,
         max: 8,
@@ -53,6 +56,11 @@ const CommonCard = ({
         url && navigate(url)
     }
 
+    const handleOnSourceBtnClick = (e: MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation()
+        navigate(`/source/${authorUsername}/${toolId}`)
+    }
+
     return (
         <Card
             style={{ overflow: 'visible', ...style }}
@@ -62,10 +70,13 @@ const CommonCard = ({
         >
             <FlexBox className={'common-card'}>
                 <div className={'icon'}>{icon}</div>
-                <div className={'version'}>{ver}</div>
+                <div className={'version'}>
+                    <AntdTag>V{ver}</AntdTag>
+                </div>
                 <div className={'info'}>
                     <div className={'tool-name'}>{toolName}</div>
                     <div className={'tool-id'}>{`ID: ${toolId}`}</div>
+                    {toolDesc && <div className={'tool-desc'}>{`简介：${toolDesc}`}</div>}
                 </div>
                 <div className={'author'}>
                     <div className={'avatar'}>
@@ -84,6 +95,41 @@ const CommonCard = ({
                         <div className={'author-name'}>{authorName}</div>
                     </AntdTooltip>
                 </div>
+                <div className={'operation'}>
+                    <AntdTooltip title={'源码'}>
+                        <Icon component={IconOxygenCode} onClick={handleOnSourceBtnClick} />
+                    </AntdTooltip>
+                </div>
+            </FlexBox>
+        </Card>
+    )
+}
+
+interface LoadMoreCardProps {
+    onClick: () => void
+}
+
+const LoadMoreCard = ({ onClick }: LoadMoreCardProps) => {
+    const cardRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        cardRef.current &&
+            VanillaTilt.init(cardRef.current, {
+                reverse: true,
+                max: 8,
+                glare: true,
+                ['max-glare']: 0.3,
+                scale: 1.03
+            })
+    }, [])
+
+    return (
+        <Card style={{ overflow: 'visible' }} ref={cardRef} onClick={onClick}>
+            <FlexBox className={'load-more-card'}>
+                <div className={'icon'}>
+                    <Icon component={IconOxygenMore} />{' '}
+                </div>
+                <div className={'text'}>加载更多</div>
             </FlexBox>
         </Card>
     )
@@ -91,24 +137,31 @@ const CommonCard = ({
 
 const Store = () => {
     const [isLoading, setIsLoading] = useState(false)
-    const [currentPage, setCurrentPage] = useState(1)
+    const [currentPage, setCurrentPage] = useState(0)
     const [hasNextPage, setHasNextPage] = useState(true)
-    const [toolData, setToolData] = useState<ToolVo[]>()
+    const [toolData, setToolData] = useState<ToolVo[]>([])
 
-    const getTool = () => {
+    const getTool = (page: number) => {
         if (isLoading) {
             return
         }
         setIsLoading(true)
         void message.loading({ content: '加载工具列表中', key: 'LOADING', duration: 0 })
 
-        void r_tool_store_get({ currentPage })
+        void r_tool_store_get({ currentPage: page })
             .then((res) => {
                 const response = res.data
 
                 switch (response.code) {
                     case DATABASE_SELECT_SUCCESS:
-                        setToolData(response.data?.records)
+                        setCurrentPage(page)
+                        setToolData([...toolData, ...response.data!.records])
+                        if (response.data?.current === response.data?.pages) {
+                            setHasNextPage(false)
+                        }
+                        break
+                    default:
+                        void message.error('加载失败，请稍后重试')
                 }
             })
             .finally(() => {
@@ -117,13 +170,20 @@ const Store = () => {
             })
     }
 
+    const handleOnLoadMore = () => {
+        if (isLoading) {
+            return
+        }
+        getTool(currentPage + 1)
+    }
+
     useEffect(() => {
-        getTool()
+        getTool(1)
     }, [])
 
     return (
         <>
-            <FitFullscreen data-component={'store'}>
+            <FitFullscreen data-component={'tools-store'}>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         {toolData?.map((value) => (
@@ -136,13 +196,15 @@ const Store = () => {
                                 }
                                 toolName={value.name}
                                 toolId={value.toolId}
-                                url={''}
+                                toolDesc={value.description}
+                                url={`/view/${value.author.username}/${value.toolId}`}
                                 authorName={value.author.userInfo.nickname}
                                 authorAvatar={value.author.userInfo.avatar}
                                 authorUsername={value.author.username}
                                 ver={value.ver}
                             />
                         ))}
+                        {hasNextPage && <LoadMoreCard onClick={handleOnLoadMore} />}
                     </FlexBox>
                 </HideScrollbar>
             </FitFullscreen>

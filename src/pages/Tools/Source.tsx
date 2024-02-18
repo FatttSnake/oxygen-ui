@@ -1,47 +1,26 @@
-import '@/assets/css/pages/tools/view.scss'
+import '@/assets/css/pages/tools/source.scss'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
-import { getLoginStatus } from '@/util/auth'
 import { r_tool_detail } from '@/services/tool'
-import compiler from '@/components/Playground/compiler'
-import { IImportMap } from '@/components/Playground/shared'
-import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
-import FitFullscreen from '@/components/common/FitFullscreen'
+import { IFiles } from '@/components/Playground/shared'
+import { base64ToFiles } from '@/components/Playground/files'
 import Playground from '@/components/Playground'
+import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
+import { getLoginStatus } from '@/util/auth.tsx'
 
-const View = () => {
+const Source = () => {
     const navigate = useNavigate()
     const { username, toolId, ver } = useParams()
     const [loading, setLoading] = useState(false)
-    const [compiledCode, setCompiledCode] = useState('')
+    const [files, setFiles] = useState<IFiles>({})
+    const [selectedFileName, setSelectedFileName] = useState('')
 
     const render = (toolVo: ToolVo) => {
-        if (username === '!') {
-            try {
-                const baseDist = base64ToStr(toolVo.base.dist.data!)
-                const files = base64ToFiles(toolVo.source.data!)
-                const importMap = JSON.parse(files[IMPORT_MAP_FILE_NAME].value) as IImportMap
-
-                void compiler
-                    .compile(files, importMap, toolVo.entryPoint)
-                    .then((result) => {
-                        const output = result.outputFiles[0].text
-                        setCompiledCode(`${output}\n${baseDist}`)
-                    })
-                    .catch((reason) => {
-                        void message.error(`编译失败：${reason}`)
-                    })
-            } catch (e) {
-                void message.error('载入工具失败')
-            }
-        } else {
-            try {
-                const baseDist = base64ToStr(toolVo.base.dist.data!)
-                const dist = base64ToStr(toolVo.dist.data!)
-                setCompiledCode(`${dist}\n${baseDist}`)
-            } catch (e) {
-                void message.error('载入工具失败')
-            }
+        try {
+            setFiles(base64ToFiles(toolVo.source.data!))
+            setSelectedFileName(toolVo.entryPoint)
+        } catch (e) {
+            void message.error('载入工具失败')
         }
     }
 
@@ -83,26 +62,28 @@ const View = () => {
             return
         }
         if (username !== '!' && ver) {
-            navigate(`/view/${username}/${toolId}`)
+            navigate(`/source/${username}/${toolId}`)
             return
         }
         if (username === '!' && !ver) {
-            navigate(`/view/!/${toolId}/latest`)
+            navigate(`/source/!/${toolId}/latest`)
             return
         }
         getTool()
     }, [])
 
     return (
-        <FitFullscreen data-component={'tools-view'}>
+        <FitFullscreen data-component={'tools-source'}>
             <Card>
-                <Playground.Output.Preview.Render
-                    iframeKey={`${username}:${toolId}:${ver}`}
-                    compiledCode={compiledCode}
+                <Playground.CodeEditor
+                    readonly
+                    files={files}
+                    selectedFileName={selectedFileName}
+                    onSelectedFileChange={setSelectedFileName}
                 />
             </Card>
         </FitFullscreen>
     )
 }
 
-export default View
+export default Source

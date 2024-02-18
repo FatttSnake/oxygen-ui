@@ -36,6 +36,7 @@ interface CommonCardProps
     url?: string
     onOpen?: () => void
     onEdit?: () => void
+    onSource?: () => void
     onPublish?: () => void
     onCancelReview?: () => void
     onDelete?: () => void
@@ -58,6 +59,7 @@ const CommonCard = ({
     url,
     onOpen,
     onEdit,
+    onSource,
     onPublish,
     onCancelReview,
     onDelete,
@@ -102,6 +104,11 @@ const CommonCard = ({
                             </AntdButton.Group>
                         </div>
                     )}
+                    {onSource && (
+                        <AntdButton size={'small'} onClick={onSource}>
+                            源码
+                        </AntdButton>
+                    )}
                     {onCancelReview && (
                         <AntdButton size={'small'} onClick={onCancelReview}>
                             取消审核
@@ -140,15 +147,23 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
     }
 
     const handleOnEditTool = () => {
-        if (selectedTool.publish === '0' && ['NONE', 'REJECT'].includes(selectedTool.review)) {
+        if (['NONE', 'REJECT'].includes(selectedTool.review)) {
             return () => {
                 navigate(`/edit/${tools[0].toolId}`)
             }
         }
     }
 
+    const handleOnSourceTool = () => {
+        if (selectedTool.review === 'PASS') {
+            return () => {
+                navigate(`/source/!/${selectedTool.toolId}/${selectedTool.ver}`)
+            }
+        }
+    }
+
     const handleOnPublishTool = () => {
-        if (selectedTool.publish === '0' && ['NONE', 'REJECT'].includes(selectedTool.review)) {
+        if (['NONE', 'REJECT'].includes(selectedTool.review)) {
             return () => {
                 onSubmit?.(selectedTool)
             }
@@ -156,7 +171,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
     }
 
     const handleOnCancelReview = () => {
-        if (selectedTool.publish === '0' && selectedTool.review === 'PROCESSING') {
+        if (selectedTool.review === 'PROCESSING') {
             return () => {
                 onCancel?.(selectedTool)
             }
@@ -178,6 +193,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
             toolId={selectedTool.toolId}
             onOpen={handleOnOpenTool}
             onEdit={handleOnEditTool()}
+            onSource={handleOnSourceTool()}
             onPublish={handleOnPublishTool()}
             onCancelReview={handleOnCancelReview()}
             onDelete={handleOnDeleteTool}
@@ -189,10 +205,10 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                 onChange={handleOnVersionChange}
                 options={tools.map((value) => ({
                     value: value.id,
-                    label: `${value.ver}${value.publish === '0' ? '*' : ''}`
+                    label: `${value.ver}${value.review !== 'PASS' ? '*' : ''}`
                 }))}
             />
-            {tools.every((value) => value.publish !== '0') && (
+            {tools.every((value) => value.review === 'PASS') && (
                 <AntdTooltip title={'更新'}>
                     <Icon
                         component={IconOxygenUpgrade}
