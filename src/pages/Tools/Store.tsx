@@ -141,23 +141,38 @@ const Store = () => {
     const [hasNextPage, setHasNextPage] = useState(true)
     const [toolData, setToolData] = useState<ToolVo[]>([])
 
-    const getTool = (page: number) => {
+    const handleOnSearch = (value: string) => {
+        getTool(1, value)
+    }
+
+    const handleOnLoadMore = () => {
+        if (isLoading) {
+            return
+        }
+        getTool(currentPage + 1, '')
+    }
+
+    const getTool = (page: number, searchValue: string) => {
         if (isLoading) {
             return
         }
         setIsLoading(true)
         void message.loading({ content: '加载工具列表中', key: 'LOADING', duration: 0 })
 
-        void r_tool_store_get({ currentPage: page })
+        void r_tool_store_get({ currentPage: page, searchValue })
             .then((res) => {
                 const response = res.data
 
                 switch (response.code) {
                     case DATABASE_SELECT_SUCCESS:
-                        setCurrentPage(page)
-                        setToolData([...toolData, ...response.data!.records])
-                        if (response.data?.current === response.data?.pages) {
+                        setCurrentPage(response.data!.current)
+                        if (response.data!.current === response.data!.pages) {
                             setHasNextPage(false)
+                        }
+                        if (response.data!.current === 1) {
+                            setToolData(response.data!.records)
+                        } else {
+                            setToolData([...toolData, ...response.data!.records])
                         }
                         break
                     default:
@@ -170,21 +185,22 @@ const Store = () => {
             })
     }
 
-    const handleOnLoadMore = () => {
-        if (isLoading) {
-            return
-        }
-        getTool(currentPage + 1)
-    }
-
     useEffect(() => {
-        getTool(1)
+        getTool(1, '')
     }, [])
 
     return (
         <>
             <FitFullscreen data-component={'tools-store'}>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
+                    <div className={'search'}>
+                        <AntdInput.Search
+                            placeholder={'请输入工具名或关键字'}
+                            enterButton
+                            loading={isLoading}
+                            onSearch={handleOnSearch}
+                        />
+                    </div>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         {toolData?.map((value) => (
                             <CommonCard
