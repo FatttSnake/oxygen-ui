@@ -77,6 +77,26 @@ const System = () => {
                                 系统设置
                             </CommonCard>
                         </Permission>
+                        <Permission operationCode={['system:tool:query:tool']}>
+                            <CommonCard icon={IconOxygenTool} url={'tools'}>
+                                工具管理
+                            </CommonCard>
+                        </Permission>
+                        <Permission operationCode={['system:tool:query:template']}>
+                            <CommonCard icon={IconOxygenTemplate} url={'tools/template'}>
+                                模板管理
+                            </CommonCard>
+                        </Permission>
+                        <Permission operationCode={['system:tool:query:base']}>
+                            <CommonCard icon={IconOxygenBase} url={'tools/base'}>
+                                基板管理
+                            </CommonCard>
+                        </Permission>
+                        <Permission operationCode={['system:tool:query:category']}>
+                            <CommonCard icon={IconOxygenCategory} url={'tools/category'}>
+                                类别管理
+                            </CommonCard>
+                        </Permission>
                         <Permission path={'/system/user'}>
                             <CommonCard icon={IconOxygenUser} url={'user'}>
                                 用户管理
