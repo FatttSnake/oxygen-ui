@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, HTMLAttributes, MouseEvent, ReactNode } from 'react'
+import { DetailedHTMLProps, HTMLAttributes, MouseEvent, ReactNode, UIEvent, useState } from 'react'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import Icon from '@ant-design/icons'
 import '@/assets/css/pages/tools/store.scss'
@@ -136,13 +136,24 @@ const LoadMoreCard = ({ onClick }: LoadMoreCardProps) => {
 }
 
 const Store = () => {
+    const scrollTopRef = useRef(0)
     const [isLoading, setIsLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
     const [hasNextPage, setHasNextPage] = useState(true)
     const [toolData, setToolData] = useState<ToolVo[]>([])
+    const [hideSearch, setHideSearch] = useState(false)
 
     const handleOnSearch = (value: string) => {
         getTool(1, value)
+    }
+
+    const handleOnScroll = (event: UIEvent<HTMLDivElement>) => {
+        if (event.currentTarget.scrollTop < scrollTopRef.current) {
+            setHideSearch(false)
+        } else {
+            setHideSearch(true)
+        }
+        scrollTopRef.current = event.currentTarget.scrollTop
     }
 
     const handleOnLoadMore = () => {
@@ -192,11 +203,16 @@ const Store = () => {
     return (
         <>
             <FitFullscreen data-component={'tools-store'}>
-                <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
-                    <div className={'search'}>
+                <HideScrollbar
+                    isShowVerticalScrollbar
+                    autoHideWaitingTime={1000}
+                    onScroll={handleOnScroll}
+                >
+                    <div className={`search${hideSearch ? ' hide' : ''}`}>
                         <AntdInput.Search
                             placeholder={'请输入工具名或关键字'}
                             enterButton
+                            allowClear
                             loading={isLoading}
                             onSearch={handleOnSearch}
                         />
@@ -204,6 +220,7 @@ const Store = () => {
                     <FlexBox direction={'horizontal'} className={'root-content'}>
                         {toolData?.map((value) => (
                             <CommonCard
+                                key={value.id}
                                 icon={
                                     <img
                                         src={`data:image/svg+xml;base64,${value.icon}`}
