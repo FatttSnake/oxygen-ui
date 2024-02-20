@@ -1,4 +1,11 @@
-import { TouchEvent, MouseEvent, KeyboardEvent, DetailedHTMLProps, HTMLAttributes } from 'react'
+import {
+    TouchEvent,
+    MouseEvent,
+    KeyboardEvent,
+    DetailedHTMLProps,
+    HTMLAttributes,
+    UIEvent
+} from 'react'
 import '@/assets/css/components/common/hide-scrollbar.scss'
 
 interface HideScrollbarProps
@@ -63,6 +70,7 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
             minHeight,
             scrollbarWidth,
             autoHideWaitingTime,
+            onScroll,
             children,
             style,
             className,
@@ -406,7 +414,8 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
             }
         }
 
-        const handleDefaultScroll = () => {
+        const handleDefaultScroll = (event: UIEvent<HTMLDivElement>) => {
+            onScroll?.(event)
             setVerticalScrollbarPosition(
                 ((rootRef.current?.scrollTop ?? 0) / (contentRef.current?.clientHeight ?? 1)) * 100
             )
@@ -482,7 +491,6 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
                         length = prevState
                         return prevState
                     })
-                    console.log(length)
                     if (
                         !isPreventHorizontalScroll &&
                         length >= 100 &&
