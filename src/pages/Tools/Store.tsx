@@ -179,6 +179,8 @@ const Store = () => {
                         setCurrentPage(response.data!.current)
                         if (response.data!.current === response.data!.pages) {
                             setHasNextPage(false)
+                        } else {
+                            setHasNextPage(true)
                         }
                         if (response.data!.current === 1) {
                             setToolData(response.data!.records)

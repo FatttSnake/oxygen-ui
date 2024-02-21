@@ -76,8 +76,8 @@ export const getVerifyStatus_async = () => {
         .verified
 }
 
-export const getUserInfo = async (): Promise<UserWithPowerInfoVo> => {
-    if (getLocalStorage(STORAGE_USER_INFO_KEY) !== null) {
+export const getUserInfo = async (force = false): Promise<UserWithPowerInfoVo> => {
+    if (getLocalStorage(STORAGE_USER_INFO_KEY) !== null && !force) {
         return new Promise((resolve) => {
             resolve(
                 JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo

@@ -23,7 +23,7 @@ const UserFramework = () => {
                                 )}
                                 <Sidebar.Item
                                     path={'/'}
-                                    icon={IconOxygenBack}
+                                    icon={IconOxygenTool}
                                     text={'回到氧工具'}
                                 />
                             </Sidebar.ItemList>
