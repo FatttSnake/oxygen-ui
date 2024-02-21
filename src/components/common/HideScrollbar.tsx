@@ -486,24 +486,21 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
                         event.preventDefault()
                         return
                     }
-                    let length = verticalScrollbarLength
                     setVerticalScrollbarLength((prevState) => {
-                        length = prevState
+                        if (
+                            !isPreventHorizontalScroll &&
+                            prevState >= 100 &&
+                            !event.shiftKey &&
+                            !event.deltaX
+                        ) {
+                            event.preventDefault()
+                            rootRef.current?.scrollTo({
+                                left: rootRef.current?.scrollLeft + event.deltaY,
+                                behavior: 'smooth'
+                            })
+                        }
                         return prevState
                     })
-                    if (
-                        !isPreventHorizontalScroll &&
-                        length >= 100 &&
-                        !event.shiftKey &&
-                        !event.deltaX
-                    ) {
-                        event.preventDefault()
-                        rootRef.current?.scrollTo({
-                            left: rootRef.current?.scrollLeft + event.deltaY,
-                            behavior: 'smooth'
-                        })
-                        return
-                    }
                 }
             }
             wheelListenerRef.current = handleDefaultWheel
