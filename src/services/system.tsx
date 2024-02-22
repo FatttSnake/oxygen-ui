@@ -24,7 +24,13 @@ import {
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
-export const r_sys_user_info = () => request.get<UserWithPowerInfoVo>(URL_SYS_USER_INFO)
+export const r_sys_user_info_get = () => request.get<UserWithPowerInfoVo>(URL_SYS_USER_INFO)
+
+export const r_sys_user_info_update = (param: UserInfoUpdateParam) =>
+    request.patch(URL_SYS_USER_INFO, param)
+
+export const r_sys_user_info_change_password = (param: UserChangePasswordParam) =>
+    request.post(URL_SYS_USER_INFO, param)
 
 export const r_sys_user_get = (param: UserGetParam) =>
     request.get<PageVo<UserWithRoleInfoVo>>(URL_SYS_USER, param)
@@ -33,7 +39,7 @@ export const r_sys_user_add = (param: UserAddEditParam) => request.post(URL_SYS_
 
 export const r_sys_user_update = (param: UserAddEditParam) => request.put(URL_SYS_USER, param)
 
-export const r_sys_user_change_password = (param: UserChangePasswordParam) =>
+export const r_sys_user_change_password = (param: UserUpdatePasswordParam) =>
     request.patch(URL_SYS_USER, param)
 
 export const r_sys_user_delete = (id: string) => request.delete(`${URL_SYS_USER}/${id}`)

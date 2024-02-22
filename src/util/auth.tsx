@@ -7,7 +7,7 @@ import {
 import { floorNumber, randomColor, randomFloat, randomInt } from '@/util/common'
 import { getLocalStorage, removeLocalStorage, setLocalStorage } from '@/util/browser'
 import { getFullTitle } from '@/util/route'
-import { r_sys_user_info } from '@/services/system'
+import { r_sys_user_info_get } from '@/services/system'
 
 let captcha: Captcha
 
@@ -90,7 +90,7 @@ export const getUserInfo = async (force = false): Promise<UserWithPowerInfoVo> =
 export const requestUserInfo = async () => {
     let user: UserWithPowerInfoVo | null
 
-    await r_sys_user_info().then((value) => {
+    await r_sys_user_info_get().then((value) => {
         const response = value.data
         if (response.code === DATABASE_SELECT_SUCCESS) {
             user = response.data

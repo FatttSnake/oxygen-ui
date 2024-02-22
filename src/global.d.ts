@@ -59,6 +59,11 @@ interface TokenVo {
     token: string
 }
 
+interface UserInfoUpdateParam {
+    avatar?: string
+    nickname?: string
+}
+
 interface RegisterParam {
     username: string
     email: string
@@ -87,6 +92,11 @@ interface LoginParam {
     account: string
     password: string
     captchaCode: string
+}
+
+interface UserChangePasswordParam {
+    originalPassword: string
+    newPassword: string
 }
 
 interface UserWithInfoVo {
@@ -243,7 +253,7 @@ interface UserAddEditParam {
     groupIds: number[]
 }
 
-interface UserChangePasswordParam {
+interface UserUpdatePasswordParam {
     id: string
     password: string
     credentialsExpiration?: string

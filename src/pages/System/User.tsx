@@ -30,7 +30,7 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 
-interface ChangePasswordFields extends UserChangePasswordParam {
+interface ChangePasswordFields extends UserUpdatePasswordParam {
     passwordConfirm: string
     needChangePassword: boolean
 }
@@ -200,7 +200,7 @@ const User = () => {
                                 style={{ color: COLOR_PRODUCTION }}
                                 onClick={handleOnChangePasswordBtnClick(record)}
                             >
-                                修改密码
+                                更改密码
                             </a>
                         </Permission>
                         <Permission operationCode={['system:user:modify:one']}>
