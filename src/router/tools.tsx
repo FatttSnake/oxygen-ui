@@ -20,6 +20,13 @@ export const tools: RouteJsonObject[] = [
         menu: true
     },
     {
+        path: 'store/:username',
+        absolutePath: '/store',
+        id: 'tools-view-user',
+        component: lazy(() => import('@/pages/Tools/User')),
+        name: '开发者'
+    },
+    {
         path: 'create',
         absolutePath: '/create',
         id: 'tools-create',

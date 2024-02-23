@@ -6,7 +6,7 @@ import { base64ToFiles } from '@/components/Playground/files'
 import Playground from '@/components/Playground'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
-import { getLoginStatus } from '@/util/auth.tsx'
+import { getLoginStatus } from '@/util/auth'
 
 const Source = () => {
     const navigate = useNavigate()

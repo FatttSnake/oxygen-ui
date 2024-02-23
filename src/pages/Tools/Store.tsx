@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, HTMLAttributes, MouseEvent, ReactNode, UIEvent, useState } from 'react'
+import { DetailedHTMLProps, HTMLAttributes, MouseEvent, ReactNode, UIEvent } from 'react'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import Icon from '@ant-design/icons'
 import '@/assets/css/pages/tools/store.scss'
@@ -56,6 +56,11 @@ const CommonCard = ({
         url && navigate(url)
     }
 
+    const handleOnClickAuthor = (e: MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation()
+        navigate(authorUsername)
+    }
+
     const handleOnSourceBtnClick = (e: MouseEvent<HTMLDivElement>) => {
         e.stopPropagation()
         navigate(`/source/${authorUsername}/${toolId}`)
@@ -78,12 +83,12 @@ const CommonCard = ({
                     <div className={'tool-id'}>{`ID: ${toolId}`}</div>
                     {toolDesc && <div className={'tool-desc'}>{`简介：${toolDesc}`}</div>}
                 </div>
-                <div className={'author'}>
+                <div className={'author'} onClick={handleOnClickAuthor}>
                     <div className={'avatar'}>
                         <AntdAvatar
                             src={
                                 <AntdImage
-                                    preview={{ mask: <Icon component={IconOxygenEye}></Icon> }}
+                                    preview={false}
                                     src={`data:image/png;base64,${authorAvatar}`}
                                     alt={'Avatar'}
                                 />
@@ -139,11 +144,13 @@ const Store = () => {
     const scrollTopRef = useRef(0)
     const [isLoading, setIsLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
-    const [hasNextPage, setHasNextPage] = useState(true)
+    const [hasNextPage, setHasNextPage] = useState(false)
     const [toolData, setToolData] = useState<ToolVo[]>([])
     const [hideSearch, setHideSearch] = useState(false)
+    const [searchValue, setSearchValue] = useState('')
 
     const handleOnSearch = (value: string) => {
+        setSearchValue(value)
         getTool(1, value)
     }
 
@@ -160,7 +167,7 @@ const Store = () => {
         if (isLoading) {
             return
         }
-        getTool(currentPage + 1, '')
+        getTool(currentPage + 1, searchValue)
     }
 
     const getTool = (page: number, searchValue: string) => {
@@ -177,7 +184,10 @@ const Store = () => {
                 switch (response.code) {
                     case DATABASE_SELECT_SUCCESS:
                         setCurrentPage(response.data!.current)
-                        if (response.data!.current === response.data!.pages) {
+                        if (
+                            response.data!.current === response.data!.pages ||
+                            response.data!.total === 0
+                        ) {
                             setHasNextPage(false)
                         } else {
                             setHasNextPage(true)
@@ -220,6 +230,7 @@ const Store = () => {
                         />
                     </div>
                     <FlexBox direction={'horizontal'} className={'root-content'}>
+                        {!toolData.length && <div className={'no-tool'}>未找到任何工具</div>}
                         {toolData?.map((value) => (
                             <CommonCard
                                 key={value.id}

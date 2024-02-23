@@ -266,14 +266,14 @@ const User = () => {
                                     href={
                                         userWithPowerInfoVo?.username &&
                                         new URL(
-                                            `/view/${userWithPowerInfoVo.username}`,
+                                            `/store/${userWithPowerInfoVo.username}`,
                                             location.href
                                         ).href
                                     }
                                 >
                                     {userWithPowerInfoVo?.username &&
                                         new URL(
-                                            `/view/${userWithPowerInfoVo.username}`,
+                                            `/store/${userWithPowerInfoVo.username}`,
                                             location.href
                                         ).href}
                                     <Icon component={IconOxygenShare} />

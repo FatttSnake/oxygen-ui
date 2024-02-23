@@ -26,6 +26,9 @@ import request from '@/services/index'
 
 export const r_sys_user_info_get = () => request.get<UserWithPowerInfoVo>(URL_SYS_USER_INFO)
 
+export const r_sys_user_info_get_basic = (username: string) =>
+    request.get<UserWithInfoVo>(`${URL_SYS_USER_INFO}/${username}`)
+
 export const r_sys_user_info_update = (param: UserInfoUpdateParam) =>
     request.patch(URL_SYS_USER_INFO, param)
 

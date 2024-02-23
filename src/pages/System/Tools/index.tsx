@@ -1,4 +1,5 @@
 import { ChangeEvent, KeyboardEvent } from 'react'
+import Icon from '@ant-design/icons'
 import {
     r_sys_tool_delete,
     r_sys_tool_get,
@@ -15,16 +16,15 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS,
     TOOL_NOT_UNDER_REVIEW
-} from '@/constants/common.constants.ts'
-import FlexBox from '@/components/common/FlexBox.tsx'
-import Card from '@/components/common/Card.tsx'
-import FitFullscreen from '@/components/common/FitFullscreen.tsx'
-import HideScrollbar from '@/components/common/HideScrollbar.tsx'
-import Icon from '@ant-design/icons'
-import compiler from '@/components/Playground/compiler.ts'
-import { base64ToFiles, IMPORT_MAP_FILE_NAME, strToBase64 } from '@/components/Playground/files.ts'
-import { IImportMap } from '@/components/Playground/shared.ts'
-import Permission from '@/components/common/Permission.tsx'
+} from '@/constants/common.constants'
+import FlexBox from '@/components/common/FlexBox'
+import Card from '@/components/common/Card'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import compiler from '@/components/Playground/compiler'
+import { IImportMap } from '@/components/Playground/shared'
+import { base64ToFiles, IMPORT_MAP_FILE_NAME, strToBase64 } from '@/components/Playground/files'
+import Permission from '@/components/common/Permission'
 
 const Tools = () => {
     const navigate = useNavigate()

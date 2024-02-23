@@ -1,12 +1,12 @@
-import FitFullscreen from '@/components/common/FitFullscreen.tsx'
 import '@/assets/css/pages/system/tools/execute.scss'
-import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files.ts'
-import { IImportMap } from '@/components/Playground/shared.ts'
-import compiler from '@/components/Playground/compiler.ts'
-import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants.ts'
-import { r_sys_tool_get_one } from '@/services/system.tsx'
-import Card from '@/components/common/Card.tsx'
+import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { r_sys_tool_get_one } from '@/services/system'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import Card from '@/components/common/Card'
 import Playground from '@/components/Playground'
+import compiler from '@/components/Playground/compiler'
+import { IImportMap } from '@/components/Playground/shared'
+import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
 
 const Execute = () => {
     const navigate = useNavigate()

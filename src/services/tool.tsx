@@ -33,3 +33,6 @@ export const r_tool_delete = (id: string) => request.delete(`${URL_TOOL}/${id}`)
 
 export const r_tool_store_get = (param: ToolStoreGetParam) =>
     request.get<PageVo<ToolVo>>(URL_TOOL_STORE, param)
+
+export const r_tool_store_get_by_username = (username: string, param: ToolStoreGetParam) =>
+    request.get<PageVo<ToolVo>>(`${URL_TOOL_STORE}/${username}`, param)
