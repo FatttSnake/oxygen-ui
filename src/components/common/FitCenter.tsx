@@ -1,22 +1,18 @@
-import React from 'react'
+import { DetailedHTMLProps, HTMLAttributes } from 'react'
 import '@/assets/css/components/common/fit-center.scss'
 
-interface FitCenterProps
-    extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+interface FitCenterProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     vertical?: boolean
 }
 
-const FitCenter: React.FC<FitCenterProps> = (props) => {
-    const { className, vertical, ..._props } = props
+const FitCenter = ({ className, vertical, ...props }: FitCenterProps) => {
     return (
-        <>
-            <div
-                className={`fit-center${className ? ` ${className}` : ''}${
-                    vertical ? ' flex-vertical' : ' flex-horizontal'
-                }`}
-                {..._props}
-            ></div>
-        </>
+        <div
+            className={`fit-center${className ? ` ${className}` : ''}${
+                vertical ? ' flex-vertical' : ' flex-horizontal'
+            }`}
+            {...props}
+        />
     )
 }
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import _ from 'lodash'
 import '@/assets/css/components/common/indicator.scss'
 
@@ -8,12 +7,10 @@ interface IndicatorProps {
     onSwitch?: (index: number) => void
 }
 
-const Indicator: React.FC<IndicatorProps> = (props) => {
-    const { total, current, onSwitch } = props
-
+const Indicator = ({ total, current, onSwitch }: IndicatorProps) => {
     const handleClick = (index: number) => {
         return () => {
-            onSwitch && onSwitch(index)
+            onSwitch?.(index)
         }
     }
 

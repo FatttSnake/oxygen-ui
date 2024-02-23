@@ -295,6 +295,7 @@ const primitiveNames = [
     'DropdownButton',
     'Drawer',
     'Empty',
+    'FloatButton',
     'Form',
     'FormItem',
     'FormItemRest',

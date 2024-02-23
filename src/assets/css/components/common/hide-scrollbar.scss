@@ -68,14 +68,14 @@
   }
 
   .vertical-scrollbar {
-    padding: 12px 4px;
+    padding: 12px 2px;
     height: 100%;
     left: 100%;
     top: 0;
     transform: translateX(-100%);
 
     .box {
-      width: 8px;
+      width: 6px;
     }
   }
 

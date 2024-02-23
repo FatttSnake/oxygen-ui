@@ -1,4 +1,4 @@
-@use '@/assets/css/constants.scss' as constants;
+@use '@/assets/css/constants' as constants;
 
 #root {
   height: 100vh;
@@ -6,6 +6,7 @@
 }
 
 .body {
+  background-color: constants.$background-color;
   color: constants.$font-main-color;
   user-select: none;
   min-width: 900px;

@@ -1,13 +1,26 @@
-import React from 'react'
-import router from '@/router'
-import LoadingMask from '@/components/common/LoadingMask'
+import { getRouter } from '@/router'
+import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
-const App: React.FC = () => {
+export const AppContext = createContext<{ refreshRouter: () => void }>({
+    refreshRouter: () => undefined
+})
+
+const App = () => {
+    const [routerState, setRouterState] = useState(getRouter)
+
     return (
         <>
-            <Suspense fallback={<LoadingMask />}>
-                <RouterProvider router={router} />
-            </Suspense>
+            <AppContext.Provider
+                value={{
+                    refreshRouter: () => {
+                        setRouterState(getRouter())
+                    }
+                }}
+            >
+                <Suspense fallback={<FullscreenLoadingMask />}>
+                    <RouterProvider router={routerState} />
+                </Suspense>
+            </AppContext.Provider>
         </>
     )
 }
