@@ -197,6 +197,12 @@ const Tools = () => {
                 title: '审核',
                 centered: true,
                 maskClosable: true,
+                footer: (_, { OkBtn, CancelBtn }) => (
+                    <>
+                        <OkBtn />
+                        <CancelBtn />
+                    </>
+                ),
                 content: (
                     <AntdForm form={form}>
                         <AntdForm.Item

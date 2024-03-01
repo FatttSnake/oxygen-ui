@@ -105,24 +105,30 @@ const SignIn = () => {
                         twoFactorForm.resetFields()
                         void modal.confirm({
                             title: '双因素验证',
-                            getContainer: false,
                             centered: true,
+                            footer: (_, { OkBtn, CancelBtn }) => (
+                                <>
+                                    <OkBtn />
+                                    <CancelBtn />
+                                </>
+                            ),
                             content: (
                                 <>
-                                    <AntdForm form={twoFactorForm}>
+                                    <AntdForm
+                                        form={twoFactorForm}
+                                        ref={(ref) => {
+                                            setTimeout(() => {
+                                                ref?.getFieldInstance('twoFactorCode').focus()
+                                            }, 50)
+                                        }}
+                                    >
                                         <AntdForm.Item
                                             name={'twoFactorCode'}
                                             label={'验证码'}
                                             style={{ marginTop: 10 }}
                                             rules={[{ required: true, len: 6 }]}
                                         >
-                                            <AntdInput
-                                                showCount
-                                                maxLength={6}
-                                                ref={(input) => {
-                                                    input?.focus()
-                                                }}
-                                            />
+                                            <AntdInput showCount maxLength={6} />
                                         </AntdForm.Item>
                                     </AntdForm>
                                 </>

@@ -262,12 +262,24 @@ const Tools = () => {
     const handleOnUpgradeTool = (tool: ToolVo) => {
         void modal.confirm({
             title: '更新工具',
-            getContainer: false,
             centered: true,
             maskClosable: true,
+            footer: (_, { OkBtn, CancelBtn }) => (
+                <>
+                    <OkBtn />
+                    <CancelBtn />
+                </>
+            ),
             content: (
                 <>
-                    <AntdForm form={upgradeForm}>
+                    <AntdForm
+                        form={upgradeForm}
+                        ref={(ref) => {
+                            setTimeout(() => {
+                                ref?.getFieldInstance('toolId').focus()
+                            }, 50)
+                        }}
+                    >
                         <AntdForm.Item
                             initialValue={tool.toolId}
                             name={'toolId'}
@@ -287,14 +299,7 @@ const Tools = () => {
                                 }
                             ]}
                         >
-                            <AntdInput
-                                maxLength={10}
-                                showCount
-                                placeholder={'请输入版本'}
-                                ref={(input) => {
-                                    input?.focus()
-                                }}
-                            />
+                            <AntdInput maxLength={10} showCount placeholder={'请输入版本'} />
                         </AntdForm.Item>
                     </AntdForm>
                 </>

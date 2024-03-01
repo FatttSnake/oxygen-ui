@@ -399,11 +399,23 @@ const Template = () => {
         const handleOnAddFile = () => {
             void modal.confirm({
                 title: '新建文件',
-                getContainer: false,
                 centered: true,
                 maskClosable: true,
+                footer: (_, { OkBtn, CancelBtn }) => (
+                    <>
+                        <OkBtn />
+                        <CancelBtn />
+                    </>
+                ),
                 content: (
-                    <AntdForm form={addFileForm}>
+                    <AntdForm
+                        form={addFileForm}
+                        ref={(ref) => {
+                            setTimeout(() => {
+                                ref?.getFieldInstance('fileName').focus()
+                            }, 50)
+                        }}
+                    >
                         <AntdForm.Item
                             name={'fileName'}
                             label={'文件名'}
@@ -429,11 +441,7 @@ const Template = () => {
                                 })
                             ]}
                         >
-                            <AntdInput
-                                ref={(input) => {
-                                    input?.focus()
-                                }}
-                            />
+                            <AntdInput />
                         </AntdForm.Item>
                     </AntdForm>
                 ),
@@ -585,11 +593,23 @@ const Template = () => {
                 renameFileForm.setFieldValue('fileName', fileName)
                 void modal.confirm({
                     title: '重命名文件',
-                    getContainer: false,
                     centered: true,
                     maskClosable: true,
+                    footer: (_, { OkBtn, CancelBtn }) => (
+                        <>
+                            <OkBtn />
+                            <CancelBtn />
+                        </>
+                    ),
                     content: (
-                        <AntdForm form={renameFileForm}>
+                        <AntdForm
+                            form={renameFileForm}
+                            ref={(ref) => {
+                                setTimeout(() => {
+                                    ref?.getFieldInstance('fileName').focus()
+                                }, 50)
+                            }}
+                        >
                             <AntdForm.Item
                                 name={'fileName'}
                                 label={'新文件名'}
@@ -618,11 +638,7 @@ const Template = () => {
                                     })
                                 ]}
                             >
-                                <AntdInput
-                                    ref={(input) => {
-                                        input?.focus()
-                                    }}
-                                />
+                                <AntdInput />
                             </AntdForm.Item>
                         </AntdForm>
                     ),
