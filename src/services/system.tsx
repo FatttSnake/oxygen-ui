@@ -20,7 +20,8 @@ import {
     URL_SYS_TOOL_CATEGORY,
     URL_SYS_TOOL_BASE,
     URL_SYS_TOOL_TEMPLATE,
-    URL_SYS_TOOL
+    URL_SYS_TOOL,
+    URL_SYS_SETTINGS_TWO_FACTOR
 } from '@/constants/urls.constants'
 import request from '@/services/index'
 
@@ -110,6 +111,12 @@ export const r_sys_settings_sensitive_update = (param: SensitiveWordUpdateParam)
 
 export const r_sys_settings_sensitive_delete = (id: string) =>
     request.delete(`${URL_SYS_SETTINGS_SENSITIVE}/${id}`)
+
+export const r_sys_settings_two_factor_get = () =>
+    request.get<TwoFactorSettingsVo>(URL_SYS_SETTINGS_TWO_FACTOR)
+
+export const r_sys_settings_two_factor_update = (param: TwoFactorSettingsParam) =>
+    request.put(URL_SYS_SETTINGS_TWO_FACTOR, param)
 
 export const r_sys_statistics_software = () =>
     request.get<SoftwareInfoVo>(URL_SYS_STATISTICS_SOFTWARE)

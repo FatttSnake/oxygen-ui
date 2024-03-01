@@ -11,6 +11,11 @@ import {
 import { utcToLocalTime } from '@/util/datetime'
 import { getUserInfo, removeToken } from '@/util/auth'
 import { r_sys_user_info_change_password, r_sys_user_info_update } from '@/services/system'
+import {
+    r_auth_two_factor_create,
+    r_auth_two_factor_remove,
+    r_auth_two_factor_validate
+} from '@/services/auth'
 import { r_api_avatar_random_base64 } from '@/services/api/avatar'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
@@ -25,6 +30,7 @@ const User = () => {
     const [modal, contextHolder] = AntdModal.useModal()
     const [form] = AntdForm.useForm<UserInfoUpdateParam>()
     const formValues = AntdForm.useWatch([], form)
+    const [twoFactorForm] = AntdForm.useForm<{ twoFactorCode: string }>()
     const [isLoading, setIsLoading] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSubmittable, setIsSubmittable] = useState(false)
@@ -93,6 +99,8 @@ const User = () => {
                     修改密码
                 </>
             ),
+            getContainer: false,
+            centered: true,
             maskClosable: true,
             content: (
                 <AntdForm
@@ -107,7 +115,12 @@ const User = () => {
                         labelAlign={'right'}
                         rules={[{ required: true, message: '请输入原密码' }]}
                     >
-                        <AntdInput.Password placeholder={'请输入原密码'} />
+                        <AntdInput.Password
+                            placeholder={'请输入原密码'}
+                            ref={(input) => {
+                                input?.focus()
+                            }}
+                        />
                     </AntdForm.Item>
                     <AntdForm.Item
                         name={'newPassword'}
@@ -194,6 +207,160 @@ const User = () => {
                     }
                 )
         })
+    }
+
+    const handleOnChangeTwoFactor = (enable: boolean) => {
+        return () => {
+            twoFactorForm.resetFields()
+            if (enable) {
+                void modal.confirm({
+                    title: '双因素',
+                    centered: true,
+                    maskClosable: true,
+                    content: '确定解除双因素？',
+                    onOk: () => {
+                        void modal.confirm({
+                            title: '解除双因素',
+                            getContainer: false,
+                            centered: true,
+                            maskClosable: true,
+                            content: (
+                                <>
+                                    <AntdForm form={twoFactorForm}>
+                                        <AntdForm.Item
+                                            name={'twoFactorCode'}
+                                            label={'验证码'}
+                                            style={{ marginTop: 10 }}
+                                            rules={[{ required: true, len: 6 }]}
+                                        >
+                                            <AntdInput
+                                                showCount
+                                                maxLength={6}
+                                                ref={(input) => {
+                                                    input?.focus()
+                                                }}
+                                            />
+                                        </AntdForm.Item>
+                                    </AntdForm>
+                                </>
+                            ),
+                            onOk: () =>
+                                twoFactorForm.validateFields().then(
+                                    () => {
+                                        return new Promise<void>((resolve) => {
+                                            void r_auth_two_factor_remove({
+                                                code: twoFactorForm.getFieldValue(
+                                                    'twoFactorCode'
+                                                ) as string
+                                            })
+                                                .then((res) => {
+                                                    const response = res.data
+                                                    if (response.success) {
+                                                        void message.success('解绑成功')
+                                                        getProfile()
+                                                    } else {
+                                                        void message.error('解绑失败，请稍后重试')
+                                                    }
+                                                })
+                                                .finally(() => {
+                                                    resolve()
+                                                })
+                                        })
+                                    },
+                                    () => {
+                                        return new Promise((_, reject) => {
+                                            reject('输入有误')
+                                        })
+                                    }
+                                )
+                        })
+                    }
+                })
+            } else {
+                if (isLoading) {
+                    return
+                }
+                setIsLoading(true)
+                void message.loading({ content: '加载中', key: 'LOADING', duration: 0 })
+                void r_auth_two_factor_create()
+                    .then((res) => {
+                        message.destroy('LOADING')
+                        const response = res.data
+                        if (response.success) {
+                            void modal.confirm({
+                                title: '绑定双因素',
+                                getContainer: false,
+                                centered: true,
+                                maskClosable: true,
+                                content: (
+                                    <>
+                                        <AntdImage
+                                            src={`data:image/svg+xml;base64,${response.data?.qrCodeSVGBase64}`}
+                                            alt={'Two-factor'}
+                                            preview={false}
+                                        />
+                                        <AntdForm form={twoFactorForm}>
+                                            <AntdForm.Item
+                                                name={'twoFactorCode'}
+                                                label={'验证码'}
+                                                style={{ marginTop: 10, marginRight: 30 }}
+                                                rules={[{ required: true, len: 6 }]}
+                                            >
+                                                <AntdInput
+                                                    showCount
+                                                    maxLength={6}
+                                                    ref={(input) => {
+                                                        input?.focus()
+                                                    }}
+                                                />
+                                            </AntdForm.Item>
+                                        </AntdForm>
+                                    </>
+                                ),
+                                onOk: () =>
+                                    twoFactorForm.validateFields().then(
+                                        () => {
+                                            return new Promise<void>((resolve) => {
+                                                void r_auth_two_factor_validate({
+                                                    code: twoFactorForm.getFieldValue(
+                                                        'twoFactorCode'
+                                                    ) as string
+                                                })
+                                                    .then((res) => {
+                                                        const response = res.data
+                                                        if (response.success) {
+                                                            void message.success('绑定成功')
+                                                            getProfile()
+                                                        } else {
+                                                            void message.error(
+                                                                '绑定失败，请稍后重试'
+                                                            )
+                                                        }
+                                                    })
+                                                    .finally(() => {
+                                                        resolve()
+                                                    })
+                                            })
+                                        },
+                                        () => {
+                                            return new Promise((_, reject) => {
+                                                reject('输入有误')
+                                            })
+                                        }
+                                    )
+                            })
+                        } else {
+                            void message.error('获取双因素绑定二维码失败，请稍后重试')
+                        }
+                    })
+                    .catch(() => {
+                        message.destroy('LOADING')
+                    })
+                    .finally(() => {
+                        setIsLoading(false)
+                    })
+            }
+        }
     }
 
     const getProfile = () => {
@@ -378,6 +545,40 @@ const User = () => {
                                             onClick={handleOnChangePassword}
                                         >
                                             <Icon component={IconOxygenRefresh} />
+                                        </AntdButton>
+                                    </AntdSpace.Compact>
+                                </div>
+                            </FlexBox>
+                            <FlexBox className={'row'} direction={'horizontal'}>
+                                <div className={'label'}>双因素</div>
+                                <div className={'input'}>
+                                    <AntdSpace.Compact>
+                                        <AntdInput
+                                            disabled
+                                            style={{
+                                                color: userWithPowerInfoVo?.twoFactor
+                                                    ? COLOR_PRODUCTION
+                                                    : undefined
+                                            }}
+                                            value={
+                                                userWithPowerInfoVo?.twoFactor ? '已设置' : '未设置'
+                                            }
+                                        />
+                                        <AntdButton
+                                            type={'primary'}
+                                            title={userWithPowerInfoVo?.twoFactor ? '解绑' : '绑定'}
+                                            disabled={isLoading}
+                                            onClick={handleOnChangeTwoFactor(
+                                                userWithPowerInfoVo?.twoFactor ?? false
+                                            )}
+                                        >
+                                            <Icon
+                                                component={
+                                                    userWithPowerInfoVo?.twoFactor
+                                                        ? IconOxygenUnlock
+                                                        : IconOxygenLock
+                                                }
+                                            />
                                         </AntdButton>
                                     </AntdSpace.Compact>
                                 </div>
