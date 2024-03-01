@@ -46,7 +46,7 @@ const Base = () => {
     return (
         <>
             <SettingsCard
-                icon={IconOxygenEmail}
+                icon={IconOxygenBase}
                 title={'基础'}
                 loading={loading}
                 onReset={handleOnReset}

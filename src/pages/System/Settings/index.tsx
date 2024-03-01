@@ -10,6 +10,7 @@ import Permission from '@/components/common/Permission'
 import Base from '@/pages/System/Settings/Base'
 import Mail from '@/pages/System/Settings/Mail'
 import SensitiveWord from '@/pages/System/Settings/SensitiveWord'
+import TwoFactor from '@/pages/System/Settings/TwoFactor.tsx'
 
 interface SettingsCardProps extends PropsWithChildren {
     icon: IconComponent
@@ -67,6 +68,9 @@ const Settings = () => {
                         <FlexBox className={'root-col'}>
                             <Permission operationCode={['system:settings:query:mail']}>
                                 <Mail />
+                            </Permission>
+                            <Permission operationCode={['system:settings:query:two-factor']}>
+                                <TwoFactor />
                             </Permission>
                         </FlexBox>
                     </FlexBox>

@@ -232,6 +232,7 @@ const Base = () => {
                     compileForm.setFieldValue('entryFileName', undefined)
                     void modal.confirm({
                         title: '编译',
+                        centered: true,
                         maskClosable: true,
                         content: (
                             <>
@@ -537,6 +538,8 @@ const Base = () => {
         const handleOnAddFile = () => {
             void modal.confirm({
                 title: '新建文件',
+                getContainer: false,
+                centered: true,
                 maskClosable: true,
                 content: (
                     <AntdForm form={addFileForm}>
@@ -565,7 +568,11 @@ const Base = () => {
                                 })
                             ]}
                         >
-                            <AntdInput />
+                            <AntdInput
+                                ref={(input) => {
+                                    input?.focus()
+                                }}
+                            />
                         </AntdForm.Item>
                     </AntdForm>
                 ),
@@ -714,6 +721,8 @@ const Base = () => {
                 renameFileForm.setFieldValue('fileName', fileName)
                 void modal.confirm({
                     title: '重命名文件',
+                    getContainer: false,
+                    centered: true,
                     maskClosable: true,
                     content: (
                         <AntdForm form={renameFileForm}>
@@ -745,7 +754,11 @@ const Base = () => {
                                     })
                                 ]}
                             >
-                                <AntdInput />
+                                <AntdInput
+                                    ref={(input) => {
+                                        input?.focus()
+                                    }}
+                                />
                             </AntdForm.Item>
                         </AntdForm>
                     ),

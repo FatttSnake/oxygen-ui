@@ -92,6 +92,7 @@ interface LoginParam {
     account: string
     password: string
     captchaCode: string
+    twoFactorCode?: string
 }
 
 interface UserChangePasswordParam {
@@ -99,9 +100,18 @@ interface UserChangePasswordParam {
     newPassword: string
 }
 
+interface TwoFactorValidateParam {
+    code: string
+}
+
+interface TwoFactorRemoveParam {
+    code: string
+}
+
 interface UserWithInfoVo {
     id: string
     username: string
+    twoFactor: boolean
     verified: boolean
     locking: boolean
     expiration: string
@@ -119,6 +129,7 @@ interface UserWithInfoVo {
 interface UserWithPowerInfoVo {
     id: string
     username: string
+    twoFactor: boolean
     verified: boolean
     locking: boolean
     expiration: string
@@ -140,6 +151,7 @@ interface UserWithPowerInfoVo {
 interface UserWithRoleInfoVo {
     id: string
     username: string
+    twoFactor: boolean
     verify: string
     locking: boolean
     expiration: string
@@ -162,6 +174,10 @@ interface UserInfoVo {
     nickname: string
     avatar: string
     email: string
+}
+
+interface TwoFactorVo {
+    qrCodeSVGBase64: string
 }
 
 interface ModuleVo {
@@ -400,6 +416,16 @@ interface SensitiveWordAddParam {
 
 interface SensitiveWordUpdateParam {
     ids: string[]
+}
+
+interface TwoFactorSettingsVo {
+    issuer: string
+    secretKeyLength: number
+}
+
+interface TwoFactorSettingsParam {
+    issuer: string
+    secretKeyLength: number
 }
 
 interface SoftwareInfoVo {
