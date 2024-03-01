@@ -399,6 +399,8 @@ const Template = () => {
         const handleOnAddFile = () => {
             void modal.confirm({
                 title: '新建文件',
+                getContainer: false,
+                centered: true,
                 maskClosable: true,
                 content: (
                     <AntdForm form={addFileForm}>
@@ -427,7 +429,11 @@ const Template = () => {
                                 })
                             ]}
                         >
-                            <AntdInput />
+                            <AntdInput
+                                ref={(input) => {
+                                    input?.focus()
+                                }}
+                            />
                         </AntdForm.Item>
                     </AntdForm>
                 ),
@@ -579,6 +585,8 @@ const Template = () => {
                 renameFileForm.setFieldValue('fileName', fileName)
                 void modal.confirm({
                     title: '重命名文件',
+                    getContainer: false,
+                    centered: true,
                     maskClosable: true,
                     content: (
                         <AntdForm form={renameFileForm}>
@@ -610,7 +618,11 @@ const Template = () => {
                                     })
                                 ]}
                             >
-                                <AntdInput />
+                                <AntdInput
+                                    ref={(input) => {
+                                        input?.focus()
+                                    }}
+                                />
                             </AntdForm.Item>
                         </AntdForm>
                     ),

@@ -336,6 +336,8 @@ const User = () => {
                         修改用户 {value.username} 的密码
                     </>
                 ),
+                getContainer: false,
+                centered: true,
                 maskClosable: true,
                 content: (
                     <AntdForm
@@ -356,7 +358,11 @@ const User = () => {
                                 }
                             ]}
                         >
-                            <AntdInput.Password />
+                            <AntdInput.Password
+                                ref={(input) => {
+                                    input?.focus()
+                                }}
+                            />
                         </AntdForm.Item>
                         <AntdForm.Item
                             name={'passwordConfirm'}

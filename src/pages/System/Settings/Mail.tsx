@@ -17,6 +17,8 @@ const Mail = () => {
     const handleOnTest = () => {
         void modal.confirm({
             title: '发送测试邮件',
+            getContainer: false,
+            centered: true,
             maskClosable: true,
             content: (
                 <>
@@ -27,7 +29,11 @@ const Mail = () => {
                             style={{ marginTop: 10 }}
                             rules={[{ required: true, type: 'email' }]}
                         >
-                            <AntdInput />
+                            <AntdInput
+                                ref={(input) => {
+                                    input?.focus()
+                                }}
+                            />
                         </AntdForm.Item>
                     </AntdForm>
                     <AntdTag style={{ whiteSpace: 'normal' }}>
@@ -56,7 +62,7 @@ const Mail = () => {
                     },
                     () => {
                         return new Promise((_, reject) => {
-                            reject('未输入接收者')
+                            reject('输入有误')
                         })
                     }
                 )

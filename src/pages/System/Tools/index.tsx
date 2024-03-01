@@ -195,6 +195,7 @@ const Tools = () => {
             form.setFieldValue('pass', undefined)
             void modal.confirm({
                 title: '审核',
+                centered: true,
                 maskClosable: true,
                 content: (
                     <AntdForm form={form}>

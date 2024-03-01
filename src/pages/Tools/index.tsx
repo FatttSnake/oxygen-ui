@@ -262,6 +262,8 @@ const Tools = () => {
     const handleOnUpgradeTool = (tool: ToolVo) => {
         void modal.confirm({
             title: '更新工具',
+            getContainer: false,
+            centered: true,
             maskClosable: true,
             content: (
                 <>
@@ -285,7 +287,14 @@ const Tools = () => {
                                 }
                             ]}
                         >
-                            <AntdInput maxLength={10} showCount placeholder={'请输入版本'} />
+                            <AntdInput
+                                maxLength={10}
+                                showCount
+                                placeholder={'请输入版本'}
+                                ref={(input) => {
+                                    input?.focus()
+                                }}
+                            />
                         </AntdForm.Item>
                     </AntdForm>
                 </>
