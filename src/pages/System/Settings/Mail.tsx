@@ -17,23 +17,31 @@ const Mail = () => {
     const handleOnTest = () => {
         void modal.confirm({
             title: '发送测试邮件',
-            getContainer: false,
             centered: true,
             maskClosable: true,
+            footer: (_, { OkBtn, CancelBtn }) => (
+                <>
+                    <OkBtn />
+                    <CancelBtn />
+                </>
+            ),
             content: (
                 <>
-                    <AntdForm form={mailSendForm}>
+                    <AntdForm
+                        form={mailSendForm}
+                        ref={(ref) => {
+                            setTimeout(() => {
+                                ref?.getFieldInstance('to').focus()
+                            }, 50)
+                        }}
+                    >
                         <AntdForm.Item
                             name={'to'}
                             label={'接收人'}
                             style={{ marginTop: 10 }}
                             rules={[{ required: true, type: 'email' }]}
                         >
-                            <AntdInput
-                                ref={(input) => {
-                                    input?.focus()
-                                }}
-                            />
+                            <AntdInput />
                         </AntdForm.Item>
                     </AntdForm>
                     <AntdTag style={{ whiteSpace: 'normal' }}>

@@ -99,15 +99,25 @@ const User = () => {
                     修改密码
                 </>
             ),
-            getContainer: false,
             centered: true,
             maskClosable: true,
+            footer: (_, { OkBtn, CancelBtn }) => (
+                <>
+                    <OkBtn />
+                    <CancelBtn />
+                </>
+            ),
             content: (
                 <AntdForm
                     form={changePasswordForm}
                     style={{ marginTop: 20 }}
                     labelCol={{ span: 6 }}
                     wrapperCol={{ span: 18 }}
+                    ref={(ref) => {
+                        setTimeout(() => {
+                            ref?.getFieldInstance('originalPassword').focus()
+                        }, 50)
+                    }}
                 >
                     <AntdForm.Item
                         name={'originalPassword'}
@@ -115,12 +125,7 @@ const User = () => {
                         labelAlign={'right'}
                         rules={[{ required: true, message: '请输入原密码' }]}
                     >
-                        <AntdInput.Password
-                            placeholder={'请输入原密码'}
-                            ref={(input) => {
-                                input?.focus()
-                            }}
-                        />
+                        <AntdInput.Password placeholder={'请输入原密码'} />
                     </AntdForm.Item>
                     <AntdForm.Item
                         name={'newPassword'}
@@ -217,29 +222,42 @@ const User = () => {
                     title: '双因素',
                     centered: true,
                     maskClosable: true,
+                    focusTriggerAfterClose: false,
+                    footer: (_, { OkBtn, CancelBtn }) => (
+                        <>
+                            <OkBtn />
+                            <CancelBtn />
+                        </>
+                    ),
                     content: '确定解除双因素？',
                     onOk: () => {
                         void modal.confirm({
                             title: '解除双因素',
-                            getContainer: false,
                             centered: true,
                             maskClosable: true,
+                            footer: (_, { OkBtn, CancelBtn }) => (
+                                <>
+                                    <OkBtn />
+                                    <CancelBtn />
+                                </>
+                            ),
                             content: (
                                 <>
-                                    <AntdForm form={twoFactorForm}>
+                                    <AntdForm
+                                        form={twoFactorForm}
+                                        ref={(ref) => {
+                                            setTimeout(() => {
+                                                ref?.getFieldInstance('twoFactorCode').focus()
+                                            }, 50)
+                                        }}
+                                    >
                                         <AntdForm.Item
                                             name={'twoFactorCode'}
                                             label={'验证码'}
                                             style={{ marginTop: 10 }}
                                             rules={[{ required: true, len: 6 }]}
                                         >
-                                            <AntdInput
-                                                showCount
-                                                maxLength={6}
-                                                ref={(input) => {
-                                                    input?.focus()
-                                                }}
-                                            />
+                                            <AntdInput showCount maxLength={6} />
                                         </AntdForm.Item>
                                     </AntdForm>
                                 </>
@@ -289,9 +307,14 @@ const User = () => {
                         if (response.success) {
                             void modal.confirm({
                                 title: '绑定双因素',
-                                getContainer: false,
                                 centered: true,
                                 maskClosable: true,
+                                footer: (_, { OkBtn, CancelBtn }) => (
+                                    <>
+                                        <OkBtn />
+                                        <CancelBtn />
+                                    </>
+                                ),
                                 content: (
                                     <>
                                         <AntdImage
@@ -299,20 +322,21 @@ const User = () => {
                                             alt={'Two-factor'}
                                             preview={false}
                                         />
-                                        <AntdForm form={twoFactorForm}>
+                                        <AntdForm
+                                            form={twoFactorForm}
+                                            ref={(ref) => {
+                                                setTimeout(() => {
+                                                    ref?.getFieldInstance('twoFactorCode').focus()
+                                                }, 50)
+                                            }}
+                                        >
                                             <AntdForm.Item
                                                 name={'twoFactorCode'}
                                                 label={'验证码'}
                                                 style={{ marginTop: 10, marginRight: 30 }}
                                                 rules={[{ required: true, len: 6 }]}
                                             >
-                                                <AntdInput
-                                                    showCount
-                                                    maxLength={6}
-                                                    ref={(input) => {
-                                                        input?.focus()
-                                                    }}
-                                                />
+                                                <AntdInput showCount maxLength={6} />
                                             </AntdForm.Item>
                                         </AntdForm>
                                     </>

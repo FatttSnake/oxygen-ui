@@ -6,6 +6,7 @@ import {
     PERMISSION_RETRIEVE_CODE_ERROR_OR_EXPIRED,
     PERMISSION_RETRIEVE_SUCCESS,
     PERMISSION_USER_NOT_FOUND,
+    SIZE_ICON_MD,
     SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants'
 import { r_auth_forget, r_auth_retrieve } from '@/services/auth'
@@ -160,11 +161,21 @@ const Forget = () => {
                                             />
                                         </AntdForm.Item>
                                         <AntdForm.Item>
+                                            {!turnstileRef.current && (
+                                                <div className={'loading-turnstile'}>
+                                                    <Icon
+                                                        component={IconOxygenLoading}
+                                                        style={{ fontSize: SIZE_ICON_MD }}
+                                                        spin
+                                                    />
+                                                </div>
+                                            )}
                                             <Turnstile
                                                 id={'forget-turnstile'}
                                                 ref={turnstileRefCallback}
                                                 siteKey={H_CAPTCHA_SITE_KEY}
-                                                options={{ theme: 'light', execution: 'execute' }}
+                                                hidden={!turnstileRef.current}
+                                                options={{ theme: 'light' }}
                                                 onSuccess={setCaptchaCode}
                                             />
                                         </AntdForm.Item>
@@ -232,11 +243,21 @@ const Forget = () => {
                                         />
                                     </AntdForm.Item>
                                     <AntdForm.Item>
+                                        {!turnstileRef.current && (
+                                            <div className={'loading-turnstile'}>
+                                                <Icon
+                                                    component={IconOxygenLoading}
+                                                    style={{ fontSize: SIZE_ICON_MD }}
+                                                    spin
+                                                />
+                                            </div>
+                                        )}
                                         <Turnstile
                                             id={'retrieve-turnstile'}
                                             ref={retrieveTurnstileRefCallback}
                                             siteKey={H_CAPTCHA_SITE_KEY}
-                                            options={{ theme: 'light', execution: 'execute' }}
+                                            hidden={!turnstileRef.current}
+                                            options={{ theme: 'light' }}
                                             onSuccess={setRetrieveCaptchaCode}
                                         />
                                     </AntdForm.Item>

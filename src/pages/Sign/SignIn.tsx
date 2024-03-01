@@ -8,6 +8,7 @@ import {
     PERMISSION_TWO_FACTOR_VERIFICATION_CODE_ERROR,
     PERMISSION_USER_DISABLE,
     PERMISSION_USERNAME_NOT_FOUND,
+    SIZE_ICON_MD,
     SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants'
 import { getUserInfo, setToken } from '@/util/auth'
@@ -105,24 +106,30 @@ const SignIn = () => {
                         twoFactorForm.resetFields()
                         void modal.confirm({
                             title: '双因素验证',
-                            getContainer: false,
                             centered: true,
+                            footer: (_, { OkBtn, CancelBtn }) => (
+                                <>
+                                    <OkBtn />
+                                    <CancelBtn />
+                                </>
+                            ),
                             content: (
                                 <>
-                                    <AntdForm form={twoFactorForm}>
+                                    <AntdForm
+                                        form={twoFactorForm}
+                                        ref={(ref) => {
+                                            setTimeout(() => {
+                                                ref?.getFieldInstance('twoFactorCode').focus()
+                                            }, 50)
+                                        }}
+                                    >
                                         <AntdForm.Item
                                             name={'twoFactorCode'}
                                             label={'验证码'}
                                             style={{ marginTop: 10 }}
                                             rules={[{ required: true, len: 6 }]}
                                         >
-                                            <AntdInput
-                                                showCount
-                                                maxLength={6}
-                                                ref={(input) => {
-                                                    input?.focus()
-                                                }}
-                                            />
+                                            <AntdInput showCount maxLength={6} />
                                         </AntdForm.Item>
                                     </AntdForm>
                                 </>
@@ -220,11 +227,21 @@ const SignIn = () => {
                             />
                         </AntdForm.Item>
                         <AntdForm.Item>
+                            {!turnstileRef.current && (
+                                <div className={'loading-turnstile'}>
+                                    <Icon
+                                        component={IconOxygenLoading}
+                                        style={{ fontSize: SIZE_ICON_MD }}
+                                        spin
+                                    />
+                                </div>
+                            )}
                             <Turnstile
                                 id={'sign-in-turnstile'}
                                 ref={turnstileRefCallback}
                                 siteKey={H_CAPTCHA_SITE_KEY}
-                                options={{ theme: 'light', execution: 'execute' }}
+                                hidden={!turnstileRef.current}
+                                options={{ theme: 'light' }}
                                 onSuccess={setCaptchaCode}
                             />
                         </AntdForm.Item>

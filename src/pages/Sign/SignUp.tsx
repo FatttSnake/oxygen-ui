@@ -4,6 +4,7 @@ import {
     DATABASE_DUPLICATE_KEY,
     H_CAPTCHA_SITE_KEY,
     PERMISSION_REGISTER_SUCCESS,
+    SIZE_ICON_MD,
     SYSTEM_INVALID_CAPTCHA_CODE,
     SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
@@ -200,11 +201,21 @@ const SignUp = () => {
                                     />
                                 </AntdForm.Item>
                                 <AntdForm.Item>
+                                    {!turnstileRef.current && (
+                                        <div className={'loading-turnstile'}>
+                                            <Icon
+                                                component={IconOxygenLoading}
+                                                style={{ fontSize: SIZE_ICON_MD }}
+                                                spin
+                                            />
+                                        </div>
+                                    )}
                                     <Turnstile
                                         id={'sign-up-turnstile'}
                                         ref={turnstileRefCallback}
                                         siteKey={H_CAPTCHA_SITE_KEY}
-                                        options={{ theme: 'light', execution: 'execute' }}
+                                        hidden={!turnstileRef.current}
+                                        options={{ theme: 'light' }}
                                         onSuccess={setCaptchaCode}
                                     />
                                 </AntdForm.Item>

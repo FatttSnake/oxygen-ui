@@ -85,6 +85,11 @@
       }
 
       .sign-up, .sign-in, .forget {
+        .loading-turnstile {
+          display: flex;
+          justify-content: center;
+        }
+
         .footer {
           a {
             font-weight: bolder;

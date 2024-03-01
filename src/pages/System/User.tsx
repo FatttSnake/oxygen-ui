@@ -336,15 +336,25 @@ const User = () => {
                         修改用户 {value.username} 的密码
                     </>
                 ),
-                getContainer: false,
                 centered: true,
                 maskClosable: true,
+                footer: (_, { OkBtn, CancelBtn }) => (
+                    <>
+                        <OkBtn />
+                        <CancelBtn />
+                    </>
+                ),
                 content: (
                     <AntdForm
                         form={changePasswordForm}
                         style={{ marginTop: 20 }}
                         labelCol={{ span: 6 }}
                         wrapperCol={{ span: 18 }}
+                        ref={(ref) => {
+                            setTimeout(() => {
+                                ref?.getFieldInstance('password').focus()
+                            }, 50)
+                        }}
                     >
                         <AntdForm.Item name={'id'} label={'ID'} labelAlign={'right'}>
                             <AntdInput disabled />
@@ -358,11 +368,7 @@ const User = () => {
                                 }
                             ]}
                         >
-                            <AntdInput.Password
-                                ref={(input) => {
-                                    input?.focus()
-                                }}
-                            />
+                            <AntdInput.Password />
                         </AntdForm.Item>
                         <AntdForm.Item
                             name={'passwordConfirm'}
