@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
-    "@marsidev/react-turnstile": "^0.4.1",
+    "@marsidev/react-turnstile": "^0.5.3",
     "@monaco-editor/react": "^4.6.0",
     "@typescript/ata": "^0.9.4",
     "antd": "^5.13.2",

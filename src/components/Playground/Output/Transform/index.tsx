@@ -53,7 +53,7 @@ const Transform = ({ file, theme }: OutputProps) => {
                         setCompiledCode(code)
                 }
             } catch (e) {
-                console.log(e)
+                console.error(e)
                 setCompiledCode('')
             }
         } else {
