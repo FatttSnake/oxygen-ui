@@ -8,7 +8,6 @@ import {
     PERMISSION_TWO_FACTOR_VERIFICATION_CODE_ERROR,
     PERMISSION_USER_DISABLE,
     PERMISSION_USERNAME_NOT_FOUND,
-    SIZE_ICON_MD,
     SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants'
 import { getUserInfo, setToken } from '@/util/auth'
@@ -24,18 +23,24 @@ const SignIn = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const turnstileRef = useRef<TurnstileInstance>()
-    const turnstileRefCallback = useCallback(
-        (node: TurnstileInstance) => {
-            turnstileRef.current = node
-            if (location.pathname === '/login') {
-                turnstileRef.current?.execute()
-            }
-        },
-        [location.pathname]
-    )
+    const [refreshTime, setRefreshTime] = useState(0)
     const [twoFactorForm] = AntdForm.useForm<{ twoFactorCode: string }>()
     const [isSigningIn, setIsSigningIn] = useState(false)
     const [captchaCode, setCaptchaCode] = useState('')
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (window.turnstile) {
+                clearInterval(timer)
+                setRefreshTime(Date.now())
+                if (location.pathname === '/login') {
+                    setTimeout(() => {
+                        turnstileRef.current?.execute()
+                    }, 500)
+                }
+            }
+        })
+    }, [location.pathname])
 
     useEffect(() => {
         if (!isSigningIn) {
@@ -227,22 +232,17 @@ const SignIn = () => {
                             />
                         </AntdForm.Item>
                         <AntdForm.Item>
-                            {!turnstileRef.current && (
-                                <div className={'loading-turnstile'}>
-                                    <Icon
-                                        component={IconOxygenLoading}
-                                        style={{ fontSize: SIZE_ICON_MD }}
-                                        spin
-                                    />
-                                </div>
-                            )}
                             <Turnstile
                                 id={'sign-in-turnstile'}
-                                ref={turnstileRefCallback}
+                                ref={turnstileRef}
                                 siteKey={H_CAPTCHA_SITE_KEY}
-                                hidden={!turnstileRef.current}
-                                options={{ theme: 'light' }}
+                                options={{
+                                    theme: 'light',
+                                    execution: 'execute',
+                                    appearance: 'execute'
+                                }}
                                 onSuccess={setCaptchaCode}
+                                data-refresh={refreshTime}
                             />
                         </AntdForm.Item>
                         <FlexBox direction={'horizontal'} className={'addition'}>

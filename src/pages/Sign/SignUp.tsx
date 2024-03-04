@@ -4,7 +4,6 @@ import {
     DATABASE_DUPLICATE_KEY,
     H_CAPTCHA_SITE_KEY,
     PERMISSION_REGISTER_SUCCESS,
-    SIZE_ICON_MD,
     SYSTEM_INVALID_CAPTCHA_CODE,
     SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
@@ -17,20 +16,25 @@ const SignUp = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const turnstileRef = useRef<TurnstileInstance>()
-    const turnstileRefCallback = useCallback(
-        (node: TurnstileInstance) => {
-            turnstileRef.current = node
-
-            if (location.pathname === '/register') {
-                turnstileRef.current?.execute()
-            }
-        },
-        [location.pathname]
-    )
+    const [refreshTime, setRefreshTime] = useState(0)
     const [isSigningUp, setIsSigningUp] = useState(false)
     const [isFinish, setIsFinish] = useState(false)
     const [isSending, setIsSending] = useState(false)
     const [captchaCode, setCaptchaCode] = useState('')
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (window.turnstile) {
+                clearInterval(timer)
+                setRefreshTime(Date.now())
+                if (location.pathname === '/register') {
+                    setTimeout(() => {
+                        turnstileRef.current?.execute()
+                    }, 500)
+                }
+            }
+        })
+    }, [location.pathname])
 
     useEffect(() => {
         if (!isSigningUp) {
@@ -201,22 +205,17 @@ const SignUp = () => {
                                     />
                                 </AntdForm.Item>
                                 <AntdForm.Item>
-                                    {!turnstileRef.current && (
-                                        <div className={'loading-turnstile'}>
-                                            <Icon
-                                                component={IconOxygenLoading}
-                                                style={{ fontSize: SIZE_ICON_MD }}
-                                                spin
-                                            />
-                                        </div>
-                                    )}
                                     <Turnstile
                                         id={'sign-up-turnstile'}
-                                        ref={turnstileRefCallback}
+                                        ref={turnstileRef}
                                         siteKey={H_CAPTCHA_SITE_KEY}
-                                        hidden={!turnstileRef.current}
-                                        options={{ theme: 'light' }}
+                                        options={{
+                                            theme: 'light',
+                                            execution: 'execute',
+                                            appearance: 'execute'
+                                        }}
                                         onSuccess={setCaptchaCode}
+                                        data-refresh={refreshTime}
                                     />
                                 </AntdForm.Item>
                                 <AntdForm.Item>
