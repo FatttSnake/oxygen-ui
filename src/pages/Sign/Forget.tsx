@@ -204,6 +204,7 @@ const Forget = () => {
                                         ]}
                                     >
                                         <AntdInput.Password
+                                            id={'forget-password'}
                                             addonBefore={
                                                 <span>新&nbsp;&nbsp;密&nbsp;&nbsp;码</span>
                                             }
@@ -231,6 +232,7 @@ const Forget = () => {
                                         ]}
                                     >
                                         <AntdInput.Password
+                                            id={'forget-password-confirm'}
                                             addonBefore={'确认密码'}
                                             placeholder={'确认密码'}
                                             disabled={isChanging}

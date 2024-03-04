@@ -177,6 +177,7 @@ const SignUp = () => {
                                     ]}
                                 >
                                     <AntdInput.Password
+                                        id={'sign-up-password'}
                                         prefix={<Icon component={IconOxygenPassword} />}
                                         placeholder={'密码'}
                                         disabled={isSigningUp}
@@ -199,6 +200,7 @@ const SignUp = () => {
                                     ]}
                                 >
                                     <AntdInput.Password
+                                        id={'sign-up-password-confirm'}
                                         prefix={<Icon component={IconOxygenPassword} />}
                                         placeholder={'确认密码'}
                                         disabled={isSigningUp}

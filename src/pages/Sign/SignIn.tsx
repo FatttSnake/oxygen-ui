@@ -134,7 +134,11 @@ const SignIn = () => {
                                             style={{ marginTop: 10 }}
                                             rules={[{ required: true, len: 6 }]}
                                         >
-                                            <AntdInput showCount maxLength={6} />
+                                            <AntdInput
+                                                showCount
+                                                maxLength={6}
+                                                autoComplete={'off'}
+                                            />
                                         </AntdForm.Item>
                                     </AntdForm>
                                 </>
