@@ -2,6 +2,7 @@ import {
     COLOR_BACKGROUND,
     PERMISSION_ACCOUNT_NEED_INIT,
     PERMISSION_NO_VERIFICATION_REQUIRED,
+    PERMISSION_RESEND_SUCCESS,
     PERMISSION_VERIFY_SUCCESS,
     SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
@@ -74,10 +75,16 @@ const Verify = () => {
         void r_auth_resend()
             .then((res) => {
                 const response = res.data
-                if (response.success) {
-                    void message.success('已发送验证邮件，请查收')
-                } else {
-                    void message.error('出错了，请稍后重试')
+                switch (response.code) {
+                    case PERMISSION_RESEND_SUCCESS:
+                        void message.success('已发送验证邮件，请查收')
+                        break
+                    case PERMISSION_NO_VERIFICATION_REQUIRED:
+                        void message.warning('账户已验证')
+                        navigate('/')
+                        break
+                    default:
+                        void message.error('出错了，请稍后重试')
                 }
             })
             .finally(() => {
