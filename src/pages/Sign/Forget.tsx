@@ -6,7 +6,6 @@ import {
     PERMISSION_RETRIEVE_CODE_ERROR_OR_EXPIRED,
     PERMISSION_RETRIEVE_SUCCESS,
     PERMISSION_USER_NOT_FOUND,
-    SIZE_ICON_MD,
     SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants'
 import { r_auth_forget, r_auth_retrieve } from '@/services/auth'
@@ -17,33 +16,33 @@ const Forget = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const turnstileRef = useRef<TurnstileInstance>()
-    const turnstileRefCallback = useCallback(
-        (node: TurnstileInstance) => {
-            turnstileRef.current = node
-
-            if (location.pathname === '/forget' && !searchParams.get('code')) {
-                turnstileRef.current?.execute()
-            }
-        },
-        [location.pathname, searchParams]
-    )
     const retrieveTurnstileRef = useRef<TurnstileInstance>()
-    const retrieveTurnstileRefCallback = useCallback(
-        (node: TurnstileInstance) => {
-            retrieveTurnstileRef.current = node
-
-            if (location.pathname === '/forget' && searchParams.get('code')) {
-                retrieveTurnstileRef.current?.execute()
-            }
-        },
-        [location.pathname, searchParams]
-    )
+    const [refreshTime, setRefreshTime] = useState(0)
     const [isSending, setIsSending] = useState(false)
     const [isSent, setIsSent] = useState(false)
     const [isChanging, setIsChanging] = useState(false)
     const [isChanged, setIsChanged] = useState(false)
     const [captchaCode, setCaptchaCode] = useState('')
     const [retrieveCaptchaCode, setRetrieveCaptchaCode] = useState('')
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (window.turnstile) {
+                clearInterval(timer)
+                setRefreshTime(Date.now())
+                if (location.pathname === '/forget' && !searchParams.get('code')) {
+                    setTimeout(() => {
+                        turnstileRef.current?.execute()
+                    }, 500)
+                }
+                if (location.pathname === '/forget' && searchParams.get('code')) {
+                    setTimeout(() => {
+                        retrieveTurnstileRef.current?.execute()
+                    }, 500)
+                }
+            }
+        })
+    }, [location.pathname])
 
     useEffect(() => {
         if (!isSending) {
@@ -161,22 +160,17 @@ const Forget = () => {
                                             />
                                         </AntdForm.Item>
                                         <AntdForm.Item>
-                                            {!turnstileRef.current && (
-                                                <div className={'loading-turnstile'}>
-                                                    <Icon
-                                                        component={IconOxygenLoading}
-                                                        style={{ fontSize: SIZE_ICON_MD }}
-                                                        spin
-                                                    />
-                                                </div>
-                                            )}
                                             <Turnstile
                                                 id={'forget-turnstile'}
-                                                ref={turnstileRefCallback}
+                                                ref={turnstileRef}
                                                 siteKey={H_CAPTCHA_SITE_KEY}
-                                                hidden={!turnstileRef.current}
-                                                options={{ theme: 'light' }}
+                                                options={{
+                                                    theme: 'light',
+                                                    execution: 'execute',
+                                                    appearance: 'execute'
+                                                }}
                                                 onSuccess={setCaptchaCode}
+                                                data-refresh={refreshTime}
                                             />
                                         </AntdForm.Item>
                                         <AntdForm.Item>
@@ -210,6 +204,7 @@ const Forget = () => {
                                         ]}
                                     >
                                         <AntdInput.Password
+                                            id={'forget-password'}
                                             addonBefore={
                                                 <span>新&nbsp;&nbsp;密&nbsp;&nbsp;码</span>
                                             }
@@ -237,28 +232,24 @@ const Forget = () => {
                                         ]}
                                     >
                                         <AntdInput.Password
+                                            id={'forget-password-confirm'}
                                             addonBefore={'确认密码'}
                                             placeholder={'确认密码'}
                                             disabled={isChanging}
                                         />
                                     </AntdForm.Item>
                                     <AntdForm.Item>
-                                        {!turnstileRef.current && (
-                                            <div className={'loading-turnstile'}>
-                                                <Icon
-                                                    component={IconOxygenLoading}
-                                                    style={{ fontSize: SIZE_ICON_MD }}
-                                                    spin
-                                                />
-                                            </div>
-                                        )}
                                         <Turnstile
                                             id={'retrieve-turnstile'}
-                                            ref={retrieveTurnstileRefCallback}
+                                            ref={retrieveTurnstileRef}
                                             siteKey={H_CAPTCHA_SITE_KEY}
-                                            hidden={!turnstileRef.current}
-                                            options={{ theme: 'light' }}
+                                            options={{
+                                                theme: 'light',
+                                                execution: 'execute',
+                                                appearance: 'execute'
+                                            }}
                                             onSuccess={setRetrieveCaptchaCode}
+                                            data-refresh={refreshTime}
                                         />
                                     </AntdForm.Item>
                                     <AntdForm.Item>

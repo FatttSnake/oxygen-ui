@@ -257,7 +257,11 @@ const User = () => {
                                             style={{ marginTop: 10 }}
                                             rules={[{ required: true, len: 6 }]}
                                         >
-                                            <AntdInput showCount maxLength={6} />
+                                            <AntdInput
+                                                showCount
+                                                maxLength={6}
+                                                autoComplete={'off'}
+                                            />
                                         </AntdForm.Item>
                                     </AntdForm>
                                 </>
@@ -336,7 +340,11 @@ const User = () => {
                                                 style={{ marginTop: 10, marginRight: 30 }}
                                                 rules={[{ required: true, len: 6 }]}
                                             >
-                                                <AntdInput showCount maxLength={6} />
+                                                <AntdInput
+                                                    showCount
+                                                    maxLength={6}
+                                                    autoComplete={'off'}
+                                                />
                                             </AntdForm.Item>
                                         </AntdForm>
                                     </>
