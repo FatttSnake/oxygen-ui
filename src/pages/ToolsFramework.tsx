@@ -11,10 +11,15 @@ const ToolsFramework = () => {
                 <div className={'left-panel'}>
                     <Sidebar title={'氧工具'}>
                         <Sidebar.ItemList>
-                            <Sidebar.Item end path={''} icon={tools[0].icon} text={tools[0].name} />
                             <Sidebar.Item
                                 end
-                                path={'store'}
+                                path={'/'}
+                                icon={tools[0].icon}
+                                text={tools[0].name}
+                            />
+                            <Sidebar.Item
+                                end
+                                path={'/store'}
                                 icon={tools[1].icon}
                                 text={tools[1].name}
                             />
