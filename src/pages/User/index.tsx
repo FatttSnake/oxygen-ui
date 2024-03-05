@@ -326,6 +326,10 @@ const User = () => {
                                             alt={'Two-factor'}
                                             preview={false}
                                         />
+                                        <AntdTag style={{ whiteSpace: 'normal' }}>
+                                            请使用身份验证器APP（eg. Microsoft Authenticator, Google
+                                            Authenticator）扫描二维码，并在下方输入显示的动态二维码进行绑定
+                                        </AntdTag>
                                         <AntdForm
                                             form={twoFactorForm}
                                             ref={(ref) => {
