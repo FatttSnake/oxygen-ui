@@ -152,6 +152,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                 navigate(`/edit/${tools[0].toolId}`)
             }
         }
+        return undefined
     }
 
     const handleOnSourceTool = () => {
@@ -160,6 +161,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                 navigate(`/source/!/${selectedTool.toolId}/${selectedTool.ver}`)
             }
         }
+        return undefined
     }
 
     const handleOnPublishTool = () => {
@@ -168,6 +170,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                 onSubmit?.(selectedTool)
             }
         }
+        return undefined
     }
 
     const handleOnCancelReview = () => {
@@ -176,6 +179,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                 onCancel?.(selectedTool)
             }
         }
+        return undefined
     }
 
     const handleOnDeleteTool = () => {
