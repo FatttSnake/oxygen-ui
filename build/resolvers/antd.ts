@@ -417,6 +417,7 @@ export const AntDesignResolver = (options: AntDesignResolverOptions = {}): Compo
                     sideEffects: getSideEffects(importName, options)
                 }
             }
+            return undefined
         }
     }
 }
