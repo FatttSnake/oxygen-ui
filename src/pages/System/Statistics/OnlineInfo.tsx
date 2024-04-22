@@ -11,7 +11,7 @@ const OnlineInfo = () => {
     const onlineInfoEChartsRef = useRef<echarts.EChartsType | null>(null)
     const [isLoading, setIsLoading] = useState(false)
     const [currentOnlineCount, setCurrentOnlineCount] = useState(-1)
-    const [scope, setScope] = useState('WEAK')
+    const [scope, setScope] = useState('WEEK')
 
     useEffect(() => {
         const chartResizeObserver = new ResizeObserver(() => {
@@ -59,13 +59,53 @@ const OnlineInfo = () => {
                         const dataList = getTimesBetweenTwoTimes(
                             data.history[0].time,
                             data.history[data.history.length - 1].time,
-                            'minute'
-                        ).map((time) => [
-                            time,
-                            data.history.find(
-                                (value) => value.time.substring(0, 16) === time.substring(0, 16)
-                            )?.record ?? 0
-                        ])
+                            _scope === 'DAY'
+                                ? 'minute'
+                                : _scope === 'WEEK'
+                                  ? 'minute'
+                                  : _scope === 'MONTH'
+                                    ? 'hour'
+                                    : 'day'
+                        ).map((time) => {
+                            const records = data.history
+                                .filter(
+                                    (value) =>
+                                        value.time.substring(
+                                            0,
+                                            _scope === 'DAY'
+                                                ? 16
+                                                : _scope === 'WEEK'
+                                                  ? 16
+                                                  : _scope === 'MONTH'
+                                                    ? 13
+                                                    : 10
+                                        ) ===
+                                        time.substring(
+                                            0,
+                                            _scope === 'DAY'
+                                                ? 16
+                                                : _scope === 'WEEK'
+                                                  ? 16
+                                                  : _scope === 'MONTH'
+                                                    ? 13
+                                                    : 10
+                                        )
+                                )
+                                .map((item) => Number(item.record))
+                            return [
+                                time.substring(
+                                    0,
+                                    _scope === 'DAY'
+                                        ? 16
+                                        : _scope === 'WEEK'
+                                          ? 16
+                                          : _scope === 'MONTH'
+                                            ? 13
+                                            : 10
+                                ),
+                                records.length ? Math.max(...records) : 0
+                            ]
+                        })
 
                         onlineInfoEChartsRef.current = echarts.init(
                             onlineInfoDivRef.current,
@@ -77,7 +117,15 @@ const OnlineInfo = () => {
                             ...lineEChartsBaseOption,
                             tooltip: {
                                 ...lineEChartsBaseOption.tooltip,
-                                formatter: getTooltipTimeFormatter('yyyy-MM-DD HH:mm')
+                                formatter: getTooltipTimeFormatter(
+                                    _scope === 'DAY'
+                                        ? 'yyyy-MM-DD HH:mm'
+                                        : _scope === 'WEEK'
+                                          ? 'yyyy-MM-DD HH:mm'
+                                          : _scope === 'MONTH'
+                                            ? 'yyyy-MM-DD HH时'
+                                            : 'yyyy-MM-DD'
+                                )
                             },
                             xAxis: {
                                 ...lineEChartsBaseOption.xAxis
@@ -122,7 +170,7 @@ const OnlineInfo = () => {
                         style={{ width: '8em' }}
                     >
                         <AntdSelect.Option key={'DAY'}>最近24小时</AntdSelect.Option>
-                        <AntdSelect.Option key={'WEAK'}>最近7天</AntdSelect.Option>
+                        <AntdSelect.Option key={'WEEK'}>最近7天</AntdSelect.Option>
                         <AntdSelect.Option key={'MONTH'}>最近30天</AntdSelect.Option>
                         <AntdSelect.Option key={'QUARTER'}>最近3个月</AntdSelect.Option>
                         <AntdSelect.Option key={'YEAR'}>最近12个月</AntdSelect.Option>
