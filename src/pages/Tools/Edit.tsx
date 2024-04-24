@@ -24,6 +24,10 @@ import LoadingMask from '@/components/common/LoadingMask'
 import Card from '@/components/common/Card'
 
 const Edit = () => {
+    const blocker = useBlocker(
+        ({ currentLocation, nextLocation }) =>
+            currentLocation.pathname !== nextLocation.pathname && hasEdited
+    )
     const navigate = useNavigate()
     const { toolId } = useParams()
     const [searchParams] = useSearchParams({
@@ -48,6 +52,19 @@ const Edit = () => {
     const [hasEdited, setHasEdited] = useState(false)
     const [categoryData, setCategoryData] = useState<ToolCategoryVo[]>()
     const [loadingCategory, setLoadingCategory] = useState(false)
+
+    useBeforeUnload(
+        useCallback(
+            (event) => {
+                if (hasEdited) {
+                    event.preventDefault()
+                    event.returnValue = ''
+                }
+            },
+            [hasEdited]
+        ),
+        { capture: true }
+    )
 
     const handleOnChangeFileContent = (content: string, fileName: string, files: IFiles) => {
         setHasEdited(true)
@@ -369,7 +386,11 @@ const Edit = () => {
             <AntdForm.Item name={'icon'} hidden>
                 <AntdInput />
             </AntdForm.Item>
-            <AntdForm.Item label={'名称'} name={'name'} rules={[{ required: true }]}>
+            <AntdForm.Item
+                label={'名称'}
+                name={'name'}
+                rules={[{ required: true, whitespace: true }]}
+            >
                 <AntdInput maxLength={20} showCount placeholder={'请输入名称'} />
             </AntdForm.Item>
             <AntdForm.Item label={'简介'} name={'description'}>
@@ -384,18 +405,17 @@ const Edit = () => {
                 label={'关键字'}
                 tooltip={'工具搜索（每个不超过10个字符）'}
                 name={'keywords'}
-                rules={[{ required: true, message: '请输入关键字' }]}
+                rules={[{ required: true, whitespace: true }]}
             >
-                <AntdSelect placeholder={'请输入关键字'} mode={'tags'} maxCount={20} />
+                <AntdSelect mode={'tags'} maxCount={20} placeholder={'请输入关键字'} />
             </AntdForm.Item>
             <AntdForm.Item
                 label={'类别'}
                 tooltip={'工具分类'}
                 name={'categories'}
-                rules={[{ required: true }]}
+                rules={[{ required: true, whitespace: true }]}
             >
                 <AntdSelect
-                    placeholder={'请选择类别'}
                     mode={'multiple'}
                     options={categoryData?.map((value) => ({
                         value: value.id,
@@ -403,6 +423,7 @@ const Edit = () => {
                     }))}
                     loading={loadingCategory}
                     disabled={loadingCategory}
+                    placeholder={'请选择类别'}
                 />
             </AntdForm.Item>
         </AntdForm>
@@ -480,6 +501,20 @@ const Edit = () => {
             >
                 {editForm}
             </AntdDrawer>
+            <AntdModal
+                open={blocker.state === 'blocked'}
+                title={'未保存'}
+                onOk={() => blocker.proceed?.()}
+                onCancel={() => blocker.reset?.()}
+                footer={(_, { OkBtn, CancelBtn }) => (
+                    <>
+                        <OkBtn />
+                        <CancelBtn />
+                    </>
+                )}
+            >
+                离开此页面将丢失所有未保存数据，是否继续？
+            </AntdModal>
         </>
     )
 }
