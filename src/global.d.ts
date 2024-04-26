@@ -604,6 +604,7 @@ interface ToolVo {
     review: 'NONE' | 'PROCESSING' | 'PASS' | 'REJECT'
     createTime: string
     updateTime: string
+    favorite: boolean
 }
 
 interface ToolCreateParam {
@@ -646,4 +647,10 @@ interface ToolManagementPassParam {
 
 interface ToolStoreGetParam extends PageParam {
     searchValue?: string
+}
+
+interface ToolFavoriteAddRemoveParam {
+    username: string
+    toolId: string
+    platform: Platform
 }
