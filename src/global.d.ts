@@ -654,3 +654,11 @@ interface ToolFavoriteAddRemoveParam {
     toolId: string
     platform: Platform
 }
+
+interface ToolMenuItem {
+    icon: string
+    toolName: string
+    toolId: string
+    authorUsername: string
+    ver: string
+}

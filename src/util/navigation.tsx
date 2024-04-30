@@ -117,3 +117,11 @@ export const navigateToUser = (navigate: NavigateFunction, options?: NavigateOpt
 export const navigateToTools = (navigate: NavigateFunction, options?: NavigateOptions) => {
     navigate('/system/tools', options)
 }
+
+export const getViewPath = (
+    username: string,
+    toolId: string,
+    platform: Platform,
+    version?: string
+) =>
+    `/view/${username}/${toolId}${version ? `/${version}` : ''}${platform !== import.meta.env.VITE_PLATFORM ? `?platform=${platform}` : ''}`
