@@ -66,7 +66,7 @@ class Compiler {
         })
 
     stop = () => {
-        esbuild.stop()
+        void esbuild.stop()
     }
 
     private fileResolverPlugin = (
