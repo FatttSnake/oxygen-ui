@@ -5,7 +5,7 @@ import {
     r_sys_settings_mail_send,
     r_sys_settings_mail_update
 } from '@/services/system'
-import { SettingsCard } from '@/pages/System/Settings'
+import SettingsCard from '@/components/system/SettingCard'
 
 const Mail = () => {
     const [modal, contextHolder] = AntdModal.useModal()
@@ -16,9 +16,9 @@ const Mail = () => {
 
     const handleOnTest = () => {
         void modal.confirm({
-            title: '发送测试邮件',
             centered: true,
             maskClosable: true,
+            title: '发送测试邮件',
             footer: (_, { OkBtn, CancelBtn }) => (
                 <>
                     <OkBtn />

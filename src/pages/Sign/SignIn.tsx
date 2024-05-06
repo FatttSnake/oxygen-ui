@@ -12,6 +12,12 @@ import {
 } from '@/constants/common.constants'
 import { getUserInfo, setToken } from '@/util/auth'
 import { utcToLocalTime } from '@/util/datetime'
+import {
+    navigateToForget,
+    navigateToRedirect,
+    navigateToRegister,
+    navigateToRoot
+} from '@/util/navigation'
 import { r_auth_login } from '@/services/auth'
 import { AppContext } from '@/App'
 import FitCenter from '@/components/common/FitCenter'
@@ -78,11 +84,7 @@ const SignIn = () => {
                         setTimeout(() => {
                             void getUserInfo().then((user) => {
                                 refreshRouter()
-                                if (searchParams.has('redirect')) {
-                                    navigate(searchParams.get('redirect') ?? '/')
-                                } else {
-                                    navigate('/')
-                                }
+                                navigateToRedirect(navigate, searchParams, '/repository')
 
                                 notification.success({
                                     message: '欢迎回来',
@@ -110,8 +112,8 @@ const SignIn = () => {
                     case PERMISSION_NEED_TWO_FACTOR:
                         twoFactorForm.resetFields()
                         void modal.confirm({
-                            title: '双因素验证',
                             centered: true,
+                            title: '双因素验证',
                             footer: (_, { OkBtn, CancelBtn }) => (
                                 <>
                                     <OkBtn />
@@ -259,14 +261,14 @@ const SignIn = () => {
                         <FlexBox direction={'horizontal'} className={'addition'}>
                             <a
                                 onClick={() => {
-                                    navigate('/')
+                                    navigateToRoot(navigate)
                                 }}
                             >
-                                返回首页
+                                返回主页
                             </a>
                             <a
                                 onClick={() => {
-                                    navigate(`/forget${location.search}`, { replace: true })
+                                    navigateToForget(navigate, location.search, { replace: true })
                                 }}
                             >
                                 忘记密码？
@@ -287,7 +289,7 @@ const SignIn = () => {
                             还没有账号？
                             <a
                                 onClick={() =>
-                                    navigate(`/register${location.search}`, { replace: true })
+                                    navigateToRegister(navigate, location.search, { replace: true })
                                 }
                             >
                                 注册

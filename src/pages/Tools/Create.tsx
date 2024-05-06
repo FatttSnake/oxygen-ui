@@ -5,6 +5,7 @@ import {
     DATABASE_INSERT_SUCCESS,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
+import { navigateToEdit } from '@/util/navigation'
 import {
     r_tool_category_get,
     r_tool_create,
@@ -44,9 +45,7 @@ const Create = () => {
                         void message.success(
                             `创建工具 ${response.data!.name}<${response.data!.toolId}:${response.data!.platform.slice(0, 1)}${response.data!.platform.slice(1).toLowerCase()}:${response.data!.ver}> 成功`
                         )
-                        navigate(
-                            `/edit/${response.data!.toolId}${response.data!.platform !== import.meta.env.VITE_PLATFORM ? `?platform=${response.data!.platform}` : ''}`
-                        )
+                        navigateToEdit(navigate, response.data!.toolId, response.data!.platform)
                         break
                     case DATABASE_DUPLICATE_KEY:
                         void message.warning('已存在相同 ID 的应用')
@@ -330,7 +329,7 @@ const Create = () => {
                                         label={'关键字'}
                                         tooltip={'工具搜索（每个不超过10个字符）'}
                                         name={'keywords'}
-                                        rules={[{ required: true, whitespace: true }]}
+                                        rules={[{ required: true }]}
                                     >
                                         <AntdSelect
                                             mode={'tags'}
@@ -342,7 +341,7 @@ const Create = () => {
                                         label={'类别'}
                                         tooltip={'工具分类'}
                                         name={'categories'}
-                                        rules={[{ required: true, whitespace: true }]}
+                                        rules={[{ required: true }]}
                                     >
                                         <AntdSelect
                                             mode={'multiple'}

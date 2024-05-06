@@ -27,6 +27,7 @@
       font-size: constants.$SIZE_ICON_SM;
       border-radius: 8px;
       cursor: pointer;
+
       span {
         transform: rotateZ(180deg);
         transition: all .3s;
@@ -55,16 +56,18 @@
     .scroll {
       min-height: 0;
       flex: 1;
+      width: 100%;
     }
 
     ul {
-      > li {
+      > li, > div > li {
+        padding: 2px 14px;
+
         &.item {
           position: relative;
-          margin: 4px 14px;
-          font-size: 1.4em;
+          font-size: 1rem;
 
-          >.menu-bt {
+          > .menu-bt {
             border-radius: 8px;
             overflow: hidden;
             height: 40px;
@@ -78,6 +81,10 @@
               height: 40px;
               font-size: constants.$SIZE_ICON_SM;
               cursor: pointer;
+
+              img {
+                width: 100%;
+              }
             }
 
             a {
@@ -86,15 +93,24 @@
               height: 100%;
               width: 100%;
               transition: all 0.2s;
+              background-color: constants.$origin-color;
 
               .text {
                 flex: 1;
                 padding-left: 8px;
+                width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
               }
 
               &.active {
                 color: constants.$origin-color;
-                background-color: constants.$main-color !important;
+                background-color: constants.$main-color;
+
+                img {
+                  filter: drop-shadow(1000px 0 0 constants.$origin-color);
+                  transform: translate(-1000px);
+                }
               }
             }
           }
@@ -102,7 +118,7 @@
           .submenu {
             visibility: hidden;
             position: fixed;
-            padding-left: 20px;
+            padding-left: 10px;
             z-index: 10000;
             animation: 0.1s ease forwards;
             @include mixins.unique-keyframes {
@@ -123,11 +139,13 @@
               padding: 10px 10px;
               background-color: constants.$origin-color;
               border-radius: 8px;
+              box-shadow: 2px 2px 10px 0 rgba(0,0,0,0.1);
 
               .item {
                 border-radius: 8px;
                 white-space: nowrap;
                 overflow: hidden;
+                padding: 0;
 
                 a {
                   display: block;
@@ -136,11 +154,11 @@
 
                   &.active {
                     color: constants.$origin-color;
-                    background-color: constants.$main-color !important;
+                    background-color: constants.$main-color;
                   }
                 }
 
-                &:hover a {
+                &:hover a:not(.active) {
                   background-color: constants.$background-color;
                 }
               }
@@ -148,8 +166,8 @@
           }
 
           &:hover {
-            >.menu-bt {
-              a {
+            > .menu-bt {
+              a:not(.active) {
                 background-color: constants.$background-color;
               }
             }
@@ -168,6 +186,22 @@
                 }
               }
             }
+          }
+        }
+      }
+
+      .delete {
+        .menu-bt {
+          border: {
+            width: 1px;
+            color: constants.$error-secondary-color;
+            style: dashed;
+          };
+          filter: drop-shadow(1000px 0 0 constants.$error-secondary-color);
+          transform: translate(-1000px);
+
+          > a {
+            background-color: transparent !important;
           }
         }
       }
@@ -222,7 +256,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
 
-      a{
+      a {
         color: constants.$main-color;
         text-decoration: underline;
       }
@@ -251,13 +285,14 @@
           transition: all .3s;
         }
       }
+
       .text {
         display: none;
       }
     }
 
     .menu-bt {
-      .text {
+      .text, .extend {
         display: none;
       }
     }
@@ -272,6 +307,7 @@
 
     .footer {
       position: relative;
+
       .text {
         display: none;
       }
@@ -282,7 +318,7 @@
         padding-left: 6px;
         left: 100%;
         z-index: 1000;
-        box-shadow: 5px 5px 15px 0 rgba(0,0,0,0.1);
+        box-shadow: 5px 5px 15px 0 rgba(0, 0, 0, 0.1);
 
         .content {
           padding: 8px;
@@ -291,6 +327,7 @@
 
           .icon-exit {
             padding: 4px 8px;
+
             &:hover {
               border-radius: 8px;
               background-color: constants.$background-color;
@@ -299,7 +336,7 @@
         }
 
         &.hide {
-          display: none!important;
+          display: none !important;
         }
       }
 

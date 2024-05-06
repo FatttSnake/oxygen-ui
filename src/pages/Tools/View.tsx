@@ -1,6 +1,7 @@
 import '@/assets/css/pages/tools/view.scss'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
 import { getLoginStatus } from '@/util/auth'
+import { navigateToRepository, navigateToRoot, navigateToView } from '@/util/navigation'
 import { r_tool_detail } from '@/services/tool'
 import compiler from '@/components/Playground/compiler'
 import { IImportMap } from '@/components/Playground/shared'
@@ -31,7 +32,10 @@ const View = () => {
                     .compile(files, importMap, toolVo.entryPoint)
                     .then((result) => {
                         const output = result.outputFiles[0].text
-                        setCompiledCode(`${output}\n${baseDist}`)
+                        setCompiledCode('')
+                        setTimeout(() => {
+                            setCompiledCode(`${output}\n${baseDist}`)
+                        }, 100)
                     })
                     .catch((reason) => {
                         void message.error(`编译失败：${reason}`)
@@ -43,7 +47,10 @@ const View = () => {
             try {
                 const baseDist = base64ToStr(toolVo.base.dist.data!)
                 const dist = base64ToStr(toolVo.dist.data!)
-                setCompiledCode(`${dist}\n${baseDist}`)
+                setCompiledCode('')
+                setTimeout(() => {
+                    setCompiledCode(`${dist}\n${baseDist}`)
+                }, 100)
             } catch (e) {
                 void message.error('载入工具失败')
             }
@@ -71,9 +78,7 @@ const View = () => {
                         break
                     case DATABASE_NO_RECORD_FOUND:
                         void message.error('未找到指定工具')
-                        setTimeout(() => {
-                            navigate('/')
-                        }, 3000)
+                        navigateToRepository(navigate)
                         break
                     default:
                         void message.error('获取工具信息失败，请稍后重试')
@@ -86,26 +91,26 @@ const View = () => {
     }
 
     useEffect(() => {
+        const platform = searchParams.get('platform')!
+        if (!['WEB', 'DESKTOP', 'ANDROID'].includes(platform)) {
+            navigateToRepository(navigate)
+            return
+        }
         if (username === '!' && !getLoginStatus()) {
-            setTimeout(() => {
-                navigate('/')
-            }, 3000)
+            void message.error('未登录')
+            navigateToRoot(navigate)
             return
         }
         if (username !== '!' && ver) {
-            navigate(`/view/${username}/${toolId}`)
+            navigateToView(navigate, username!, toolId!, platform as Platform)
             return
         }
         if (username === '!' && !ver) {
-            navigate(`/view/!/${toolId}/latest`)
-            return
-        }
-        if (!['WEB', 'DESKTOP', 'ANDROID'].includes(searchParams.get('platform')!)) {
-            navigate('/')
+            navigateToView(navigate, '!', toolId!, platform as Platform, 'latest')
             return
         }
         getTool()
-    }, [])
+    }, [username, toolId, ver, searchParams])
 
     return (
         <FitFullscreen data-component={'tools-view'}>

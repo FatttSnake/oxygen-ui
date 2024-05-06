@@ -1,12 +1,13 @@
 import '@/assets/css/pages/tools/source.scss'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { getLoginStatus } from '@/util/auth'
+import { navigateToRepository, navigateToSource } from '@/util/navigation'
 import { r_tool_detail } from '@/services/tool'
 import { IFiles } from '@/components/Playground/shared'
 import { base64ToFiles } from '@/components/Playground/files'
 import Playground from '@/components/Playground'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
-import { getLoginStatus } from '@/util/auth'
 
 const Source = () => {
     const navigate = useNavigate()
@@ -48,9 +49,7 @@ const Source = () => {
                         break
                     case DATABASE_NO_RECORD_FOUND:
                         void message.error('未找到指定工具')
-                        setTimeout(() => {
-                            navigate('/')
-                        }, 3000)
+                        navigateToRepository(navigate)
                         break
                     default:
                         void message.error('获取工具信息失败，请稍后重试')
@@ -63,26 +62,25 @@ const Source = () => {
     }
 
     useEffect(() => {
+        const platform = searchParams.get('platform')!
+        if (!['WEB', 'DESKTOP', 'ANDROID'].includes(platform)) {
+            navigateToRepository(navigate)
+            return
+        }
         if (username === '!' && !getLoginStatus()) {
-            setTimeout(() => {
-                navigate('/')
-            }, 3000)
+            navigateToRepository(navigate)
             return
         }
         if (username !== '!' && ver) {
-            navigate(`/source/${username}/${toolId}`)
+            navigateToSource(navigate, username!, toolId!, platform as Platform)
             return
         }
         if (username === '!' && !ver) {
-            navigate(`/source/!/${toolId}/latest`)
-            return
-        }
-        if (!['WEB', 'DESKTOP', 'ANDROID'].includes(searchParams.get('platform')!)) {
-            navigate('/')
+            navigateToSource(navigate, '!', toolId!, platform as Platform, 'latest')
             return
         }
         getTool()
-    }, [])
+    }, [username, toolId, ver, searchParams])
 
     return (
         <FitFullscreen data-component={'tools-source'}>

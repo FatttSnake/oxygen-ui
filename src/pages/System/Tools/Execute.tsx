@@ -1,5 +1,6 @@
 import '@/assets/css/pages/system/tools/execute.scss'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { navigateToTools } from '@/util/navigation'
 import { r_sys_tool_get_one } from '@/services/system'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
@@ -24,7 +25,10 @@ const Execute = () => {
                 .compile(files, importMap, toolVo.entryPoint)
                 .then((result) => {
                     const output = result.outputFiles[0].text
-                    setCompiledCode(`${output}\n${baseDist}`)
+                    setCompiledCode('')
+                    setTimeout(() => {
+                        setCompiledCode(`${output}\n${baseDist}`)
+                    }, 100)
                 })
                 .catch((reason) => {
                     void message.error(`编译失败：${reason}`)
@@ -50,9 +54,7 @@ const Execute = () => {
                         break
                     case DATABASE_NO_RECORD_FOUND:
                         void message.error('未找到指定工具')
-                        setTimeout(() => {
-                            navigate('/')
-                        }, 3000)
+                        navigateToTools(navigate)
                         break
                     default:
                         void message.error('获取工具信息失败，请稍后重试')
@@ -66,7 +68,7 @@ const Execute = () => {
 
     useEffect(() => {
         getTool()
-    }, [])
+    }, [id])
 
     return (
         <FitFullscreen data-component={'system-tools-execute'}>

@@ -7,7 +7,7 @@ import {
     SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
 import { getLoginStatus, getUserInfo, requestUserInfo } from '@/util/auth'
-import { getRedirectUrl } from '@/util/route'
+import { navigateToLogin, navigateToRedirect, navigateToRepository } from '@/util/navigation'
 import { r_auth_resend, r_auth_verify } from '@/services/auth'
 import { r_api_avatar_random_base64 } from '@/services/api/avatar'
 import { AppContext } from '@/App'
@@ -32,7 +32,7 @@ const Verify = () => {
         }
 
         if (!getLoginStatus()) {
-            navigate(getRedirectUrl('/login', `${location.pathname}${location.search}`), {
+            navigateToLogin(navigate, location.search, undefined, {
                 replace: true
             })
             return
@@ -81,7 +81,7 @@ const Verify = () => {
                         break
                     case PERMISSION_NO_VERIFICATION_REQUIRED:
                         void message.warning('账户已验证')
-                        navigate('/')
+                        navigateToRepository(navigate)
                         break
                     default:
                         void message.error('出错了，请稍后重试')
@@ -128,11 +128,7 @@ const Verify = () => {
                     setTimeout(() => {
                         void requestUserInfo().then(() => {
                             refreshRouter()
-                            if (searchParams.has('redirect')) {
-                                navigate(searchParams.get('redirect') ?? '/')
-                            } else {
-                                navigate('/')
-                            }
+                            navigateToRedirect(navigate, searchParams, '/repository')
                         })
                     }, 1500)
                     break

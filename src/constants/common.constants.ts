@@ -1,6 +1,7 @@
 export const PRODUCTION_NAME = 'Oxygen Toolbox'
 export const STORAGE_TOKEN_KEY = 'JWT_TOKEN'
 export const STORAGE_USER_INFO_KEY = 'USER_INFO'
+export const STORAGE_TOOL_MENU_ITEM_KEY = 'TOOL_MENU_ITEM'
 export const COLOR_ORIGIN = 'white'
 export const COLOR_PRODUCTION = '#4E47BB'
 export const COLOR_MAIN = COLOR_PRODUCTION
@@ -77,6 +78,7 @@ export const DATABASE_DELETE_FILED = 30035
 export const DATABASE_EXECUTE_ERROR = 30050
 export const DATABASE_DUPLICATE_KEY = 30051
 export const DATABASE_NO_RECORD_FOUND = 30052
+export const DATABASE_RECORD_ALREADY_EXISTS = 30053
 
 export const TOOL_SUBMIT_SUCCESS = 40010
 export const TOOL_CANCEL_SUCCESS = 40011

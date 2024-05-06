@@ -3,10 +3,11 @@ import Icon from '@ant-design/icons'
 import Submenu from '@/components/common/Sidebar/Submenu'
 
 type ItemProps = {
-    icon?: IconComponent
+    icon?: IconComponent | string
     text?: string
     path: string
     children?: ReactNode
+    extend?: ReactNode
     end?: boolean
 }
 
@@ -41,10 +42,21 @@ const Item = (props: ItemProps) => {
                         isPending ? 'pending' : isActive ? 'active' : ''
                     }
                 >
-                    <div className={'icon-box'}>
-                        {props.icon && <Icon className={'icon'} component={props.icon} />}
-                    </div>
+                    {props.icon && (
+                        <div className={'icon-box'}>
+                            {typeof props.icon === 'string' ? (
+                                <img
+                                    className={'icon'}
+                                    src={`data:image/svg+xml;base64,${props.icon}`}
+                                    alt={'icon'}
+                                />
+                            ) : (
+                                <Icon className={'icon'} component={props.icon} />
+                            )}
+                        </div>
+                    )}
                     <span className={'text'}>{props.text}</span>
+                    <div className={'extend'}>{props.extend}</div>
                 </NavLink>
             </div>
             {props.children && (

@@ -1,6 +1,4 @@
-import { DetailedHTMLProps, HTMLAttributes, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
-import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import '@/assets/css/pages/tools/index.scss'
 import {
     DATABASE_DELETE_SUCCESS,
@@ -16,116 +14,22 @@ import {
 } from '@/constants/common.constants'
 import { checkDesktop } from '@/util/common'
 import { getLoginStatus } from '@/util/auth'
+import { navigateToEdit, navigateToSource, navigateToView } from '@/util/navigation'
 import {
     r_tool_cancel,
     r_tool_delete,
     r_tool_get,
+    r_tool_get_favorite,
     r_tool_submit,
     r_tool_upgrade
 } from '@/services/tool'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
-import Card from '@/components/common/Card'
-
-interface CommonCardProps
-    extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-    icon: ReactNode
-    toolName?: string
-    toolId?: string
-    options?: TiltOptions
-    url?: string
-    onOpen?: () => void
-    onEdit?: () => void
-    onSource?: () => void
-    onPublish?: () => void
-    onCancelReview?: () => void
-    onDelete?: () => void
-}
-
-const CommonCard = ({
-    style,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ref,
-    icon,
-    toolName,
-    toolId,
-    options = {
-        reverse: true,
-        max: 8,
-        glare: true,
-        ['max-glare']: 0.3,
-        scale: 1.03
-    },
-    url,
-    onOpen,
-    onEdit,
-    onSource,
-    onPublish,
-    onCancelReview,
-    onDelete,
-    children,
-    ...props
-}: CommonCardProps) => {
-    const navigate = useNavigate()
-    const cardRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        cardRef.current && VanillaTilt.init(cardRef.current, options)
-    }, [options])
-
-    const handleCardOnClick = () => {
-        url && navigate(url)
-    }
-
-    return (
-        <Card
-            style={{ overflow: 'visible', ...style }}
-            ref={cardRef}
-            {...props}
-            onClick={handleCardOnClick}
-        >
-            <FlexBox className={'common-card'}>
-                <div className={'icon'}>{icon}</div>
-                <div className={'info'}>
-                    {toolName && <div className={'tool-name'}>{toolName}</div>}
-                    {toolId && <div className={'tool-id'}>{`ID: ${toolId}`}</div>}
-                </div>
-                <div className={'operation'}>
-                    {onOpen && (
-                        <AntdButton onClick={onOpen} size={'small'} type={'primary'}>
-                            打开
-                        </AntdButton>
-                    )}
-                    {onEdit && onPublish && (
-                        <div className={'edit'}>
-                            <AntdButton.Group size={'small'}>
-                                <AntdButton onClick={onEdit}>编辑</AntdButton>
-                                <AntdButton onClick={onPublish}>发布</AntdButton>
-                            </AntdButton.Group>
-                        </div>
-                    )}
-                    {onSource && (
-                        <AntdButton size={'small'} onClick={onSource}>
-                            源码
-                        </AntdButton>
-                    )}
-                    {onCancelReview && (
-                        <AntdButton size={'small'} onClick={onCancelReview}>
-                            取消审核
-                        </AntdButton>
-                    )}
-                    {onDelete && (
-                        <AntdButton size={'small'} danger onClick={onDelete}>
-                            删除
-                        </AntdButton>
-                    )}
-                </div>
-                {children}
-            </FlexBox>
-        </Card>
-    )
-}
+import RepositoryCard from '@/components/tools/RepositoryCard'
+import LoadMoreCard from '@/components/tools/LoadMoreCard'
+import StoreCard from '@/components/tools/StoreCard'
+import UrlCard from '@/components/common/UrlCard'
 
 interface ToolCardProps {
     tools: ToolVo[]
@@ -145,8 +49,12 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
 
     const handleOnOpenTool = () => {
         if (checkDesktop() || selectedTool.platform !== 'DESKTOP') {
-            navigate(
-                `/view/!/${selectedTool.toolId}/${selectedTool.ver}${selectedTool.platform !== import.meta.env.VITE_PLATFORM ? `?platform=${selectedTool.platform}` : ''}`
+            navigateToView(
+                navigate,
+                '!',
+                selectedTool.toolId,
+                selectedTool.platform,
+                selectedTool.ver
             )
         } else {
             void message.warning('此应用需要桌面端环境，请在桌面端打开')
@@ -157,9 +65,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
         if (['NONE', 'REJECT'].includes(selectedTool.review)) {
             return () => {
                 if (checkDesktop() || selectedTool.platform !== 'DESKTOP') {
-                    navigate(
-                        `/edit/${selectedTool.toolId}${selectedTool.platform !== import.meta.env.VITE_PLATFORM ? `?platform=${selectedTool.platform}` : ''}`
-                    )
+                    navigateToEdit(navigate, selectedTool.toolId, selectedTool.platform)
                 } else {
                     void message.warning('此应用需要桌面端环境，请在桌面端编辑')
                 }
@@ -171,8 +77,12 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
     const handleOnSourceTool = () => {
         if (selectedTool.review === 'PASS') {
             return () => {
-                navigate(
-                    `/source/!/${selectedTool.toolId}/${selectedTool.ver}${selectedTool.platform !== import.meta.env.VITE_PLATFORM ? `?platform=${selectedTool.platform}` : ''}`
+                navigateToSource(
+                    navigate,
+                    '!',
+                    selectedTool.toolId,
+                    selectedTool.platform,
+                    selectedTool.ver
                 )
             }
         }
@@ -255,10 +165,12 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
     }
 
     return (
-        <CommonCard
-            icon={<img src={`data:image/svg+xml;base64,${selectedTool.icon}`} alt={'Icon'} />}
+        <RepositoryCard
+            icon={selectedTool.icon}
             toolName={selectedTool.name}
             toolId={selectedTool.toolId}
+            ver={selectedTool.ver}
+            platform={selectedTool.platform}
             onOpen={handleOnOpenTool}
             onEdit={handleOnEditTool()}
             onSource={handleOnSourceTool()}
@@ -289,7 +201,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                     />
                 </AntdTooltip>
             )}
-        </CommonCard>
+        </RepositoryCard>
     )
 }
 
@@ -297,14 +209,20 @@ const Tools = () => {
     const navigate = useNavigate()
     const [modal, contextHolder] = AntdModal.useModal()
     const [loading, setLoading] = useState(false)
-    const [toolData, setToolData] = useState<ToolVo[]>()
+    const [currentPage, setCurrentPage] = useState(0)
+    const [hasNextPage, setHasNextPage] = useState(false)
+    const [toolData, setToolData] = useState<ToolVo[]>([])
     const [upgradeForm] = AntdForm.useForm<ToolUpgradeParam>()
+    const [currentStarPage, setCurrentStarPage] = useState(0)
+    const [hasNextStarPage, setHasNextStarPage] = useState(false)
+    const [starToolData, setStarToolData] = useState<ToolVo[]>([])
 
     const handleOnDeleteTool = (tool: ToolVo) => {
         modal
             .confirm({
-                title: '删除',
+                centered: true,
                 maskClosable: true,
+                title: '删除',
                 content: `确定删除工具 ${tool.toolId}:${tool.platform.slice(0, 1)}${tool.platform.slice(1).toLowerCase()}:${tool.ver} 吗？`
             })
             .then(
@@ -317,7 +235,7 @@ const Tools = () => {
                                 const response = res.data
                                 if (response.code === DATABASE_DELETE_SUCCESS) {
                                     void message.success('删除成功')
-                                    getTool()
+                                    getTool(1)
                                 } else {
                                     void message.error('删除失败，请稍后重试')
                                 }
@@ -333,9 +251,9 @@ const Tools = () => {
 
     const handleOnUpgradeTool = (tool: ToolVo) => {
         void modal.confirm({
-            title: '更新工具',
             centered: true,
             maskClosable: true,
+            title: '更新工具',
             footer: (_, { OkBtn, CancelBtn }) => (
                 <>
                     <OkBtn />
@@ -406,8 +324,10 @@ const Tools = () => {
                                             checkDesktop() ||
                                             response.data!.platform !== 'DESKTOP'
                                         ) {
-                                            navigate(
-                                                `/edit/${response.data!.toolId}${response.data!.platform !== import.meta.env.VITE_PLATFORM ? `?platform=${response.data!.platform}` : ''}`
+                                            navigateToEdit(
+                                                navigate,
+                                                response.data!.toolId,
+                                                response.data!.platform
                                             )
                                         }
                                         resolve()
@@ -443,8 +363,9 @@ const Tools = () => {
     const handleOnSubmitTool = (tool: ToolVo) => {
         modal
             .confirm({
-                title: '提交审核',
+                centered: true,
                 maskClosable: true,
+                title: '提交审核',
                 content: `确定提交审核工具 ${tool.name}:${tool.ver} 吗？`
             })
             .then(
@@ -458,7 +379,7 @@ const Tools = () => {
                                 switch (response.code) {
                                     case TOOL_SUBMIT_SUCCESS:
                                         void message.success('提交审核成功')
-                                        getTool()
+                                        getTool(1)
                                         break
                                     case TOOL_UNDER_REVIEW:
                                         void message.warning('工具审核中，请勿重复提交')
@@ -482,8 +403,9 @@ const Tools = () => {
     const handleOnCancelTool = (tool: ToolVo) => {
         modal
             .confirm({
-                title: '取消审核',
+                centered: true,
                 maskClosable: true,
+                title: '取消审核',
                 content: `确定取消审核工具 ${tool.name}:${tool.ver} 吗？`
             })
             .then(
@@ -510,7 +432,7 @@ const Tools = () => {
                             })
                             .finally(() => {
                                 setLoading(false)
-                                getTool()
+                                getTool(1)
                             })
                     }
                 },
@@ -518,23 +440,91 @@ const Tools = () => {
             )
     }
 
-    const getTool = () => {
+    const handleOnLoadMore = () => {
+        if (loading) {
+            return
+        }
+        getTool(currentPage + 1)
+    }
+
+    const handleOnLoadMoreStar = () => {
+        if (loading) {
+            return
+        }
+        getStarTool(currentStarPage + 1)
+    }
+
+    const getTool = (page: number) => {
         if (loading) {
             return
         }
         setLoading(true)
         void message.loading({ content: '加载工具列表中', key: 'LOADING', duration: 0 })
 
-        void r_tool_get()
+        void r_tool_get({ currentPage: page })
             .then((res) => {
                 const response = res.data
 
                 switch (response.code) {
                     case DATABASE_SELECT_SUCCESS:
-                        setToolData(response.data!)
+                        setCurrentPage(response.data!.current)
+                        if (
+                            response.data!.current === response.data!.pages ||
+                            response.data!.total === 0
+                        ) {
+                            setHasNextPage(false)
+                        } else {
+                            setHasNextPage(true)
+                        }
+                        if (response.data!.current === 1) {
+                            setToolData(response.data!.records)
+                        } else {
+                            setToolData([...toolData, ...response.data!.records])
+                        }
                         break
                     default:
                         void message.error('获取工具失败，请稍后重试')
+                }
+            })
+            .finally(() => {
+                setLoading(false)
+                message.destroy('LOADING')
+                if (currentStarPage === 0) {
+                    getStarTool(1)
+                }
+            })
+    }
+
+    const getStarTool = (page: number) => {
+        if (loading) {
+            return
+        }
+        setLoading(true)
+        void message.loading({ content: '加载收藏列表中', key: 'LOADING', duration: 0 })
+
+        void r_tool_get_favorite({ currentPage: page })
+            .then((res) => {
+                const response = res.data
+
+                switch (response.code) {
+                    case DATABASE_SELECT_SUCCESS:
+                        setCurrentStarPage(response.data!.current)
+                        if (
+                            response.data!.current === response.data!.pages ||
+                            response.data!.total === 0
+                        ) {
+                            setHasNextStarPage(false)
+                        } else {
+                            setHasNextStarPage(true)
+                        }
+                        if (response.data!.current === 1) {
+                            setStarToolData(response.data!.records)
+                        } else {
+                            setStarToolData([...starToolData, ...response.data!.records])
+                        }
+                        break
+                    default:
+                        void message.error('加载失败，请稍后重试')
                 }
             })
             .finally(() => {
@@ -547,36 +537,102 @@ const Tools = () => {
         if (!getLoginStatus()) {
             return
         }
-        getTool()
+        getTool(1)
     }, [])
 
     return (
         <>
             <FitFullscreen data-component={'tools'}>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
-                    <FlexBox direction={'horizontal'} className={'root-content'}>
-                        <CommonCard
-                            icon={<Icon component={IconOxygenNewProject} />}
-                            toolName={'创建工具'}
-                            url={'/create'}
-                        />
-                        {toolData &&
-                            Object.values(
-                                toolData.reduce((result: Record<string, ToolVo[]>, item) => {
-                                    result[item.toolId] = result[item.toolId] || []
-                                    result[item.toolId].push(item)
-                                    return result
-                                }, {})
-                            ).map((value) => (
-                                <ToolCard
-                                    key={JSON.stringify(value)}
-                                    tools={value}
-                                    onDelete={handleOnDeleteTool}
-                                    onUpgrade={handleOnUpgradeTool}
-                                    onSubmit={handleOnSubmitTool}
-                                    onCancel={handleOnCancelTool}
-                                />
-                            ))}
+                    <FlexBox direction={'vertical'} className={'root-content'}>
+                        <FlexBox direction={'horizontal'} className={'own-content'}>
+                            <UrlCard icon={IconOxygenNewProject} url={'/create'}>
+                                创建工具
+                            </UrlCard>
+                            {toolData &&
+                                Object.values(
+                                    toolData.reduce((result: Record<string, ToolVo[]>, item) => {
+                                        result[item.toolId] = result[item.toolId] || []
+                                        result[item.toolId].push(item)
+                                        return result
+                                    }, {})
+                                ).map((value) => (
+                                    <ToolCard
+                                        key={JSON.stringify(value)}
+                                        tools={value}
+                                        onDelete={handleOnDeleteTool}
+                                        onUpgrade={handleOnUpgradeTool}
+                                        onSubmit={handleOnSubmitTool}
+                                        onCancel={handleOnCancelTool}
+                                    />
+                                ))}
+                            {hasNextPage && <LoadMoreCard onClick={handleOnLoadMore} />}
+                        </FlexBox>
+                        {starToolData.length ? (
+                            <>
+                                <FlexBox className={'favorite-divider'}>
+                                    <div />
+                                    <div className={'divider-text'}>收藏</div>
+                                    <div />
+                                </FlexBox>
+                                <FlexBox direction={'horizontal'} className={'star-content'}>
+                                    {starToolData
+                                        ?.reduce((previousValue: ToolVo[], currentValue) => {
+                                            if (
+                                                !previousValue.some(
+                                                    (value) =>
+                                                        value.author.id ===
+                                                            currentValue.author.id &&
+                                                        value.toolId === currentValue.toolId
+                                                )
+                                            ) {
+                                                previousValue.push(currentValue)
+                                            }
+                                            return previousValue
+                                        }, [])
+                                        .map((item) => {
+                                            const tools = starToolData.filter(
+                                                (value) =>
+                                                    value.author.id === item.author.id &&
+                                                    value.toolId === item.toolId
+                                            )
+                                            const webTool = tools.find(
+                                                (value) => value.platform === 'WEB'
+                                            )
+                                            const desktopTool = tools.find(
+                                                (value) => value.platform === 'DESKTOP'
+                                            )
+                                            const androidTool = tools.find(
+                                                (value) => value.platform === 'ANDROID'
+                                            )
+                                            const firstTool =
+                                                (checkDesktop()
+                                                    ? desktopTool || webTool
+                                                    : webTool || desktopTool) || androidTool
+
+                                            return (
+                                                <StoreCard
+                                                    key={firstTool!.id}
+                                                    icon={firstTool!.icon}
+                                                    toolName={firstTool!.name}
+                                                    toolId={firstTool!.toolId}
+                                                    toolDesc={firstTool!.description}
+                                                    author={firstTool!.author}
+                                                    ver={firstTool!.ver}
+                                                    platform={firstTool!.platform}
+                                                    supportPlatform={tools.map(
+                                                        (value) => value.platform
+                                                    )}
+                                                    favorite={firstTool!.favorite}
+                                                />
+                                            )
+                                        })}
+                                    {hasNextStarPage && (
+                                        <LoadMoreCard onClick={handleOnLoadMoreStar} />
+                                    )}
+                                </FlexBox>
+                            </>
+                        ) : undefined}
                     </FlexBox>
                 </HideScrollbar>
             </FitFullscreen>
