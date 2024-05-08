@@ -37,10 +37,15 @@ export const navigateToView = (
     version?: string,
     options?: NavigateOptions
 ) => {
-    navigate(
-        `/view/${username}/${toolId}${version ? `/${version}` : ''}${platform !== import.meta.env.VITE_PLATFORM ? `?platform=${platform}` : ''}`,
-        options
+    const url = new URL(
+        `/view/${username}/${toolId}${version ? `/${version}` : ''}`,
+        window.location.href
     )
+    if (platform !== import.meta.env.VITE_PLATFORM) {
+        url.searchParams.append('platform', platform)
+    }
+
+    navigate(`${url.pathname}${url.search}`, options)
 }
 
 export const navigateToSource = (
@@ -51,10 +56,14 @@ export const navigateToSource = (
     version?: string,
     options?: NavigateOptions
 ) => {
-    navigate(
-        `/source/${username}/${toolId}${version ? `/${version}` : ''}${platform !== import.meta.env.VITE_PLATFORM ? `?platform=${platform}` : ''}`,
-        options
+    const url = new URL(
+        `/source/${username}/${toolId}${version ? `/${version}` : ''}`,
+        window.location.href
     )
+    if (platform !== import.meta.env.VITE_PLATFORM) {
+        url.searchParams.append('platform', platform)
+    }
+    navigate(`${url.pathname}${url.search}`, options)
 }
 
 export const navigateToRedirect = (
@@ -104,10 +113,12 @@ export const navigateToEdit = (
     platform: Platform,
     options?: NavigateOptions
 ) => {
-    navigate(
-        `/edit/${toolId}${platform !== import.meta.env.VITE_PLATFORM ? `?platform=${platform}` : ''}`,
-        options
-    )
+    const url = new URL(`/edit/${toolId}`, window.location.href)
+    if (platform !== import.meta.env.VITE_PLATFORM) {
+        url.searchParams.append('platform', platform)
+    }
+
+    navigate(`${url.pathname}${url.search}`, options)
 }
 
 export const navigateToUser = (navigate: NavigateFunction, options?: NavigateOptions) => {
@@ -123,5 +134,14 @@ export const getViewPath = (
     toolId: string,
     platform: Platform,
     version?: string
-) =>
-    `/view/${username}/${toolId}${version ? `/${version}` : ''}${platform !== import.meta.env.VITE_PLATFORM ? `?platform=${platform}` : ''}`
+) => {
+    const url = new URL(
+        `/view/${username}/${toolId}${version ? `/${version}` : ''}`,
+        window.location.href
+    )
+    if (platform !== import.meta.env.VITE_PLATFORM) {
+        url.searchParams.append('platform', platform)
+    }
+
+    return `${url.pathname}${url.search}`
+}
