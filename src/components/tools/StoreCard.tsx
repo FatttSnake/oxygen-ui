@@ -7,6 +7,7 @@ import { COLOR_BACKGROUND, COLOR_MAIN, COLOR_PRODUCTION } from '@/constants/comm
 import { checkDesktop, omitText } from '@/util/common'
 import { getLoginStatus, getUserId } from '@/util/auth'
 import {
+    getAndroidUrl,
     navigateToLogin,
     navigateToSource,
     navigateToStore,
@@ -80,10 +81,7 @@ const StoreCard = ({
                 title: 'Android 端',
                 content: (
                     <FlexBox className={'android-qrcode'}>
-                        <AntdQRCode
-                            value={`oxygen://openurl/view/${author.username}/${toolId}`}
-                            size={300}
-                        />
+                        <AntdQRCode value={getAndroidUrl(author.username, toolId)} size={300} />
                         <AntdTag className={'tag'}>请使用手机端扫描上方二维码</AntdTag>
                     </FlexBox>
                 ),
@@ -151,10 +149,7 @@ const StoreCard = ({
             title: 'Android 端',
             content: (
                 <FlexBox className={'android-qrcode'}>
-                    <AntdQRCode
-                        value={`oxygen://openurl/view/${author.username}/${toolId}`}
-                        size={300}
-                    />
+                    <AntdQRCode value={getAndroidUrl(author.username, toolId)} size={300} />
                     <AntdTag className={'tag'}>请使用手机端扫描上方二维码</AntdTag>
                 </FlexBox>
             ),
