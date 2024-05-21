@@ -37,15 +37,15 @@ export const navigateToView = (
     version?: string,
     options?: NavigateOptions
 ) => {
-    const url = new URL(
-        `/view/${username}/${toolId}${version ? `/${version}` : ''}`,
-        window.location.href
-    )
+    const searchParams = new URLSearchParams()
     if (platform !== import.meta.env.VITE_PLATFORM) {
-        url.searchParams.append('platform', platform)
+        searchParams.append('platform', platform)
     }
 
-    navigate(`${url.pathname}${url.search}`, options)
+    navigate(
+        `/view/${username}/${toolId}${version ? `/${version}` : ''}${searchParams.size ? `?${searchParams.toString()}` : ''}`,
+        options
+    )
 }
 
 export const navigateToSource = (
@@ -56,14 +56,15 @@ export const navigateToSource = (
     version?: string,
     options?: NavigateOptions
 ) => {
-    const url = new URL(
-        `/source/${username}/${toolId}${version ? `/${version}` : ''}`,
-        window.location.href
-    )
+    const searchParams = new URLSearchParams()
     if (platform !== import.meta.env.VITE_PLATFORM) {
-        url.searchParams.append('platform', platform)
+        searchParams.append('platform', platform)
     }
-    navigate(`${url.pathname}${url.search}`, options)
+
+    navigate(
+        `/source/${username}/${toolId}${version ? `/${version}` : ''}${searchParams.size ? `?${searchParams.toString()}` : ''}`,
+        options
+    )
 }
 
 export const navigateToRedirect = (
@@ -113,12 +114,12 @@ export const navigateToEdit = (
     platform: Platform,
     options?: NavigateOptions
 ) => {
-    const url = new URL(`/edit/${toolId}`, window.location.href)
+    const searchParams = new URLSearchParams()
     if (platform !== import.meta.env.VITE_PLATFORM) {
-        url.searchParams.append('platform', platform)
+        searchParams.append('platform', platform)
     }
 
-    navigate(`${url.pathname}${url.search}`, options)
+    navigate(`/edit/${toolId}${searchParams.size ? `?${searchParams.toString()}` : ''}`, options)
 }
 
 export const navigateToUser = (navigate: NavigateFunction, options?: NavigateOptions) => {
@@ -135,15 +136,12 @@ export const getViewPath = (
     platform: Platform,
     version?: string
 ) => {
-    const url = new URL(
-        `/view/${username}/${toolId}${version ? `/${version}` : ''}`,
-        window.location.href
-    )
+    const searchParams = new URLSearchParams()
     if (platform !== import.meta.env.VITE_PLATFORM) {
-        url.searchParams.append('platform', platform)
+        searchParams.append('platform', platform)
     }
 
-    return `${url.pathname}${url.search}`
+    return `/view/${username}/${toolId}${version ? `/${version}` : ''}${searchParams.size ? `?${searchParams.toString()}` : ''}`
 }
 
 export const getAndroidUrl = (username: string, toolId: string) =>
