@@ -1,8 +1,11 @@
 {
   "name": "oxygen-ui",
   "private": true,
-  "version": "1.0.0-SNAPSHOT",
   "type": "module",
+  "version": "1.0.0-SNAPSHOT",
+  "description": "Oxygen Toolbox browser version",
+  "author": "FatttSnake",
+  "homepage": "https://tool.fatweb.top",
   "scripts": {
     "dev": "vite",
     "dev-host": "vite --host 0.0.0.0",
