@@ -4,7 +4,11 @@
   "type": "module",
   "version": "1.0.0-SNAPSHOT",
   "description": "Oxygen Toolbox browser version",
-  "author": "FatttSnake",
+  "author":  {
+    "name": "FatttSnake",
+    "email": "fatttsnake@fatweb.top",
+    "url": "https://fatweb.top"
+  },
   "homepage": "https://tool.fatweb.top",
   "scripts": {
     "dev": "vite",
