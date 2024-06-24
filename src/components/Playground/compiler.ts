@@ -16,7 +16,7 @@ class Compiler {
             void esbuild
                 .initialize({
                     worker: true,
-                    wasmURL: 'https://esm.sh/esbuild-wasm@0.20.2/esbuild.wasm'
+                    wasmURL: 'https://esm.sh/esbuild-wasm@0.21.5/esbuild.wasm'
                 })
                 .finally(() => {
                     this.init = true
