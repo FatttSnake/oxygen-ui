@@ -2,7 +2,7 @@
   "name": "oxygen-ui",
   "private": true,
   "type": "module",
-  "version": "1.0.0-SNAPSHOT",
+  "version": "1.0.0",
   "description": "Oxygen Toolbox browser version",
   "author":  {
     "name": "FatttSnake",
