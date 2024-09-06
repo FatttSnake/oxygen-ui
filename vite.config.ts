@@ -27,9 +27,9 @@ export default defineConfig({
                 'react-router-dom',
                 {
                     react: ['Suspense', 'createContext'],
-                    'react-router': ['useMatches', 'RouterProvider'],
-                    'react-router-dom': ['createBrowserRouter'],
-                    antd: ['message']
+                    'react-router': ['useMatches', 'RouterProvider', 'useBlocker'],
+                    'react-router-dom': ['createBrowserRouter', 'useBeforeUnload'],
+                    antd: ['message', 'notification']
                 },
                 {
                     from: 'react-router',
@@ -49,7 +49,7 @@ export default defineConfig({
                 IconsResolver({
                     prefix: 'icon',
                     extension: 'jsx',
-                    customCollections: ['fatweb']
+                    customCollections: ['oxygen']
                 }),
                 AntDesignResolver({
                     resolveIcons: true
@@ -69,7 +69,7 @@ export default defineConfig({
             jsx: 'react',
             autoInstall: true,
             customCollections: {
-                fatweb: FileSystemIconLoader('src/assets/svg', (svg) =>
+                oxygen: FileSystemIconLoader('src/assets/svg', (svg) =>
                     svg.replace(/^svg /, '<svg fill="currentColor"')
                 )
             }

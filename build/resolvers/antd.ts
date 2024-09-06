@@ -1,4 +1,4 @@
-export function kebabCase(key: string): string {
+export const kebabCase = (key: string) => {
     const result: string = key.replace(/([A-Z])/g, ' $1').trim()
     return result.split(' ').join('-').toLowerCase()
 }
@@ -149,7 +149,10 @@ const matchComponents: IMatcher[] = [
         pattern: /^Mentions/,
         styleDir: 'mentions'
     },
-
+    {
+        pattern: /^QRCode/,
+        styleDir: 'qr-code'
+    },
     {
         pattern: /^Step/,
         styleDir: 'steps'
@@ -295,6 +298,7 @@ const primitiveNames = [
     'DropdownButton',
     'Drawer',
     'Empty',
+    'FloatButton',
     'Form',
     'FormItem',
     'FormItemRest',
@@ -336,6 +340,7 @@ const primitiveNames = [
     'Rate',
     'Result',
     'Row',
+    'QRCode',
     'Select',
     'SelectOptGroup',
     'SelectOption',
@@ -395,7 +400,7 @@ const isAntd = (compName: string): boolean => {
     return antdNames.has(compName)
 }
 
-export function AntDesignResolver(options: AntDesignResolverOptions = {}): ComponentResolver {
+export const AntDesignResolver = (options: AntDesignResolverOptions = {}): ComponentResolver => {
     return {
         type: 'component',
         resolve: (name: string) => {
@@ -416,6 +421,7 @@ export function AntDesignResolver(options: AntDesignResolverOptions = {}): Compo
                     sideEffects: getSideEffects(importName, options)
                 }
             }
+            return undefined
         }
     }
 }

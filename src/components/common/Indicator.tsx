@@ -1,4 +1,3 @@
-import React from 'react'
 import _ from 'lodash'
 import '@/assets/css/components/common/indicator.scss'
 
@@ -8,12 +7,10 @@ interface IndicatorProps {
     onSwitch?: (index: number) => void
 }
 
-const Indicator: React.FC<IndicatorProps> = (props) => {
-    const { total, current, onSwitch } = props
-
+const Indicator = ({ total, current, onSwitch }: IndicatorProps) => {
     const handleClick = (index: number) => {
         return () => {
-            onSwitch && onSwitch(index)
+            onSwitch?.(index)
         }
     }
 
@@ -24,7 +21,7 @@ const Indicator: React.FC<IndicatorProps> = (props) => {
                     return (
                         <li
                             key={index}
-                            className={'item center-box' + (index === current ? ' active' : '')}
+                            className={`item center-box${index === current ? ' active' : ''}`}
                             onClick={handleClick(index)}
                         >
                             <div className={'dot'} />

@@ -1,26 +1,30 @@
-import React from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
 import '@/assets/css/components/common/loading-mask.scss'
-import FitFullScreen from '@/components/common/FitFullScreen'
-import { COLOR_FONT_MAIN } from '@/constants/Common.constants'
+import { COLOR_FONT_MAIN } from '@/constants/common.constants'
 
-const LoadingMask: React.FC = () => {
+interface LoadingMaskProps extends PropsWithChildren {
+    hidden?: boolean
+    maskContent?: ReactNode
+}
+
+const LoadingMask = (props: LoadingMaskProps) => {
     const loadingIcon = (
         <>
             <Icon
-                component={IconFatwebLoading}
+                component={IconOxygenLoading}
                 style={{ fontSize: 24, color: COLOR_FONT_MAIN }}
                 spin
             />
         </>
     )
-    return (
+    return props.hidden ? (
+        props.children
+    ) : (
         <>
-            <FitFullScreen>
-                <div className={'loading-mask'}>
-                    <AntdSpin indicator={loadingIcon} />
-                </div>
-            </FitFullScreen>
+            <div className={'loading-mask'}>
+                {props.maskContent || <AntdSpin indicator={loadingIcon} />}
+            </div>
         </>
     )
 }
