@@ -24,6 +24,7 @@
 # 环境要求
 
 - Web 服务器（如 Nginx, Apache httpd）
+- [API of Oxygen Toolbox](https://github.com/FatttSnake/oxygen-api) (v1.0.0 及更高版本)
 
 # 关联项目
 
