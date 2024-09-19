@@ -169,18 +169,18 @@ const Base = () => {
                     )}
                 </>
             ),
-            width: '12em',
+            width: '14em',
             align: 'center',
             render: (_, record) => (
                 <>
                     <AntdSpace size={'middle'}>
-                        {!record.compiled && !Object.keys(hasEdited).length && (
+                        {!Object.keys(hasEdited).length && (
                             <Permission operationCode={['system:tool:modify:base']}>
                                 <a
                                     style={{ color: COLOR_PRODUCTION }}
                                     onClick={handleOnCompileBtnClick(record)}
                                 >
-                                    编译
+                                    {record.compiled ? '重新编译' : '编译'}
                                 </a>
                             </Permission>
                         )}
@@ -304,7 +304,10 @@ const Base = () => {
                                                         ![
                                                             IMPORT_MAP_FILE_NAME,
                                                             TS_CONFIG_FILE_NAME
-                                                        ].includes(value)
+                                                        ].includes(value) &&
+                                                        !value.endsWith('.d.ts') &&
+                                                        !value.endsWith('.css') &&
+                                                        !value.endsWith('.json')
                                                 )
                                                 .map((value) => ({ value, label: value }))}
                                             placeholder={'请选择入口文件'}
@@ -1097,7 +1100,7 @@ const Base = () => {
                                 <Playground.CodeEditor
                                     files={editingFiles[editingBaseId]}
                                     selectedFileName={editingFileName}
-                                    onSelectedFileChange={() => {}}
+                                    onSelectedFileChange={setEditingFileName}
                                     onChangeFileContent={handleOnChangeFileContent}
                                     showFileSelector={false}
                                     tsconfig={tsconfig}

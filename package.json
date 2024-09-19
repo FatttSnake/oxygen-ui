@@ -2,9 +2,9 @@
   "name": "oxygen-ui",
   "private": true,
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Oxygen Toolbox browser version",
-  "author":  {
+  "author": {
     "name": "FatttSnake",
     "email": "fatttsnake@fatweb.top",
     "url": "https://fatweb.top"
