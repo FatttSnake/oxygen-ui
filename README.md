@@ -24,7 +24,7 @@ This project is a front-end web UI of Oxygen Toolbox and needs to be used with t
 # Requires
 
 - Web Server (e.g. Nginx, Apache httpd)
-- [API of Oxygen Toolbox](https://github.com/FatttSnake/oxygen-api) (v1.0.0 and later versions)
+- [API of Oxygen Toolbox](https://github.com/FatttSnake/oxygen-api) (v1.0.0 or later versions)
 
 # Related projects
 
