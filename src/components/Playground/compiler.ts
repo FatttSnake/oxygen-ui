@@ -57,7 +57,7 @@ class Compiler {
 
     transform = async (code: string, loader: Loader) => {
         await this.waitInit()
-        return esbuild.transform(code, { loader })
+        return esbuild.transform(code, { loader, target: 'es2015' })
     }
 
     compile = async (files: IFiles, importMap: IImportMap, entryPoint: string) => {
@@ -66,6 +66,7 @@ class Compiler {
             bundle: true,
             entryPoints: [entryPoint],
             format: 'esm',
+            target: 'es2015',
             metafile: true,
             write: false,
             plugins: [this.fileResolverPlugin(files, importMap)]
