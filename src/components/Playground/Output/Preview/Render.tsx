@@ -1,5 +1,5 @@
 import { ChangeEvent } from 'react'
-import '@/components/Playground/Output/Preview/render.scss'
+import '@/components/Playground/Output/Preview/render.less'
 import { COLOR_FONT_MAIN } from '@/constants/common.constants'
 import iframeRaw from '@/components/Playground/Output/Preview/iframe.html?raw'
 import HideScrollbar from '@/components/common/HideScrollbar'

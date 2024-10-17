@@ -1,6 +1,6 @@
 import { DetailedHTMLProps, HTMLAttributes } from 'react'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
-import '@/assets/css/components/tools/repository-card.scss'
+import '@/assets/css/components/tools/repository-card.less'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import Draggable from '@/components/dnd/Draggable'
@@ -24,7 +24,6 @@ interface RepositoryCardProps
 
 const RepositoryCard = ({
     style,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ref,
     icon,
     toolName,

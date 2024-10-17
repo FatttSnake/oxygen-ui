@@ -2,7 +2,7 @@ import { DetailedHTMLProps, HTMLAttributes, MouseEvent } from 'react'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import protocolCheck from 'custom-protocol-check'
 import Icon from '@ant-design/icons'
-import '@/assets/css/components/tools/store-card.scss'
+import '@/assets/css/components/tools/store-card.less'
 import { COLOR_BACKGROUND, COLOR_MAIN, COLOR_PRODUCTION } from '@/constants/common.constants'
 import { checkDesktop, omitText } from '@/util/common'
 import { getLoginStatus, getUserId } from '@/util/auth'
@@ -35,7 +35,7 @@ interface StoreCardProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement
 
 const StoreCard = ({
     style,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     ref,
     icon,
     toolName,
