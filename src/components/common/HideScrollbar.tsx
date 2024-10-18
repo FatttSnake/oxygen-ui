@@ -6,7 +6,7 @@ import {
     HTMLAttributes,
     UIEvent
 } from 'react'
-import styles from '@/assets/css/components/common/hide-scrollbar.module.less'
+import useStyles from '@/assets/css/components/common/hide-scrollbar.style'
 
 interface HideScrollbarProps
     extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -82,6 +82,8 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
         },
         ref
     ) => {
+        const { styles } = useStyles()
+
         useImperativeHandle<HideScrollbarElement, HideScrollbarElement>(ref, () => {
             return {
                 scrollTo(x, y, smooth?: boolean) {
@@ -582,9 +584,12 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
                                     padding: `${scrollbarAsidePadding}px ${scrollbarEdgePadding}px`
                                 }}
                             >
-                                <div className={styles.box} style={{ width: scrollbarWidth }}>
+                                <div
+                                    className={styles.scrollbarBox}
+                                    style={{ width: scrollbarWidth }}
+                                >
                                     <div
-                                        className={styles.block}
+                                        className={styles.scrollbarBoxBlock}
                                         style={{
                                             height: `${verticalScrollbarLength}%`,
                                             top: `clamp(0px, ${verticalScrollbarPosition}%, ${
@@ -625,9 +630,12 @@ const HideScrollbar = forwardRef<HideScrollbarElement, HideScrollbarProps>(
                                     padding: `${scrollbarEdgePadding}px ${scrollbarAsidePadding}px`
                                 }}
                             >
-                                <div className={styles.box} style={{ height: scrollbarWidth }}>
+                                <div
+                                    className={styles.scrollbarBox}
+                                    style={{ height: scrollbarWidth }}
+                                >
                                     <div
-                                        className={styles.block}
+                                        className={styles.scrollbarBoxBlock}
                                         style={{
                                             width: `${horizontalScrollbarLength}%`,
                                             left: `clamp(0px, ${horizontalScrollbarPosition}%, ${

@@ -1,6 +1,6 @@
 import { ReactNode, MouseEvent } from 'react'
 import Icon from '@ant-design/icons'
-import styles from '@/assets/css/components/common/sidebar.module.less'
+import useStyles from '@/assets/css/components/common/sidebar/item.style'
 import Submenu from '@/components/common/Sidebar/Submenu'
 
 type ItemProps = {
@@ -13,6 +13,7 @@ type ItemProps = {
 }
 
 const Item = (props: ItemProps) => {
+    const { styles } = useStyles()
     const [submenuTop, setSubmenuTop] = useState(Number.MAX_VALUE)
     const [submenuLeft, setSubmenuLeft] = useState(Number.MAX_VALUE)
 
