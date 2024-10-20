@@ -164,7 +164,7 @@ const Render = ({ iframeKey, compiledCode, mobileMode = false }: RenderProps) =>
             iframeRef.current?.contentWindow?.postMessage(
                 {
                     type: 'SCALE',
-                    data: { zoom: zoom }
+                    data: { zoom }
                 } as IMessage,
                 '*'
             )

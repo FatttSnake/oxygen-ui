@@ -1,6 +1,6 @@
 import { PropsWithChildren, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
-import styles from '@/assets/css/components/common/loading-mask.module.less'
+import useStyles from '@/assets/css/components/common/loading-mask.style'
 import { COLOR_FONT_MAIN } from '@/constants/common.constants'
 
 interface LoadingMaskProps extends PropsWithChildren {
@@ -9,6 +9,8 @@ interface LoadingMaskProps extends PropsWithChildren {
 }
 
 const LoadingMask = (props: LoadingMaskProps) => {
+    const { styles } = useStyles()
+
     const loadingIcon = (
         <>
             <Icon

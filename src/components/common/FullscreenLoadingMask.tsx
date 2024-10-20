@@ -1,9 +1,11 @@
 import Icon from '@ant-design/icons'
-import styles from '@/assets/css/components/common/fullscreen-loading-mask.module.less'
+import useStyles from '@/assets/css/components/common/fullscreen-loading-mask.style'
 import { COLOR_FONT_MAIN } from '@/constants/common.constants'
 import FitFullscreen from '@/components/common/FitFullscreen'
 
 const FullscreenLoadingMask = () => {
+    const { styles } = useStyles()
+
     const loadingIcon = (
         <>
             <Icon
