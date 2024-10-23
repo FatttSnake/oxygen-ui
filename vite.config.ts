@@ -12,14 +12,12 @@ import { AntDesignResolver } from './build/resolvers/antd'
 export default defineConfig({
     plugins: [
         react(),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         AutoImport({
             // targets to transform
             include: [
                 /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
                 /\.md$/ // .md
             ],
-
             // global imports to register
             imports: [
                 'react',
@@ -42,7 +40,6 @@ export default defineConfig({
             // Defaults to './auto-imports.d.ts' when `typescript` is installed locally.
             // Set `false` to disable.
             dts: './auto-imports.d.ts',
-
             // Custom resolvers, compatible with `unplugin-vue-components`
             // see https://github.com/antfu/unplugin-auto-import/pull/23/
             resolvers: [
@@ -55,7 +52,6 @@ export default defineConfig({
                     resolveIcons: true
                 })
             ],
-
             // Generate corresponding .eslintrc-auto-import.json file.
             // eslint globals Docs - https://eslint.org/docs/user-guide/configuring/language-options#specifying-globals
             eslintrc: {

@@ -10,6 +10,7 @@ import {
 } from '@/constants/common.constants'
 import { utcToLocalTime } from '@/util/datetime'
 import { hasPermission } from '@/util/auth'
+import editorExtraLibs from '@/util/editorExtraLibs'
 import {
     r_sys_tool_template_update,
     r_sys_tool_template_delete,
@@ -479,7 +480,6 @@ const Template = () => {
                         form={addFileForm}
                         ref={() => {
                             setTimeout(() => {
-                                // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
                                 addFileForm?.getFieldInstance('fileName').focus()
                             }, 50)
                         }}
@@ -674,7 +674,6 @@ const Template = () => {
                             form={renameFileForm}
                             ref={() => {
                                 setTimeout(() => {
-                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
                                     renameFileForm?.getFieldInstance('fileName').focus()
                                 }, 50)
                             }}
@@ -1053,6 +1052,7 @@ const Template = () => {
                                         templateDetailLoading[editingTemplateId] ||
                                         !hasPermission('system:tool:modify:template')
                                     }
+                                    extraLibs={editorExtraLibs}
                                 />
                                 <div className={'close-editor-btn'} onClick={handleOnCloseBtnClick}>
                                     <Icon component={IconOxygenClose} />

@@ -7,6 +7,11 @@ import { fileNameToLanguage, tsconfigJsonDiagnosticsOptions } from '@/components
 import { useEditor, useTypesProgress } from '@/components/Playground/CodeEditor/Editor/hooks'
 import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
 
+export interface ExtraLib {
+    path: string
+    content: string
+}
+
 interface EditorProps {
     tsconfig?: ITsconfig
     files?: IFiles
@@ -16,6 +21,7 @@ interface EditorProps {
     options?: IEditorOptions
     theme?: ITheme
     onJumpFile?: (fileName: string) => void
+    extraLibs?: ExtraLib[]
 }
 
 const Editor = ({
@@ -26,7 +32,8 @@ const Editor = ({
     theme,
     onChange,
     options,
-    onJumpFile
+    onJumpFile,
+    extraLibs = []
 }: EditorProps) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>()
     const monacoRef = useRef<Monaco>()
@@ -72,19 +79,21 @@ const Editor = ({
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         editor['_codeEditorService'].doOpenEditor = function (
             editor: editor.IStandaloneCodeEditor,
             input: { options: { selection: Selection }; resource: { path: string } }
         ) {
             const path = input.resource.path
-            if (!path.startsWith('/node_modules/')) {
+            if (!['/lib.dom.d.ts', '/node_modules/'].some((item) => path.startsWith(item))) {
                 onJumpFile?.(path.replace('/', ''))
                 doOpenEditor(editor, input)
             }
         }
 
         jsxSyntaxHighlightRef.current = loadJsxSyntaxHighlight(editor, monaco)
+        extraLibs.forEach((item) =>
+            monaco.languages.typescript.typescriptDefaults.addExtraLib(item.content, item.path)
+        )
 
         void autoLoadExtraLib(editor, monaco, file.value, onWatch)
     }
