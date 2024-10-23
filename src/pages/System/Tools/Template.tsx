@@ -1,13 +1,13 @@
 import Icon from '@ant-design/icons'
-import '@/assets/css/pages/system/tools/template.scss'
+import useStyles from '@/assets/css/pages/system/tools/template.style'
 import {
-    COLOR_PRODUCTION,
     DATABASE_DELETE_SUCCESS,
     DATABASE_DUPLICATE_KEY,
     DATABASE_INSERT_SUCCESS,
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
+import { message, modal } from '@/util/common'
 import { utcToLocalTime } from '@/util/datetime'
 import { hasPermission } from '@/util/auth'
 import editorExtraLibs from '@/util/editorExtraLibs'
@@ -27,6 +27,7 @@ import {
     getFilesSize,
     TS_CONFIG_FILE_NAME
 } from '@/components/Playground/files'
+import { AppContext } from '@/App'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 import HideScrollbar from '@/components/common/HideScrollbar'
@@ -35,11 +36,12 @@ import Permission from '@/components/common/Permission'
 import Playground from '@/components/Playground'
 
 const Template = () => {
+    const { styles, theme } = useStyles()
+    const { isDarkMode } = useContext(AppContext)
     const blocker = useBlocker(
         ({ currentLocation, nextLocation }) =>
             currentLocation.pathname !== nextLocation.pathname && Object.keys(hasEdited).length > 0
     )
-    const [modal, contextHolder] = AntdModal.useModal()
     const [tableParams, setTableParams] = useState<TableParam>({
         pagination: {
             current: 1,
@@ -128,7 +130,7 @@ const Template = () => {
         {
             title: '名称',
             render: (_, record) => (
-                <span className={hasEdited[record.id] ? 'has-edited' : undefined}>
+                <span className={hasEdited[record.id] ? styles.hasEdited : undefined}>
                     {record.name}
                 </span>
             )
@@ -181,7 +183,7 @@ const Template = () => {
                         <Permission operationCode={['system:tool:add:template']}>
                             {' '}
                             (
-                            <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
+                            <a style={{ color: theme.colorPrimary }} onClick={handleOnAddBtnClick}>
                                 新增
                             </a>
                             )
@@ -197,7 +199,7 @@ const Template = () => {
                         {hasEdited[record.id] && (
                             <Permission operationCode={['system:tool:modify:template']}>
                                 <a
-                                    style={{ color: COLOR_PRODUCTION }}
+                                    style={{ color: theme.colorPrimary }}
                                     onClick={handleOnSaveBtnClick(record)}
                                 >
                                     保存
@@ -207,7 +209,7 @@ const Template = () => {
                         {!Object.keys(hasEdited).length && (
                             <Permission operationCode={['system:tool:modify:template']}>
                                 <a
-                                    style={{ color: COLOR_PRODUCTION }}
+                                    style={{ color: theme.colorPrimary }}
                                     onClick={handleOnEditBtnClick(record)}
                                 >
                                     编辑
@@ -216,7 +218,7 @@ const Template = () => {
                         )}
                         <Permission operationCode={['system:tool:delete:template']}>
                             <a
-                                style={{ color: COLOR_PRODUCTION }}
+                                style={{ color: theme.colorPrimary }}
                                 onClick={handleOnDeleteBtnClick(record)}
                             >
                                 删除
@@ -591,7 +593,7 @@ const Template = () => {
                             <Permission operationCode={['system:tool:modify:template']}>
                                 {' '}
                                 (
-                                <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddFile}>
+                                <a style={{ color: theme.colorPrimary }} onClick={handleOnAddFile}>
                                     新增
                                 </a>
                                 )
@@ -612,7 +614,7 @@ const Template = () => {
                             >
                                 <a
                                     onClick={handleOnEditFile(record.name)}
-                                    style={{ color: COLOR_PRODUCTION }}
+                                    style={{ color: theme.colorPrimary }}
                                 >
                                     {hasPermission('system:tool:modify:template') ? '编辑' : '查看'}
                                 </a>
@@ -621,7 +623,7 @@ const Template = () => {
                                 <Permission operationCode={['system:tool:modify:template']}>
                                     <a
                                         onClick={handleOnRenameFile(record.name)}
-                                        style={{ color: COLOR_PRODUCTION }}
+                                        style={{ color: theme.colorPrimary }}
                                     >
                                         重命名
                                     </a>
@@ -631,7 +633,7 @@ const Template = () => {
                                 <Permission operationCode={['system:tool:delete:template']}>
                                     <a
                                         onClick={handleOnDeleteFile(record.name)}
-                                        style={{ color: COLOR_PRODUCTION }}
+                                        style={{ color: theme.colorPrimary }}
                                     >
                                         删除
                                     </a>
@@ -1020,9 +1022,9 @@ const Template = () => {
 
     return (
         <>
-            <FitFullscreen data-component={'system-tools-template'}>
+            <FitFullscreen>
                 <HideScrollbar>
-                    <FlexBox direction={'horizontal'} className={'root-content'}>
+                    <FlexBox direction={'horizontal'} className={styles.root}>
                         <Card>
                             <AntdTable
                                 dataSource={templateData}
@@ -1041,6 +1043,7 @@ const Template = () => {
                         {editingFileName && (
                             <Card>
                                 <Playground.CodeEditor
+                                    isDarkMode={isDarkMode}
                                     files={editingFiles[editingTemplateId]}
                                     selectedFileName={editingFileName}
                                     onSelectedFileChange={setEditingFileName}
@@ -1054,7 +1057,10 @@ const Template = () => {
                                     }
                                     extraLibs={editorExtraLibs}
                                 />
-                                <div className={'close-editor-btn'} onClick={handleOnCloseBtnClick}>
+                                <div
+                                    className={styles.closeEditorBtn}
+                                    onClick={handleOnCloseBtnClick}
+                                >
                                     <Icon component={IconOxygenClose} />
                                 </div>
                             </Card>
@@ -1072,7 +1078,6 @@ const Template = () => {
                     {addAndEditForm}
                 </AntdDrawer>
             </FitFullscreen>
-            {contextHolder}
             <AntdModal
                 open={blocker.state === 'blocked'}
                 title={'未保存'}

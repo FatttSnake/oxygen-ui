@@ -1,7 +1,7 @@
 import { UIEvent } from 'react'
-import '@/assets/css/pages/tools/store.scss'
+import useStyles from '@/assets/css/pages/tools/store.style'
 import { DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
-import { checkDesktop } from '@/util/common'
+import { message, checkDesktop } from '@/util/common'
 import { r_tool_store_get } from '@/services/tool'
 import FlexBox from '@/components/common/FlexBox'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -10,6 +10,7 @@ import StoreCard from '@/components/tools/StoreCard'
 import LoadMoreCard from '@/components/tools/LoadMoreCard'
 
 const Store = () => {
+    const { styles, cx } = useStyles()
     const scrollTopRef = useRef(0)
     const [isLoading, setIsLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
@@ -83,13 +84,13 @@ const Store = () => {
 
     return (
         <>
-            <FitFullscreen data-component={'tools-store'}>
+            <FitFullscreen>
                 <HideScrollbar
                     isShowVerticalScrollbar
                     autoHideWaitingTime={1000}
                     onScroll={handleOnScroll}
                 >
-                    <div className={`search${isHideSearch ? ' hide' : ''}`}>
+                    <div className={cx(styles.search, isHideSearch ? styles.hide : '')}>
                         <AntdInput.Search
                             enterButton
                             allowClear
@@ -98,8 +99,8 @@ const Store = () => {
                             placeholder={'请输入工具名或关键字'}
                         />
                     </div>
-                    <FlexBox direction={'horizontal'} className={'root-content'}>
-                        {!toolData.length && <div className={'no-tool'}>未找到任何工具</div>}
+                    <FlexBox direction={'horizontal'} className={styles.root}>
+                        {!toolData.length && <div className={styles.noTool}>未找到任何工具</div>}
                         {toolData
                             ?.reduce((previousValue: ToolVo[], currentValue) => {
                                 if (

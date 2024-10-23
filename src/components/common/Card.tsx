@@ -1,10 +1,18 @@
 import { DetailedHTMLProps, HTMLAttributes } from 'react'
-import '@/assets/css/components/common/card.scss'
+import useStyles from '@/assets/css/components/common/card.style'
 
 type CardProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 
 const Card = forwardRef<HTMLDivElement, CardProps>(({ className, ...props }, ref) => {
-    return <div className={`card-box${className ? ` ${className}` : ''}`} {...props} ref={ref} />
+    const { styles } = useStyles()
+
+    return (
+        <div
+            className={`${styles.cardBox}${className ? ` ${className}` : ''}`}
+            {...props}
+            ref={ref}
+        />
+    )
 })
 
 export default Card

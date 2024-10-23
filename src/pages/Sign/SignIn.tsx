@@ -1,5 +1,6 @@
 import Icon from '@ant-design/icons'
 import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
+import useStyles from '@/assets/css/pages/sign/sign-in.style'
 import {
     H_CAPTCHA_SITE_KEY,
     PERMISSION_LOGIN_SUCCESS,
@@ -10,6 +11,7 @@ import {
     PERMISSION_USERNAME_NOT_FOUND,
     SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants'
+import { message, notification, modal } from '@/util/common'
 import { getUserInfo, setToken } from '@/util/auth'
 import { utcToLocalTime } from '@/util/datetime'
 import {
@@ -24,8 +26,8 @@ import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
 
 const SignIn = () => {
-    const [modal, contextHolder] = AntdModal.useModal()
-    const { refreshRouter } = useContext(AppContext)
+    const { styles } = useStyles()
+    const { refreshRouter, isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const turnstileRef = useRef<TurnstileInstance>()
@@ -80,8 +82,7 @@ const SignIn = () => {
                 switch (code) {
                     case PERMISSION_LOGIN_SUCCESS:
                         setToken(data?.token ?? '')
-                        void message.success('登录成功')
-                        setTimeout(() => {
+                        message.success('登录成功').then(() => {
                             void getUserInfo().then((user) => {
                                 refreshRouter()
                                 navigateToRedirect(navigate, searchParams, '/repository')
@@ -107,7 +108,7 @@ const SignIn = () => {
                                     placement: 'topRight'
                                 })
                             })
-                        }, 1500)
+                        })
                         break
                     case PERMISSION_NEED_TWO_FACTOR:
                         twoFactorForm.resetFields()
@@ -211,96 +212,93 @@ const SignIn = () => {
     }
 
     return (
-        <div className={'sign-in'}>
-            <FitCenter>
-                <FlexBox>
-                    <div className={'title'}>
-                        <div className={'primary'}>欢迎回来</div>
-                        <div className={'secondary'}>Welcome back</div>
+        <FitCenter>
+            <FlexBox>
+                <div className={styles.title}>
+                    <div className={styles.primary}>欢迎回来</div>
+                    <div className={styles.secondary}>Welcome back</div>
+                </div>
+                <AntdForm autoComplete={'on'} onFinish={handleOnFinish} className={styles.form}>
+                    <AntdForm.Item
+                        name={'account'}
+                        rules={[
+                            { required: true, message: '请输入账号' },
+                            { whitespace: true, message: '账号不能为空字符' }
+                        ]}
+                    >
+                        <AntdInput
+                            prefix={<Icon component={IconOxygenUser} />}
+                            disabled={isSigningIn}
+                            placeholder={'邮箱/用户名'}
+                        />
+                    </AntdForm.Item>
+                    <AntdForm.Item
+                        name={'password'}
+                        rules={[
+                            { required: true, message: '请输入密码' },
+                            { whitespace: true, message: '密码不能为空字符' }
+                        ]}
+                    >
+                        <AntdInput.Password
+                            prefix={<Icon component={IconOxygenPassword} />}
+                            disabled={isSigningIn}
+                            placeholder={'密码'}
+                        />
+                    </AntdForm.Item>
+                    <AntdForm.Item>
+                        <Turnstile
+                            id={'sign-in-turnstile'}
+                            ref={turnstileRef}
+                            siteKey={H_CAPTCHA_SITE_KEY}
+                            options={{
+                                theme: isDarkMode ? 'dark' : 'light',
+                                execution: 'execute',
+                                appearance: 'execute'
+                            }}
+                            onSuccess={setCaptchaCode}
+                            data-refresh={refreshTime}
+                        />
+                    </AntdForm.Item>
+                    <FlexBox direction={'horizontal'} className={styles.addition}>
+                        <a
+                            onClick={() => {
+                                navigateToRoot(navigate)
+                            }}
+                        >
+                            返回主页
+                        </a>
+                        <a
+                            onClick={() => {
+                                navigateToForget(navigate, location.search, { replace: true })
+                            }}
+                        >
+                            忘记密码？
+                        </a>
+                    </FlexBox>
+                    <AntdForm.Item>
+                        <AntdButton
+                            style={{ width: '100%' }}
+                            type={'primary'}
+                            htmlType={'submit'}
+                            disabled={isSigningIn}
+                            loading={isSigningIn}
+                        >
+                            登&ensp;&ensp;&ensp;&ensp;录
+                        </AntdButton>
+                    </AntdForm.Item>
+                    <div className={styles.footer}>
+                        还没有账号？
+                        <a
+                            onClick={() =>
+                                navigateToRegister(navigate, location.search, { replace: true })
+                            }
+                        >
+                            注册
+                        </a>
                     </div>
-                    <AntdForm autoComplete={'on'} onFinish={handleOnFinish} className={'form'}>
-                        <AntdForm.Item
-                            name={'account'}
-                            rules={[
-                                { required: true, message: '请输入账号' },
-                                { whitespace: true, message: '账号不能为空字符' }
-                            ]}
-                        >
-                            <AntdInput
-                                prefix={<Icon component={IconOxygenUser} />}
-                                disabled={isSigningIn}
-                                placeholder={'邮箱/用户名'}
-                            />
-                        </AntdForm.Item>
-                        <AntdForm.Item
-                            name={'password'}
-                            rules={[
-                                { required: true, message: '请输入密码' },
-                                { whitespace: true, message: '密码不能为空字符' }
-                            ]}
-                        >
-                            <AntdInput.Password
-                                prefix={<Icon component={IconOxygenPassword} />}
-                                disabled={isSigningIn}
-                                placeholder={'密码'}
-                            />
-                        </AntdForm.Item>
-                        <AntdForm.Item>
-                            <Turnstile
-                                id={'sign-in-turnstile'}
-                                ref={turnstileRef}
-                                siteKey={H_CAPTCHA_SITE_KEY}
-                                options={{
-                                    theme: 'light',
-                                    execution: 'execute',
-                                    appearance: 'execute'
-                                }}
-                                onSuccess={setCaptchaCode}
-                                data-refresh={refreshTime}
-                            />
-                        </AntdForm.Item>
-                        <FlexBox direction={'horizontal'} className={'addition'}>
-                            <a
-                                onClick={() => {
-                                    navigateToRoot(navigate)
-                                }}
-                            >
-                                返回主页
-                            </a>
-                            <a
-                                onClick={() => {
-                                    navigateToForget(navigate, location.search, { replace: true })
-                                }}
-                            >
-                                忘记密码？
-                            </a>
-                        </FlexBox>
-                        <AntdForm.Item>
-                            <AntdButton
-                                style={{ width: '100%' }}
-                                type={'primary'}
-                                htmlType={'submit'}
-                                disabled={isSigningIn}
-                                loading={isSigningIn}
-                            >
-                                登&ensp;&ensp;&ensp;&ensp;录
-                            </AntdButton>
-                        </AntdForm.Item>
-                        <div className={'footer'}>
-                            还没有账号？
-                            <a
-                                onClick={() =>
-                                    navigateToRegister(navigate, location.search, { replace: true })
-                                }
-                            >
-                                注册
-                            </a>
-                        </div>
-                    </AntdForm>
-                </FlexBox>
-            </FitCenter>
-            {contextHolder}
-        </div>
+                </AntdForm>
+            </FlexBox>
+        </FitCenter>
     )
 }
 

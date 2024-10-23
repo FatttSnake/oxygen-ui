@@ -1,7 +1,6 @@
 import { PropsWithChildren, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
-import '@/assets/css/components/common/loading-mask.scss'
-import { COLOR_FONT_MAIN } from '@/constants/common.constants'
+import useStyles from '@/assets/css/components/common/loading-mask.style'
 
 interface LoadingMaskProps extends PropsWithChildren {
     hidden?: boolean
@@ -9,11 +8,13 @@ interface LoadingMaskProps extends PropsWithChildren {
 }
 
 const LoadingMask = (props: LoadingMaskProps) => {
+    const { styles, theme } = useStyles()
+
     const loadingIcon = (
         <>
             <Icon
                 component={IconOxygenLoading}
-                style={{ fontSize: 24, color: COLOR_FONT_MAIN }}
+                style={{ fontSize: 24, color: theme.colorText }}
                 spin
             />
         </>
@@ -22,7 +23,7 @@ const LoadingMask = (props: LoadingMaskProps) => {
         props.children
     ) : (
         <>
-            <div className={'loading-mask'}>
+            <div className={styles.loadingMask}>
                 {props.maskContent || <AntdSpin indicator={loadingIcon} />}
             </div>
         </>

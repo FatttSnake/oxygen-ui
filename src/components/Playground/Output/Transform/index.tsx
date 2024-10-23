@@ -1,17 +1,18 @@
 import MonacoEditor from '@monaco-editor/react'
 import { Loader } from 'esbuild-wasm'
-import '@/components/Playground/Output/Transform/transform.scss'
-import { IFile, ITheme } from '@/components/Playground/shared'
+import useStyles from '@/components/Playground/Output/Transform/index.style'
+import { IFile } from '@/components/Playground/shared'
 import { cssToJsFromFile, jsonToJsFromFile } from '@/components/Playground/files'
 import Compiler from '@/components/Playground/compiler'
 import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
 
 interface OutputProps {
+    isDarkMode?: boolean
     file: IFile
-    theme?: ITheme
 }
 
-const Transform = ({ file, theme }: OutputProps) => {
+const Transform = ({ isDarkMode, file }: OutputProps) => {
+    const { styles } = useStyles()
     const [compiledCode, setCompiledCode] = useState('')
     const [errorMsg, setErrorMsg] = useState('')
 
@@ -57,14 +58,14 @@ const Transform = ({ file, theme }: OutputProps) => {
     }, [file, Compiler])
 
     return (
-        <div data-component={'playground-transform'}>
+        <div className={styles.root}>
             <MonacoEditor
-                theme={theme}
+                theme={isDarkMode ? 'vitesse-dark' : 'vitesse-light'}
                 language={'javascript'}
                 value={compiledCode}
                 options={{ ...MonacoEditorConfig, readOnly: true }}
             />
-            {errorMsg && <div className={'playground-error-message'}>{errorMsg}</div>}
+            {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
         </div>
     )
 }

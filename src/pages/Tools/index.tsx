@@ -1,5 +1,5 @@
 import Icon from '@ant-design/icons'
-import '@/assets/css/pages/tools/index.scss'
+import useStyles from '@/assets/css/pages/tools/index.style'
 import {
     DATABASE_DELETE_SUCCESS,
     DATABASE_SELECT_SUCCESS,
@@ -12,7 +12,7 @@ import {
     TOOL_SUBMIT_SUCCESS,
     TOOL_UNDER_REVIEW
 } from '@/constants/common.constants'
-import { checkDesktop } from '@/util/common'
+import { message, modal, checkDesktop } from '@/util/common'
 import { getLoginStatus } from '@/util/auth'
 import { navigateToEdit, navigateToSource, navigateToView } from '@/util/navigation'
 import {
@@ -169,6 +169,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
             icon={selectedTool.icon}
             toolName={selectedTool.name}
             toolId={selectedTool.toolId}
+            toolDesc={selectedTool.description}
             ver={selectedTool.ver}
             platform={selectedTool.platform}
             onOpen={handleOnOpenTool}
@@ -179,7 +180,6 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
             onDelete={handleOnDeleteTool}
         >
             <AntdCascader
-                className={'version-select'}
                 size={'small'}
                 allowClear={false}
                 value={[
@@ -194,11 +194,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                 .filter((value) => value.platform === selectedTool.platform)
                 .every((value) => value.review === 'PASS') && (
                 <AntdTooltip title={'更新'}>
-                    <Icon
-                        component={IconOxygenUpgrade}
-                        className={'upgrade-bt'}
-                        onClick={handleOnUpgradeTool}
-                    />
+                    <Icon component={IconOxygenUpgrade} onClick={handleOnUpgradeTool} />
                 </AntdTooltip>
             )}
         </RepositoryCard>
@@ -206,8 +202,8 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
 }
 
 const Tools = () => {
+    const { styles } = useStyles()
     const navigate = useNavigate()
-    const [modal, contextHolder] = AntdModal.useModal()
     const [isLoading, setIsLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(0)
     const [hasNextPage, setHasNextPage] = useState(false)
@@ -540,103 +536,97 @@ const Tools = () => {
     }, [])
 
     return (
-        <>
-            <FitFullscreen data-component={'tools'}>
-                <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
-                    <FlexBox direction={'vertical'} className={'root-content'}>
-                        <FlexBox direction={'horizontal'} className={'own-content'}>
-                            <UrlCard icon={IconOxygenNewProject} url={'/create'}>
-                                创建工具
-                            </UrlCard>
-                            {toolData &&
-                                Object.values(
-                                    toolData.reduce((result: Record<string, ToolVo[]>, item) => {
-                                        result[item.toolId] = result[item.toolId] || []
-                                        result[item.toolId].push(item)
-                                        return result
-                                    }, {})
-                                ).map((value) => (
-                                    <ToolCard
-                                        key={JSON.stringify(value)}
-                                        tools={value}
-                                        onDelete={handleOnDeleteTool}
-                                        onUpgrade={handleOnUpgradeTool}
-                                        onSubmit={handleOnSubmitTool}
-                                        onCancel={handleOnCancelTool}
-                                    />
-                                ))}
-                            {hasNextPage && <LoadMoreCard onClick={handleOnLoadMore} />}
-                        </FlexBox>
-                        {starToolData.length ? (
-                            <>
-                                <FlexBox className={'favorite-divider'}>
-                                    <div />
-                                    <div className={'divider-text'}>收藏</div>
-                                    <div />
-                                </FlexBox>
-                                <FlexBox direction={'horizontal'} className={'star-content'}>
-                                    {starToolData
-                                        ?.reduce((previousValue: ToolVo[], currentValue) => {
-                                            if (
-                                                !previousValue.some(
-                                                    (value) =>
-                                                        value.author.id ===
-                                                            currentValue.author.id &&
-                                                        value.toolId === currentValue.toolId
-                                                )
-                                            ) {
-                                                previousValue.push(currentValue)
-                                            }
-                                            return previousValue
-                                        }, [])
-                                        .map((item) => {
-                                            const tools = starToolData.filter(
-                                                (value) =>
-                                                    value.author.id === item.author.id &&
-                                                    value.toolId === item.toolId
-                                            )
-                                            const webTool = tools.find(
-                                                (value) => value.platform === 'WEB'
-                                            )
-                                            const desktopTool = tools.find(
-                                                (value) => value.platform === 'DESKTOP'
-                                            )
-                                            const androidTool = tools.find(
-                                                (value) => value.platform === 'ANDROID'
-                                            )
-                                            const firstTool =
-                                                (checkDesktop()
-                                                    ? desktopTool || webTool
-                                                    : webTool || desktopTool) || androidTool
-
-                                            return (
-                                                <StoreCard
-                                                    key={firstTool!.id}
-                                                    icon={firstTool!.icon}
-                                                    toolName={firstTool!.name}
-                                                    toolId={firstTool!.toolId}
-                                                    toolDesc={firstTool!.description}
-                                                    author={firstTool!.author}
-                                                    ver={firstTool!.ver}
-                                                    platform={firstTool!.platform}
-                                                    supportPlatform={tools.map(
-                                                        (value) => value.platform
-                                                    )}
-                                                    favorite={firstTool!.favorite}
-                                                />
-                                            )
-                                        })}
-                                    {hasNextStarPage && (
-                                        <LoadMoreCard onClick={handleOnLoadMoreStar} />
-                                    )}
-                                </FlexBox>
-                            </>
-                        ) : undefined}
+        <FitFullscreen>
+            <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
+                <FlexBox direction={'vertical'} className={styles.root}>
+                    <FlexBox direction={'horizontal'} className={styles.ownContent}>
+                        <UrlCard icon={IconOxygenNewProject} url={'/create'}>
+                            创建工具
+                        </UrlCard>
+                        {toolData &&
+                            Object.values(
+                                toolData.reduce((result: Record<string, ToolVo[]>, item) => {
+                                    result[item.toolId] = result[item.toolId] || []
+                                    result[item.toolId].push(item)
+                                    return result
+                                }, {})
+                            ).map((value) => (
+                                <ToolCard
+                                    key={JSON.stringify(value)}
+                                    tools={value}
+                                    onDelete={handleOnDeleteTool}
+                                    onUpgrade={handleOnUpgradeTool}
+                                    onSubmit={handleOnSubmitTool}
+                                    onCancel={handleOnCancelTool}
+                                />
+                            ))}
+                        {hasNextPage && <LoadMoreCard onClick={handleOnLoadMore} />}
                     </FlexBox>
-                </HideScrollbar>
-            </FitFullscreen>
-            {contextHolder}
-        </>
+                    {starToolData.length ? (
+                        <>
+                            <FlexBox direction={'horizontal'} className={styles.favoriteDivider}>
+                                <div />
+                                <div className={styles.dividerText}>收藏</div>
+                                <div />
+                            </FlexBox>
+                            <FlexBox direction={'horizontal'} className={styles.starContent}>
+                                {starToolData
+                                    ?.reduce((previousValue: ToolVo[], currentValue) => {
+                                        if (
+                                            !previousValue.some(
+                                                (value) =>
+                                                    value.author.id === currentValue.author.id &&
+                                                    value.toolId === currentValue.toolId
+                                            )
+                                        ) {
+                                            previousValue.push(currentValue)
+                                        }
+                                        return previousValue
+                                    }, [])
+                                    .map((item) => {
+                                        const tools = starToolData.filter(
+                                            (value) =>
+                                                value.author.id === item.author.id &&
+                                                value.toolId === item.toolId
+                                        )
+                                        const webTool = tools.find(
+                                            (value) => value.platform === 'WEB'
+                                        )
+                                        const desktopTool = tools.find(
+                                            (value) => value.platform === 'DESKTOP'
+                                        )
+                                        const androidTool = tools.find(
+                                            (value) => value.platform === 'ANDROID'
+                                        )
+                                        const firstTool =
+                                            (checkDesktop()
+                                                ? desktopTool || webTool
+                                                : webTool || desktopTool) || androidTool
+
+                                        return (
+                                            <StoreCard
+                                                key={firstTool!.id}
+                                                icon={firstTool!.icon}
+                                                toolName={firstTool!.name}
+                                                toolId={firstTool!.toolId}
+                                                toolDesc={firstTool!.description}
+                                                author={firstTool!.author}
+                                                ver={firstTool!.ver}
+                                                platform={firstTool!.platform}
+                                                supportPlatform={tools.map(
+                                                    (value) => value.platform
+                                                )}
+                                                favorite={firstTool!.favorite}
+                                            />
+                                        )
+                                    })}
+                                {hasNextStarPage && <LoadMoreCard onClick={handleOnLoadMoreStar} />}
+                            </FlexBox>
+                        </>
+                    ) : undefined}
+                </FlexBox>
+            </HideScrollbar>
+        </FitFullscreen>
     )
 }
 

@@ -1,8 +1,36 @@
 import { createRoot } from 'react-dom/client'
 import { floor } from 'lodash'
-import { STORAGE_TOOL_MENU_ITEM_KEY } from '@/constants/common.constants'
+import {
+    STORAGE_COLLAPSE_SIDEBAR_KEY,
+    STORAGE_THEME_MODE_KEY,
+    STORAGE_TOOL_MENU_ITEM_KEY,
+    THEME_DARK,
+    THEME_FOLLOW_SYSTEM,
+    THEME_LIGHT
+} from '@/constants/common.constants'
 import { getLocalStorage, setLocalStorage } from '@/util/browser'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
+import { MessageInstance } from 'antd/es/message/interface'
+import { NotificationInstance } from 'antd/es/notification/interface'
+import { HookAPI } from 'antd/es/modal/useModal'
+
+export type ThemeMode = typeof THEME_FOLLOW_SYSTEM | typeof THEME_LIGHT | typeof THEME_DARK
+
+let message: MessageInstance
+let notification: NotificationInstance
+let modal: HookAPI
+
+export const init = (
+    messageInstance: MessageInstance,
+    notificationInstance: NotificationInstance,
+    modalInstance: HookAPI
+) => {
+    message = messageInstance
+    notification = notificationInstance
+    modal = modalInstance
+}
+
+export { message, notification, modal }
 
 export const randomInt = (start: number, end: number) => {
     if (start > end) {
@@ -153,4 +181,64 @@ export const omitText = (text: string, length: number) => {
         return text
     }
     return `${text.substring(0, length)}...`
+}
+
+const getByteLength = (str: string) => {
+    let length = 0
+    for (let i = 0; i < str.length; i++) {
+        if (str.charCodeAt(i) > 255) {
+            length += 2
+        } else {
+            length++
+        }
+    }
+
+    return length
+}
+
+const substringByByte = (str: string, start: number, length: number) => {
+    let byteLength = 0
+    let result = ''
+
+    for (let i = 0; i < str.length; i++) {
+        const charCode = str.charCodeAt(i)
+        byteLength += charCode > 255 ? 2 : 1
+
+        if (byteLength > start + length) {
+            break
+        } else if (byteLength > start) {
+            result += str[i]
+        }
+    }
+
+    return result
+}
+
+export const omitTextByByte = (text: string, length: number) => {
+    console.log(getByteLength(text))
+    if (getByteLength(text) <= length) {
+        return text
+    }
+    return `${substringByByte(text, 0, length)}...`
+}
+
+export const getSidebarCollapse = () => getLocalStorage(STORAGE_COLLAPSE_SIDEBAR_KEY) === 'true'
+
+export const setSidebarCollapse = (isCollapse: boolean) => {
+    setLocalStorage(STORAGE_COLLAPSE_SIDEBAR_KEY, isCollapse ? 'true' : 'false')
+}
+
+export const getThemeMode = (): ThemeMode => {
+    switch (getLocalStorage(STORAGE_THEME_MODE_KEY)) {
+        case THEME_FOLLOW_SYSTEM:
+        case THEME_LIGHT:
+        case THEME_DARK:
+            return getLocalStorage(STORAGE_THEME_MODE_KEY) as ThemeMode
+        default:
+            return THEME_FOLLOW_SYSTEM
+    }
+}
+
+export const setThemeMode = (themeMode: ThemeMode) => {
+    setLocalStorage(STORAGE_THEME_MODE_KEY, themeMode)
 }

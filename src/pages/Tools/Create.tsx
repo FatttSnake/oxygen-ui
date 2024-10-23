@@ -1,10 +1,11 @@
 import Icon from '@ant-design/icons'
-import '@/assets/css/pages/tools/create.scss'
+import useStyles from '@/assets/css/pages/tools/create.style'
 import {
     DATABASE_DUPLICATE_KEY,
     DATABASE_INSERT_SUCCESS,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
+import { message } from '@/util/common'
 import { navigateToEdit } from '@/util/navigation'
 import {
     r_tool_category_get,
@@ -22,6 +23,7 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import Playground from '@/components/Playground'
 
 const Create = () => {
+    const { styles } = useStyles()
     const navigate = useNavigate()
     const [form] = AntdForm.useForm<ToolCreateParam>()
     const formValues = AntdForm.useWatch([], form)
@@ -184,15 +186,15 @@ const Create = () => {
     }, [])
 
     return (
-        <FitFullscreen data-component={'tools-create'}>
-            <FlexBox direction={'horizontal'} className={'root-content'}>
+        <FitFullscreen>
+            <FlexBox direction={'horizontal'} className={styles.root}>
                 <FlexBox>
-                    <Card className={'title'}>
+                    <Card className={styles.title}>
                         <FlexBox>配置</FlexBox>
                     </Card>
-                    <Card className={'config'}>
+                    <Card>
                         <HideScrollbar>
-                            <div className={'config-content'}>
+                            <div className={styles.config}>
                                 <AntdForm
                                     form={form}
                                     layout={'vertical'}
@@ -355,7 +357,7 @@ const Create = () => {
                                     </AntdForm.Item>
                                     <AntdForm.Item>
                                         <AntdButton
-                                            className={'create-bt'}
+                                            className={styles.createBt}
                                             type={'primary'}
                                             htmlType={'submit'}
                                             loading={isCreating}
@@ -369,10 +371,10 @@ const Create = () => {
                     </Card>
                 </FlexBox>
                 <FlexBox>
-                    <Card className={'title'}>
+                    <Card className={styles.title}>
                         <FlexBox>预览</FlexBox>
                     </Card>
-                    <Card className={'preview'}>
+                    <Card className={styles.preview}>
                         {compiledCode ? (
                             <Playground.Output.Preview.Render
                                 iframeKey={previewTemplate}
@@ -380,7 +382,7 @@ const Create = () => {
                                 mobileMode={formValues.platform === 'ANDROID'}
                             />
                         ) : (
-                            <span className={'no-preview'}>暂无预览</span>
+                            <span className={styles.noPreview}>暂无预览</span>
                         )}
                     </Card>
                 </FlexBox>

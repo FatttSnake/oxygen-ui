@@ -5,6 +5,7 @@ import Transform from '@/components/Playground/Output/Transform'
 import Preview from '@/components/Playground/Output/Preview'
 
 interface OutputProps {
+    isDarkMode?: boolean
     files: IFiles
     selectedFileName: string
     importMap: IImportMap
@@ -15,6 +16,7 @@ interface OutputProps {
 }
 
 const Output = ({
+    isDarkMode,
     files,
     selectedFileName,
     importMap,
@@ -26,7 +28,7 @@ const Output = ({
     const [selectedTab, setSelectedTab] = useState('Preview')
 
     return (
-        <FlexBox data-component={'playground-code-output'}>
+        <FlexBox>
             <Playground.CodeEditor.FileSelector
                 files={{
                     Preview: { name: 'Preview', language: 'json', value: '' },
@@ -47,7 +49,9 @@ const Output = ({
                     mobileMode={mobileMode}
                 />
             )}
-            {selectedTab === 'Transform' && <Transform file={files[selectedFileName]} />}
+            {selectedTab === 'Transform' && (
+                <Transform isDarkMode={isDarkMode} file={files[selectedFileName]} />
+            )}
         </FlexBox>
     )
 }

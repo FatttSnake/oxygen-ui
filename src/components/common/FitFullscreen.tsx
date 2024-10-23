@@ -1,5 +1,5 @@
 import { DetailedHTMLProps, HTMLAttributes } from 'react'
-import '@/assets/css/components/common/fit-fullscreen.scss'
+import useStyles from '@/assets/css/components/common/fit-fullscreen.style'
 
 interface FitFullscreenProps
     extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -9,9 +9,11 @@ interface FitFullscreenProps
 
 const FitFullscreen = forwardRef<HTMLDivElement, FitFullscreenProps>(
     ({ zIndex, backgroundColor, className, style, ...props }, ref) => {
+        const { styles } = useStyles()
+
         return (
             <div
-                className={`fit-fullscreen${className ? ` ${className}` : ''}`}
+                className={`${styles.fitFullscreen}${className ? ` ${className}` : ''}`}
                 style={{
                     zIndex,
                     backgroundColor,

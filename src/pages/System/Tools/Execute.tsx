@@ -1,5 +1,6 @@
-import '@/assets/css/pages/system/tools/execute.scss'
+import useStyles from '@/assets/css/pages/system/tools/execute.style'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { message } from '@/util/common'
 import { navigateToTools } from '@/util/navigation'
 import { r_sys_tool_get_one } from '@/services/system'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -10,6 +11,7 @@ import { IImportMap } from '@/components/Playground/shared'
 import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
 
 const Execute = () => {
+    const { styles } = useStyles()
     const navigate = useNavigate()
     const { id } = useParams()
     const [isLoading, setIsLoading] = useState(false)
@@ -71,8 +73,8 @@ const Execute = () => {
     }, [id])
 
     return (
-        <FitFullscreen data-component={'system-tools-execute'}>
-            <Card>
+        <FitFullscreen className={styles.root}>
+            <Card className={styles.rootBox}>
                 <Playground.Output.Preview.Render iframeKey={`${id}`} compiledCode={compiledCode} />
             </Card>
         </FitFullscreen>

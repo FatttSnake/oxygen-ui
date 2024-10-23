@@ -1,11 +1,12 @@
+import { useTheme } from 'antd-style'
 import {
-    COLOR_PRODUCTION,
     DATABASE_DELETE_SUCCESS,
     DATABASE_DUPLICATE_KEY,
     DATABASE_INSERT_SUCCESS,
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
+import { message, modal } from '@/util/common'
 import { utcToLocalTime } from '@/util/datetime'
 import {
     r_sys_tool_category_add,
@@ -19,7 +20,7 @@ import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 
 const Category = () => {
-    const [modal, contextHolder] = AntdModal.useModal()
+    const theme = useTheme()
     const [form] = AntdForm.useForm<ToolCategoryAddEditParam>()
     const formValues = AntdForm.useWatch([], form)
     const [newFormValues, setNewFormValues] = useState<ToolCategoryAddEditParam>()
@@ -72,7 +73,7 @@ const Category = () => {
                     <Permission operationCode={['system:tool:add:category']}>
                         {' '}
                         (
-                        <a style={{ color: COLOR_PRODUCTION }} onClick={handleOnAddBtnClick}>
+                        <a style={{ color: theme.colorPrimary }} onClick={handleOnAddBtnClick}>
                             新增
                         </a>
                         )
@@ -86,7 +87,7 @@ const Category = () => {
                     <AntdSpace size={'middle'}>
                         <Permission operationCode={['system:tool:modify:category']}>
                             <a
-                                style={{ color: COLOR_PRODUCTION }}
+                                style={{ color: theme.colorPrimary }}
                                 onClick={handleOnEditBtnClick(record)}
                             >
                                 编辑
@@ -94,7 +95,7 @@ const Category = () => {
                         </Permission>
                         <Permission operationCode={['system:tool:delete:category']}>
                             <a
-                                style={{ color: COLOR_PRODUCTION }}
+                                style={{ color: theme.colorPrimary }}
                                 onClick={handleOnDeleteBtnClick(record)}
                             >
                                 删除
@@ -285,7 +286,7 @@ const Category = () => {
 
     return (
         <>
-            <FitFullscreen data-component={'system-tools-category'}>
+            <FitFullscreen>
                 <HideScrollbar
                     style={{ padding: 20 }}
                     isShowVerticalScrollbar
@@ -297,6 +298,7 @@ const Category = () => {
                             columns={categoryColumns}
                             rowKey={(record) => record.id}
                             loading={isLoading}
+                            scroll={{ x: true }}
                             pagination={false}
                         />
                     </Card>
@@ -312,7 +314,6 @@ const Category = () => {
             >
                 {addAndEditForm}
             </AntdDrawer>
-            {contextHolder}
         </>
     )
 }

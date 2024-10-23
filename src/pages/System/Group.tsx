@@ -1,15 +1,14 @@
 import { ChangeEvent, Key, KeyboardEvent } from 'react'
 import Icon from '@ant-design/icons'
+import { useTheme } from 'antd-style'
 import {
-    COLOR_ERROR_SECONDARY,
-    COLOR_FONT_SECONDARY,
-    COLOR_PRODUCTION,
     DATABASE_DELETE_SUCCESS,
     DATABASE_DUPLICATE_KEY,
     DATABASE_INSERT_SUCCESS,
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
+import { message, modal } from '@/util/common'
 import { hasPermission } from '@/util/auth'
 import { utcToLocalTime } from '@/util/datetime'
 import {
@@ -28,7 +27,7 @@ import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 
 const Group = () => {
-    const [modal, contextHolder] = AntdModal.useModal()
+    const theme = useTheme()
     const [form] = AntdForm.useForm<GroupAddEditParam>()
     const formValues = AntdForm.useWatch([], form)
     const [newFormValues, setNewFormValues] = useState<GroupAddEditParam>()
@@ -109,14 +108,14 @@ const Group = () => {
                         <Permission operationCode={['system:group:modify:status']}>
                             {value ? (
                                 <a
-                                    style={{ color: COLOR_PRODUCTION }}
+                                    style={{ color: theme.colorPrimary }}
                                     onClick={handleOnChangStatusBtnClick(record.id, false)}
                                 >
                                     禁用
                                 </a>
                             ) : (
                                 <a
-                                    style={{ color: COLOR_PRODUCTION }}
+                                    style={{ color: theme.colorPrimary }}
                                     onClick={handleOnChangStatusBtnClick(record.id, true)}
                                 >
                                     启用
@@ -125,7 +124,7 @@ const Group = () => {
                         </Permission>
                         <Permission operationCode={['system:group:modify:one']}>
                             <a
-                                style={{ color: COLOR_PRODUCTION }}
+                                style={{ color: theme.colorPrimary }}
                                 onClick={handleOnEditBtnClick(record)}
                             >
                                 编辑
@@ -133,7 +132,7 @@ const Group = () => {
                         </Permission>
                         <Permission operationCode={['system:group:delete:one']}>
                             <a
-                                style={{ color: COLOR_PRODUCTION }}
+                                style={{ color: theme.colorPrimary }}
                                 onClick={handleOnDeleteBtnClick(record)}
                             >
                                 删除
@@ -247,7 +246,7 @@ const Group = () => {
                     centered: true,
                     maskClosable: true,
                     title: '确定删除',
-                    content: `确定删除角色 ${value.name} 吗？`
+                    content: `确定删除用户组 ${value.name} 吗？`
                 })
                 .then(
                     (confirmed) => {
@@ -301,7 +300,7 @@ const Group = () => {
                             getGroup()
                             break
                         case DATABASE_DUPLICATE_KEY:
-                            void message.error('已存在相同名称的角色')
+                            void message.error('已存在相同名称的用户组')
                             break
                         default:
                             void message.error('更新失败，请稍后重试')
@@ -322,7 +321,7 @@ const Group = () => {
                             getGroup()
                             break
                         case DATABASE_DUPLICATE_KEY:
-                            void message.error('已存在相同名称的角色')
+                            void message.error('已存在相同名称的用户组')
                             break
                         default:
                             void message.error('添加失败，请稍后重试')
@@ -524,7 +523,7 @@ const Group = () => {
                         <span
                             style={{
                                 fontSize: '0.9em',
-                                color: COLOR_FONT_SECONDARY
+                                color: theme.colorTextSecondary
                             }}
                         >
                             名称
@@ -533,7 +532,7 @@ const Group = () => {
                     suffix={
                         <>
                             {!isRegexLegal && (
-                                <span style={{ color: COLOR_ERROR_SECONDARY }}>非法表达式</span>
+                                <span style={{ color: theme.colorErrorText }}>非法表达式</span>
                             )}
                             <AntdCheckbox checked={isUseRegex} onChange={handleOnUseRegexChange}>
                                 <AntdTooltip title={'正则表达式'}>.*</AntdTooltip>
@@ -564,6 +563,7 @@ const Group = () => {
                 rowKey={(record) => record.id}
                 pagination={tableParams.pagination}
                 loading={isLoading}
+                scroll={{ x: true }}
                 onChange={handleOnTableChange}
                 rowSelection={
                     hasPermission('system:group:delete:multiple')
@@ -636,7 +636,7 @@ const Group = () => {
 
     return (
         <>
-            <FitFullscreen data-component={'system-group'}>
+            <FitFullscreen>
                 <HideScrollbar
                     style={{ padding: 20 }}
                     isShowVerticalScrollbar
@@ -658,7 +658,6 @@ const Group = () => {
             >
                 {addAndEditForm}
             </AntdDrawer>
-            {contextHolder}
         </>
     )
 }

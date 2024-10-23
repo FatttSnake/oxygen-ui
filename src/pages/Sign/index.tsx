@@ -1,4 +1,4 @@
-import '@/assets/css/pages/sign.scss'
+import useStyles from '@/assets/css/pages/sign/index.style'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
@@ -8,6 +8,7 @@ import Forget from '@/pages/Sign/Forget'
 import SignIn from '@/pages/Sign/SignIn'
 
 const Sign = () => {
+    const { styles, cx } = useStyles()
     const lastPage = useRef('none')
     const currentPage = useRef('none')
     const match = useMatches().reduce((_, second) => second)
@@ -42,23 +43,25 @@ const Sign = () => {
 
     return (
         <>
-            <FitFullscreen data-component={'sign'}>
+            <FitFullscreen className={styles.root}>
                 <FitCenter>
                     <FlexBox
                         direction={'horizontal'}
-                        className={`sign-box${isSwitch ? ' switch' : ''}`}
+                        className={cx(styles.signBox, isSwitch ? styles.switch : '')}
                     >
-                        <div className={`left${!isSwitch ? ' hidden' : ''}`}>{leftComponent()}</div>
-                        <div className={`right${isSwitch ? ' hidden' : ''}`}>
+                        <div className={cx(styles.side, !isSwitch ? styles.hidden : '')}>
+                            {leftComponent()}
+                        </div>
+                        <div className={cx(styles.side, isSwitch ? styles.hidden : '')}>
                             {rightComponent()}
                         </div>
-                        <FlexBox className={'cover'}>
-                            <div className={'ball-box'}>
-                                <div className={'ball'} />
+                        <FlexBox className={styles.cover}>
+                            <div className={styles.ballBox}>
+                                <div className={styles.ball} />
                             </div>
-                            <div className={'ball-box'}>
-                                <div className={'mask'}>
-                                    <div className={'ball'} />
+                            <div className={styles.ballBox}>
+                                <div className={styles.mask}>
+                                    <div className={styles.ball} />
                                 </div>
                             </div>
                         </FlexBox>

@@ -1,4 +1,4 @@
-import '@/assets/css/pages/system/statistics.scss'
+import useStyles from '@/assets/css/pages/system/statistics/index.style'
 import FlexBox from '@/components/common/FlexBox'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
@@ -11,11 +11,13 @@ import CPUInfo from '@/pages/System/Statistics/CPUInfo'
 import StorageInfo from '@/pages/System/Statistics/StorageInfo'
 
 const Statistics = () => {
+    const { styles } = useStyles()
+
     return (
         <>
-            <FitFullscreen data-component={'system-statistics'}>
+            <FitFullscreen>
                 <HideScrollbar isShowVerticalScrollbar autoHideWaitingTime={1000}>
-                    <FlexBox direction={'horizontal'} className={'root-content'}>
+                    <FlexBox direction={'horizontal'} className={styles.root}>
                         <Permission operationCode={['system:statistics:query:usage']}>
                             <OnlineInfo />
                             <ActiveInfo />

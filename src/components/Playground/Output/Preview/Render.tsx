@@ -1,6 +1,5 @@
 import { ChangeEvent } from 'react'
-import '@/components/Playground/Output/Preview/render.scss'
-import { COLOR_FONT_MAIN } from '@/constants/common.constants'
+import useStyles from '@/components/Playground/Output/Preview/render.style'
 import iframeRaw from '@/components/Playground/Output/Preview/iframe.html?raw'
 import HideScrollbar from '@/components/common/HideScrollbar'
 
@@ -41,6 +40,7 @@ const getIframeUrl = (iframeRaw: string) => {
 const iframeUrl = getIframeUrl(iframeRaw)
 
 const Render = ({ iframeKey, compiledCode, mobileMode = false }: RenderProps) => {
+    const { styles, theme, cx } = useStyles()
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const [isLoaded, setIsLoaded] = useState(false)
     const [selectedDevice, setSelectedDevice] = useState('Pixel 7')
@@ -164,7 +164,7 @@ const Render = ({ iframeKey, compiledCode, mobileMode = false }: RenderProps) =>
             iframeRef.current?.contentWindow?.postMessage(
                 {
                     type: 'SCALE',
-                    data: { zoom: zoom }
+                    data: { zoom }
                 } as IMessage,
                 '*'
             )
@@ -174,16 +174,24 @@ const Render = ({ iframeKey, compiledCode, mobileMode = false }: RenderProps) =>
     return mobileMode ? (
         <>
             <HideScrollbar
-                className={'mobile-mode-background'}
+                className={styles.mobileModeRoot}
                 isShowVerticalScrollbar
                 isShowHorizontalScrollbar
                 autoHideWaitingTime={1000}
             >
-                <div className={'mobile-mode-content'} style={{ zoom }}>
-                    <div className={`device${isRotate ? ' rotate' : ''}`}>
-                        <div className={`device-header${isRotate ? ' rotate' : ''}`} />
+                <div className={styles.mobileModeContent} style={{ zoom }}>
+                    <div className={cx(styles.device, isRotate ? styles.rotate : '')}>
                         <div
-                            className={`device-content${isRotate ? ' rotate' : ''}`}
+                            className={cx(
+                                styles.deviceHeader,
+                                isRotate ? styles.rotatedDeviceHeader : ''
+                            )}
+                        />
+                        <div
+                            className={cx(
+                                styles.deviceContent,
+                                isRotate ? styles.rotatedDeviceContent : ''
+                            )}
                             style={{
                                 width: isRotate
                                     ? (devices.find((value) => value.name === selectedDevice)
@@ -198,7 +206,7 @@ const Render = ({ iframeKey, compiledCode, mobileMode = false }: RenderProps) =>
                             }}
                         >
                             <iframe
-                                data-component={'playground-output-preview-render'}
+                                className={styles.renderRoot}
                                 key={iframeKey}
                                 ref={iframeRef}
                                 src={iframeUrl}
@@ -207,28 +215,33 @@ const Render = ({ iframeKey, compiledCode, mobileMode = false }: RenderProps) =>
                                 allow={'clipboard-read; clipboard-write'}
                             />
                         </div>
-                        <div className={`device-footer${isRotate ? ' rotate' : ''}`} />
+                        <div
+                            className={cx(
+                                styles.deviceFooter,
+                                isRotate ? styles.rotatedDeviceFooter : ''
+                            )}
+                        />
                     </div>
                 </div>
             </HideScrollbar>
 
-            <div className={'switch-device'}>
-                <IconOxygenMobile fill={COLOR_FONT_MAIN} />
+            <div className={styles.switchDevice}>
+                <IconOxygenMobile fill={theme.colorText} />
                 <select value={selectedDevice} onChange={handleOnChangeDevice}>
                     {devices.map((value) => (
                         <option value={value.name}>{value.name}</option>
                     ))}
                 </select>
-                <div className={'rotate-device'} title={'旋转屏幕'} onClick={handleOnRotateDevice}>
+                <div title={'旋转屏幕'} onClick={handleOnRotateDevice}>
                     {isRotate ? (
-                        <IconOxygenRotateRight fill={COLOR_FONT_MAIN} />
+                        <IconOxygenRotateRight fill={theme.colorText} />
                     ) : (
-                        <IconOxygenRotateLeft fill={COLOR_FONT_MAIN} />
+                        <IconOxygenRotateLeft fill={theme.colorText} />
                     )}
                 </div>
             </div>
-            <div className={'switch-zoom'}>
-                <IconOxygenZoom fill={COLOR_FONT_MAIN} />
+            <div className={styles.switchZoom}>
+                <IconOxygenZoom fill={theme.colorText} />
                 <input
                     type={'range'}
                     min={0.5}
@@ -241,7 +254,7 @@ const Render = ({ iframeKey, compiledCode, mobileMode = false }: RenderProps) =>
         </>
     ) : (
         <iframe
-            data-component={'playground-output-preview-render'}
+            className={styles.renderRoot}
             key={iframeKey}
             ref={iframeRef}
             src={iframeUrl}

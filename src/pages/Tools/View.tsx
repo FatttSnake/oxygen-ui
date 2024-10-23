@@ -1,5 +1,6 @@
-import '@/assets/css/pages/tools/view.scss'
+import useStyles from '@/assets/css/pages/tools/view.style'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { message } from '@/util/common'
 import { getLoginStatus } from '@/util/auth'
 import { navigateToRepository, navigateToRoot, navigateToView } from '@/util/navigation'
 import { r_tool_detail } from '@/services/tool'
@@ -11,6 +12,7 @@ import Playground from '@/components/Playground'
 import Card from '@/components/common/Card'
 
 const View = () => {
+    const { styles } = useStyles()
     const navigate = useNavigate()
     const { username, toolId, ver } = useParams()
     const [searchParams] = useSearchParams({
@@ -77,8 +79,9 @@ const View = () => {
                         render(response.data!)
                         break
                     case DATABASE_NO_RECORD_FOUND:
-                        void message.error('未找到指定工具')
-                        navigateToRepository(navigate)
+                        void message.error('未找到指定工具').then(() => {
+                            navigateToRepository(navigate)
+                        })
                         break
                     default:
                         void message.error('获取工具信息失败，请稍后重试')
@@ -97,8 +100,9 @@ const View = () => {
             return
         }
         if (username === '!' && !getLoginStatus()) {
-            void message.error('未登录')
-            navigateToRoot(navigate)
+            void message.error('未登录').then(() => {
+                navigateToRoot(navigate)
+            })
             return
         }
         if (username !== '!' && ver) {
@@ -113,8 +117,8 @@ const View = () => {
     }, [username, toolId, ver, searchParams])
 
     return (
-        <FitFullscreen data-component={'tools-view'}>
-            <Card>
+        <FitFullscreen className={styles.root}>
+            <Card className={styles.content}>
                 <Playground.Output.Preview.Render
                     iframeKey={`${username}:${toolId}:${ver}`}
                     compiledCode={compiledCode}
