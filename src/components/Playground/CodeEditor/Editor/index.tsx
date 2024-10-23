@@ -1,5 +1,7 @@
 import { editor, Selection } from 'monaco-editor'
 import MonacoEditor, { Monaco } from '@monaco-editor/react'
+import { shikiToMonaco } from '@shikijs/monaco'
+import { createHighlighter } from 'shiki'
 import useStyles from '@/components/Playground/CodeEditor/Editor/index.style'
 import '@/components/Playground/CodeEditor/Editor/loader'
 import { IEditorOptions, IFiles, ITsconfig } from '@/components/Playground/shared'
@@ -38,18 +40,19 @@ const Editor = ({
     const { styles } = useStyles()
     const editorRef = useRef<editor.IStandaloneCodeEditor>()
     const monacoRef = useRef<Monaco>()
-    const { doOpenEditor, loadJsxSyntaxHighlight, autoLoadExtraLib } = useEditor()
-    const jsxSyntaxHighlightRef = useRef<{
-        highlighter: (code?: string | undefined) => void
-        dispose: () => void
-    }>({
-        highlighter: () => undefined,
-        dispose: () => undefined
-    })
+    const { doOpenEditor, autoLoadExtraLib } = useEditor()
     const { total, finished, onWatch } = useTypesProgress()
     const file = files[selectedFileName] || { name: 'Untitled' }
 
     const handleOnEditorWillMount = (monaco: Monaco) => {
+        createHighlighter({
+            themes: ['vitesse-light', 'vitesse-dark'],
+            langs: ['javascript', 'jsx', 'typescript', 'tsx', 'css', 'json', 'xml']
+        }).then((highlighter) => {
+            shikiToMonaco(highlighter, monaco)
+            monaco.editor.setTheme(isDarkMode ? 'vitesse-dark' : 'vitesse-light')
+        })
+
         monaco.languages.json.jsonDefaults.setDiagnosticsOptions(tsconfigJsonDiagnosticsOptions)
         tsconfig &&
             monaco.languages.typescript.typescriptDefaults.setCompilerOptions(
@@ -91,7 +94,6 @@ const Editor = ({
             }
         }
 
-        jsxSyntaxHighlightRef.current = loadJsxSyntaxHighlight(editor, monaco)
         extraLibs.forEach((item) =>
             monaco.languages.typescript.typescriptDefaults.addExtraLib(item.content, item.path)
         )
@@ -100,8 +102,11 @@ const Editor = ({
     }
 
     useEffect(() => {
+        monacoRef.current?.editor.setTheme(isDarkMode ? 'vitesse-dark' : 'vitesse-light')
+    }, [isDarkMode])
+
+    useEffect(() => {
         editorRef.current?.focus()
-        jsxSyntaxHighlightRef?.current?.highlighter?.()
     }, [file.name])
 
     useEffect(() => {
@@ -115,9 +120,8 @@ const Editor = ({
         <>
             <div className={styles.root}>
                 <MonacoEditor
-                    theme={isDarkMode ? 'vs-dark' : 'light'}
+                    theme={isDarkMode ? 'vitesse-dark' : 'vitesse-light'}
                     path={file.name}
-                    className={`monaco-editor-${isDarkMode ? 'dark' : 'light'}`}
                     language={file.language}
                     value={file.value}
                     onChange={onChange}
