@@ -1,5 +1,6 @@
 import useStyles from '@/assets/css/pages/tools/view.style'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { message } from '@/util/common'
 import { getLoginStatus } from '@/util/auth'
 import { navigateToRepository, navigateToRoot, navigateToView } from '@/util/navigation'
 import { r_tool_detail } from '@/services/tool'
@@ -78,8 +79,9 @@ const View = () => {
                         render(response.data!)
                         break
                     case DATABASE_NO_RECORD_FOUND:
-                        void message.error('未找到指定工具')
-                        navigateToRepository(navigate)
+                        void message.error('未找到指定工具').then(() => {
+                            navigateToRepository(navigate)
+                        })
                         break
                     default:
                         void message.error('获取工具信息失败，请稍后重试')
@@ -98,8 +100,9 @@ const View = () => {
             return
         }
         if (username === '!' && !getLoginStatus()) {
-            void message.error('未登录')
-            navigateToRoot(navigate)
+            void message.error('未登录').then(() => {
+                navigateToRoot(navigate)
+            })
             return
         }
         if (username !== '!' && ver) {
