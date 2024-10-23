@@ -2,9 +2,8 @@ import { DetailedHTMLProps, HTMLAttributes, MouseEvent } from 'react'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import protocolCheck from 'custom-protocol-check'
 import Icon from '@ant-design/icons'
-import styles from '@/assets/css/components/tools/store-card.module.less'
-import { COLOR_BACKGROUND, COLOR_MAIN, COLOR_PRODUCTION } from '@/constants/common.constants'
-import { checkDesktop, omitText } from '@/util/common'
+import useStyles from '@/assets/css/components/tools/store-card.style'
+import { checkDesktop, omitTextByByte } from '@/util/common'
 import { getLoginStatus, getUserId } from '@/util/auth'
 import {
     getAndroidUrl,
@@ -35,7 +34,6 @@ interface StoreCardProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement
 
 const StoreCard = ({
     style,
-
     ref,
     icon,
     toolName,
@@ -56,6 +54,7 @@ const StoreCard = ({
     favorite,
     ...props
 }: StoreCardProps) => {
+    const { styles, theme } = useStyles()
     const navigate = useNavigate()
     const [modal, contextHolder] = AntdModal.useModal()
     const cardRef = useRef<HTMLDivElement>(null)
@@ -77,7 +76,7 @@ const StoreCard = ({
         if (platform === 'ANDROID') {
             void modal.confirm({
                 centered: true,
-                icon: <Icon style={{ color: COLOR_MAIN }} component={IconOxygenInfo} />,
+                icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygenInfo} />,
                 title: 'Android 端',
                 content: (
                     <FlexBox className={styles.androidQrcode}>
@@ -115,8 +114,8 @@ const StoreCard = ({
         if (favorite_) {
             void r_tool_remove_favorite({
                 authorId: author.id,
-                toolId: toolId,
-                platform: platform
+                toolId,
+                platform
             }).then((res) => {
                 const response = res.data
                 if (response.success) {
@@ -128,8 +127,8 @@ const StoreCard = ({
         } else {
             void r_tool_add_favorite({
                 authorId: author.id,
-                toolId: toolId,
-                platform: platform
+                toolId,
+                platform
             }).then((res) => {
                 const response = res.data
                 if (response.success) {
@@ -145,7 +144,7 @@ const StoreCard = ({
         e.stopPropagation()
         void modal.confirm({
             centered: true,
-            icon: <Icon style={{ color: COLOR_MAIN }} component={IconOxygenInfo} />,
+            icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygenInfo} />,
             title: 'Android 端',
             content: (
                 <FlexBox className={styles.androidQrcode}>
@@ -200,17 +199,16 @@ const StoreCard = ({
                     toolId,
                     authorUsername: author.username,
                     ver: '',
-                    platform: platform
+                    platform
                 }}
             >
                 <Card
-                    className={styles.root}
                     style={{ overflow: 'visible', ...style }}
                     ref={cardRef}
                     {...props}
                     onClick={handleCardOnClick}
                 >
-                    <FlexBox className={styles.storeCard}>
+                    <FlexBox className={styles.root}>
                         <div className={styles.header}>
                             <div className={styles.version}>
                                 <AntdTag>
@@ -255,7 +253,7 @@ const StoreCard = ({
                                                 favorite_ ? IconOxygenStarFilled : IconOxygenStar
                                             }
                                             style={{
-                                                color: favorite_ ? COLOR_PRODUCTION : undefined
+                                                color: favorite_ ? theme.colorPrimary : undefined
                                             }}
                                             onClick={handleOnStarBtnClick}
                                         />
@@ -268,13 +266,14 @@ const StoreCard = ({
                             <img src={`data:image/svg+xml;base64,${icon}`} alt={'Icon'} />
                         </div>
                         <div className={styles.info}>
-                            <div className={styles.toolName}>{toolName}</div>
+                            <div className={styles.toolName} title={toolName}>
+                                {toolName}
+                            </div>
                             <div>{`ID: ${toolId}`}</div>
                             {toolDesc && (
-                                <div
-                                    className={styles.toolDesc}
-                                    title={toolDesc}
-                                >{`简介：${omitText(toolDesc, 18)}`}</div>
+                                <div className={styles.toolDesc} title={toolDesc}>
+                                    {omitTextByByte(toolDesc, 64)}
+                                </div>
                             )}
                         </div>
                         {showAuthor && (
@@ -288,7 +287,7 @@ const StoreCard = ({
                                                 alt={'Avatar'}
                                             />
                                         }
-                                        style={{ background: COLOR_BACKGROUND }}
+                                        style={{ background: theme.colorBgLayout }}
                                     />
                                 </div>
                                 <div className={styles.authorName}>{author.userInfo.nickname}</div>
