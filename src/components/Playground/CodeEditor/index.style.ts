@@ -3,7 +3,6 @@ import { createStyles } from 'antd-style'
 export default createStyles(({ token }) => ({
     root: {
         position: 'relative',
-        width: '100%',
         height: '100%'
     },
 
