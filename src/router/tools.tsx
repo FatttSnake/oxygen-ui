@@ -20,11 +20,6 @@ export const tools: RouteJsonObject[] = [
         menu: true
     },
     {
-        path: '',
-        absolutePath: '/',
-        element: <Navigate to="/store" replace />
-    },
-    {
         path: 'store/:username',
         absolutePath: '/store',
         id: 'tools-view-user',
@@ -82,7 +77,7 @@ export const tools: RouteJsonObject[] = [
     {
         path: '*',
         absolutePath: '*',
-        element: <Navigate to="/" replace />
+        element: <Navigate to="/store" replace />
     }
 ]
 
