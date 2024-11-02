@@ -1,9 +1,15 @@
 import useStyles from '@/assets/css/pages/tools/view.style'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
-import { checkDesktop, message } from '@/util/common'
+import {
+    checkDesktop,
+    generateThemeCssVariables,
+    message,
+    removeUselessAttributes
+} from '@/util/common'
 import { getLoginStatus } from '@/util/auth'
 import { navigateToRepository, navigateToRoot, navigateToView } from '@/util/navigation'
 import { r_tool_detail } from '@/services/tool'
+import { AppContext } from '@/App'
 import compiler from '@/components/Playground/compiler'
 import { IImportMap } from '@/components/Playground/shared'
 import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
@@ -12,7 +18,8 @@ import Playground from '@/components/Playground'
 import Card from '@/components/common/Card'
 
 const View = () => {
-    const { styles } = useStyles()
+    const { styles, theme } = useStyles()
+    const { isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
     const { username, toolId, ver } = useParams()
     const [searchParams] = useSearchParams({
@@ -134,6 +141,10 @@ const View = () => {
                     iframeKey={`${username}:${toolId}:${ver}`}
                     compiledCode={compiledCode}
                     mobileMode={isMobileMode}
+                    globalJsVariables={{
+                        OxygenTheme: { ...removeUselessAttributes(theme), isDarkMode }
+                    }}
+                    globalCssVariables={generateThemeCssVariables(theme).styles}
                 />
             </Card>
         </FitFullscreen>
