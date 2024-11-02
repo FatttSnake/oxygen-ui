@@ -11,14 +11,18 @@ interface RenderProps {
     iframeKey: string
     compiledCode: string
     mobileMode?: boolean
+    globalJsVariables?: Record<string, unknown>
+    globalCssVariables?: string
 }
 
 interface IMessage {
-    type: 'LOADED' | 'ERROR' | 'UPDATE' | 'DONE'
+    type: 'LOADED' | 'ERROR' | 'UPDATE' | 'DONE' | 'GLOBAL_VARIABLES'
     msg: string
     data: {
         compiledCode?: string
         zoom?: number
+        globalJsVariables?: Record<string, unknown>
+        globalCssVariables?: string
     }
 }
 
@@ -28,7 +32,13 @@ const getIframeUrl = (iframeRaw: string) => {
 
 const iframeUrl = getIframeUrl(iframeRaw)
 
-const Render = ({ iframeKey, compiledCode, mobileMode = false }: RenderProps) => {
+const Render = ({
+    iframeKey,
+    compiledCode,
+    mobileMode = false,
+    globalJsVariables,
+    globalCssVariables
+}: RenderProps) => {
     const { styles, theme } = useStyles()
     const { isDarkMode } = useContext(AppContext)
     const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -57,6 +67,16 @@ const Render = ({ iframeKey, compiledCode, mobileMode = false }: RenderProps) =>
         setIsRotate(!isRotate)
     }
 
+    const loadGlobalVariables = () => {
+        iframeRef.current?.contentWindow?.postMessage(
+            {
+                type: 'GLOBAL_VARIABLES',
+                data: { globalJsVariables, globalCssVariables }
+            } as IMessage,
+            '*'
+        )
+    }
+
     useEffect(() => {
         if (!isLoaded) {
             return
@@ -68,7 +88,15 @@ const Render = ({ iframeKey, compiledCode, mobileMode = false }: RenderProps) =>
             } as IMessage,
             '*'
         )
+        loadGlobalVariables()
     }, [isLoaded, compiledCode])
+
+    useEffect(() => {
+        if (!isLoaded) {
+            return
+        }
+        loadGlobalVariables()
+    }, [isLoaded, globalJsVariables, globalCssVariables])
 
     return mobileMode ? (
         <>
