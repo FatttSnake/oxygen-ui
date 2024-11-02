@@ -1,10 +1,12 @@
 import Draggable from 'react-draggable'
 import Icon from '@ant-design/icons'
-import '@/assets/css/pages/system/tools/code.scss'
+import useStyles from '@/assets/css/pages/system/tools/code.style'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
-import { checkDesktop } from '@/util/common'
+import { message, modal, checkDesktop, addExtraCssVariables } from '@/util/common'
 import { navigateToExecute, navigateToRepository } from '@/util/navigation'
+import editorExtraLibs from '@/util/editorExtraLibs'
 import { r_sys_tool_get_one } from '@/services/system'
+import { AppContext } from '@/App'
 import { IFiles } from '@/components/Playground/shared'
 import { base64ToFiles } from '@/components/Playground/files'
 import Playground from '@/components/Playground'
@@ -12,8 +14,9 @@ import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
 
 const Code = () => {
+    const { styles } = useStyles()
+    const { isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
-    const [modal, contextHolder] = AntdModal.useModal()
     const { id } = useParams()
     const [isLoading, setIsLoading] = useState(false)
     const [files, setFiles] = useState<IFiles>({})
@@ -61,8 +64,9 @@ const Code = () => {
                         render(response.data!)
                         break
                     case DATABASE_NO_RECORD_FOUND:
-                        void message.error('未找到指定工具')
-                        navigateToRepository(navigate)
+                        message.error('未找到指定工具').then(() => {
+                            navigateToRepository(navigate)
+                        })
                         break
                     default:
                         void message.error('获取工具信息失败，请稍后重试')
@@ -80,18 +84,21 @@ const Code = () => {
 
     return (
         <>
-            <FitFullscreen data-component={'system-tools-code'}>
-                <Card>
+            <FitFullscreen className={styles.root}>
+                <Card className={styles.rootBox}>
                     <Playground.CodeEditor
+                        isDarkMode={isDarkMode}
                         readonly
                         files={files}
                         selectedFileName={selectedFileName}
                         onSelectedFileChange={setSelectedFileName}
+                        extraLibs={editorExtraLibs}
+                        onEditorDidMount={(_, monaco) => addExtraCssVariables(monaco)}
                     />
                 </Card>
 
                 <Draggable bounds={'#root'}>
-                    <div className={'draggable-content'}>
+                    <div className={styles.draggableContent}>
                         <AntdFloatButton
                             type={'primary'}
                             icon={<Icon component={IconOxygenExecute} />}
@@ -100,7 +107,6 @@ const Code = () => {
                     </div>
                 </Draggable>
             </FitFullscreen>
-            {contextHolder}
         </>
     )
 }

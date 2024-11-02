@@ -1,8 +1,11 @@
+import useStyles from '@/assets/css/pages/system/statistics/common.style'
+import { message } from '@/util/common'
 import { r_sys_statistics_hardware } from '@/services/system'
 import FlexBox from '@/components/common/FlexBox'
 import StatisticsCard from '@/components/system/StatisticsCard'
 
 const HardwareInfo = () => {
+    const { styles } = useStyles()
     const [hardwareInfoData, setHardwareInfoData] = useState<HardwareInfoVo>()
 
     useEffect(() => {
@@ -22,8 +25,8 @@ const HardwareInfo = () => {
             title={'硬件信息'}
             loading={hardwareInfoData === undefined}
         >
-            <FlexBox className={'card-content'} direction={'horizontal'}>
-                <FlexBox className={'key'}>
+            <FlexBox className={styles.content} direction={'horizontal'}>
+                <FlexBox className={styles.key}>
                     <div>CPU</div>
                     <div>CPU 架构</div>
                     <div>微架构</div>
@@ -34,7 +37,7 @@ const HardwareInfo = () => {
                     <div>内存</div>
                     <div>磁盘</div>
                 </FlexBox>
-                <FlexBox className={'value'}>
+                <FlexBox className={styles.value}>
                     <div title={hardwareInfoData?.cpu}>{hardwareInfoData?.cpu}</div>
                     <div title={hardwareInfoData?.arch}>{hardwareInfoData?.arch}</div>
                     <div title={hardwareInfoData?.microarchitecture}>

@@ -1,8 +1,39 @@
 import { createRoot } from 'react-dom/client'
+import { editor, languages, Position } from 'monaco-editor'
+import { Monaco } from '@monaco-editor/react'
+import { MessageInstance } from 'antd/es/message/interface'
+import { HookAPI } from 'antd/es/modal/useModal'
+import { NotificationInstance } from 'antd/es/notification/interface'
+import { css, AntdToken, Theme } from 'antd-style'
 import { floor } from 'lodash'
-import { STORAGE_TOOL_MENU_ITEM_KEY } from '@/constants/common.constants'
+import {
+    STORAGE_COLLAPSE_SIDEBAR_KEY,
+    STORAGE_THEME_MODE_KEY,
+    STORAGE_TOOL_MENU_ITEM_KEY,
+    THEME_DARK,
+    THEME_FOLLOW_SYSTEM,
+    THEME_LIGHT
+} from '@/constants/common.constants'
 import { getLocalStorage, setLocalStorage } from '@/util/browser'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
+
+export type ThemeMode = typeof THEME_FOLLOW_SYSTEM | typeof THEME_LIGHT | typeof THEME_DARK
+
+let message: MessageInstance
+let notification: NotificationInstance
+let modal: HookAPI
+
+export const init = (
+    messageInstance: MessageInstance,
+    notificationInstance: NotificationInstance,
+    modalInstance: HookAPI
+) => {
+    message = messageInstance
+    notification = notificationInstance
+    modal = modalInstance
+}
+
+export { message, notification, modal }
 
 export const randomInt = (start: number, end: number) => {
     if (start > end) {
@@ -153,4 +184,376 @@ export const omitText = (text: string, length: number) => {
         return text
     }
     return `${text.substring(0, length)}...`
+}
+
+const getByteLength = (str: string) => {
+    let length = 0
+    for (let i = 0; i < str.length; i++) {
+        if (str.charCodeAt(i) > 255) {
+            length += 2
+        } else {
+            length++
+        }
+    }
+
+    return length
+}
+
+const substringByByte = (str: string, start: number, length: number) => {
+    let byteLength = 0
+    let result = ''
+
+    for (let i = 0; i < str.length; i++) {
+        const charCode = str.charCodeAt(i)
+        byteLength += charCode > 255 ? 2 : 1
+
+        if (byteLength > start + length) {
+            break
+        } else if (byteLength > start) {
+            result += str[i]
+        }
+    }
+
+    return result
+}
+
+export const omitTextByByte = (text: string, length: number) => {
+    if (getByteLength(text) <= length) {
+        return text
+    }
+    return `${substringByByte(text, 0, length)}...`
+}
+
+export const getSidebarCollapse = () => getLocalStorage(STORAGE_COLLAPSE_SIDEBAR_KEY) === 'true'
+
+export const setSidebarCollapse = (isCollapse: boolean) => {
+    setLocalStorage(STORAGE_COLLAPSE_SIDEBAR_KEY, isCollapse ? 'true' : 'false')
+}
+
+export const getThemeMode = (): ThemeMode => {
+    switch (getLocalStorage(STORAGE_THEME_MODE_KEY)) {
+        case THEME_FOLLOW_SYSTEM:
+        case THEME_LIGHT:
+        case THEME_DARK:
+            return getLocalStorage(STORAGE_THEME_MODE_KEY) as ThemeMode
+        default:
+            return THEME_FOLLOW_SYSTEM
+    }
+}
+
+export const setThemeMode = (themeMode: ThemeMode) => {
+    setLocalStorage(STORAGE_THEME_MODE_KEY, themeMode)
+}
+
+const cssColors = [
+    'blue',
+    'purple',
+    'cyan',
+    'green',
+    'magenta',
+    'pink',
+    'red',
+    'orange',
+    'yellow',
+    'volcano',
+    'geekblue',
+    'gold',
+    'lime'
+].reduce((prev: string[], current) => {
+    let temp: string[] = []
+    for (let i = 1; i <= 10; i++) {
+        temp = [...temp, `${current}${i}`]
+    }
+    return [...prev, current, ...temp]
+}, [])
+
+const cssVariables: string[] = [
+    ...cssColors,
+    'colorPrimary',
+    'colorSuccess',
+    'colorWarning',
+    'colorError',
+    'colorInfo',
+    'colorLink',
+    'colorTextBase',
+    'colorBgBase',
+    'fontFamily',
+    'fontFamilyCode',
+    'fontSize',
+    'lineWidth',
+    'lineType',
+    'motionUnit',
+    'motionBase',
+    'motionEaseOutCirc',
+    'motionEaseInOutCirc',
+    'motionEaseOut',
+    'motionEaseInOut',
+    'motionEaseOutBack',
+    'motionEaseInBack',
+    'motionEaseInQuint',
+    'motionEaseOutQuint',
+    'borderRadius',
+    'sizeUnit',
+    'sizeStep',
+    'sizePopupArrow',
+    'controlHeight',
+    'zIndexBase',
+    'zIndexPopupBase',
+    'opacityImage',
+    'colorLinkHover',
+    'colorText',
+    'colorTextSecondary',
+    'colorTextTertiary',
+    'colorTextQuaternary',
+    'colorFill',
+    'colorFillSecondary',
+    'colorFillTertiary',
+    'colorFillQuaternary',
+    'colorBgSolid',
+    'colorBgSolidHover',
+    'colorBgSolidActive',
+    'colorBgLayout',
+    'colorBgContainer',
+    'colorBgElevated',
+    'colorBgSpotlight',
+    'colorBgBlur',
+    'colorBorder',
+    'colorBorderSecondary',
+    'colorPrimaryBg',
+    'colorPrimaryBgHover',
+    'colorPrimaryBorder',
+    'colorPrimaryBorderHover',
+    'colorPrimaryHover',
+    'colorPrimaryActive',
+    'colorPrimaryTextHover',
+    'colorPrimaryText',
+    'colorPrimaryTextActive',
+    'colorSuccessBg',
+    'colorSuccessBgHover',
+    'colorSuccessBorder',
+    'colorSuccessBorderHover',
+    'colorSuccessHover',
+    'colorSuccessActive',
+    'colorSuccessTextHover',
+    'colorSuccessText',
+    'colorSuccessTextActive',
+    'colorErrorBg',
+    'colorErrorBgHover',
+    'colorErrorBgFilledHover',
+    'colorErrorBgActive',
+    'colorErrorBorder',
+    'colorErrorBorderHover',
+    'colorErrorHover',
+    'colorErrorActive',
+    'colorErrorTextHover',
+    'colorErrorText',
+    'colorErrorTextActive',
+    'colorWarningBg',
+    'colorWarningBgHover',
+    'colorWarningBorder',
+    'colorWarningBorderHover',
+    'colorWarningHover',
+    'colorWarningActive',
+    'colorWarningTextHover',
+    'colorWarningText',
+    'colorWarningTextActive',
+    'colorInfoBg',
+    'colorInfoBgHover',
+    'colorInfoBorder',
+    'colorInfoBorderHover',
+    'colorInfoHover',
+    'colorInfoActive',
+    'colorInfoTextHover',
+    'colorInfoText',
+    'colorInfoTextActive',
+    'colorLinkActive',
+    'colorBgMask',
+    'colorWhite',
+    'fontSizeSM',
+    'fontSizeLG',
+    'fontSizeXL',
+    'fontSizeHeading1',
+    'fontSizeHeading2',
+    'fontSizeHeading3',
+    'fontSizeHeading4',
+    'fontSizeHeading5',
+    'lineHeight',
+    'lineHeightLG',
+    'lineHeightSM',
+    'lineHeightHeading1',
+    'lineHeightHeading2',
+    'lineHeightHeading3',
+    'lineHeightHeading4',
+    'lineHeightHeading5',
+    'sizeXXL',
+    'sizeXL',
+    'sizeLG',
+    'sizeMD',
+    'sizeMS',
+    'size',
+    'sizeSM',
+    'sizeXS',
+    'sizeXXS',
+    'controlHeightSM',
+    'controlHeightXS',
+    'controlHeightLG',
+    'motionDurationFast',
+    'motionDurationMid',
+    'motionDurationSlow',
+    'lineWidthBold',
+    'borderRadiusXS',
+    'borderRadiusSM',
+    'borderRadiusLG',
+    'borderRadiusOuter',
+    'colorFillContent',
+    'colorFillContentHover',
+    'colorFillAlter',
+    'colorBgContainerDisabled',
+    'colorBorderBg',
+    'colorSplit',
+    'colorTextPlaceholder',
+    'colorTextDisabled',
+    'colorTextHeading',
+    'colorTextLabel',
+    'colorTextDescription',
+    'colorTextLightSolid',
+    'colorHighlight',
+    'colorBgTextHover',
+    'colorBgTextActive',
+    'colorIcon',
+    'colorIconHover',
+    'colorErrorOutline',
+    'colorWarningOutline',
+    'fontSizeIcon',
+    'lineWidthFocus',
+    'controlOutlineWidth',
+    'controlInteractiveSize',
+    'controlItemBgHover',
+    'controlItemBgActive',
+    'controlItemBgActiveHover',
+    'controlItemBgActiveDisabled',
+    'controlOutline',
+    'fontWeightStrong',
+    'opacityLoading',
+    'linkDecoration',
+    'linkHoverDecoration',
+    'linkFocusDecoration',
+    'controlPaddingHorizontal',
+    'controlPaddingHorizontalSM',
+    'paddingXXS',
+    'paddingXS',
+    'paddingSM',
+    'padding',
+    'paddingMD',
+    'paddingLG',
+    'paddingXL',
+    'paddingContentHorizontalLG',
+    'paddingContentVerticalLG',
+    'paddingContentHorizontal',
+    'paddingContentVertical',
+    'paddingContentHorizontalSM',
+    'paddingContentVerticalSM',
+    'marginXXS',
+    'marginXS',
+    'marginSM',
+    'margin',
+    'marginMD',
+    'marginLG',
+    'marginXL',
+    'marginXXL',
+    'boxShadow',
+    'boxShadowSecondary',
+    'boxShadowTertiary',
+    'screenXS',
+    'screenXSMin',
+    'screenXSMax',
+    'screenSM',
+    'screenSMMin',
+    'screenSMMax',
+    'screenMD',
+    'screenMDMin',
+    'screenMDMax',
+    'screenLG',
+    'screenLGMin',
+    'screenLGMax',
+    'screenXL',
+    'screenXLMin',
+    'screenXLMax',
+    'screenXXL',
+    'screenXXLMin'
+]
+
+export const generateThemeCssVariables = (theme: AntdToken) => {
+    const cssContent = cssVariables
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        .map((variable) => `--${variable}: ${theme[variable]};`)
+        .join('\n')
+
+    return css`
+        :root {
+            ${cssContent}
+        }
+    `
+}
+
+export const addExtraCssVariables = (monaco: Monaco) => {
+    monaco.languages.registerCompletionItemProvider('css', {
+        provideCompletionItems: (
+            model: editor.ITextModel,
+            position: Position
+        ): languages.ProviderResult<languages.CompletionList> => {
+            const textUntilPosition = model.getValueInRange({
+                startLineNumber: 1,
+                startColumn: 1,
+                endLineNumber: position.lineNumber,
+                endColumn: position.column
+            })
+            if (!textUntilPosition.match(/var\(([^)]*)$/)) {
+                return { suggestions: [] }
+            }
+
+            const word = model.getWordUntilPosition(position)
+            const range = new monaco.Range(
+                position.lineNumber,
+                word.startColumn,
+                position.lineNumber,
+                word.endColumn
+            )
+
+            return {
+                suggestions: cssVariables.map(
+                    (variable): languages.CompletionItem => ({
+                        label: `--${variable}`,
+                        kind: monaco.languages.CompletionItemKind.Variable,
+                        insertText: `--${variable}`,
+                        range,
+                        detail: 'Oxygen Theme Variable'
+                    })
+                )
+            }
+        }
+    })
+}
+
+export const removeUselessAttributes = (theme: Omit<Theme, 'prefixCls'>) => {
+    const {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        Tree,
+        appearance,
+        browserPrefers,
+        isDarkMode,
+        setAppearance,
+        setThemeMode,
+        stylish,
+        themeMode,
+        wireframe,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        _tokenKey,
+        ...result
+    } = theme
+
+    return result
 }

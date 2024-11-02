@@ -1,4 +1,8 @@
 import { PropsWithChildren } from 'react'
+import useStyles from '@/assets/css/components/common/sidebar/submenu.style'
+import { ItemContext } from '@/components/common/Sidebar/Item'
+
+export const SubmenuContext = createContext({ isInSubmenu: false })
 
 interface SidebarSubmenuProps extends PropsWithChildren {
     submenuTop: number
@@ -6,16 +10,21 @@ interface SidebarSubmenuProps extends PropsWithChildren {
 }
 
 const Submenu = (props: SidebarSubmenuProps) => {
+    const { styles, cx } = useStyles()
+    const { isHover } = useContext(ItemContext)
+
     return (
-        <ul
-            className={'submenu'}
-            style={{
-                top: props.submenuTop,
-                left: props.submenuLeft
-            }}
-        >
-            <div className={'content'}>{props.children}</div>
-        </ul>
+        <SubmenuContext.Provider value={{ isInSubmenu: true }}>
+            <ul
+                className={cx(styles.submenu, isHover ? styles.hoveredSubmenu : '')}
+                style={{
+                    top: props.submenuTop,
+                    left: props.submenuLeft - 1
+                }}
+            >
+                <div className={styles.content}>{props.children}</div>
+            </ul>
+        </SubmenuContext.Provider>
     )
 }
 

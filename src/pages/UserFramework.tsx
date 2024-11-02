@@ -1,4 +1,4 @@
-import '@/assets/css/pages/user-framework.scss'
+import useStyles from '@/assets/css/pages/user-framework.style'
 import user from '@/router/user'
 import { hasPathPermission } from '@/util/auth'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -6,10 +6,12 @@ import Sidebar from '@/components/common/Sidebar'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 const UserFramework = () => {
+    const { styles } = useStyles()
+
     return (
         <>
-            <FitFullscreen data-component={'user-framework'} className={'flex-horizontal'}>
-                <div className={'left-panel'}>
+            <FitFullscreen className={'flex-horizontal'}>
+                <div className={styles.leftPanel}>
                     <Sidebar
                         title={'个人中心'}
                         bottomFixed={
@@ -46,7 +48,7 @@ const UserFramework = () => {
                         </Sidebar.ItemList>
                     </Sidebar>
                 </div>
-                <div className={'right-panel'}>
+                <div className={styles.rightPanel}>
                     <Suspense
                         fallback={
                             <>

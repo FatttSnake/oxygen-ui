@@ -1,7 +1,9 @@
+import { Monaco } from '@monaco-editor/react'
+import { editor } from 'monaco-editor'
 import _ from 'lodash'
-import '@/components/Playground/CodeEditor/code-editor.scss'
+import useStyles from '@/components/Playground/CodeEditor/index.style'
 import FlexBox from '@/components/common/FlexBox'
-import { IEditorOptions, IFiles, ITheme, ITsconfig } from '@/components/Playground/shared'
+import { IEditorOptions, IFiles, ITsconfig } from '@/components/Playground/shared'
 import {
     fileNameToLanguage,
     getFileNameList,
@@ -9,10 +11,10 @@ import {
     TS_CONFIG_FILE_NAME
 } from '@/components/Playground/files'
 import FileSelector from '@/components/Playground/CodeEditor/FileSelector'
-import Editor from '@/components/Playground/CodeEditor/Editor'
+import Editor, { ExtraLib } from '@/components/Playground/CodeEditor/Editor'
 
 interface CodeEditorProps {
-    theme?: ITheme
+    isDarkMode?: boolean
     showFileSelector?: boolean
     tsconfig?: ITsconfig
     files: IFiles
@@ -21,6 +23,8 @@ interface CodeEditorProps {
     notRemovable?: string[]
     selectedFileName?: string
     options?: IEditorOptions
+    extraLibs?: ExtraLib[]
+    onEditorDidMount?: (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => void
     onSelectedFileChange?: (fileName: string) => void
     onAddFile?: (fileName: string, files: IFiles) => void
     onRemoveFile?: (fileName: string, files: IFiles) => void
@@ -30,7 +34,7 @@ interface CodeEditorProps {
 }
 
 const CodeEditor = ({
-    theme,
+    isDarkMode,
     showFileSelector = true,
     tsconfig,
     files,
@@ -44,8 +48,11 @@ const CodeEditor = ({
     onRenameFile,
     onChangeFileContent,
     onError,
+    extraLibs,
+    onEditorDidMount,
     ...props
 }: CodeEditorProps) => {
+    const { styles } = useStyles()
     const filteredFilesName = getFileNameList(files).filter(
         (item) => ![IMPORT_MAP_FILE_NAME, TS_CONFIG_FILE_NAME].includes(item) && !files[item].hidden
     )
@@ -120,7 +127,7 @@ const CodeEditor = ({
 
     return (
         <>
-            <FlexBox data-component={'playground-code-editor'}>
+            <FlexBox className={styles.root}>
                 {showFileSelector && (
                     <FileSelector
                         files={files}
@@ -137,8 +144,8 @@ const CodeEditor = ({
                     />
                 )}
                 <Editor
+                    isDarkMode={isDarkMode}
                     tsconfig={tsconfig}
-                    theme={theme}
                     selectedFileName={
                         onSelectedFileChange ? propsSelectedFileName : selectedFileName
                     }
@@ -153,8 +160,10 @@ const CodeEditor = ({
                     }
                     onChange={handleOnChangeFileContent}
                     onJumpFile={handleOnChangeSelectedFile}
+                    extraLibs={extraLibs}
+                    onEditorDidMount={onEditorDidMount}
                 />
-                {errorMsg && <div className={'playground-error-message'}>{errorMsg}</div>}
+                {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
             </FlexBox>
         </>
     )

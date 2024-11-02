@@ -1,13 +1,14 @@
 import Icon from '@ant-design/icons'
-import '@/assets/css/pages/user/index.scss'
+import useStyles from '@/assets/css/pages/user/index.style'
 import {
-    COLOR_BACKGROUND,
-    COLOR_ERROR,
-    COLOR_PRODUCTION,
+    THEME_DARK,
+    THEME_FOLLOW_SYSTEM,
+    THEME_LIGHT,
     DATABASE_UPDATE_SUCCESS,
     PERMISSION_ACCESS_DENIED,
     PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR
 } from '@/constants/common.constants'
+import { message, notification, modal, getThemeMode, ThemeMode, setThemeMode } from '@/util/common'
 import { utcToLocalTime } from '@/util/datetime'
 import { getUserInfo, removeToken } from '@/util/auth'
 import { r_sys_user_info_change_password, r_sys_user_info_update } from '@/services/system'
@@ -22,12 +23,8 @@ import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import HideScrollbar from '@/components/common/HideScrollbar'
 
-interface ChangePasswordFields extends UserUpdatePasswordParam {
-    newPasswordConfirm: string
-}
-
 const User = () => {
-    const [modal, contextHolder] = AntdModal.useModal()
+    const { styles, theme } = useStyles()
     const [form] = AntdForm.useForm<UserInfoUpdateParam>()
     const formValues = AntdForm.useWatch([], form)
     const [twoFactorForm] = AntdForm.useForm<{ twoFactorCode: string }>()
@@ -37,7 +34,7 @@ const User = () => {
     const [isGettingAvatar, setIsGettingAvatar] = useState(false)
     const [avatar, setAvatar] = useState('')
     const [userWithPowerInfoVo, setUserWithPowerInfoVo] = useState<UserWithPowerInfoVo>()
-    const [changePasswordForm] = AntdForm.useForm<ChangePasswordFields>()
+    const [changePasswordForm] = AntdForm.useForm<UserChangePasswordParam>()
 
     const handleOnCopyToClipboard = (username?: string) => {
         return username
@@ -107,7 +104,7 @@ const User = () => {
             title: (
                 <>
                     <Icon
-                        style={{ color: COLOR_PRODUCTION, marginRight: 10 }}
+                        style={{ color: theme.colorPrimary, marginRight: 10 }}
                         component={IconOxygenSetting}
                     />
                     修改密码
@@ -127,7 +124,6 @@ const User = () => {
                     wrapperCol={{ span: 18 }}
                     ref={() => {
                         setTimeout(() => {
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
                             changePasswordForm?.getFieldInstance('originalPassword').focus()
                         }, 50)
                     }}
@@ -187,20 +183,19 @@ const User = () => {
                                 const response = res.data
                                 switch (response.code) {
                                     case DATABASE_UPDATE_SUCCESS:
-                                        void message.success('密码修改成功，请重新登录')
                                         removeToken()
                                         notification.info({
                                             message: '已退出登录',
                                             icon: (
                                                 <Icon
                                                     component={IconOxygenExit}
-                                                    style={{ color: COLOR_ERROR }}
+                                                    style={{ color: theme.colorErrorText }}
                                                 />
                                             )
                                         })
-                                        setTimeout(() => {
+                                        message.success('密码修改成功，请重新登录').then(() => {
                                             window.location.reload()
-                                        }, 1500)
+                                        })
                                         resolve()
                                         break
                                     case PERMISSION_ACCESS_DENIED:
@@ -260,10 +255,8 @@ const User = () => {
                                         form={twoFactorForm}
                                         ref={() => {
                                             setTimeout(() => {
-                                                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                                                 twoFactorForm
                                                     ?.getFieldInstance('twoFactorCode')
-                                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                                                     .focus()
                                             }, 50)
                                         }}
@@ -321,7 +314,7 @@ const User = () => {
                     return
                 }
                 setIsLoading(true)
-                void message.loading({ content: '加载中', key: 'LOADING', duration: 0 })
+                void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
                 void r_auth_two_factor_create()
                     .then((res) => {
                         message.destroy('LOADING')
@@ -352,10 +345,8 @@ const User = () => {
                                             form={twoFactorForm}
                                             ref={() => {
                                                 setTimeout(() => {
-                                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                                                     twoFactorForm
                                                         ?.getFieldInstance('twoFactorCode')
-                                                        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                                                         .focus()
                                                 }, 50)
                                             }}
@@ -458,194 +449,195 @@ const User = () => {
     }, [])
 
     return (
-        <>
-            <FitFullscreen data-component={'user'}>
-                <HideScrollbar
-                    isShowVerticalScrollbar
-                    autoHideWaitingTime={1000}
-                    className={'root-content'}
-                >
-                    <Card>
-                        <FlexBox className={'info'} direction={'horizontal'}>
-                            <AntdTooltip title={'点击获取新头像'}>
-                                <div className={'avatar-box'}>
-                                    <AntdAvatar
-                                        src={
-                                            <img
-                                                src={`data:image/png;base64,${avatar}`}
-                                                alt={'Avatar'}
-                                            />
-                                        }
-                                        size={144}
-                                        style={{
-                                            background: COLOR_BACKGROUND,
-                                            cursor: 'pointer'
-                                        }}
-                                        className={'avatar'}
-                                        onClick={handleOnChangeAvatar}
-                                    />
-                                </div>
-                            </AntdTooltip>
-                            <FlexBox className={'info-name'}>
-                                <div className={'nickname'}>
-                                    {userWithPowerInfoVo?.userInfo.nickname}
-                                </div>
-                                <a
-                                    className={'url'}
-                                    onClick={handleOnCopyToClipboard(userWithPowerInfoVo?.username)}
-                                >
-                                    {userWithPowerInfoVo?.username &&
-                                        new URL(
-                                            `/store/${userWithPowerInfoVo.username}`,
-                                            import.meta.env.VITE_UI_URL
-                                        ).href}
-                                    <Icon component={IconOxygenCopy} />
-                                </a>
-                            </FlexBox>
+        <FitFullscreen>
+            <HideScrollbar
+                isShowVerticalScrollbar
+                autoHideWaitingTime={1000}
+                className={styles.root}
+            >
+                <Card className={styles.content}>
+                    <FlexBox className={styles.info} direction={'horizontal'}>
+                        <AntdTooltip title={'点击获取新头像'}>
+                            <div className={styles.avatarBox}>
+                                <AntdAvatar
+                                    src={
+                                        <img
+                                            src={`data:image/png;base64,${avatar}`}
+                                            alt={'Avatar'}
+                                        />
+                                    }
+                                    size={144}
+                                    style={{
+                                        background: theme.colorBgLayout,
+                                        cursor: 'pointer'
+                                    }}
+                                    className={styles.avatar}
+                                    onClick={handleOnChangeAvatar}
+                                />
+                            </div>
+                        </AntdTooltip>
+                        <FlexBox className={styles.infoName}>
+                            <div className={styles.nickname}>
+                                {userWithPowerInfoVo?.userInfo.nickname}
+                            </div>
+                            <a
+                                className={styles.url}
+                                onClick={handleOnCopyToClipboard(userWithPowerInfoVo?.username)}
+                            >
+                                {userWithPowerInfoVo?.username &&
+                                    new URL(
+                                        `/store/${userWithPowerInfoVo.username}`,
+                                        import.meta.env.VITE_UI_URL
+                                    ).href}
+                                <Icon component={IconOxygenCopy} />
+                            </a>
                         </FlexBox>
-                        <FlexBox className={'title'}>
-                            <FlexBox direction={'horizontal'} className={'content'}>
-                                <div className={'text'}>档案管理</div>
-                                <FlexBox className={'operation'} direction={'horizontal'}>
-                                    <AntdButton onClick={handleOnReset} loading={isLoading}>
-                                        重置
-                                    </AntdButton>
-                                    <AntdButton
-                                        onClick={handleOnSave}
-                                        type={'primary'}
-                                        disabled={isLoading || !isSubmittable}
+                    </FlexBox>
+                    <FlexBox direction={'horizontal'} className={styles.header}>
+                        <div className={styles.title}>档案管理</div>
+                        <FlexBox className={styles.operation} direction={'horizontal'}>
+                            <AntdButton onClick={handleOnReset} loading={isLoading}>
+                                重置
+                            </AntdButton>
+                            <AntdButton
+                                onClick={handleOnSave}
+                                type={'primary'}
+                                disabled={isLoading || !isSubmittable}
+                            >
+                                保存
+                            </AntdButton>
+                        </FlexBox>
+                    </FlexBox>
+                    <div className={styles.divider} />
+                    <FlexBox className={styles.list}>
+                        <FlexBox className={styles.row} direction={'horizontal'}>
+                            <div className={styles.label}>昵称</div>
+                            <div className={styles.input}>
+                                <AntdForm form={form}>
+                                    <AntdForm.Item
+                                        name={'nickname'}
+                                        rules={[
+                                            { required: true, whitespace: true },
+                                            { min: 3, message: '昵称至少为3个字符' }
+                                        ]}
+                                        style={{ marginBottom: 0 }}
                                     >
-                                        保存
-                                    </AntdButton>
-                                </FlexBox>
-                            </FlexBox>
-                        </FlexBox>
-                        <div className={'divide'} />
-                        <FlexBox className={'profile table'}>
-                            <FlexBox className={'row'} direction={'horizontal'}>
-                                <div className={'label'}>昵称</div>
-                                <div className={'input'}>
-                                    <AntdForm form={form}>
-                                        <AntdForm.Item
-                                            name={'nickname'}
-                                            rules={[
-                                                { required: true, whitespace: true },
-                                                { min: 3, message: '昵称至少为3个字符' }
-                                            ]}
-                                            style={{ marginBottom: 0 }}
-                                        >
-                                            <AntdInput
-                                                maxLength={20}
-                                                showCount
-                                                disabled={isLoading}
-                                                placeholder={'请输入昵称'}
-                                            />
-                                        </AntdForm.Item>
-                                    </AntdForm>
-                                </div>
-                            </FlexBox>
-                            <FlexBox className={'row'} direction={'horizontal'}>
-                                <div className={'label'}>用户名</div>
-                                <div className={'input'}>
-                                    <AntdInput disabled value={userWithPowerInfoVo?.username} />
-                                </div>
-                            </FlexBox>
-                            <FlexBox className={'row'} direction={'horizontal'}>
-                                <div className={'label'}>邮箱</div>
-                                <div className={'input'}>
-                                    <AntdInput
-                                        disabled
-                                        value={userWithPowerInfoVo?.userInfo.email}
-                                    />
-                                </div>
-                            </FlexBox>
-                            <FlexBox className={'row'} direction={'horizontal'}>
-                                <div className={'label'}>注册时间</div>
-                                <div className={'input'}>
-                                    <AntdInput
-                                        disabled
-                                        value={utcToLocalTime(
-                                            userWithPowerInfoVo?.createTime ?? ''
-                                        )}
-                                    />
-                                </div>
-                            </FlexBox>
-                        </FlexBox>
-                        <div className={'divide'} />
-                        <FlexBox className={'security table'}>
-                            <FlexBox className={'row'} direction={'horizontal'}>
-                                <div className={'label'}>上次登录 IP</div>
-                                <div className={'input'}>
-                                    <AntdInput disabled value={userWithPowerInfoVo?.lastLoginIp} />
-                                </div>
-                            </FlexBox>
-                            <FlexBox className={'row'} direction={'horizontal'}>
-                                <div className={'label'}>上次登录时间</div>
-                                <div className={'input'}>
-                                    <AntdInput
-                                        disabled
-                                        value={utcToLocalTime(
-                                            userWithPowerInfoVo?.lastLoginTime ?? ''
-                                        )}
-                                    />
-                                </div>
-                            </FlexBox>
-                            <FlexBox className={'row'} direction={'horizontal'}>
-                                <div className={'label'}>密码</div>
-                                <div className={'input'}>
-                                    <AntdSpace.Compact>
-                                        <AntdInput disabled value={'********'} />
-                                        <AntdButton
-                                            type={'primary'}
-                                            title={'更改密码'}
-                                            disabled={isLoading}
-                                            onClick={handleOnChangePassword}
-                                        >
-                                            <Icon component={IconOxygenRefresh} />
-                                        </AntdButton>
-                                    </AntdSpace.Compact>
-                                </div>
-                            </FlexBox>
-                            <FlexBox className={'row'} direction={'horizontal'}>
-                                <div className={'label'}>双因素</div>
-                                <div className={'input'}>
-                                    <AntdSpace.Compact>
                                         <AntdInput
-                                            disabled
-                                            style={{
-                                                color: userWithPowerInfoVo?.twoFactor
-                                                    ? COLOR_PRODUCTION
-                                                    : undefined
-                                            }}
-                                            value={
-                                                userWithPowerInfoVo?.twoFactor ? '已设置' : '未设置'
+                                            maxLength={20}
+                                            showCount
+                                            disabled={isLoading}
+                                            placeholder={'请输入昵称'}
+                                        />
+                                    </AntdForm.Item>
+                                </AntdForm>
+                            </div>
+                        </FlexBox>
+                        <FlexBox className={styles.row} direction={'horizontal'}>
+                            <div className={styles.label}>用户名</div>
+                            <div className={styles.input}>
+                                <AntdInput disabled value={userWithPowerInfoVo?.username} />
+                            </div>
+                        </FlexBox>
+                        <FlexBox className={styles.row} direction={'horizontal'}>
+                            <div className={styles.label}>邮箱</div>
+                            <div className={styles.input}>
+                                <AntdInput disabled value={userWithPowerInfoVo?.userInfo.email} />
+                            </div>
+                        </FlexBox>
+                        <FlexBox className={styles.row} direction={'horizontal'}>
+                            <div className={styles.label}>注册时间</div>
+                            <div className={styles.input}>
+                                <AntdInput
+                                    disabled
+                                    value={utcToLocalTime(userWithPowerInfoVo?.createTime ?? '')}
+                                />
+                            </div>
+                        </FlexBox>
+                    </FlexBox>
+                    <div className={styles.divider} />
+                    <FlexBox className={styles.list}>
+                        <FlexBox className={styles.row} direction={'horizontal'}>
+                            <div className={styles.label}>主题</div>
+                            <div className={styles.input}>
+                                <AntdSegmented<ThemeMode>
+                                    options={[
+                                        { label: '跟随系统', value: THEME_FOLLOW_SYSTEM },
+                                        { label: '亮色', value: THEME_LIGHT },
+                                        { label: '深色', value: THEME_DARK }
+                                    ]}
+                                    defaultValue={getThemeMode()}
+                                    onChange={setThemeMode}
+                                    block
+                                />
+                            </div>
+                        </FlexBox>
+                        <FlexBox className={styles.row} direction={'horizontal'}>
+                            <div className={styles.label}>上次登录 IP</div>
+                            <div className={styles.input}>
+                                <AntdInput disabled value={userWithPowerInfoVo?.lastLoginIp} />
+                            </div>
+                        </FlexBox>
+                        <FlexBox className={styles.row} direction={'horizontal'}>
+                            <div className={styles.label}>上次登录时间</div>
+                            <div className={styles.input}>
+                                <AntdInput
+                                    disabled
+                                    value={utcToLocalTime(userWithPowerInfoVo?.lastLoginTime ?? '')}
+                                />
+                            </div>
+                        </FlexBox>
+                        <FlexBox className={styles.row} direction={'horizontal'}>
+                            <div className={styles.label}>密码</div>
+                            <div className={styles.input}>
+                                <AntdSpace.Compact>
+                                    <AntdInput disabled value={'********'} />
+                                    <AntdButton
+                                        type={'primary'}
+                                        title={'更改密码'}
+                                        disabled={isLoading}
+                                        onClick={handleOnChangePassword}
+                                    >
+                                        <Icon component={IconOxygenRefresh} />
+                                    </AntdButton>
+                                </AntdSpace.Compact>
+                            </div>
+                        </FlexBox>
+                        <FlexBox className={styles.row} direction={'horizontal'}>
+                            <div className={styles.label}>双因素</div>
+                            <div className={styles.input}>
+                                <AntdSpace.Compact>
+                                    <AntdInput
+                                        disabled
+                                        style={{
+                                            color: userWithPowerInfoVo?.twoFactor
+                                                ? theme.colorPrimary
+                                                : undefined
+                                        }}
+                                        value={userWithPowerInfoVo?.twoFactor ? '已设置' : '未设置'}
+                                    />
+                                    <AntdButton
+                                        type={'primary'}
+                                        title={userWithPowerInfoVo?.twoFactor ? '解绑' : '绑定'}
+                                        disabled={isLoading}
+                                        onClick={handleOnChangeTwoFactor(
+                                            userWithPowerInfoVo?.twoFactor ?? false
+                                        )}
+                                    >
+                                        <Icon
+                                            component={
+                                                userWithPowerInfoVo?.twoFactor
+                                                    ? IconOxygenUnlock
+                                                    : IconOxygenLock
                                             }
                                         />
-                                        <AntdButton
-                                            type={'primary'}
-                                            title={userWithPowerInfoVo?.twoFactor ? '解绑' : '绑定'}
-                                            disabled={isLoading}
-                                            onClick={handleOnChangeTwoFactor(
-                                                userWithPowerInfoVo?.twoFactor ?? false
-                                            )}
-                                        >
-                                            <Icon
-                                                component={
-                                                    userWithPowerInfoVo?.twoFactor
-                                                        ? IconOxygenUnlock
-                                                        : IconOxygenLock
-                                                }
-                                            />
-                                        </AntdButton>
-                                    </AntdSpace.Compact>
-                                </div>
-                            </FlexBox>
+                                    </AntdButton>
+                                </AntdSpace.Compact>
+                            </div>
                         </FlexBox>
-                    </Card>
-                </HideScrollbar>
-            </FitFullscreen>
-            {contextHolder}
-        </>
+                    </FlexBox>
+                </Card>
+            </HideScrollbar>
+        </FitFullscreen>
     )
 }
 

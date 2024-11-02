@@ -1,10 +1,11 @@
 import Icon from '@ant-design/icons'
-import '@/assets/css/pages/tools/create.scss'
+import useStyles from '@/assets/css/pages/tools/create.style'
 import {
     DATABASE_DUPLICATE_KEY,
     DATABASE_INSERT_SUCCESS,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
+import { generateThemeCssVariables, message, removeUselessAttributes } from '@/util/common'
 import { navigateToEdit } from '@/util/navigation'
 import {
     r_tool_category_get,
@@ -12,6 +13,7 @@ import {
     r_tool_template_get,
     r_tool_template_get_one
 } from '@/services/tool'
+import { AppContext } from '@/App'
 import compiler from '@/components/Playground/compiler'
 import { IImportMap } from '@/components/Playground/shared'
 import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
@@ -22,6 +24,8 @@ import HideScrollbar from '@/components/common/HideScrollbar'
 import Playground from '@/components/Playground'
 
 const Create = () => {
+    const { styles, theme } = useStyles()
+    const { isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
     const [form] = AntdForm.useForm<ToolCreateParam>()
     const formValues = AntdForm.useWatch([], form)
@@ -74,7 +78,6 @@ const Create = () => {
 
         const reader = new FileReader()
         reader.addEventListener('load', () => {
-            // eslint-disable-next-line @typescript-eslint/no-base-to-string
             form.setFieldValue('icon', reader.result!.toString().split(',')[1])
             void form.validateFields(['icon'])
         })
@@ -163,7 +166,7 @@ const Create = () => {
                 temp.push(item)
             }
         })
-        form.setFieldValue('keyword', temp)
+        form.setFieldValue('keywords', temp)
     }, [form, formValues?.keywords])
 
     useEffect(() => {
@@ -185,15 +188,15 @@ const Create = () => {
     }, [])
 
     return (
-        <FitFullscreen data-component={'tools-create'}>
-            <FlexBox direction={'horizontal'} className={'root-content'}>
+        <FitFullscreen>
+            <FlexBox direction={'horizontal'} className={styles.root}>
                 <FlexBox>
-                    <Card className={'title'}>
+                    <Card className={styles.title}>
                         <FlexBox>配置</FlexBox>
                     </Card>
-                    <Card className={'config'}>
+                    <Card>
                         <HideScrollbar>
-                            <div className={'config-content'}>
+                            <div className={styles.config}>
                                 <AntdForm
                                     form={form}
                                     layout={'vertical'}
@@ -356,7 +359,7 @@ const Create = () => {
                                     </AntdForm.Item>
                                     <AntdForm.Item>
                                         <AntdButton
-                                            className={'create-bt'}
+                                            className={styles.createBt}
                                             type={'primary'}
                                             htmlType={'submit'}
                                             loading={isCreating}
@@ -370,18 +373,22 @@ const Create = () => {
                     </Card>
                 </FlexBox>
                 <FlexBox>
-                    <Card className={'title'}>
+                    <Card className={styles.title}>
                         <FlexBox>预览</FlexBox>
                     </Card>
-                    <Card className={'preview'}>
+                    <Card className={styles.preview}>
                         {compiledCode ? (
                             <Playground.Output.Preview.Render
                                 iframeKey={previewTemplate}
                                 compiledCode={compiledCode}
                                 mobileMode={formValues.platform === 'ANDROID'}
+                                globalJsVariables={{
+                                    OxygenTheme: { ...removeUselessAttributes(theme), isDarkMode }
+                                }}
+                                globalCssVariables={generateThemeCssVariables(theme).styles}
                             />
                         ) : (
-                            <span className={'no-preview'}>暂无预览</span>
+                            <span className={styles.noPreview}>暂无预览</span>
                         )}
                     </Card>
                 </FlexBox>

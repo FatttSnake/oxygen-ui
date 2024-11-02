@@ -1,6 +1,7 @@
 import { DetailedHTMLProps, HTMLAttributes } from 'react'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
-import '@/assets/css/components/tools/repository-card.scss'
+import useStyles from '@/assets/css/components/tools/repository-card.style'
+import { omitTextByByte } from '@/util/common'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import Draggable from '@/components/dnd/Draggable'
@@ -11,6 +12,7 @@ interface RepositoryCardProps
     icon: string
     toolName: string
     toolId: string
+    toolDesc?: string
     ver: string
     platform: Platform
     options?: TiltOptions
@@ -24,11 +26,11 @@ interface RepositoryCardProps
 
 const RepositoryCard = ({
     style,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ref,
     icon,
     toolName,
     toolId,
+    toolDesc,
     ver,
     platform,
     options = {
@@ -47,6 +49,7 @@ const RepositoryCard = ({
     children,
     ...props
 }: RepositoryCardProps) => {
+    const { styles } = useStyles()
     const cardRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -58,32 +61,32 @@ const RepositoryCard = ({
             id={`!:${toolId}:${ver}:${platform}`}
             data={{ icon, toolName, toolId, authorUsername: '!', ver, platform }}
         >
-            <Card
-                data-component={'component-repository-card'}
-                style={{ overflow: 'visible', ...style }}
-                ref={cardRef}
-                {...props}
-            >
-                <FlexBox className={'repository-card'}>
-                    <div className={'header'}>
+            <Card style={{ ...style }} ref={cardRef} {...props}>
+                <FlexBox className={styles.root}>
+                    <div className={styles.header}>
                         {children}
                         <DragHandle />
                     </div>
-                    <div className={'icon'}>
+                    <div className={styles.icon}>
                         <img src={`data:image/svg+xml;base64,${icon}`} alt={'Icon'} />
                     </div>
-                    <div className={'info'}>
-                        <div className={'tool-name'}>{toolName}</div>
-                        <div className={'tool-id'}>{`ID: ${toolId}`}</div>
+                    <div className={styles.info}>
+                        <div className={styles.toolName} title={toolName}>
+                            {toolName}
+                        </div>
+                        <div>{`ID: ${toolId}`}</div>
+                        <div className={styles.toolDesc} title={toolDesc}>
+                            {toolDesc && omitTextByByte(toolDesc, 64)}
+                        </div>
                     </div>
-                    <div className={'operation'}>
+                    <div className={styles.operation}>
                         {onOpen && (
                             <AntdButton onClick={onOpen} size={'small'} type={'primary'}>
                                 打开
                             </AntdButton>
                         )}
                         {onEdit && onPublish && (
-                            <div className={'edit'}>
+                            <div className={styles.edit}>
                                 <AntdButton.Group size={'small'}>
                                     <AntdButton onClick={onEdit}>编辑</AntdButton>
                                     <AntdButton onClick={onPublish}>发布</AntdButton>

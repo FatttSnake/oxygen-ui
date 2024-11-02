@@ -1,8 +1,15 @@
-import '@/assets/css/pages/tools/view.scss'
+import useStyles from '@/assets/css/pages/tools/view.style'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import {
+    checkDesktop,
+    generateThemeCssVariables,
+    message,
+    removeUselessAttributes
+} from '@/util/common'
 import { getLoginStatus } from '@/util/auth'
 import { navigateToRepository, navigateToRoot, navigateToView } from '@/util/navigation'
 import { r_tool_detail } from '@/services/tool'
+import { AppContext } from '@/App'
 import compiler from '@/components/Playground/compiler'
 import { IImportMap } from '@/components/Playground/shared'
 import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
@@ -11,6 +18,8 @@ import Playground from '@/components/Playground'
 import Card from '@/components/common/Card'
 
 const View = () => {
+    const { styles, theme } = useStyles()
+    const { isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
     const { username, toolId, ver } = useParams()
     const [searchParams] = useSearchParams({
@@ -18,10 +27,21 @@ const View = () => {
     })
     const [isLoading, setIsLoading] = useState(false)
     const [compiledCode, setCompiledCode] = useState('')
-    const [isAndroid, setIsAndroid] = useState(false)
+    const [isMobileMode, setIsMobileMode] = useState(false)
 
     const render = (toolVo: ToolVo) => {
-        setIsAndroid(toolVo.platform === 'ANDROID')
+        switch (toolVo.platform) {
+            case 'ANDROID':
+                setIsMobileMode(true)
+                break
+            case 'DESKTOP':
+                if (!checkDesktop()) {
+                    message.warning('此应用需要桌面端环境，请在桌面端打开').then(() => {
+                        navigateToRepository(navigate)
+                    })
+                    return
+                }
+        }
         if (username === '!') {
             try {
                 const baseDist = base64ToStr(toolVo.base.dist.data!)
@@ -77,8 +97,9 @@ const View = () => {
                         render(response.data!)
                         break
                     case DATABASE_NO_RECORD_FOUND:
-                        void message.error('未找到指定工具')
-                        navigateToRepository(navigate)
+                        void message.error('未找到指定工具').then(() => {
+                            navigateToRepository(navigate)
+                        })
                         break
                     default:
                         void message.error('获取工具信息失败，请稍后重试')
@@ -97,8 +118,9 @@ const View = () => {
             return
         }
         if (username === '!' && !getLoginStatus()) {
-            void message.error('未登录')
-            navigateToRoot(navigate)
+            void message.error('未登录').then(() => {
+                navigateToRoot(navigate)
+            })
             return
         }
         if (username !== '!' && ver) {
@@ -113,12 +135,16 @@ const View = () => {
     }, [username, toolId, ver, searchParams])
 
     return (
-        <FitFullscreen data-component={'tools-view'}>
-            <Card>
+        <FitFullscreen className={styles.root}>
+            <Card className={styles.content}>
                 <Playground.Output.Preview.Render
                     iframeKey={`${username}:${toolId}:${ver}`}
                     compiledCode={compiledCode}
-                    mobileMode={isAndroid}
+                    mobileMode={isMobileMode}
+                    globalJsVariables={{
+                        OxygenTheme: { ...removeUselessAttributes(theme), isDarkMode }
+                    }}
+                    globalCssVariables={generateThemeCssVariables(theme).styles}
                 />
             </Card>
         </FitFullscreen>

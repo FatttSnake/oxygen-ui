@@ -1,6 +1,6 @@
-import '@/assets/css/pages/tools/edit.scss'
 import Draggable from 'react-draggable'
 import Icon from '@ant-design/icons'
+import useStyles from '@/assets/css/pages/tools/edit.style'
 import {
     DATABASE_NO_RECORD_FOUND,
     DATABASE_SELECT_SUCCESS,
@@ -8,8 +8,16 @@ import {
     TOOL_HAS_BEEN_PUBLISHED,
     TOOL_UNDER_REVIEW
 } from '@/constants/common.constants'
+import {
+    addExtraCssVariables,
+    generateThemeCssVariables,
+    message,
+    removeUselessAttributes
+} from '@/util/common'
 import { navigateToRepository } from '@/util/navigation'
+import editorExtraLibs from '@/util/editorExtraLibs'
 import { r_tool_category_get, r_tool_detail, r_tool_update } from '@/services/tool'
+import { AppContext } from '@/App'
 import { IFiles, IImportMap, ITsconfig } from '@/components/Playground/shared'
 import {
     base64ToFiles,
@@ -25,6 +33,8 @@ import LoadingMask from '@/components/common/LoadingMask'
 import Card from '@/components/common/Card'
 
 const Edit = () => {
+    const { styles, theme } = useStyles()
+    const { isDarkMode } = useContext(AppContext)
     const blocker = useBlocker(
         ({ currentLocation, nextLocation }) =>
             currentLocation.pathname !== nextLocation.pathname && hasEdited
@@ -117,12 +127,14 @@ const Edit = () => {
                         getTool()
                         break
                     case TOOL_UNDER_REVIEW:
-                        void message.error('保存失败：工具审核中')
-                        navigateToRepository(navigate)
+                        message.error('保存失败：工具审核中').then(() => {
+                            navigateToRepository(navigate)
+                        })
                         break
                     case TOOL_HAS_BEEN_PUBLISHED:
-                        void message.error('保存失败：工具已发布')
-                        navigateToRepository(navigate)
+                        message.error('保存失败：工具已发布').then(() => {
+                            navigateToRepository(navigate)
+                        })
                         break
                     default:
                         void message.error('保存失败，请稍后重试')
@@ -151,7 +163,6 @@ const Edit = () => {
 
         const reader = new FileReader()
         reader.addEventListener('load', () => {
-            // eslint-disable-next-line @typescript-eslint/no-base-to-string
             form.setFieldValue('icon', reader.result!.toString().split(',')[1])
             void form.validateFields(['icon'])
         })
@@ -179,12 +190,14 @@ const Edit = () => {
                         getTool()
                         break
                     case TOOL_UNDER_REVIEW:
-                        void message.error('保存失败：工具审核中')
-                        navigateToRepository(navigate)
+                        message.error('保存失败：工具审核中').then(() => {
+                            navigateToRepository(navigate)
+                        })
                         break
                     case TOOL_HAS_BEEN_PUBLISHED:
-                        void message.error('保存失败：工具已发布')
-                        navigateToRepository(navigate)
+                        message.error('保存失败：工具已发布').then(() => {
+                            navigateToRepository(navigate)
+                        })
                         break
                     default:
                         void message.error('保存失败，请稍后重试')
@@ -236,17 +249,20 @@ const Edit = () => {
                                 setHasEdited(false)
                                 break
                             case 'PROCESSING':
-                                void message.warning('工具审核中，请勿修改')
-                                navigateToRepository(navigate)
+                                message.warning('工具审核中，请勿修改').then(() => {
+                                    navigateToRepository(navigate)
+                                })
                                 break
                             default:
-                                void message.warning('请先创建新版本后编辑工具')
-                                navigateToRepository(navigate)
+                                message.warning('请先创建新版本后编辑工具').then(() => {
+                                    navigateToRepository(navigate)
+                                })
                         }
                         break
                     case DATABASE_NO_RECORD_FOUND:
-                        void message.error('未找到指定工具')
-                        navigateToRepository(navigate)
+                        message.error('未找到指定工具').then(() => {
+                            navigateToRepository(navigate)
+                        })
                         break
                     default:
                         void message.error('获取工具信息失败，请稍后重试')
@@ -418,11 +434,12 @@ const Edit = () => {
 
     return (
         <>
-            <FitFullscreen data-component={'tools-edit'}>
-                <Card>
-                    <FlexBox direction={'horizontal'} className={'root-content'}>
+            <FitFullscreen className={styles.root}>
+                <Card className={styles.rootBox}>
+                    <FlexBox direction={'horizontal'} className={styles.content}>
                         <LoadingMask hidden={!isLoading}>
                             <Playground.CodeEditor
+                                isDarkMode={isDarkMode}
                                 tsconfig={tsconfig}
                                 files={{
                                     ...files,
@@ -444,17 +461,24 @@ const Edit = () => {
                                 onRenameFile={(_, __, files) => setFiles(files)}
                                 onChangeFileContent={handleOnChangeFileContent}
                                 onSelectedFileChange={setSelectedFileName}
+                                extraLibs={editorExtraLibs}
+                                onEditorDidMount={(_, monaco) => addExtraCssVariables(monaco)}
                             />
                             <Playground.Output
+                                isDarkMode={isDarkMode}
                                 files={files}
                                 selectedFileName={selectedFileName}
                                 importMap={importMap!}
                                 entryPoint={entryPoint}
                                 postExpansionCode={baseDist}
                                 mobileMode={toolData?.platform === 'ANDROID'}
+                                globalJsVariables={{
+                                    OxygenTheme: { ...removeUselessAttributes(theme), isDarkMode }
+                                }}
+                                globalCssVariables={generateThemeCssVariables(theme).styles}
                             />
                         </LoadingMask>
-                        {isShowDraggableMask && <div className={'draggable-mask'} />}
+                        {isShowDraggableMask && <div className={styles.draggableMask} />}
                     </FlexBox>
                 </Card>
                 <Draggable
@@ -462,7 +486,7 @@ const Edit = () => {
                     onStop={() => setIsShowDraggableMask(false)}
                     bounds={'#root'}
                 >
-                    <div className={'draggable-content'}>
+                    <div className={styles.draggableContent}>
                         {hasEdited ? (
                             <AntdFloatButton
                                 type={'primary'}

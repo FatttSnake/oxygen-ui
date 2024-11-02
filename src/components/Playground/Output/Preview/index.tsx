@@ -1,4 +1,4 @@
-import '@/components/Playground/Output/Preview/preview.scss'
+import useStyles from '@/components/Playground/Output/Preview/index.style'
 import { IFiles, IImportMap } from '@/components/Playground/shared'
 import Compiler from '@/components/Playground/compiler'
 import Render from '@/components/Playground/Output/Preview/Render'
@@ -11,6 +11,8 @@ interface PreviewProps {
     preExpansionCode?: string
     postExpansionCode?: string
     mobileMode?: boolean
+    globalJsVariables?: Record<string, unknown>
+    globalCssVariables?: string
 }
 
 const Preview = ({
@@ -20,8 +22,11 @@ const Preview = ({
     entryPoint,
     preExpansionCode = '',
     postExpansionCode = '',
-    mobileMode = false
+    mobileMode = false,
+    globalJsVariables,
+    globalCssVariables
 }: PreviewProps) => {
+    const { styles } = useStyles()
     const [errorMsg, setErrorMsg] = useState('')
     const [compiledCode, setCompiledCode] = useState('')
 
@@ -42,9 +47,15 @@ const Preview = ({
     }, [files, Compiler, importMap, entryPoint])
 
     return (
-        <div data-component={'playground-preview'}>
-            <Render iframeKey={iframeKey} compiledCode={compiledCode} mobileMode={mobileMode} />
-            {errorMsg && <div className={'playground-error-message'}>{errorMsg}</div>}
+        <div className={styles.root}>
+            <Render
+                iframeKey={iframeKey}
+                compiledCode={compiledCode}
+                mobileMode={mobileMode}
+                globalJsVariables={globalJsVariables}
+                globalCssVariables={globalCssVariables}
+            />
+            {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
         </div>
     )
 }

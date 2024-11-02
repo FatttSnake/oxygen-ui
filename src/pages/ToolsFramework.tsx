@@ -1,9 +1,9 @@
 import { DndContext, DragOverEvent, DragStartEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext } from '@dnd-kit/sortable'
 import type { DragEndEvent } from '@dnd-kit/core/dist/types'
-import '@/assets/css/pages/tools-framework.scss'
+import useStyles from '@/assets/css/pages/tools-framework.style'
 import { tools } from '@/router/tools'
-import { checkDesktop, getToolMenuItem, saveToolMenuItem } from '@/util/common'
+import { message, checkDesktop, getToolMenuItem, saveToolMenuItem } from '@/util/common'
 import { getViewPath } from '@/util/navigation'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Sidebar from '@/components/common/Sidebar'
@@ -15,6 +15,7 @@ import DropMask from '@/components/dnd/DropMask'
 import Droppable from '@/components/dnd/Droppable'
 
 const ToolsFramework = () => {
+    const { styles } = useStyles()
     const [isDelete, setIsDelete] = useState(false)
     const [toolMenuItem, setToolMenuItem] = useState<ToolMenuItem[]>(getToolMenuItem)
     const [activeItem, setActiveItem] = useState<ToolMenuItem | null>(null)
@@ -86,14 +87,14 @@ const ToolsFramework = () => {
 
     return (
         <>
-            <FitFullscreen data-component={'tools-framework'} className={'flex-horizontal'}>
+            <FitFullscreen className={'flex-horizontal'}>
                 <DndContext
                     onDragStart={handleOnDragStart}
                     onDragOver={handleOnDragOver}
                     onDragEnd={handleOnDragEnd}
                     onDragCancel={handleOnDragCancel}
                 >
-                    <div className={'left-panel'}>
+                    <div className={styles.leftPanel}>
                         <Sidebar title={'氧工具'}>
                             <Sidebar.ItemList>
                                 <Sidebar.Item
@@ -110,7 +111,7 @@ const ToolsFramework = () => {
                                 />
                             </Sidebar.ItemList>
                             <Sidebar.Separate />
-                            <Droppable id={'menu'} className={'menu-droppable'}>
+                            <Droppable id={'menu'} className={styles.menuDroppable}>
                                 <Sidebar.Scroll>
                                     <Sidebar.ItemList>
                                         <SortableContext
@@ -178,7 +179,7 @@ const ToolsFramework = () => {
                             </Droppable>
                         </Sidebar>
                     </div>
-                    <div className={'right-panel'}>
+                    <div className={styles.rightPanel}>
                         <Suspense
                             fallback={
                                 <>

@@ -1,47 +1,60 @@
 import { editor, Selection } from 'monaco-editor'
 import MonacoEditor, { Monaco } from '@monaco-editor/react'
-import '@/components/Playground/CodeEditor/Editor/editor.scss'
+import { shikiToMonaco } from '@shikijs/monaco'
+import { createHighlighter } from 'shiki'
+import useStyles from '@/components/Playground/CodeEditor/Editor/index.style'
 import '@/components/Playground/CodeEditor/Editor/loader'
-import { IEditorOptions, IFiles, ITheme, ITsconfig } from '@/components/Playground/shared'
+import { IEditorOptions, IFiles, ITsconfig } from '@/components/Playground/shared'
 import { fileNameToLanguage, tsconfigJsonDiagnosticsOptions } from '@/components/Playground/files'
 import { useEditor, useTypesProgress } from '@/components/Playground/CodeEditor/Editor/hooks'
 import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
 
+export interface ExtraLib {
+    path: string
+    content: string
+}
+
 interface EditorProps {
+    isDarkMode?: boolean
     tsconfig?: ITsconfig
     files?: IFiles
     selectedFileName?: string
     readonly?: boolean
     onChange?: (code: string | undefined) => void
     options?: IEditorOptions
-    theme?: ITheme
     onJumpFile?: (fileName: string) => void
+    extraLibs?: ExtraLib[]
+    onEditorDidMount?: (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => void
 }
 
 const Editor = ({
+    isDarkMode,
     tsconfig,
     files = {},
     selectedFileName = '',
     readonly,
-    theme,
     onChange,
     options,
-    onJumpFile
+    onJumpFile,
+    extraLibs = [],
+    onEditorDidMount
 }: EditorProps) => {
+    const { styles } = useStyles()
     const editorRef = useRef<editor.IStandaloneCodeEditor>()
     const monacoRef = useRef<Monaco>()
-    const { doOpenEditor, loadJsxSyntaxHighlight, autoLoadExtraLib } = useEditor()
-    const jsxSyntaxHighlightRef = useRef<{
-        highlighter: (code?: string | undefined) => void
-        dispose: () => void
-    }>({
-        highlighter: () => undefined,
-        dispose: () => undefined
-    })
+    const { doOpenEditor, autoLoadExtraLib } = useEditor()
     const { total, finished, onWatch } = useTypesProgress()
     const file = files[selectedFileName] || { name: 'Untitled' }
 
     const handleOnEditorWillMount = (monaco: Monaco) => {
+        createHighlighter({
+            themes: ['vitesse-light', 'vitesse-dark'],
+            langs: ['javascript', 'jsx', 'typescript', 'tsx', 'css', 'json', 'xml']
+        }).then((highlighter) => {
+            shikiToMonaco(highlighter, monaco)
+            monaco.editor.setTheme(isDarkMode ? 'vitesse-dark' : 'vitesse-light')
+        })
+
         monaco.languages.json.jsonDefaults.setDiagnosticsOptions(tsconfigJsonDiagnosticsOptions)
         tsconfig &&
             monaco.languages.typescript.typescriptDefaults.setCompilerOptions(
@@ -72,26 +85,32 @@ const Editor = ({
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         editor['_codeEditorService'].doOpenEditor = function (
             editor: editor.IStandaloneCodeEditor,
             input: { options: { selection: Selection }; resource: { path: string } }
         ) {
             const path = input.resource.path
-            if (!path.startsWith('/node_modules/')) {
+            if (!['/lib.dom.d.ts', '/node_modules/'].some((item) => path.startsWith(item))) {
                 onJumpFile?.(path.replace('/', ''))
                 doOpenEditor(editor, input)
             }
         }
 
-        jsxSyntaxHighlightRef.current = loadJsxSyntaxHighlight(editor, monaco)
+        extraLibs.forEach((item) =>
+            monaco.languages.typescript.typescriptDefaults.addExtraLib(item.content, item.path)
+        )
+
+        onEditorDidMount?.(editor, monaco)
 
         void autoLoadExtraLib(editor, monaco, file.value, onWatch)
     }
 
     useEffect(() => {
+        monacoRef.current?.editor.setTheme(isDarkMode ? 'vitesse-dark' : 'vitesse-light')
+    }, [isDarkMode])
+
+    useEffect(() => {
         editorRef.current?.focus()
-        jsxSyntaxHighlightRef?.current?.highlighter?.()
     }, [file.name])
 
     useEffect(() => {
@@ -103,11 +122,10 @@ const Editor = ({
 
     return (
         <>
-            <div data-component={'playground-code-editor-editor'}>
+            <div className={styles.root}>
                 <MonacoEditor
-                    theme={theme}
+                    theme={isDarkMode ? 'vitesse-dark' : 'vitesse-light'}
                     path={file.name}
-                    className={`monaco-editor-${theme ?? 'light'}`}
                     language={file.language}
                     value={file.value}
                     onChange={onChange}
@@ -120,7 +138,7 @@ const Editor = ({
                         readOnly: readonly
                     }}
                 />
-                {total > 0 && !finished && <div className={'playground-code-editor-loading'} />}
+                {total > 0 && !finished && <div className={styles.loading} />}
             </div>
         </>
     )

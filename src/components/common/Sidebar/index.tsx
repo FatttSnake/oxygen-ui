@@ -1,13 +1,15 @@
 import { PropsWithChildren, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
-import '@/assets/css/components/common/sidebar.scss'
-import { getLocalStorage, setLocalStorage } from '@/util/browser'
+import useStyles from '@/assets/css/components/common/sidebar/index.style'
+import { getSidebarCollapse, setSidebarCollapse } from '@/util/common'
 import Item from '@/components/common/Sidebar/Item'
 import ItemList from '@/components/common/Sidebar/ItemList'
 import Scroll from '@/components/common/Sidebar/Scroll'
 import Separate from '@/components/common/Sidebar/Separate'
 import Submenu from '@/components/common/Sidebar/Submenu'
 import Footer from '@/components/common/Sidebar/Footer'
+
+export const SidebarContext = createContext({ isCollapse: false })
 
 interface SidebarProps extends PropsWithChildren {
     title: string
@@ -17,35 +19,36 @@ interface SidebarProps extends PropsWithChildren {
 }
 
 const Sidebar = (props: SidebarProps) => {
-    const [isHideSidebar, setIsHideSidebar] = useState(getLocalStorage('HIDE_SIDEBAR') === 'true')
+    const { styles, cx } = useStyles()
+    const [isCollapseSidebar, setIsCollapseSidebar] = useState(getSidebarCollapse())
 
     const switchSidebar = () => {
-        setLocalStorage('HIDE_SIDEBAR', !isHideSidebar ? 'true' : 'false')
-        setIsHideSidebar(!isHideSidebar)
-        props.onSidebarSwitch?.(isHideSidebar)
+        setSidebarCollapse(!isCollapseSidebar)
+        setIsCollapseSidebar(!isCollapseSidebar)
+        props.onSidebarSwitch?.(isCollapseSidebar)
     }
 
     return (
-        <>
+        <SidebarContext.Provider value={{ isCollapse: isCollapseSidebar }}>
             <div
-                className={`sidebar${isHideSidebar ? ' hide' : ''}`}
+                className={cx(styles.sidebar, isCollapseSidebar ? styles.collapse : '')}
                 style={{ width: props.width ?? 'clamp(180px, 20vw, 240px)' }}
             >
-                <div className={'title'}>
-                    <span className={'icon-box'} onClick={switchSidebar}>
+                <div className={styles.title}>
+                    <span className={styles.titleIcon} onClick={switchSidebar}>
                         <Icon component={IconOxygenExpand} />
                     </span>
-                    <span className={'text'}>{props.title}</span>
+                    <span className={styles.titleText}>{props.title}</span>
                 </div>
                 <Separate style={{ marginTop: 0 }} />
-                <div className={'content'}>{props.children}</div>
-                <div className={'bottom-fixed'} style={{ flex: 'none' }}>
+                <div className={styles.content}>{props.children}</div>
+                <div className={styles.content} style={{ flex: 'none' }}>
                     {props.bottomFixed}
                 </div>
                 <Separate style={{ marginTop: 0, marginBottom: 0 }} />
                 <Footer />
             </div>
-        </>
+        </SidebarContext.Provider>
     )
 }
 

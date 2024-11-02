@@ -1,9 +1,12 @@
 import { PropsWithChildren } from 'react'
+import useStyles from '@/assets/css/components/common/sidebar/scroll.style'
 import HideScrollbar from '@/components/common/HideScrollbar'
 
 const Scroll = (props: PropsWithChildren) => {
+    const { styles } = useStyles()
+
     return (
-        <div className={'scroll'}>
+        <div className={styles.scroll}>
             <HideScrollbar
                 isShowVerticalScrollbar={true}
                 scrollbarWidth={2}

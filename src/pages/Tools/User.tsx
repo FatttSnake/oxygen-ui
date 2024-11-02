@@ -1,11 +1,7 @@
 import Icon from '@ant-design/icons'
-import '@/assets/css/pages/tools/user.scss'
-import {
-    COLOR_BACKGROUND,
-    DATABASE_NO_RECORD_FOUND,
-    DATABASE_SELECT_SUCCESS
-} from '@/constants/common.constants'
-import { checkDesktop } from '@/util/common'
+import useStyles from '@/assets/css/pages/tools/user.style'
+import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { message, checkDesktop } from '@/util/common'
 import { navigateToRoot } from '@/util/navigation'
 import { r_sys_user_info_get_basic } from '@/services/system'
 import { r_tool_store_get_by_username } from '@/services/tool'
@@ -17,6 +13,7 @@ import StoreCard from '@/components/tools/StoreCard'
 import LoadMoreCard from '@/components/tools/LoadMoreCard'
 
 const User = () => {
+    const { styles, theme } = useStyles()
     const { username } = useParams()
     const navigate = useNavigate()
     const [isLoading, setIsLoading] = useState(false)
@@ -43,7 +40,7 @@ const User = () => {
             return
         }
         setIsLoading(true)
-        void message.loading({ content: '加载中', key: 'LOADING', duration: 0 })
+        void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
 
         void r_sys_user_info_get_basic(username!)
             .then((res) => {
@@ -54,10 +51,9 @@ const User = () => {
                         getTool(1)
                         break
                     case DATABASE_NO_RECORD_FOUND:
-                        void message.warning('用户不存在')
-                        setTimeout(() => {
+                        void message.warning('用户不存在').then(() => {
                             navigateToRoot(navigate)
-                        }, 3000)
+                        })
                         break
                     default:
                         void message.error('获取失败请稍后重试')
@@ -120,15 +116,15 @@ const User = () => {
 
     return (
         <>
-            <FitFullscreen data-component={'tools-store-user'}>
+            <FitFullscreen>
                 <HideScrollbar
                     isShowVerticalScrollbar
                     autoHideWaitingTime={1000}
-                    className={'root-content'}
+                    className={styles.root}
                 >
-                    <Card className={'root-box'}>
-                        <FlexBox className={'info'} direction={'horizontal'}>
-                            <div className={'avatar-box'}>
+                    <Card className={styles.content}>
+                        <FlexBox className={styles.info} direction={'horizontal'}>
+                            <div className={styles.avatarBox}>
                                 <AntdAvatar
                                     src={
                                         <img
@@ -138,18 +134,18 @@ const User = () => {
                                     }
                                     size={144}
                                     style={{
-                                        background: COLOR_BACKGROUND,
+                                        background: theme.colorBgLayout,
                                         cursor: 'pointer'
                                     }}
-                                    className={'avatar'}
+                                    className={styles.avatar}
                                 />
                             </div>
-                            <FlexBox className={'info-name'}>
-                                <div className={'nickname'}>
+                            <FlexBox className={styles.infoName}>
+                                <div className={styles.nickname}>
                                     {userWithInfoVo?.userInfo.nickname}
                                 </div>
                                 <a
-                                    className={'url'}
+                                    className={styles.url}
                                     onClick={handleOnCopyToClipboard(userWithInfoVo?.username)}
                                 >
                                     {userWithInfoVo?.username &&
@@ -161,9 +157,9 @@ const User = () => {
                                 </a>
                             </FlexBox>
                         </FlexBox>
-                        <FlexBox direction={'horizontal'} className={'tools'}>
+                        <FlexBox direction={'horizontal'} className={styles.tools}>
                             {!toolData.length && (
-                                <div className={'no-tool'}>该开发者暂未发布任何工具</div>
+                                <div className={styles.noTool}>该开发者暂未发布任何工具</div>
                             )}
                             {toolData
                                 ?.reduce((previousValue: ToolVo[], currentValue) => {

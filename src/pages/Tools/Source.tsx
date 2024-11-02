@@ -1,8 +1,11 @@
-import '@/assets/css/pages/tools/source.scss'
+import useStyles from '@/assets/css/pages/tools/source.style'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
+import { addExtraCssVariables, message } from '@/util/common'
 import { getLoginStatus } from '@/util/auth'
 import { navigateToRepository, navigateToSource } from '@/util/navigation'
+import editorExtraLibs from '@/util/editorExtraLibs'
 import { r_tool_detail } from '@/services/tool'
+import { AppContext } from '@/App'
 import { IFiles } from '@/components/Playground/shared'
 import { base64ToFiles } from '@/components/Playground/files'
 import Playground from '@/components/Playground'
@@ -10,6 +13,8 @@ import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
 
 const Source = () => {
+    const { styles } = useStyles()
+    const { isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
     const { username, toolId, ver } = useParams()
     const [searchParams] = useSearchParams({
@@ -48,8 +53,9 @@ const Source = () => {
                         render(response.data!)
                         break
                     case DATABASE_NO_RECORD_FOUND:
-                        void message.error('未找到指定工具')
-                        navigateToRepository(navigate)
+                        void message.error('未找到指定工具').then(() => {
+                            navigateToRepository(navigate)
+                        })
                         break
                     default:
                         void message.error('获取工具信息失败，请稍后重试')
@@ -83,13 +89,16 @@ const Source = () => {
     }, [username, toolId, ver, searchParams])
 
     return (
-        <FitFullscreen data-component={'tools-source'}>
-            <Card>
+        <FitFullscreen className={styles.root}>
+            <Card className={styles.content}>
                 <Playground.CodeEditor
+                    isDarkMode={isDarkMode}
                     readonly
                     files={files}
                     selectedFileName={selectedFileName}
                     onSelectedFileChange={setSelectedFileName}
+                    extraLibs={editorExtraLibs}
+                    onEditorDidMount={(_, monaco) => addExtraCssVariables(monaco)}
                 />
             </Card>
         </FitFullscreen>
