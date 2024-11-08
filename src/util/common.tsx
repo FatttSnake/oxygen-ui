@@ -528,7 +528,7 @@ export const addExtraCssVariables = (monaco: Monaco) => {
                         kind: monaco.languages.CompletionItemKind.Variable,
                         insertText: `--${variable}`,
                         range,
-                        detail: 'Oxygen Theme Variable'
+                        detail: 'Oxygen Theme Variables'
                     })
                 )
             }
