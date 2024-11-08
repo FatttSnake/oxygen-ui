@@ -66,7 +66,7 @@ class Compiler {
             bundle: true,
             entryPoints: [entryPoint],
             format: 'esm',
-            target: 'es2015',
+            target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
             metafile: true,
             write: false,
             plugins: [this.fileResolverPlugin(files, importMap)]
