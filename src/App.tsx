@@ -8,8 +8,8 @@ import {
     THEME_FOLLOW_SYSTEM,
     THEME_LIGHT
 } from '@/constants/common.constants'
-import { getRouter } from '@/router'
 import { getThemeMode, init } from '@/util/common'
+import { getRouter } from '@/router'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 export const AppContext = createContext({
