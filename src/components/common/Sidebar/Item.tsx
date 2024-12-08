@@ -1,7 +1,7 @@
 import { ReactNode, MouseEvent } from 'react'
 import Icon from '@ant-design/icons'
 import useStyles from '@/assets/css/components/common/sidebar/item.style'
-import { SidebarContext } from '@/components/common/Sidebar/index'
+import { SidebarContext } from '@/components/common/Sidebar'
 import Submenu, { SubmenuContext } from '@/components/common/Sidebar/Submenu'
 
 export const ItemContext = createContext({ isHover: false })
