@@ -19,6 +19,12 @@ import {
     r_sys_tool_template_get_one,
     r_sys_tool_base_get_list
 } from '@/services/system'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import FlexBox from '@/components/common/FlexBox'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import Card from '@/components/common/Card'
+import Permission from '@/components/common/Permission'
+import Playground from '@/components/Playground'
 import { IFile, IFiles, ITsconfig } from '@/components/Playground/shared'
 import {
     base64ToFiles,
@@ -28,12 +34,6 @@ import {
     TS_CONFIG_FILE_NAME
 } from '@/components/Playground/files'
 import { AppContext } from '@/App'
-import FitFullscreen from '@/components/common/FitFullscreen'
-import FlexBox from '@/components/common/FlexBox'
-import HideScrollbar from '@/components/common/HideScrollbar'
-import Card from '@/components/common/Card'
-import Permission from '@/components/common/Permission'
-import Playground from '@/components/Playground'
 
 const Template = () => {
     const { styles, theme } = useStyles()
