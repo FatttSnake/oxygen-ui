@@ -16,9 +16,9 @@ import Droppable from '@/components/dnd/Droppable'
 
 const ToolsFramework = () => {
     const { styles } = useStyles()
-    const [isDelete, setIsDelete] = useState(false)
+    const [deleteItem, setDeleteItem] = useState<string>()
     const [toolMenuItem, setToolMenuItem] = useState<ToolMenuItem[]>(getToolMenuItem)
-    const [activeItem, setActiveItem] = useState<ToolMenuItem | null>(null)
+    const [activeItem, setActiveItem] = useState<ToolMenuItem>()
     const [isShowDropMask, setIsShowDropMask] = useState(false)
 
     const handleOnDragStart = ({ active }: DragStartEvent) => {
@@ -28,8 +28,8 @@ const ToolsFramework = () => {
         }
     }
 
-    const handleOnDragOver = ({ over }: DragOverEvent) => {
-        setIsDelete(over === null)
+    const handleOnDragOver = ({ active, over }: DragOverEvent) => {
+        setDeleteItem(over === null ? (active.id as string) : undefined)
     }
 
     const handleOnDragEnd = ({ active, over }: DragEndEvent) => {
@@ -73,12 +73,14 @@ const ToolsFramework = () => {
             }
         }
 
-        setActiveItem(null)
+        setActiveItem(undefined)
+        setDeleteItem(undefined)
         setIsShowDropMask(false)
     }
 
     const handleOnDragCancel = () => {
-        setActiveItem(null)
+        setActiveItem(undefined)
+        setDeleteItem(undefined)
     }
 
     useEffect(() => {
@@ -139,7 +141,10 @@ const ToolsFramework = () => {
                                                             ver,
                                                             platform
                                                         }}
-                                                        isDelete={isDelete}
+                                                        isOver={
+                                                            deleteItem ===
+                                                            `${authorUsername}:${toolId}:${ver}:${platform}`
+                                                        }
                                                     >
                                                         <Sidebar.Item
                                                             path={getViewPath(
