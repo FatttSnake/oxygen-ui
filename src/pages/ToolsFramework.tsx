@@ -1,4 +1,12 @@
-import { DndContext, DragOverEvent, DragStartEvent } from '@dnd-kit/core'
+import {
+    DndContext,
+    DragOverEvent,
+    DragStartEvent,
+    MouseSensor,
+    TouchSensor,
+    useSensor,
+    useSensors
+} from '@dnd-kit/core'
 import { arrayMove, SortableContext } from '@dnd-kit/sortable'
 import type { DragEndEvent } from '@dnd-kit/core/dist/types'
 import useStyles from '@/assets/css/pages/tools-framework.style'
@@ -20,6 +28,7 @@ const ToolsFramework = () => {
     const [toolMenuItem, setToolMenuItem] = useState<ToolMenuItem[]>(getToolMenuItem)
     const [activeItem, setActiveItem] = useState<ToolMenuItem>()
     const [isShowDropMask, setIsShowDropMask] = useState(false)
+    const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor))
 
     const handleOnDragStart = ({ active }: DragStartEvent) => {
         setActiveItem(active.data.current as ToolMenuItem)
@@ -91,6 +100,7 @@ const ToolsFramework = () => {
         <>
             <FitFullscreen className={'flex-horizontal'}>
                 <DndContext
+                    sensors={sensors}
                     onDragStart={handleOnDragStart}
                     onDragOver={handleOnDragOver}
                     onDragEnd={handleOnDragEnd}
