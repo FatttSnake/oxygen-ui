@@ -155,6 +155,7 @@ const ToolsFramework = () => {
                                                             deleteItem ===
                                                             `${authorUsername}:${toolId}:${ver}:${platform}`
                                                         }
+                                                        hasDragHandle
                                                     >
                                                         <Sidebar.Item
                                                             path={getViewPath(
