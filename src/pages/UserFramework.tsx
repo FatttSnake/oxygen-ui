@@ -6,11 +6,11 @@ import Sidebar from '@/components/common/Sidebar'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 const UserFramework = () => {
-    const { styles } = useStyles()
+    const { styles, cx } = useStyles()
 
     return (
         <>
-            <FitFullscreen className={'flex-horizontal'}>
+            <FitFullscreen className={cx(styles.root, 'flex-horizontal')}>
                 <div className={styles.leftPanel}>
                     <Sidebar
                         title={'个人中心'}

@@ -23,7 +23,7 @@ import DropMask from '@/components/dnd/DropMask'
 import Droppable from '@/components/dnd/Droppable'
 
 const ToolsFramework = () => {
-    const { styles } = useStyles()
+    const { styles, cx } = useStyles()
     const [deleteItem, setDeleteItem] = useState<string>()
     const [toolMenuItem, setToolMenuItem] = useState<ToolMenuItem[]>(getToolMenuItem)
     const [activeItem, setActiveItem] = useState<ToolMenuItem>()
@@ -98,7 +98,7 @@ const ToolsFramework = () => {
 
     return (
         <>
-            <FitFullscreen className={'flex-horizontal'}>
+            <FitFullscreen className={cx(styles.root, 'flex-horizontal')}>
                 <DndContext
                     sensors={sensors}
                     onDragStart={handleOnDragStart}
