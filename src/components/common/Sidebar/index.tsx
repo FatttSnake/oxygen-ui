@@ -20,18 +20,18 @@ interface SidebarProps extends PropsWithChildren {
 
 const Sidebar = (props: SidebarProps) => {
     const { styles, cx } = useStyles()
-    const [isCollapseSidebar, setIsCollapseSidebar] = useState(getSidebarCollapse())
+    const [isCollapse, setIsCollapse] = useState(getSidebarCollapse())
 
     const switchSidebar = () => {
-        setSidebarCollapse(!isCollapseSidebar)
-        setIsCollapseSidebar(!isCollapseSidebar)
-        props.onSidebarSwitch?.(isCollapseSidebar)
+        setSidebarCollapse(!isCollapse)
+        setIsCollapse(!isCollapse)
+        props.onSidebarSwitch?.(isCollapse)
     }
 
     return (
-        <SidebarContext.Provider value={{ isCollapse: isCollapseSidebar }}>
+        <SidebarContext.Provider value={{ isCollapse }}>
             <div
-                className={cx(styles.sidebar, isCollapseSidebar ? styles.collapse : '')}
+                className={cx(styles.sidebar, isCollapse ? styles.collapse : '')}
                 style={{ width: props.width ?? 'clamp(180px, 20vw, 240px)' }}
             >
                 <div className={styles.title}>
