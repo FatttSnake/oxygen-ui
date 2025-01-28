@@ -9,58 +9,46 @@ const UserFramework = () => {
     const { styles, cx } = useStyles()
 
     return (
-        <>
-            <FitFullscreen className={cx(styles.root, 'flex-horizontal')}>
-                <div className={styles.leftPanel}>
-                    <Sidebar
-                        title={'个人中心'}
-                        bottomFixed={
-                            <Sidebar.ItemList>
-                                {hasPathPermission('/system') && (
-                                    <Sidebar.Item
-                                        path={'/system'}
-                                        icon={IconOxygenSetting}
-                                        text={'系统配置'}
-                                    />
-                                )}
-                                <Sidebar.Item
-                                    path={'/'}
-                                    icon={IconOxygenTool}
-                                    text={'回到氧工具'}
-                                />
-                            </Sidebar.ItemList>
-                        }
-                    >
+        <FitFullscreen className={cx(styles.root, 'flex-horizontal')}>
+            <div className={styles.leftPanel}>
+                <Sidebar
+                    title={'个人中心'}
+                    bottomFixed={
                         <Sidebar.ItemList>
-                            {user.map((value) => {
-                                return (
-                                    value.menu && (
-                                        <Sidebar.Item
-                                            end={value.id === 'user' && true}
-                                            path={value.absolutePath}
-                                            icon={value.icon}
-                                            text={value.name}
-                                            key={value.id}
-                                        />
-                                    )
-                                )
-                            })}
+                            {hasPathPermission('/system') && (
+                                <Sidebar.Item
+                                    path={'/system'}
+                                    icon={IconOxygenSetting}
+                                    text={'系统配置'}
+                                />
+                            )}
+                            <Sidebar.Item path={'/'} icon={IconOxygenTool} text={'回到氧工具'} />
                         </Sidebar.ItemList>
-                    </Sidebar>
-                </div>
-                <div className={styles.rightPanel}>
-                    <Suspense
-                        fallback={
-                            <>
-                                <FullscreenLoadingMask />
-                            </>
-                        }
-                    >
-                        <Outlet />
-                    </Suspense>
-                </div>
-            </FitFullscreen>
-        </>
+                    }
+                >
+                    <Sidebar.ItemList>
+                        {user.map((value) => {
+                            return (
+                                value.menu && (
+                                    <Sidebar.Item
+                                        end={value.id === 'user' && true}
+                                        path={value.absolutePath}
+                                        icon={value.icon}
+                                        text={value.name}
+                                        key={value.id}
+                                    />
+                                )
+                            )
+                        })}
+                    </Sidebar.ItemList>
+                </Sidebar>
+            </div>
+            <div className={styles.rightPanel}>
+                <Suspense fallback={<FullscreenLoadingMask />}>
+                    <Outlet />
+                </Suspense>
+            </div>
+        </FitFullscreen>
     )
 }
 
