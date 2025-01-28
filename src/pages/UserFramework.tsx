@@ -1,12 +1,14 @@
 import useStyles from '@/assets/css/pages/user-framework.style'
 import user from '@/router/user'
-import { hasPathPermission } from '@/util/auth'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Sidebar from '@/components/common/Sidebar'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
+import Permission from '@/components/common/Permission'
 
 const UserFramework = () => {
     const { styles, cx } = useStyles()
+    const location = useLocation()
+    const navigate = useNavigate()
 
     return (
         <FitFullscreen className={cx(styles.root, 'flex-horizontal')}>
@@ -15,31 +17,36 @@ const UserFramework = () => {
                     title={'个人中心'}
                     bottomFixed={
                         <Sidebar.ItemList>
-                            {hasPathPermission('/system') && (
+                            <Permission path={'/system'}>
                                 <Sidebar.Item
-                                    path={'/system'}
                                     icon={IconOxygenSetting}
                                     text={'系统配置'}
+                                    active={location.pathname === '/system'}
+                                    onClick={() => navigate('/system')}
                                 />
-                            )}
-                            <Sidebar.Item path={'/'} icon={IconOxygenTool} text={'回到氧工具'} />
+                            </Permission>
+                            <Sidebar.Item
+                                icon={IconOxygenTool}
+                                text={'回到氧工具'}
+                                active={location.pathname === '/'}
+                                onClick={() => navigate('/')}
+                            />
                         </Sidebar.ItemList>
                     }
                 >
                     <Sidebar.ItemList>
-                        {user.map((value) => {
-                            return (
+                        {user.map(
+                            (value) =>
                                 value.menu && (
                                     <Sidebar.Item
-                                        end={value.id === 'user' && true}
-                                        path={value.absolutePath}
+                                        key={value.id}
                                         icon={value.icon}
                                         text={value.name}
-                                        key={value.id}
+                                        active={location.pathname === value.absolutePath}
+                                        onClick={() => navigate(value.absolutePath)}
                                     />
                                 )
-                            )
-                        })}
+                        )}
                     </Sidebar.ItemList>
                 </Sidebar>
             </div>

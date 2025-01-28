@@ -22,7 +22,7 @@ export default createStyles(({ cx, css, token }) => {
     `)
 
     return {
-        footer: css`
+        root: css`
             display: flex;
             position: relative;
             align-items: center;

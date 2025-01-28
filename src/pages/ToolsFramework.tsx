@@ -12,7 +12,7 @@ import type { DragEndEvent } from '@dnd-kit/core/dist/types'
 import useStyles from '@/assets/css/pages/tools-framework.style'
 import { tools } from '@/router/tools'
 import { message, checkDesktop, getToolMenuItem, saveToolMenuItem } from '@/util/common'
-import { getViewPath } from '@/util/navigation'
+import { checkIsSamePathname, getViewPath } from '@/util/navigation'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Sidebar from '@/components/common/Sidebar'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
@@ -24,6 +24,8 @@ import Droppable from '@/components/dnd/Droppable'
 
 const ToolsFramework = () => {
     const { styles, cx } = useStyles()
+    const location = useLocation()
+    const navigate = useNavigate()
     const [deleteItem, setDeleteItem] = useState<string>()
     const [toolMenuItem, setToolMenuItem] = useState<ToolMenuItem[]>(getToolMenuItem)
     const [activeItem, setActiveItem] = useState<ToolMenuItem>()
@@ -109,16 +111,16 @@ const ToolsFramework = () => {
                     <Sidebar title={'氧工具'}>
                         <Sidebar.ItemList>
                             <Sidebar.Item
-                                end
-                                path={'/store'}
                                 icon={tools[0].icon}
                                 text={tools[0].name}
+                                active={location.pathname === '/store'}
+                                onClick={() => navigate('/store')}
                             />
                             <Sidebar.Item
-                                end
-                                path={'/repository'}
                                 icon={tools[1].icon}
                                 text={tools[1].name}
+                                active={location.pathname === '/repository'}
+                                onClick={() => navigate('/repository')}
                             />
                         </Sidebar.ItemList>
                         <Sidebar.Separate />
@@ -141,6 +143,7 @@ const ToolsFramework = () => {
                                                 platform
                                             }) => (
                                                 <Sortable
+                                                    key={`${authorUsername}:${toolId}:${ver}:${platform}`}
                                                     id={`${authorUsername}:${toolId}:${ver}:${platform}`}
                                                     data={{
                                                         icon,
@@ -157,16 +160,28 @@ const ToolsFramework = () => {
                                                     hasDragHandle
                                                 >
                                                     <Sidebar.Item
-                                                        path={getViewPath(
-                                                            authorUsername,
-                                                            toolId,
-                                                            platform,
-                                                            ver
-                                                        )}
                                                         icon={icon}
                                                         text={toolName}
-                                                        key={`${authorUsername}:${toolId}:${ver}:${platform}`}
                                                         extend={<DragHandle padding={10} />}
+                                                        active={checkIsSamePathname(
+                                                            location.pathname,
+                                                            getViewPath(
+                                                                authorUsername,
+                                                                toolId,
+                                                                platform,
+                                                                ver === 'local' ? '' : ver
+                                                            )
+                                                        )}
+                                                        onClick={() =>
+                                                            navigate(
+                                                                getViewPath(
+                                                                    authorUsername,
+                                                                    toolId,
+                                                                    platform,
+                                                                    ver === 'local' ? '' : ver
+                                                                )
+                                                            )
+                                                        }
                                                     />
                                                 </Sortable>
                                             )
@@ -175,15 +190,8 @@ const ToolsFramework = () => {
                                     <DraggableOverlay>
                                         {activeItem && (
                                             <Sidebar.Item
-                                                path={getViewPath(
-                                                    activeItem.authorUsername,
-                                                    activeItem.toolId,
-                                                    import.meta.env.VITE_PLATFORM,
-                                                    activeItem.ver
-                                                )}
                                                 icon={activeItem.icon}
                                                 text={activeItem.toolName}
-                                                key={`${activeItem.authorUsername}:${activeItem.toolId}:${activeItem.ver}`}
                                                 extend={<DragHandle padding={10} />}
                                             />
                                         )}

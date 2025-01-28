@@ -31,7 +31,7 @@ const Sidebar = (props: SidebarProps) => {
     return (
         <SidebarContext.Provider value={{ isCollapse }}>
             <div
-                className={cx(styles.sidebar, isCollapse ? styles.collapse : '')}
+                className={cx(styles.root, isCollapse ? styles.collapse : '')}
                 style={{ width: props.width ?? 'clamp(180px, 20vw, 240px)' }}
             >
                 <div className={styles.title}>
