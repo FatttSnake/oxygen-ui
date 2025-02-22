@@ -37,12 +37,6 @@ const root: RouteJsonObject[] = [
                 component: lazySignPage
             },
             {
-                path: 'loading',
-                absolutePath: '/loading',
-                id: 'loading',
-                component: lazy(() => import('@/components/common/FullscreenLoadingMask'))
-            },
-            {
                 path: 'user',
                 absolutePath: '/user',
                 id: 'userFramework',
