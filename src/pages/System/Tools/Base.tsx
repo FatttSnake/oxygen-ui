@@ -18,6 +18,13 @@ import {
     r_sys_tool_base_get,
     r_sys_tool_base_update
 } from '@/services/system'
+import compiler from '@/components/Playground/compiler'
+import { AppContext } from '@/App'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import FlexBox from '@/components/common/FlexBox'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import Card from '@/components/common/Card'
+import Permission from '@/components/common/Permission'
 import { IFile, IFiles, IImportMap, ITsconfig } from '@/components/Playground/shared'
 import {
     base64ToFiles,
@@ -28,13 +35,6 @@ import {
     strToBase64,
     TS_CONFIG_FILE_NAME
 } from '@/components/Playground/files'
-import compiler from '@/components/Playground/compiler'
-import { AppContext } from '@/App'
-import FitFullscreen from '@/components/common/FitFullscreen'
-import FlexBox from '@/components/common/FlexBox'
-import HideScrollbar from '@/components/common/HideScrollbar'
-import Card from '@/components/common/Card'
-import Permission from '@/components/common/Permission'
 import Playground from '@/components/Playground'
 
 const Base = () => {
@@ -175,48 +175,46 @@ const Base = () => {
             width: '14em',
             align: 'center',
             render: (_, record) => (
-                <>
-                    <AntdSpace size={'middle'}>
-                        {!Object.keys(hasEdited).length && (
-                            <Permission operationCode={['system:tool:modify:base']}>
-                                <a
-                                    style={{ color: theme.colorPrimary }}
-                                    onClick={handleOnCompileBtnClick(record)}
-                                >
-                                    {record.compiled ? '重新编译' : '编译'}
-                                </a>
-                            </Permission>
-                        )}
-                        {hasEdited[record.id] && (
-                            <Permission operationCode={['system:tool:modify:base']}>
-                                <a
-                                    style={{ color: theme.colorPrimary }}
-                                    onClick={handleOnSaveBtnClick(record)}
-                                >
-                                    保存
-                                </a>
-                            </Permission>
-                        )}
-                        {!Object.keys(hasEdited).length && (
-                            <Permission operationCode={['system:tool:modify:base']}>
-                                <a
-                                    style={{ color: theme.colorPrimary }}
-                                    onClick={handleOnEditBtnClick(record)}
-                                >
-                                    编辑
-                                </a>
-                            </Permission>
-                        )}
-                        <Permission operationCode={['system:tool:delete:base']}>
+                <AntdSpace size={'middle'}>
+                    {!Object.keys(hasEdited).length && (
+                        <Permission operationCode={['system:tool:modify:base']}>
                             <a
                                 style={{ color: theme.colorPrimary }}
-                                onClick={handleOnDeleteBtnClick(record)}
+                                onClick={handleOnCompileBtnClick(record)}
                             >
-                                删除
+                                {record.compiled ? '重新编译' : '编译'}
                             </a>
                         </Permission>
-                    </AntdSpace>
-                </>
+                    )}
+                    {hasEdited[record.id] && (
+                        <Permission operationCode={['system:tool:modify:base']}>
+                            <a
+                                style={{ color: theme.colorPrimary }}
+                                onClick={handleOnSaveBtnClick(record)}
+                            >
+                                保存
+                            </a>
+                        </Permission>
+                    )}
+                    {!Object.keys(hasEdited).length && (
+                        <Permission operationCode={['system:tool:modify:base']}>
+                            <a
+                                style={{ color: theme.colorPrimary }}
+                                onClick={handleOnEditBtnClick(record)}
+                            >
+                                编辑
+                            </a>
+                        </Permission>
+                    )}
+                    <Permission operationCode={['system:tool:delete:base']}>
+                        <a
+                            style={{ color: theme.colorPrimary }}
+                            onClick={handleOnDeleteBtnClick(record)}
+                        >
+                            删除
+                        </a>
+                    </Permission>
+                </AntdSpace>
             )
         }
     ]
@@ -292,32 +290,30 @@ const Base = () => {
                             </>
                         ),
                         content: (
-                            <>
-                                <AntdForm form={compileForm}>
-                                    <AntdForm.Item
-                                        name={'entryFileName'}
-                                        label={'入口文件'}
-                                        style={{ marginTop: 10 }}
-                                        rules={[{ required: true }]}
-                                    >
-                                        <AntdSelect
-                                            options={Object.keys(files)
-                                                .filter(
-                                                    (value) =>
-                                                        ![
-                                                            IMPORT_MAP_FILE_NAME,
-                                                            TS_CONFIG_FILE_NAME
-                                                        ].includes(value) &&
-                                                        !value.endsWith('.d.ts') &&
-                                                        !value.endsWith('.css') &&
-                                                        !value.endsWith('.json')
-                                                )
-                                                .map((value) => ({ value, label: value }))}
-                                            placeholder={'请选择入口文件'}
-                                        />
-                                    </AntdForm.Item>
-                                </AntdForm>
-                            </>
+                            <AntdForm form={compileForm}>
+                                <AntdForm.Item
+                                    name={'entryFileName'}
+                                    label={'入口文件'}
+                                    style={{ marginTop: 10 }}
+                                    rules={[{ required: true }]}
+                                >
+                                    <AntdSelect
+                                        options={Object.keys(files)
+                                            .filter(
+                                                (value) =>
+                                                    ![
+                                                        IMPORT_MAP_FILE_NAME,
+                                                        TS_CONFIG_FILE_NAME
+                                                    ].includes(value) &&
+                                                    !value.endsWith('.d.ts') &&
+                                                    !value.endsWith('.css') &&
+                                                    !value.endsWith('.json')
+                                            )
+                                            .map((value) => ({ value, label: value }))}
+                                        placeholder={'请选择入口文件'}
+                                    />
+                                </AntdForm.Item>
+                            </AntdForm>
                         ),
                         onOk: () =>
                             compileForm.validateFields().then(
@@ -577,7 +573,7 @@ const Base = () => {
         if (baseDetailLoading[record.id] || hasEdited[record.id]) {
             return
         }
-        setBaseDetailLoading({ ...baseDetailLoading, [record.id]: true })
+        setBaseDetailLoading((prevState) => ({ ...prevState, [record.id]: true }))
 
         void r_sys_tool_base_get_one(record.id)
             .then((res) => {
@@ -602,7 +598,7 @@ const Base = () => {
                 }
             })
             .finally(() => {
-                setBaseDetailLoading({ ...baseDetailLoading, [record.id]: false })
+                setBaseDetailLoading((prevState) => ({ ...prevState, [record.id]: false }))
             })
     }
 
@@ -672,7 +668,10 @@ const Base = () => {
                             return new Promise<void>((resolve) => {
                                 const newFileName = addFileForm.getFieldValue('fileName') as string
 
-                                setBaseDetailLoading({ ...baseDetailLoading, [record.id]: true })
+                                setBaseDetailLoading((prevState) => ({
+                                    ...prevState,
+                                    [record.id]: true
+                                }))
 
                                 sourceFiles = {
                                     ...sourceFiles,
@@ -704,10 +703,10 @@ const Base = () => {
                                         }
                                     })
                                     .finally(() => {
-                                        setBaseDetailLoading({
-                                            ...baseDetailLoading,
+                                        setBaseDetailLoading((prevState) => ({
+                                            ...prevState,
                                             [record.id]: false
-                                        })
+                                        }))
                                     })
                             })
                         },
@@ -752,43 +751,38 @@ const Base = () => {
                 width: '12em',
                 align: 'center',
                 render: (_, record) => (
-                    <>
-                        <AntdSpace size={'middle'}>
-                            <Permission
-                                operationCode={[
-                                    'system:tool:query:base',
-                                    'system:tool:modify:base'
-                                ]}
+                    <AntdSpace size={'middle'}>
+                        <Permission
+                            operationCode={['system:tool:query:base', 'system:tool:modify:base']}
+                        >
+                            <a
+                                onClick={handleOnEditFile(record.name)}
+                                style={{ color: theme.colorPrimary }}
                             >
+                                {hasPermission('system:tool:modify:base') ? '编辑' : '查看'}
+                            </a>
+                        </Permission>
+                        {!Object.keys(hasEdited).length && (
+                            <Permission operationCode={['system:tool:modify:base']}>
                                 <a
-                                    onClick={handleOnEditFile(record.name)}
+                                    onClick={handleOnRenameFile(record.name)}
                                     style={{ color: theme.colorPrimary }}
                                 >
-                                    {hasPermission('system:tool:modify:base') ? '编辑' : '查看'}
+                                    重命名
                                 </a>
                             </Permission>
-                            {!Object.keys(hasEdited).length && (
-                                <Permission operationCode={['system:tool:modify:base']}>
-                                    <a
-                                        onClick={handleOnRenameFile(record.name)}
-                                        style={{ color: theme.colorPrimary }}
-                                    >
-                                        重命名
-                                    </a>
-                                </Permission>
-                            )}
-                            {!Object.keys(hasEdited).length && (
-                                <Permission operationCode={['system:tool:delete:base']}>
-                                    <a
-                                        onClick={handleOnDeleteFile(record.name)}
-                                        style={{ color: theme.colorPrimary }}
-                                    >
-                                        删除
-                                    </a>
-                                </Permission>
-                            )}
-                        </AntdSpace>
-                    </>
+                        )}
+                        {!Object.keys(hasEdited).length && (
+                            <Permission operationCode={['system:tool:delete:base']}>
+                                <a
+                                    onClick={handleOnDeleteFile(record.name)}
+                                    style={{ color: theme.colorPrimary }}
+                                >
+                                    删除
+                                </a>
+                            </Permission>
+                        )}
+                    </AntdSpace>
                 )
             }
         ]
@@ -799,7 +793,7 @@ const Base = () => {
                     setTsconfig(undefined)
                 }
                 if (!hasEdited[record.id]) {
-                    setEditingFiles({ ...editingFiles, [record.id]: sourceFiles! })
+                    setEditingFiles((prevState) => ({ ...prevState, [record.id]: sourceFiles! }))
                 }
                 setEditingBaseId(record.id)
                 setEditingFileName(fileName)
@@ -904,10 +898,10 @@ const Base = () => {
                                             }
                                         })
                                         .finally(() => {
-                                            setBaseDetailLoading({
-                                                ...baseDetailLoading,
+                                            setBaseDetailLoading((prevState) => ({
+                                                ...prevState,
                                                 [record.id]: false
-                                            })
+                                            }))
                                         })
                                     resolve()
                                 })
@@ -934,7 +928,10 @@ const Base = () => {
                     .then(
                         (confirmed) => {
                             if (confirmed) {
-                                setBaseDetailLoading({ ...baseDetailLoading, [record.id]: true })
+                                setBaseDetailLoading((prevState) => ({
+                                    ...prevState,
+                                    [record.id]: true
+                                }))
 
                                 delete sourceFiles![fileName]
 
@@ -962,10 +959,10 @@ const Base = () => {
                                         }
                                     })
                                     .finally(() => {
-                                        setBaseDetailLoading({
-                                            ...baseDetailLoading,
+                                        setBaseDetailLoading((prevState) => ({
+                                            ...prevState,
                                             [record.id]: false
-                                        })
+                                        }))
                                     })
                             }
                         },
@@ -991,9 +988,9 @@ const Base = () => {
         if (!hasPermission('system:tool:modify:base')) {
             return
         }
-        setEditingFiles({ ...editingFiles, [editingBaseId]: files })
+        setEditingFiles((prevState) => ({ ...prevState, [editingBaseId]: files }))
         if (!hasEdited[editingBaseId]) {
-            setHasEdited({ ...hasEdited, [editingBaseId]: true })
+            setHasEdited((prevState) => ({ ...prevState, [editingBaseId]: true }))
         }
     }
 

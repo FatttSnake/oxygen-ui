@@ -4,18 +4,20 @@ import {
     checkDesktop,
     generateThemeCssVariables,
     message,
-    removeUselessAttributes
+    removeUselessAttributes,
+    setPageFavicon,
+    setPageTitle
 } from '@/util/common'
 import { getLoginStatus } from '@/util/auth'
 import { navigateToRepository, navigateToRoot, navigateToView } from '@/util/navigation'
 import { r_tool_detail } from '@/services/tool'
-import { AppContext } from '@/App'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import Card from '@/components/common/Card'
+import Playground from '@/components/Playground'
 import compiler from '@/components/Playground/compiler'
 import { IImportMap } from '@/components/Playground/shared'
 import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
-import FitFullscreen from '@/components/common/FitFullscreen'
-import Playground from '@/components/Playground'
-import Card from '@/components/common/Card'
+import { AppContext } from '@/App'
 
 const View = () => {
     const { styles, theme } = useStyles()
@@ -30,6 +32,8 @@ const View = () => {
     const [isMobileMode, setIsMobileMode] = useState(false)
 
     const render = (toolVo: ToolVo) => {
+        setPageFavicon(`data:image/svg+xml;base64,${toolVo.icon}`)
+        setPageTitle(toolVo.name)
         switch (toolVo.platform) {
             case 'ANDROID':
                 setIsMobileMode(true)
@@ -132,6 +136,10 @@ const View = () => {
             return
         }
         getTool()
+
+        return () => {
+            setPageFavicon()
+        }
     }, [username, toolId, ver, searchParams])
 
     return (

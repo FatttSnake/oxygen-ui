@@ -21,9 +21,9 @@ import {
     navigateToRoot
 } from '@/util/navigation'
 import { r_auth_login } from '@/services/auth'
-import { AppContext } from '@/App'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
+import { AppContext } from '@/App'
 
 const SignIn = () => {
     const { styles } = useStyles()
@@ -122,31 +122,23 @@ const SignIn = () => {
                                 </>
                             ),
                             content: (
-                                <>
-                                    <AntdForm
-                                        form={twoFactorForm}
-                                        ref={() => {
-                                            setTimeout(() => {
-                                                twoFactorForm
-                                                    .getFieldInstance('twoFactorCode')
-                                                    .focus()
-                                            }, 50)
-                                        }}
+                                <AntdForm
+                                    form={twoFactorForm}
+                                    ref={() => {
+                                        setTimeout(() => {
+                                            twoFactorForm.getFieldInstance('twoFactorCode').focus()
+                                        }, 50)
+                                    }}
+                                >
+                                    <AntdForm.Item
+                                        name={'twoFactorCode'}
+                                        label={'验证码'}
+                                        style={{ marginTop: 10 }}
+                                        rules={[{ required: true, whitespace: true, len: 6 }]}
                                     >
-                                        <AntdForm.Item
-                                            name={'twoFactorCode'}
-                                            label={'验证码'}
-                                            style={{ marginTop: 10 }}
-                                            rules={[{ required: true, whitespace: true, len: 6 }]}
-                                        >
-                                            <AntdInput
-                                                showCount
-                                                maxLength={6}
-                                                autoComplete={'off'}
-                                            />
-                                        </AntdForm.Item>
-                                    </AntdForm>
-                                </>
+                                        <AntdInput showCount maxLength={6} autoComplete={'off'} />
+                                    </AntdForm.Item>
+                                </AntdForm>
                             ),
                             onOk: () =>
                                 twoFactorForm.validateFields().then(
@@ -198,11 +190,7 @@ const SignIn = () => {
                         setIsSigningIn(false)
                         break
                     default:
-                        void message.error(
-                            <>
-                                <strong>服务器出错了</strong>
-                            </>
-                        )
+                        void message.error(<strong>服务器出错了</strong>)
                         setIsSigningIn(false)
                 }
             })

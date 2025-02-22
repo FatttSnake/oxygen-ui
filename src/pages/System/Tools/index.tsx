@@ -21,10 +21,10 @@ import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
+import Permission from '@/components/common/Permission'
 import compiler from '@/components/Playground/compiler'
 import { IImportMap } from '@/components/Playground/shared'
 import { base64ToFiles, IMPORT_MAP_FILE_NAME, strToBase64 } from '@/components/Playground/files'
-import Permission from '@/components/common/Permission'
 
 const Tools = () => {
     const theme = useTheme()
@@ -128,42 +128,37 @@ const Tools = () => {
             width: '12em',
             align: 'center',
             render: (_, record) => (
-                <>
-                    <AntdSpace size={'middle'}>
-                        <a
-                            style={{ color: theme.colorPrimary }}
-                            onClick={handleOnViewBtnClick(record)}
-                        >
-                            查看
-                        </a>
-                        <Permission operationCode={['system:tool:modify:tool']}>
-                            {record.review === 'PROCESSING' && (
-                                <a
-                                    style={{ color: theme.colorPrimary }}
-                                    onClick={handleOnReviewBtnClick(record)}
-                                >
-                                    审核
-                                </a>
-                            )}
-                            {record.review === 'PASS' && (
-                                <a
-                                    style={{ color: theme.colorPrimary }}
-                                    onClick={handleOnOffShelveBtnClick(record)}
-                                >
-                                    下架
-                                </a>
-                            )}
-                        </Permission>
-                        <Permission operationCode={['system:tool:delete:tool']}>
+                <AntdSpace size={'middle'}>
+                    <a style={{ color: theme.colorPrimary }} onClick={handleOnViewBtnClick(record)}>
+                        查看
+                    </a>
+                    <Permission operationCode={['system:tool:modify:tool']}>
+                        {record.review === 'PROCESSING' && (
                             <a
                                 style={{ color: theme.colorPrimary }}
-                                onClick={handleOnDeleteBtnClick(record)}
+                                onClick={handleOnReviewBtnClick(record)}
                             >
-                                删除
+                                审核
                             </a>
-                        </Permission>
-                    </AntdSpace>{' '}
-                </>
+                        )}
+                        {record.review === 'PASS' && (
+                            <a
+                                style={{ color: theme.colorPrimary }}
+                                onClick={handleOnOffShelveBtnClick(record)}
+                            >
+                                下架
+                            </a>
+                        )}
+                    </Permission>
+                    <Permission operationCode={['system:tool:delete:tool']}>
+                        <a
+                            style={{ color: theme.colorPrimary }}
+                            onClick={handleOnDeleteBtnClick(record)}
+                        >
+                            删除
+                        </a>
+                    </Permission>
+                </AntdSpace>
             )
         }
     ]

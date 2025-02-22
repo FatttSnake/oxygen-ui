@@ -39,7 +39,7 @@ export default createStyles(({ cx, css, token }) => {
     `)
 
     return {
-        sidebar: {
+        root: {
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
@@ -58,11 +58,7 @@ export default createStyles(({ cx, css, token }) => {
             display: 'flex',
             minHeight: 0,
             flexDirection: 'column',
-            flex: 1,
-
-            'ul > li, ul > div > li': {
-                padding: `${token.paddingXXS}px ${token.paddingSM}px`
-            }
+            flex: 1
         },
 
         collapse: cx(css`

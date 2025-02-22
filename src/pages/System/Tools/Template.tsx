@@ -19,6 +19,12 @@ import {
     r_sys_tool_template_get_one,
     r_sys_tool_base_get_list
 } from '@/services/system'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import FlexBox from '@/components/common/FlexBox'
+import HideScrollbar from '@/components/common/HideScrollbar'
+import Card from '@/components/common/Card'
+import Permission from '@/components/common/Permission'
+import Playground from '@/components/Playground'
 import { IFile, IFiles, ITsconfig } from '@/components/Playground/shared'
 import {
     base64ToFiles,
@@ -28,12 +34,6 @@ import {
     TS_CONFIG_FILE_NAME
 } from '@/components/Playground/files'
 import { AppContext } from '@/App'
-import FitFullscreen from '@/components/common/FitFullscreen'
-import FlexBox from '@/components/common/FlexBox'
-import HideScrollbar from '@/components/common/HideScrollbar'
-import Card from '@/components/common/Card'
-import Permission from '@/components/common/Permission'
-import Playground from '@/components/Playground'
 
 const Template = () => {
     const { styles, theme } = useStyles()
@@ -194,38 +194,36 @@ const Template = () => {
             width: '8em',
             align: 'center',
             render: (_, record) => (
-                <>
-                    <AntdSpace size={'middle'}>
-                        {hasEdited[record.id] && (
-                            <Permission operationCode={['system:tool:modify:template']}>
-                                <a
-                                    style={{ color: theme.colorPrimary }}
-                                    onClick={handleOnSaveBtnClick(record)}
-                                >
-                                    保存
-                                </a>
-                            </Permission>
-                        )}
-                        {!Object.keys(hasEdited).length && (
-                            <Permission operationCode={['system:tool:modify:template']}>
-                                <a
-                                    style={{ color: theme.colorPrimary }}
-                                    onClick={handleOnEditBtnClick(record)}
-                                >
-                                    编辑
-                                </a>
-                            </Permission>
-                        )}
-                        <Permission operationCode={['system:tool:delete:template']}>
+                <AntdSpace size={'middle'}>
+                    {hasEdited[record.id] && (
+                        <Permission operationCode={['system:tool:modify:template']}>
                             <a
                                 style={{ color: theme.colorPrimary }}
-                                onClick={handleOnDeleteBtnClick(record)}
+                                onClick={handleOnSaveBtnClick(record)}
                             >
-                                删除
+                                保存
                             </a>
                         </Permission>
-                    </AntdSpace>
-                </>
+                    )}
+                    {!Object.keys(hasEdited).length && (
+                        <Permission operationCode={['system:tool:modify:template']}>
+                            <a
+                                style={{ color: theme.colorPrimary }}
+                                onClick={handleOnEditBtnClick(record)}
+                            >
+                                编辑
+                            </a>
+                        </Permission>
+                    )}
+                    <Permission operationCode={['system:tool:delete:template']}>
+                        <a
+                            style={{ color: theme.colorPrimary }}
+                            onClick={handleOnDeleteBtnClick(record)}
+                        >
+                            删除
+                        </a>
+                    </Permission>
+                </AntdSpace>
             )
         }
     ]
@@ -426,17 +424,17 @@ const Template = () => {
         if (templateDetailLoading[record.id] || hasEdited[record.id]) {
             return
         }
-        setTemplateDetailLoading({ ...templateDetailLoading, [record.id]: true })
+        setTemplateDetailLoading((prevState) => ({ ...prevState, [record.id]: true }))
 
         void r_sys_tool_template_get_one(record.id)
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
                     case DATABASE_SELECT_SUCCESS:
-                        setTemplateDetailData({
-                            ...templateDetailData,
+                        setTemplateDetailData((prevState) => ({
+                            ...prevState,
                             [record.id]: response.data!
-                        })
+                        }))
                         setTemplateData(
                             templateData.map((value) =>
                                 value.id === response.data!.id
@@ -453,7 +451,7 @@ const Template = () => {
                 }
             })
             .finally(() => {
-                setTemplateDetailLoading({ ...templateDetailLoading, [record.id]: false })
+                setTemplateDetailLoading((prevState) => ({ ...prevState, [record.id]: false }))
             })
     }
 
@@ -521,10 +519,10 @@ const Template = () => {
                             return new Promise<void>((resolve) => {
                                 const newFileName = addFileForm.getFieldValue('fileName') as string
 
-                                setTemplateDetailLoading({
-                                    ...templateDetailLoading,
+                                setTemplateDetailLoading((prevState) => ({
+                                    ...prevState,
                                     [record.id]: true
-                                })
+                                }))
 
                                 sourceFiles = {
                                     ...sourceFiles,
@@ -556,10 +554,10 @@ const Template = () => {
                                         }
                                     })
                                     .finally(() => {
-                                        setTemplateDetailLoading({
-                                            ...templateDetailLoading,
+                                        setTemplateDetailLoading((prevState) => ({
+                                            ...prevState,
                                             [record.id]: false
-                                        })
+                                        }))
                                     })
                             })
                         },
@@ -604,43 +602,41 @@ const Template = () => {
                 width: '12em',
                 align: 'center',
                 render: (_, record) => (
-                    <>
-                        <AntdSpace size={'middle'}>
-                            <Permission
-                                operationCode={[
-                                    'system:tool:query:template',
-                                    'system:tool:modify:template'
-                                ]}
+                    <AntdSpace size={'middle'}>
+                        <Permission
+                            operationCode={[
+                                'system:tool:query:template',
+                                'system:tool:modify:template'
+                            ]}
+                        >
+                            <a
+                                onClick={handleOnEditFile(record.name)}
+                                style={{ color: theme.colorPrimary }}
                             >
+                                {hasPermission('system:tool:modify:template') ? '编辑' : '查看'}
+                            </a>
+                        </Permission>
+                        {!Object.keys(hasEdited).length && (
+                            <Permission operationCode={['system:tool:modify:template']}>
                                 <a
-                                    onClick={handleOnEditFile(record.name)}
+                                    onClick={handleOnRenameFile(record.name)}
                                     style={{ color: theme.colorPrimary }}
                                 >
-                                    {hasPermission('system:tool:modify:template') ? '编辑' : '查看'}
+                                    重命名
                                 </a>
                             </Permission>
-                            {!Object.keys(hasEdited).length && (
-                                <Permission operationCode={['system:tool:modify:template']}>
-                                    <a
-                                        onClick={handleOnRenameFile(record.name)}
-                                        style={{ color: theme.colorPrimary }}
-                                    >
-                                        重命名
-                                    </a>
-                                </Permission>
-                            )}
-                            {!Object.keys(hasEdited).length && (
-                                <Permission operationCode={['system:tool:delete:template']}>
-                                    <a
-                                        onClick={handleOnDeleteFile(record.name)}
-                                        style={{ color: theme.colorPrimary }}
-                                    >
-                                        删除
-                                    </a>
-                                </Permission>
-                            )}
-                        </AntdSpace>
-                    </>
+                        )}
+                        {!Object.keys(hasEdited).length && (
+                            <Permission operationCode={['system:tool:delete:template']}>
+                                <a
+                                    onClick={handleOnDeleteFile(record.name)}
+                                    style={{ color: theme.colorPrimary }}
+                                >
+                                    删除
+                                </a>
+                            </Permission>
+                        )}
+                    </AntdSpace>
                 )
             }
         ]
@@ -651,7 +647,7 @@ const Template = () => {
                     setTsconfig(undefined)
                 }
                 if (!hasEdited[record.id]) {
-                    setEditingFiles({ ...editingFiles, [record.id]: sourceFiles! })
+                    setEditingFiles((prevState) => ({ ...prevState, [record.id]: sourceFiles! }))
                 }
                 setEditingTemplateId(record.id)
                 setEditingFileName(fileName)
@@ -755,10 +751,10 @@ const Template = () => {
                                             }
                                         })
                                         .finally(() => {
-                                            setTemplateDetailLoading({
-                                                ...templateDetailLoading,
+                                            setTemplateDetailLoading((prevState) => ({
+                                                ...prevState,
                                                 [record.id]: false
-                                            })
+                                            }))
                                         })
                                     resolve()
                                 })
@@ -785,10 +781,10 @@ const Template = () => {
                     .then(
                         (confirmed) => {
                             if (confirmed) {
-                                setTemplateDetailLoading({
-                                    ...templateDetailLoading,
+                                setTemplateDetailLoading((prevState) => ({
+                                    ...prevState,
                                     [record.id]: true
-                                })
+                                }))
 
                                 delete sourceFiles![fileName]
 
@@ -816,10 +812,10 @@ const Template = () => {
                                         }
                                     })
                                     .finally(() => {
-                                        setTemplateDetailLoading({
-                                            ...templateDetailLoading,
+                                        setTemplateDetailLoading((prevState) => ({
+                                            ...prevState,
                                             [record.id]: false
-                                        })
+                                        }))
                                     })
                             }
                         },
@@ -845,9 +841,9 @@ const Template = () => {
         if (!hasPermission('system:tool:modify:template')) {
             return
         }
-        setEditingFiles({ ...editingFiles, [editingTemplateId]: files })
+        setEditingFiles((prevState) => ({ ...prevState, [editingTemplateId]: files }))
         if (!hasEdited[editingTemplateId]) {
-            setHasEdited({ ...hasEdited, [editingTemplateId]: true })
+            setHasEdited((prevState) => ({ ...prevState, [editingTemplateId]: true }))
         }
     }
 

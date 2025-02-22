@@ -6,12 +6,12 @@ import { message, modal, checkDesktop, addExtraCssVariables } from '@/util/commo
 import { navigateToExecute, navigateToRepository } from '@/util/navigation'
 import editorExtraLibs from '@/util/editorExtraLibs'
 import { r_sys_tool_get_one } from '@/services/system'
+import FitFullscreen from '@/components/common/FitFullscreen'
+import Card from '@/components/common/Card'
 import { AppContext } from '@/App'
 import { IFiles } from '@/components/Playground/shared'
 import { base64ToFiles } from '@/components/Playground/files'
 import Playground from '@/components/Playground'
-import FitFullscreen from '@/components/common/FitFullscreen'
-import Card from '@/components/common/Card'
 
 const Code = () => {
     const { styles } = useStyles()
@@ -83,31 +83,29 @@ const Code = () => {
     }, [id])
 
     return (
-        <>
-            <FitFullscreen className={styles.root}>
-                <Card className={styles.rootBox}>
-                    <Playground.CodeEditor
-                        isDarkMode={isDarkMode}
-                        readonly
-                        files={files}
-                        selectedFileName={selectedFileName}
-                        onSelectedFileChange={setSelectedFileName}
-                        extraLibs={editorExtraLibs}
-                        onEditorDidMount={(_, monaco) => addExtraCssVariables(monaco)}
-                    />
-                </Card>
+        <FitFullscreen className={styles.root}>
+            <Card className={styles.rootBox}>
+                <Playground.CodeEditor
+                    isDarkMode={isDarkMode}
+                    readonly
+                    files={files}
+                    selectedFileName={selectedFileName}
+                    onSelectedFileChange={setSelectedFileName}
+                    extraLibs={editorExtraLibs}
+                    onEditorDidMount={(_, monaco) => addExtraCssVariables(monaco)}
+                />
+            </Card>
 
-                <Draggable bounds={'#root'}>
-                    <div className={styles.draggableContent}>
-                        <AntdFloatButton
-                            type={'primary'}
-                            icon={<Icon component={IconOxygenExecute} />}
-                            onClick={handleOnRunTool}
-                        />
-                    </div>
-                </Draggable>
-            </FitFullscreen>
-        </>
+            <Draggable bounds={'#root'}>
+                <div className={styles.draggableContent}>
+                    <AntdFloatButton
+                        type={'primary'}
+                        icon={<Icon component={IconOxygenExecute} />}
+                        onClick={handleOnRunTool}
+                    />
+                </div>
+            </Draggable>
+        </FitFullscreen>
     )
 }
 
