@@ -60,7 +60,7 @@ const Footer = () => {
     }, [loginStatus])
 
     return (
-        <div className={styles.footer}>
+        <div className={styles.root}>
             <span
                 className={styles.icon}
                 onClick={handleClickAvatar}

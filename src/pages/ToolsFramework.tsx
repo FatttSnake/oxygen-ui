@@ -1,10 +1,18 @@
-import { DndContext, DragOverEvent, DragStartEvent } from '@dnd-kit/core'
+import {
+    DndContext,
+    DragOverEvent,
+    DragStartEvent,
+    MouseSensor,
+    TouchSensor,
+    useSensor,
+    useSensors
+} from '@dnd-kit/core'
 import { arrayMove, SortableContext } from '@dnd-kit/sortable'
 import type { DragEndEvent } from '@dnd-kit/core/dist/types'
 import useStyles from '@/assets/css/pages/tools-framework.style'
 import { tools } from '@/router/tools'
 import { message, checkDesktop, getToolMenuItem, saveToolMenuItem } from '@/util/common'
-import { getViewPath } from '@/util/navigation'
+import { checkIsSamePathname, getViewPath } from '@/util/navigation'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Sidebar from '@/components/common/Sidebar'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
@@ -15,11 +23,14 @@ import DropMask from '@/components/dnd/DropMask'
 import Droppable from '@/components/dnd/Droppable'
 
 const ToolsFramework = () => {
-    const { styles } = useStyles()
-    const [isDelete, setIsDelete] = useState(false)
+    const { styles, cx } = useStyles()
+    const location = useLocation()
+    const navigate = useNavigate()
+    const [deleteItem, setDeleteItem] = useState<string>()
     const [toolMenuItem, setToolMenuItem] = useState<ToolMenuItem[]>(getToolMenuItem)
-    const [activeItem, setActiveItem] = useState<ToolMenuItem | null>(null)
+    const [activeItem, setActiveItem] = useState<ToolMenuItem>()
     const [isShowDropMask, setIsShowDropMask] = useState(false)
+    const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor))
 
     const handleOnDragStart = ({ active }: DragStartEvent) => {
         setActiveItem(active.data.current as ToolMenuItem)
@@ -28,8 +39,8 @@ const ToolsFramework = () => {
         }
     }
 
-    const handleOnDragOver = ({ over }: DragOverEvent) => {
-        setIsDelete(over === null)
+    const handleOnDragOver = ({ active, over }: DragOverEvent) => {
+        setDeleteItem(over === null ? (active.id as string) : undefined)
     }
 
     const handleOnDragEnd = ({ active, over }: DragEndEvent) => {
@@ -73,12 +84,14 @@ const ToolsFramework = () => {
             }
         }
 
-        setActiveItem(null)
+        setActiveItem(undefined)
+        setDeleteItem(undefined)
         setIsShowDropMask(false)
     }
 
     const handleOnDragCancel = () => {
-        setActiveItem(null)
+        setActiveItem(undefined)
+        setDeleteItem(undefined)
     }
 
     useEffect(() => {
@@ -86,113 +99,116 @@ const ToolsFramework = () => {
     }, [toolMenuItem])
 
     return (
-        <>
-            <FitFullscreen className={'flex-horizontal'}>
-                <DndContext
-                    onDragStart={handleOnDragStart}
-                    onDragOver={handleOnDragOver}
-                    onDragEnd={handleOnDragEnd}
-                    onDragCancel={handleOnDragCancel}
-                >
-                    <div className={styles.leftPanel}>
-                        <Sidebar title={'氧工具'}>
-                            <Sidebar.ItemList>
-                                <Sidebar.Item
-                                    end
-                                    path={'/store'}
-                                    icon={tools[0].icon}
-                                    text={tools[0].name}
-                                />
-                                <Sidebar.Item
-                                    end
-                                    path={'/repository'}
-                                    icon={tools[1].icon}
-                                    text={tools[1].name}
-                                />
-                            </Sidebar.ItemList>
-                            <Sidebar.Separate />
-                            <Droppable id={'menu'} className={styles.menuDroppable}>
-                                <Sidebar.Scroll>
-                                    <Sidebar.ItemList>
-                                        <SortableContext
-                                            items={toolMenuItem.map(
-                                                ({ authorUsername, toolId, ver, platform }) =>
-                                                    `${authorUsername}:${toolId}:${ver}:${platform}`
-                                            )}
-                                        >
-                                            {toolMenuItem.map(
-                                                ({
-                                                    icon,
-                                                    toolName,
-                                                    toolId,
-                                                    authorUsername,
-                                                    ver,
-                                                    platform
-                                                }) => (
-                                                    <Sortable
-                                                        id={`${authorUsername}:${toolId}:${ver}:${platform}`}
-                                                        data={{
-                                                            icon,
-                                                            toolName,
-                                                            toolId,
-                                                            authorUsername,
-                                                            ver,
-                                                            platform
-                                                        }}
-                                                        isDelete={isDelete}
-                                                    >
-                                                        <Sidebar.Item
-                                                            path={getViewPath(
+        <FitFullscreen className={cx(styles.root, 'flex-horizontal')}>
+            <DndContext
+                sensors={sensors}
+                onDragStart={handleOnDragStart}
+                onDragOver={handleOnDragOver}
+                onDragEnd={handleOnDragEnd}
+                onDragCancel={handleOnDragCancel}
+            >
+                <div className={styles.leftPanel}>
+                    <Sidebar title={'氧工具'}>
+                        <Sidebar.ItemList>
+                            <Sidebar.Item
+                                icon={tools[0].icon}
+                                text={tools[0].name}
+                                active={location.pathname === '/store'}
+                                onClick={() => navigate('/store')}
+                            />
+                            <Sidebar.Item
+                                icon={tools[1].icon}
+                                text={tools[1].name}
+                                active={location.pathname === '/repository'}
+                                onClick={() => navigate('/repository')}
+                            />
+                        </Sidebar.ItemList>
+                        <Sidebar.Separate />
+                        <Droppable id={'menu'} className={styles.menuDroppable}>
+                            <Sidebar.Scroll>
+                                <Sidebar.ItemList>
+                                    <SortableContext
+                                        items={toolMenuItem.map(
+                                            ({ authorUsername, toolId, ver, platform }) =>
+                                                `${authorUsername}:${toolId}:${ver}:${platform}`
+                                        )}
+                                    >
+                                        {toolMenuItem.map(
+                                            ({
+                                                icon,
+                                                toolName,
+                                                toolId,
+                                                authorUsername,
+                                                ver,
+                                                platform
+                                            }) => (
+                                                <Sortable
+                                                    key={`${authorUsername}:${toolId}:${ver}:${platform}`}
+                                                    id={`${authorUsername}:${toolId}:${ver}:${platform}`}
+                                                    data={{
+                                                        icon,
+                                                        toolName,
+                                                        toolId,
+                                                        authorUsername,
+                                                        ver,
+                                                        platform
+                                                    }}
+                                                    isOver={
+                                                        deleteItem ===
+                                                        `${authorUsername}:${toolId}:${ver}:${platform}`
+                                                    }
+                                                    hasDragHandle
+                                                >
+                                                    <Sidebar.Item
+                                                        icon={icon}
+                                                        text={toolName}
+                                                        extend={<DragHandle padding={10} />}
+                                                        active={checkIsSamePathname(
+                                                            location.pathname,
+                                                            getViewPath(
                                                                 authorUsername,
                                                                 toolId,
                                                                 platform,
-                                                                ver
-                                                            )}
-                                                            icon={icon}
-                                                            text={toolName}
-                                                            key={`${authorUsername}:${toolId}:${ver}:${platform}`}
-                                                            extend={<DragHandle padding={10} />}
-                                                        />
-                                                    </Sortable>
-                                                )
-                                            )}
-                                        </SortableContext>
-                                        <DraggableOverlay>
-                                            {activeItem && (
-                                                <Sidebar.Item
-                                                    path={getViewPath(
-                                                        activeItem.authorUsername,
-                                                        activeItem.toolId,
-                                                        import.meta.env.VITE_PLATFORM,
-                                                        activeItem.ver
-                                                    )}
-                                                    icon={activeItem.icon}
-                                                    text={activeItem.toolName}
-                                                    key={`${activeItem.authorUsername}:${activeItem.toolId}:${activeItem.ver}`}
-                                                    extend={<DragHandle padding={10} />}
-                                                />
-                                            )}
-                                        </DraggableOverlay>
-                                    </Sidebar.ItemList>
-                                </Sidebar.Scroll>
-                                {isShowDropMask && <DropMask />}
-                            </Droppable>
-                        </Sidebar>
-                    </div>
-                    <div className={styles.rightPanel}>
-                        <Suspense
-                            fallback={
-                                <>
-                                    <FullscreenLoadingMask />
-                                </>
-                            }
-                        >
-                            <Outlet />
-                        </Suspense>
-                    </div>
-                </DndContext>
-            </FitFullscreen>
-        </>
+                                                                ver === 'local' ? '' : ver
+                                                            )
+                                                        )}
+                                                        onClick={() =>
+                                                            navigate(
+                                                                getViewPath(
+                                                                    authorUsername,
+                                                                    toolId,
+                                                                    platform,
+                                                                    ver === 'local' ? '' : ver
+                                                                )
+                                                            )
+                                                        }
+                                                    />
+                                                </Sortable>
+                                            )
+                                        )}
+                                    </SortableContext>
+                                    <DraggableOverlay>
+                                        {activeItem && (
+                                            <Sidebar.Item
+                                                icon={activeItem.icon}
+                                                text={activeItem.toolName}
+                                                extend={<DragHandle padding={10} />}
+                                            />
+                                        )}
+                                    </DraggableOverlay>
+                                </Sidebar.ItemList>
+                            </Sidebar.Scroll>
+                            {isShowDropMask && <DropMask />}
+                        </Droppable>
+                    </Sidebar>
+                </div>
+                <div className={styles.rightPanel}>
+                    <Suspense fallback={<FullscreenLoadingMask />}>
+                        <Outlet />
+                    </Suspense>
+                </div>
+            </DndContext>
+        </FitFullscreen>
     )
 }
 
