@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import {
-    STORAGE_TOKEN_KEY,
+    STORAGE_ACCESS_TOKEN_KEY,
     STORAGE_USER_INFO_KEY,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
@@ -11,17 +11,17 @@ import { r_sys_user_info_get } from '@/services/system'
 
 let captcha: Captcha
 
-export const setToken = (token: string) => {
-    setLocalStorage(STORAGE_TOKEN_KEY, token)
+export const setAccessToken = (accessToken: string) => {
+    setLocalStorage(STORAGE_ACCESS_TOKEN_KEY, accessToken)
 }
 
-export const removeToken = () => {
+export const removeAccessToken = () => {
     removeLocalStorage(STORAGE_USER_INFO_KEY)
-    removeLocalStorage(STORAGE_TOKEN_KEY)
+    removeLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
 }
 
-export const getToken = () => {
-    return getLocalStorage(STORAGE_TOKEN_KEY)
+export const getAccessToken = () => {
+    return getLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
 }
 
 export const getCaptcha = (width: number, high: number, num: number) => {
@@ -65,7 +65,7 @@ export const getCaptcha = (width: number, high: number, num: number) => {
 }
 
 export const getLoginStatus = () => {
-    return getLocalStorage(STORAGE_TOKEN_KEY) !== null
+    return getLocalStorage(STORAGE_ACCESS_TOKEN_KEY) !== null
 }
 
 export const getVerifyStatus_async = () => {

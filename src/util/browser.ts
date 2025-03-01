@@ -30,16 +30,15 @@ export const setCookie = (
 }
 
 export const getCookie = (name: string) => {
-    const cookieArr = document.cookie.split(';')
+    const cookies = document.cookie.split(';')
 
-    for (const cookie of cookieArr) {
-        const cookiePair = cookie.split('=')
-        if (cookiePair[0].trim() === name) {
-            return decodeURIComponent(cookiePair[1])
-        }
-    }
+    return parseCookie(cookies, name)
+}
 
-    return null
+export const parseCookie = (cookies: string[] | undefined, name: string) => {
+    if (!cookies) return null
+    const target = cookies.find((c) => c.startsWith(`${name}=`))
+    return target ? decodeURIComponent(target.split(';')[0].split('=')[1]) : null
 }
 
 export const removeCookie = (name: string) => {

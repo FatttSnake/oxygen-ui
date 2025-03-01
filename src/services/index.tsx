@@ -4,18 +4,39 @@ import {
     PERMISSION_ACCESS_DENIED,
     PERMISSION_TOKEN_HAS_EXPIRED,
     PERMISSION_TOKEN_ILLEGAL,
-    PERMISSION_TOKEN_RENEW_SUCCESS,
+    PERMISSION_TOKEN_REFRESH_SUCCESS,
     PERMISSION_UNAUTHORIZED,
     SYSTEM_REQUEST_TOO_FREQUENT
 } from '@/constants/common.constants'
 import { message } from '@/util/common'
 import { getRedirectUrl } from '@/util/route'
-import { getToken, setToken, removeToken } from '@/util/auth'
+import { getAccessToken, setAccessToken, removeAccessToken } from '@/util/auth'
+
+let refreshTokenPromise: Promise<void> | null = null
+
+const getCsrfToken = () => {
+    const cookie = document.cookie.match(/XSRF-TOKEN=([^;]+)/)
+    return cookie ? decodeURIComponent(cookie[1]) : null
+}
+
+const checkTokenIsExpired = () => {
+    const accessToken = getAccessToken()
+    if (!accessToken) {
+        return false
+    }
+    const jwt = jwtDecode<JwtPayload>(accessToken)
+    if (!jwt.exp) {
+        return true
+    }
+    return jwt.exp * 1000 - new Date().getTime() < 100000
+}
+
+axios.defaults.withCredentials = true
+axios.defaults.withXSRFToken = true
 
 const service: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
-    timeout: 30000,
-    withCredentials: false
+    timeout: 30000
 })
 
 service.defaults.paramsSerializer = (params: Record<string, string>) => {
@@ -32,30 +53,29 @@ service.defaults.paramsSerializer = (params: Record<string, string>) => {
 
 service.interceptors.request.use(
     async (config) => {
-        let token = getToken()
-        if (token !== null) {
-            const jwt = jwtDecode<JwtPayload>(token)
-            if (!jwt.exp) {
-                return config
+        if (!checkTokenIsExpired() || !getCsrfToken()) {
+            try {
+                if (!refreshTokenPromise) {
+                    refreshTokenPromise = axios
+                        .post(import.meta.env.VITE_API_TOKEN_URL)
+                        .then((value: AxiosResponse<_Response<TokenVo>>) => {
+                            const response = value.data
+                            if (response.code === PERMISSION_TOKEN_REFRESH_SUCCESS) {
+                                setAccessToken(response.data?.accessToken ?? '')
+                            }
+                        })
+                        .finally(() => {
+                            refreshTokenPromise = null
+                        })
+                }
+                await refreshTokenPromise
+            } catch (error) {
+                return Promise.reject(error)
             }
-            if (
-                jwt.exp * 1000 - new Date().getTime() < 1200000 &&
-                jwt.exp * 1000 - new Date().getTime() > 0
-            ) {
-                await axios
-                    .get(import.meta.env.VITE_API_TOKEN_URL, {
-                        headers: { Authorization: `Bearer ${token}` }
-                    })
-                    .then((value: AxiosResponse<_Response<TokenVo>>) => {
-                        const response = value.data
-                        if (response.code === PERMISSION_TOKEN_RENEW_SUCCESS) {
-                            setToken(response.data?.token ?? '')
-                        }
-                    })
-            }
-
-            token = getToken()
-            config.headers.set('Authorization', `Bearer ${token}`)
+        }
+        if (getAccessToken() && !checkTokenIsExpired()) {
+            const accessToken = getAccessToken()
+            config.headers.set('Authorization', `Bearer ${accessToken}`)
         }
         return config
     },
@@ -68,7 +88,7 @@ service.interceptors.response.use(
     (response: AxiosResponse<_Response<never>>) => {
         switch (response.data.code) {
             case PERMISSION_UNAUTHORIZED:
-                removeToken()
+                removeAccessToken()
                 message
                     .error({
                         content: <strong>未登录</strong>,
@@ -80,7 +100,7 @@ service.interceptors.response.use(
                 throw response?.data
             case PERMISSION_TOKEN_ILLEGAL:
             case PERMISSION_TOKEN_HAS_EXPIRED:
-                removeToken()
+                removeAccessToken()
                 message
                     .error({
                         content: <strong>登录已过期</strong>,
