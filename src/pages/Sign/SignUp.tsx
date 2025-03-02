@@ -9,7 +9,7 @@ import {
     SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
 import { message } from '@/util/common'
-import { getLoginStatus, setToken } from '@/util/auth'
+import { getLoginStatus, setAccessToken } from '@/util/auth'
 import { navigateToLogin } from '@/util/navigation'
 import { r_auth_register, r_auth_resend } from '@/services/auth'
 import { AppContext } from '@/App'
@@ -81,7 +81,7 @@ const SignUp = () => {
                 const response = res.data
                 switch (response.code) {
                     case PERMISSION_REGISTER_SUCCESS:
-                        setToken(response.data?.token ?? '')
+                        setAccessToken(response.data?.accessToken ?? '')
                         void message.success('恭喜，您快要完成注册了')
                         setIsFinish(true)
                         break
