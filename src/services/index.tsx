@@ -31,12 +31,11 @@ const checkTokenIsExpired = () => {
     return jwt.exp * 1000 - new Date().getTime() < 100000
 }
 
-axios.defaults.withCredentials = true
-axios.defaults.withXSRFToken = true
-
 const service: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
-    timeout: 30000
+    timeout: 30000,
+    withCredentials: true,
+    withXSRFToken: true
 })
 
 service.defaults.paramsSerializer = (params: Record<string, string>) => {
@@ -57,7 +56,10 @@ service.interceptors.request.use(
             try {
                 if (!refreshTokenPromise) {
                     refreshTokenPromise = axios
-                        .post(import.meta.env.VITE_API_TOKEN_URL)
+                        .post(import.meta.env.VITE_API_TOKEN_URL, undefined, {
+                            withCredentials: true,
+                            withXSRFToken: true
+                        })
                         .then((value: AxiosResponse<_Response<TokenVo>>) => {
                             const response = value.data
                             if (response.code === PERMISSION_TOKEN_REFRESH_SUCCESS) {
