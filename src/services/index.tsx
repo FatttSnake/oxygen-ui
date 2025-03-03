@@ -1,6 +1,8 @@
 import axios, { type AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { jwtDecode, JwtPayload } from 'jwt-decode'
 import {
+    COOKIE_XSRF_TOKEN_KEY,
+    HEADER_X_XSRF_TOKEN_KEY,
     PERMISSION_ACCESS_DENIED,
     PERMISSION_TOKEN_HAS_EXPIRED,
     PERMISSION_TOKEN_ILLEGAL,
@@ -9,6 +11,7 @@ import {
     SYSTEM_REQUEST_TOO_FREQUENT
 } from '@/constants/common.constants'
 import { message } from '@/util/common'
+import { setCookie } from '@/util/browser'
 import { getRedirectUrl } from '@/util/route'
 import { getAccessToken, setAccessToken, removeAccessToken } from '@/util/auth'
 
@@ -33,9 +36,7 @@ const checkTokenIsExpired = () => {
 
 const service: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
-    timeout: 30000,
-    withCredentials: true,
-    withXSRFToken: true
+    timeout: 3e4
 })
 
 service.defaults.paramsSerializer = (params: Record<string, string>) => {
@@ -52,7 +53,11 @@ service.defaults.paramsSerializer = (params: Record<string, string>) => {
 
 service.interceptors.request.use(
     async (config) => {
-        if (!checkTokenIsExpired() || !getCsrfToken()) {
+        if (config.url === '/login') {
+            config.withCredentials = true
+        }
+
+        if (checkTokenIsExpired() || !getCsrfToken()) {
             try {
                 if (!refreshTokenPromise) {
                     refreshTokenPromise = axios
@@ -60,8 +65,13 @@ service.interceptors.request.use(
                             withCredentials: true,
                             withXSRFToken: true
                         })
-                        .then((value: AxiosResponse<_Response<TokenVo>>) => {
-                            const response = value.data
+                        .then((res: AxiosResponse<_Response<TokenVo>>) => {
+                            const xsrfToken = res.headers[HEADER_X_XSRF_TOKEN_KEY]
+                            if (xsrfToken) {
+                                setCookie(COOKIE_XSRF_TOKEN_KEY, xsrfToken)
+                            }
+
+                            const response = res.data
                             if (response.code === PERMISSION_TOKEN_REFRESH_SUCCESS) {
                                 setAccessToken(response.data?.accessToken ?? '')
                             }
