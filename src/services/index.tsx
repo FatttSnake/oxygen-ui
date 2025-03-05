@@ -11,16 +11,11 @@ import {
     SYSTEM_REQUEST_TOO_FREQUENT
 } from '@/constants/common.constants'
 import { message } from '@/util/common'
-import { setCookie } from '@/util/browser'
+import { getCookie, setCookie } from '@/util/browser'
 import { getRedirectUrl } from '@/util/route'
 import { getAccessToken, setAccessToken, removeAccessToken } from '@/util/auth'
 
 let refreshTokenPromise: Promise<void> | null = null
-
-const getCsrfToken = () => {
-    const cookie = document.cookie.match(/XSRF-TOKEN=([^;]+)/)
-    return cookie ? decodeURIComponent(cookie[1]) : null
-}
 
 const checkTokenIsExpired = () => {
     const accessToken = getAccessToken()
@@ -57,7 +52,7 @@ service.interceptors.request.use(
             config.withCredentials = true
         }
 
-        if (checkTokenIsExpired() || !getCsrfToken()) {
+        if (checkTokenIsExpired() || !getCookie(COOKIE_XSRF_TOKEN_KEY)) {
             try {
                 if (!refreshTokenPromise) {
                     refreshTokenPromise = axios
