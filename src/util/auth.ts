@@ -2,11 +2,10 @@ import _ from 'lodash'
 import {
     STORAGE_ACCESS_TOKEN_KEY,
     STORAGE_USER_INFO_KEY,
-    DATABASE_SELECT_SUCCESS,
-    COOKIE_XSRF_TOKEN_KEY
+    DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
 import { floorNumber, randomColor, randomFloat, randomInt } from '@/util/common'
-import { getLocalStorage, removeCookie, removeLocalStorage, setLocalStorage } from '@/util/browser'
+import { getLocalStorage, removeLocalStorage, setLocalStorage } from '@/util/browser'
 import { getFullTitle } from '@/util/route'
 import { r_sys_user_info_get } from '@/services/system'
 
@@ -19,7 +18,6 @@ export const setAccessToken = (accessToken: string) => {
 export const removeAccessToken = () => {
     removeLocalStorage(STORAGE_USER_INFO_KEY)
     removeLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
-    removeCookie(COOKIE_XSRF_TOKEN_KEY)
 }
 
 export const getAccessToken = () => {
