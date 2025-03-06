@@ -330,7 +330,7 @@ const User = () => {
                                     <>
                                         <AntdImage
                                             src={`data:image/svg+xml;base64,${response.data?.qrCodeSVGBase64}`}
-                                            alt={'Two-factor'}
+                                            alt={''}
                                             preview={false}
                                         />
                                         <AntdTag style={{ whiteSpace: 'normal' }}>
@@ -456,12 +456,7 @@ const User = () => {
                         <AntdTooltip title={'点击获取新头像'}>
                             <div className={styles.avatarBox}>
                                 <AntdAvatar
-                                    src={
-                                        <img
-                                            src={`data:image/png;base64,${avatar}`}
-                                            alt={'Avatar'}
-                                        />
-                                    }
+                                    src={<img src={`data:image/png;base64,${avatar}`} alt={''} />}
                                     size={144}
                                     style={{
                                         background: theme.colorBgLayout,

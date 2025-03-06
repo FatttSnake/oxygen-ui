@@ -261,7 +261,7 @@ const StoreCard = ({
                         </div>
                     </div>
                     <div className={styles.icon}>
-                        <img src={`data:image/svg+xml;base64,${icon}`} alt={'Icon'} />
+                        <img src={`data:image/svg+xml;base64,${icon}`} alt={''} />
                     </div>
                     <div className={styles.info}>
                         <div className={styles.toolName} title={toolName}>
@@ -282,7 +282,7 @@ const StoreCard = ({
                                         <AntdImage
                                             preview={false}
                                             src={`data:image/png;base64,${author.userInfo.avatar}`}
-                                            alt={'Avatar'}
+                                            alt={''}
                                         />
                                     }
                                     style={{ background: theme.colorBgLayout }}

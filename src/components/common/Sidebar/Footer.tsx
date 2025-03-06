@@ -67,7 +67,7 @@ const Footer = () => {
                 title={getLoginStatus() ? '个人中心' : '登录'}
             >
                 {avatar ? (
-                    <img src={avatar} alt={'Avatar'} />
+                    <img src={avatar} alt={''} />
                 ) : (
                     <Icon viewBox={'-20 0 1024 1024'} component={IconOxygenUser} />
                 )}
