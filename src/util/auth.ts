@@ -9,50 +9,19 @@ import { getLocalStorage, removeLocalStorage, setLocalStorage } from '@/util/bro
 import { getFullTitle } from '@/util/route'
 import { r_sys_user_info_get } from '@/services/system'
 
-export const setAccessToken = (accessToken: string) => {
+export const getAccessToken = () => getLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
+
+export const setAccessToken = (accessToken: string) =>
     setLocalStorage(STORAGE_ACCESS_TOKEN_KEY, accessToken)
-}
-
-export const removeAccessToken = () => {
-    removeLocalStorage(STORAGE_USER_INFO_KEY)
-    removeLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
-}
-
-export const getAccessToken = () => {
-    return getLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
-}
-
-export const getLoginStatus = () => {
-    return getLocalStorage(STORAGE_ACCESS_TOKEN_KEY) !== null
-}
-
-export const getVerifyStatus_async = () => {
-    if (getLocalStorage(STORAGE_USER_INFO_KEY) === null) {
-        return undefined
-    }
-    return (JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo)
-        .verified
-}
-
-export const getUserInfo = async (force = false): Promise<UserWithPowerInfoVo> => {
-    if (getLocalStorage(STORAGE_USER_INFO_KEY) !== null && !force) {
-        return new Promise((resolve) => {
-            resolve(
-                JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo
-            )
-        })
-    }
-    return requestUserInfo()
-}
 
 export const requestUserInfo = async () => {
-    let user: UserWithPowerInfoVo | null
+    let user: UserWithPowerInfoVo | undefined
 
     await r_sys_user_info_get().then((value) => {
         const response = value.data
         if (response.code === DATABASE_SELECT_SUCCESS) {
-            user = response.data
-            setLocalStorage(STORAGE_USER_INFO_KEY, JSON.stringify(user))
+            user = response.data == null ? undefined : response.data
+            setUserInfo(user)
         }
     })
 
@@ -62,6 +31,35 @@ export const requestUserInfo = async () => {
         }
         reject(user)
     })
+}
+
+export const getUserInfo = async (force = false): Promise<UserWithPowerInfoVo> => {
+    if (getLocalStorage(STORAGE_USER_INFO_KEY) && !force) {
+        return new Promise((resolve) => {
+            resolve(
+                JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo
+            )
+        })
+    }
+    return requestUserInfo()
+}
+
+export const setUserInfo = (userInfo?: UserWithPowerInfoVo) =>
+    setLocalStorage(STORAGE_USER_INFO_KEY, JSON.stringify(userInfo))
+
+export const removeAllToken = () => {
+    removeLocalStorage(STORAGE_USER_INFO_KEY)
+    removeLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
+}
+
+export const getLoginStatus = () => getAccessToken() !== null
+
+export const getVerifyStatus_async = () => {
+    if (getLocalStorage(STORAGE_USER_INFO_KEY) === null) {
+        return undefined
+    }
+    return (JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo)
+        .verified
 }
 
 export const getNickname = async () => {
@@ -191,42 +189,22 @@ export const getPermissionPath = (): string[] => {
     if (s === null) {
         return []
     }
-
     const user = JSON.parse(s) as UserWithPowerInfoVo
-    const paths: string[] = []
-    user.menus.forEach((menu) => {
-        paths.push(menu.url)
-    })
 
-    return paths
+    return user.menus.map((menu) => menu.url)
 }
 
-export const hasPathPermission = (path: string) => {
-    let flag = false
-    getPermissionPath().forEach((value) => {
-        if (RegExp(value).test(path)) {
-            flag = true
-            return
-        }
-    })
-    return flag
-}
+export const hasPathPermission = (path: string) =>
+    getPermissionPath().some((value) => RegExp(value).test(path))
 
 export const getPermission = (): string[] => {
     const s = getLocalStorage(STORAGE_USER_INFO_KEY)
     if (s === null) {
         return []
     }
-
     const user = JSON.parse(s) as UserWithPowerInfoVo
-    const operationCodes: string[] = []
-    user.operations.forEach((operation) => {
-        operationCodes.push(operation.code)
-    })
 
-    return operationCodes
+    return user.operations.map((operation) => operation.code)
 }
 
-export const hasPermission = (operationCode: string) => {
-    return getPermission().indexOf(operationCode) !== -1
-}
+export const hasPermission = (operationCode: string) => getPermission().includes(operationCode)

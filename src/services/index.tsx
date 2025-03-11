@@ -13,7 +13,7 @@ import {
 import { message } from '@/util/common'
 import { getCookie, setCookie } from '@/util/browser'
 import { getRedirectUrl } from '@/util/route'
-import { getAccessToken, setAccessToken, removeAccessToken } from '@/util/auth'
+import { getAccessToken, setAccessToken, removeAllToken } from '@/util/auth'
 
 let refreshTokenPromise: Promise<void> | null = null
 
@@ -95,7 +95,7 @@ service.interceptors.response.use(
     (response: AxiosResponse<_Response<never>>) => {
         switch (response.data.code) {
             case PERMISSION_UNAUTHORIZED:
-                removeAccessToken()
+                removeAllToken()
                 message
                     .error({
                         content: <strong>未登录</strong>,
@@ -107,7 +107,7 @@ service.interceptors.response.use(
                 throw response?.data
             case PERMISSION_TOKEN_ILLEGAL:
             case PERMISSION_TOKEN_HAS_EXPIRED:
-                removeAccessToken()
+                removeAllToken()
                 message
                     .error({
                         content: <strong>登录已过期</strong>,

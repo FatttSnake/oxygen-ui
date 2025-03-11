@@ -3,7 +3,7 @@ import useStyles from '@/assets/css/components/common/sidebar/footer.style'
 import { THEME_DARK, THEME_FOLLOW_SYSTEM, THEME_LIGHT } from '@/constants/common.constants'
 import { getThemeMode, notification, setThemeMode, ThemeMode } from '@/util/common'
 import { getRedirectUrl } from '@/util/route'
-import { getAvatar, getLoginStatus, getNickname, removeAccessToken } from '@/util/auth'
+import { getAvatar, getLoginStatus, getNickname, removeAllToken } from '@/util/auth'
 import { navigateToLogin, navigateToUser } from '@/util/navigation'
 import { r_auth_logout } from '@/services/auth'
 import { SidebarContext } from '@/components/common/Sidebar/index'
@@ -34,7 +34,7 @@ const Footer = () => {
 
         setIsExiting(true)
         void r_auth_logout().finally(() => {
-            removeAccessToken()
+            removeAllToken()
             notification.info({
                 message: '已退出登录',
                 icon: <Icon component={IconOxygenExit} style={{ color: theme.colorErrorText }} />
