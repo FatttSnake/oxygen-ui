@@ -52,7 +52,7 @@ service.interceptors.request.use(
             config.withCredentials = true
         }
 
-        if (checkTokenIsExpired() || !getCookie(COOKIE_XSRF_TOKEN_KEY)) {
+        if (!getCookie(COOKIE_XSRF_TOKEN_KEY)) {
             try {
                 if (!refreshTokenPromise) {
                     refreshTokenPromise = axios
@@ -65,7 +65,26 @@ service.interceptors.request.use(
                             if (xsrfToken) {
                                 setCookie(COOKIE_XSRF_TOKEN_KEY, xsrfToken)
                             }
+                        })
+                        .finally(() => {
+                            refreshTokenPromise = null
+                        })
+                }
+                await refreshTokenPromise
+            } catch (error) {
+                return Promise.reject(error)
+            }
+        }
 
+        if (checkTokenIsExpired()) {
+            try {
+                if (!refreshTokenPromise) {
+                    refreshTokenPromise = axios
+                        .post(import.meta.env.VITE_API_TOKEN_URL, undefined, {
+                            withCredentials: true,
+                            withXSRFToken: true
+                        })
+                        .then((res: AxiosResponse<_Response<TokenVo>>) => {
                             const response = res.data
                             if (response.code === PERMISSION_TOKEN_REFRESH_SUCCESS) {
                                 setAccessToken(response.data?.accessToken ?? '')
