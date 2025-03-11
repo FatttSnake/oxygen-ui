@@ -4,12 +4,10 @@ import {
     STORAGE_USER_INFO_KEY,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
-import { floorNumber, randomColor, randomFloat, randomInt } from '@/util/common'
+import { floorNumber } from '@/util/common'
 import { getLocalStorage, removeLocalStorage, setLocalStorage } from '@/util/browser'
 import { getFullTitle } from '@/util/route'
 import { r_sys_user_info_get } from '@/services/system'
-
-let captcha: Captcha
 
 export const setAccessToken = (accessToken: string) => {
     setLocalStorage(STORAGE_ACCESS_TOKEN_KEY, accessToken)
@@ -22,46 +20,6 @@ export const removeAccessToken = () => {
 
 export const getAccessToken = () => {
     return getLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
-}
-
-export const getCaptcha = (width: number, high: number, num: number) => {
-    const CHARTS = '23456789ABCDEFGHJKLMNPRSTUVWXYZabcdefghijklmnpqrstuvwxyz'.split('')
-
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-
-    ctx.rect(0, 0, width, high)
-    ctx.clip()
-
-    ctx.fillStyle = randomColor(200, 250)
-    ctx.fillRect(0, 0, width, high)
-
-    for (let i = 0.05 * width * high; i > 0; i--) {
-        ctx.fillStyle = randomColor(0, 256)
-        ctx.fillRect(randomInt(0, width), randomInt(0, high), 1, 1)
-    }
-
-    ctx.font = `${high - 4}px Consolas`
-    ctx.fillStyle = randomColor(160, 200)
-    let value = ''
-    for (let i = 0; i < num; i++) {
-        const x = ((width - 10) / num) * i + 5
-        const y = high - 12
-        const r = Math.PI * randomFloat(-0.12, 0.12)
-        const ch = CHARTS[randomInt(0, CHARTS.length)]
-        value += ch
-        ctx.translate(x, y)
-        ctx.rotate(r)
-        ctx.fillText(ch, 0, 0)
-        ctx.rotate(-r)
-        ctx.translate(-x, -y)
-    }
-
-    const base64Src = canvas.toDataURL('image/jpg')
-    return {
-        value,
-        base64Src
-    }
 }
 
 export const getLoginStatus = () => {
@@ -128,15 +86,6 @@ export const getUserId = async () => {
     const user = await getUserInfo()
 
     return user.id
-}
-
-export const getCaptchaSrc = () => {
-    captcha = getCaptcha(300, 150, 4)
-    return captcha.base64Src
-}
-
-export const verifyCaptcha = (value: string) => {
-    return captcha.value.toLowerCase() === value.replace(/\s*/g, '').toLowerCase()
 }
 
 export const powerListToPowerTree = (
