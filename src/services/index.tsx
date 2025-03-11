@@ -13,7 +13,7 @@ import {
 import { message } from '@/util/common'
 import { getCookie, setCookie } from '@/util/browser'
 import { getRedirectUrl } from '@/util/route'
-import { getAccessToken, setAccessToken, removeAccessToken } from '@/util/auth'
+import { getAccessToken, setAccessToken, removeAllToken } from '@/util/auth'
 
 let refreshTokenPromise: Promise<void> | null = null
 
@@ -52,7 +52,7 @@ service.interceptors.request.use(
             config.withCredentials = true
         }
 
-        if (checkTokenIsExpired() || !getCookie(COOKIE_XSRF_TOKEN_KEY)) {
+        if (!getCookie(COOKIE_XSRF_TOKEN_KEY)) {
             try {
                 if (!refreshTokenPromise) {
                     refreshTokenPromise = axios
@@ -65,7 +65,26 @@ service.interceptors.request.use(
                             if (xsrfToken) {
                                 setCookie(COOKIE_XSRF_TOKEN_KEY, xsrfToken)
                             }
+                        })
+                        .finally(() => {
+                            refreshTokenPromise = null
+                        })
+                }
+                await refreshTokenPromise
+            } catch (error) {
+                return Promise.reject(error)
+            }
+        }
 
+        if (checkTokenIsExpired()) {
+            try {
+                if (!refreshTokenPromise) {
+                    refreshTokenPromise = axios
+                        .post(import.meta.env.VITE_API_TOKEN_URL, undefined, {
+                            withCredentials: true,
+                            withXSRFToken: true
+                        })
+                        .then((res: AxiosResponse<_Response<TokenVo>>) => {
                             const response = res.data
                             if (response.code === PERMISSION_TOKEN_REFRESH_SUCCESS) {
                                 setAccessToken(response.data?.accessToken ?? '')
@@ -95,7 +114,7 @@ service.interceptors.response.use(
     (response: AxiosResponse<_Response<never>>) => {
         switch (response.data.code) {
             case PERMISSION_UNAUTHORIZED:
-                removeAccessToken()
+                removeAllToken()
                 message
                     .error({
                         content: <strong>未登录</strong>,
@@ -107,7 +126,7 @@ service.interceptors.response.use(
                 throw response?.data
             case PERMISSION_TOKEN_ILLEGAL:
             case PERMISSION_TOKEN_HAS_EXPIRED:
-                removeAccessToken()
+                removeAllToken()
                 message
                     .error({
                         content: <strong>登录已过期</strong>,
