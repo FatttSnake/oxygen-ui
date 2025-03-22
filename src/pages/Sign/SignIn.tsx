@@ -26,7 +26,7 @@ import FlexBox from '@/components/common/FlexBox'
 import { AppContext } from '@/App'
 
 const SignIn = () => {
-    const { styles } = useStyles()
+    const { styles, theme } = useStyles()
     const { refreshRouter, isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
@@ -114,6 +114,12 @@ const SignIn = () => {
                         twoFactorForm.resetFields()
                         void modal.confirm({
                             centered: true,
+                            icon: (
+                                <Icon
+                                    style={{ color: theme.colorPrimary }}
+                                    component={IconOxygen2FA}
+                                />
+                            ),
                             title: '双因素验证',
                             footer: (_, { OkBtn, CancelBtn }) => (
                                 <>
