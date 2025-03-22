@@ -124,7 +124,7 @@ const User = () => {
                     wrapperCol={{ span: 18 }}
                     ref={() => {
                         setTimeout(() => {
-                            changePasswordForm?.getFieldInstance('originalPassword').focus()
+                            changePasswordForm?.getFieldInstance('originalPassword')?.focus()
                         }, 50)
                     }}
                 >
@@ -254,7 +254,9 @@ const User = () => {
                                     form={twoFactorForm}
                                     ref={() => {
                                         setTimeout(() => {
-                                            twoFactorForm?.getFieldInstance('twoFactorCode').focus()
+                                            twoFactorForm
+                                                ?.getFieldInstance('twoFactorCode')
+                                                ?.focus()
                                         }, 50)
                                     }}
                                 >
@@ -343,7 +345,7 @@ const User = () => {
                                                 setTimeout(() => {
                                                     twoFactorForm
                                                         ?.getFieldInstance('twoFactorCode')
-                                                        .focus()
+                                                        ?.focus()
                                                 }, 50)
                                             }}
                                         >
