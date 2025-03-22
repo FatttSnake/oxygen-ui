@@ -330,10 +330,11 @@ const User = () => {
                                 ),
                                 content: (
                                     <>
-                                        <AntdImage
-                                            src={`data:image/svg+xml;base64,${response.data?.qrCodeSVGBase64}`}
-                                            alt={''}
-                                            preview={false}
+                                        <div
+                                            className={styles.qrCode}
+                                            style={{
+                                                maskImage: `url(data:image/svg+xml;base64,${response.data?.qrCodeSVGBase64})`
+                                            }}
                                         />
                                         <AntdTag style={{ whiteSpace: 'normal' }}>
                                             请使用身份验证器APP（eg. Microsoft Authenticator, Google
