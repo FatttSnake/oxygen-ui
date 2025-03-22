@@ -126,7 +126,7 @@ const SignIn = () => {
                                     form={twoFactorForm}
                                     ref={() => {
                                         setTimeout(() => {
-                                            twoFactorForm.getFieldInstance('twoFactorCode').focus()
+                                            twoFactorForm.getFieldInstance('twoFactorCode')?.focus()
                                         }, 50)
                                     }}
                                 >
