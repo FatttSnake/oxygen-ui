@@ -63,7 +63,7 @@ const StoreCard = ({
     useEffect(() => {
         cardRef.current && VanillaTilt.init(cardRef.current, options)
         if (getLoginStatus()) {
-            void getUserId().then((value) => setUserId(value))
+            void getUserId().then((value) => setUserId(value ?? ''))
         }
     }, [options])
 
