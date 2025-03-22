@@ -100,16 +100,8 @@ const User = () => {
         void modal.confirm({
             centered: true,
             maskClosable: true,
-            icon: <></>,
-            title: (
-                <>
-                    <Icon
-                        style={{ color: theme.colorPrimary, marginRight: 10 }}
-                        component={IconOxygenSetting}
-                    />
-                    修改密码
-                </>
-            ),
+            icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygenPassword} />,
+            title: '修改密码',
             footer: (_, { OkBtn, CancelBtn }) => (
                 <>
                     <OkBtn />
@@ -230,6 +222,7 @@ const User = () => {
                     centered: true,
                     maskClosable: true,
                     focusTriggerAfterClose: false,
+                    icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygen2FA} />,
                     title: '双因素',
                     footer: (_, { OkBtn, CancelBtn }) => (
                         <>
@@ -242,6 +235,12 @@ const User = () => {
                         void modal.confirm({
                             centered: true,
                             maskClosable: true,
+                            icon: (
+                                <Icon
+                                    style={{ color: theme.colorPrimary }}
+                                    component={IconOxygen2FA}
+                                />
+                            ),
                             title: '解除双因素',
                             footer: (_, { OkBtn, CancelBtn }) => (
                                 <>
@@ -321,6 +320,12 @@ const User = () => {
                             void modal.confirm({
                                 centered: true,
                                 maskClosable: true,
+                                icon: (
+                                    <Icon
+                                        style={{ color: theme.colorPrimary }}
+                                        component={IconOxygen2FA}
+                                    />
+                                ),
                                 title: '绑定双因素',
                                 footer: (_, { OkBtn, CancelBtn }) => (
                                     <>
