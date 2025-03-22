@@ -50,10 +50,10 @@ const Footer = () => {
     useEffect(() => {
         if (getLoginStatus()) {
             void getNickname().then((nickname) => {
-                setNickname(nickname)
+                setNickname(nickname ?? '')
 
                 void getAvatar().then((avatar) => {
-                    setAvatar(`data:image/png;base64,${avatar}`)
+                    setAvatar(avatar ? `data:image/png;base64,${avatar}` : '')
                 })
             })
         }

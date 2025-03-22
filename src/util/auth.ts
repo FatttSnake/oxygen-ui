@@ -9,6 +9,8 @@ import { getLocalStorage, removeLocalStorage, setLocalStorage } from '@/util/bro
 import { getFullTitle } from '@/util/route'
 import { r_sys_user_info_get } from '@/services/system'
 
+let getUserInfoPromise: Promise<UserWithPowerInfoVo> | null = null
+
 export const getAccessToken = () => getLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
 
 export const setAccessToken = (accessToken: string) =>
@@ -44,6 +46,19 @@ export const getUserInfo = async (force = false): Promise<UserWithPowerInfoVo> =
     return requestUserInfo()
 }
 
+export const getUserInfoQueue = async (): Promise<UserWithPowerInfoVo | undefined> => {
+    if (!getUserInfoPromise) {
+        getUserInfoPromise = getUserInfo().finally(() => {
+            getUserInfoPromise = null
+        })
+    }
+    await getUserInfoPromise
+
+    return getLocalStorage(STORAGE_USER_INFO_KEY)
+        ? (JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo)
+        : undefined
+}
+
 export const setUserInfo = (userInfo?: UserWithPowerInfoVo) =>
     setLocalStorage(STORAGE_USER_INFO_KEY, JSON.stringify(userInfo))
 
@@ -63,27 +78,27 @@ export const getVerifyStatus_async = () => {
 }
 
 export const getNickname = async () => {
-    const user = await getUserInfo()
+    const user = await getUserInfoQueue()
 
-    return user.userInfo.nickname
+    return user?.userInfo.nickname
 }
 
 export const getAvatar = async () => {
-    const user = await getUserInfo()
+    const user = await getUserInfoQueue()
 
-    return user.userInfo.avatar
+    return user?.userInfo.avatar
 }
 
 export const getUsername = async () => {
-    const user = await getUserInfo()
+    const user = await getUserInfoQueue()
 
-    return user.username
+    return user?.username
 }
 
 export const getUserId = async () => {
-    const user = await getUserInfo()
+    const user = await getUserInfoQueue()
 
-    return user.id
+    return user?.id
 }
 
 export const powerListToPowerTree = (
