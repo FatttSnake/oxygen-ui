@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { cloneDeep } from 'lodash'
 import {
     STORAGE_ACCESS_TOKEN_KEY,
     STORAGE_USER_INFO_KEY,
@@ -183,7 +183,7 @@ const parentToTree = (data: _DataNode[]): _DataNode[] => {
         parents.forEach((parent) => {
             children.forEach((current, index) => {
                 if (current.parentId === parent.key) {
-                    const temp = _.cloneDeep(children)
+                    const temp = cloneDeep(children)
                     temp.splice(index, 1)
                     translator([current], temp)
                     typeof parent.children !== 'undefined'
