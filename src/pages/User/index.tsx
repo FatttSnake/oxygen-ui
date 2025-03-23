@@ -222,7 +222,7 @@ const User = () => {
                     centered: true,
                     maskClosable: true,
                     focusTriggerAfterClose: false,
-                    icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygen2FA} />,
+                    icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygen2fa} />,
                     title: '双因素',
                     footer: (_, { OkBtn, CancelBtn }) => (
                         <>
@@ -238,7 +238,7 @@ const User = () => {
                             icon: (
                                 <Icon
                                     style={{ color: theme.colorPrimary }}
-                                    component={IconOxygen2FA}
+                                    component={IconOxygen2fa}
                                 />
                             ),
                             title: '解除双因素',
@@ -323,7 +323,7 @@ const User = () => {
                                 icon: (
                                     <Icon
                                         style={{ color: theme.colorPrimary }}
-                                        component={IconOxygen2FA}
+                                        component={IconOxygen2fa}
                                     />
                                 ),
                                 title: '绑定双因素',
