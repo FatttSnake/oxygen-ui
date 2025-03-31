@@ -7,6 +7,7 @@ import esbuild, {
     Plugin,
     PluginBuild
 } from 'esbuild-wasm'
+import wasmURL from 'esbuild-wasm/esbuild.wasm?url'
 import localforage from 'localforage'
 import axios from 'axios'
 import { IFile, IFiles, IImportMap } from '@/components/Playground/shared'
@@ -30,7 +31,7 @@ class Compiler {
             void esbuild
                 .initialize({
                     worker: true,
-                    wasmURL: 'https://esm.sh/esbuild-wasm@0.24.0/esbuild.wasm'
+                    wasmURL
                 })
                 .finally(() => {
                     this.init = true
