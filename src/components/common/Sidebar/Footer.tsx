@@ -33,7 +33,7 @@ const Footer = () => {
         }
 
         setIsExiting(true)
-        void r_auth_logout().finally(() => {
+        r_auth_logout().finally(() => {
             removeAllToken()
             notification.info({
                 message: '已退出登录',
@@ -49,10 +49,10 @@ const Footer = () => {
 
     useEffect(() => {
         if (getLoginStatus()) {
-            void getNickname().then((nickname) => {
+            getNickname().then((nickname) => {
                 setNickname(nickname ?? '')
 
-                void getAvatar().then((avatar) => {
+                getAvatar().then((avatar) => {
                     setAvatar(avatar ? `data:image/png;base64,${avatar}` : '')
                 })
             })

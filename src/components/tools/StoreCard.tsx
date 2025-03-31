@@ -63,7 +63,7 @@ const StoreCard = ({
     useEffect(() => {
         cardRef.current && VanillaTilt.init(cardRef.current, options)
         if (getLoginStatus()) {
-            void getUserId().then((value) => setUserId(value ?? ''))
+            getUserId().then((value) => setUserId(value ?? ''))
         }
     }, [options])
 
@@ -112,7 +112,7 @@ const StoreCard = ({
             return
         }
         if (favorite_) {
-            void r_tool_remove_favorite({
+            r_tool_remove_favorite({
                 authorId: author.id,
                 toolId,
                 platform
@@ -125,7 +125,7 @@ const StoreCard = ({
                 }
             })
         } else {
-            void r_tool_add_favorite({
+            r_tool_add_favorite({
                 authorId: author.id,
                 toolId,
                 platform

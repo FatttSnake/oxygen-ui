@@ -39,7 +39,7 @@ const User = () => {
     const handleOnCopyToClipboard = (username?: string) => {
         return username
             ? () => {
-                  void navigator.clipboard
+                  navigator.clipboard
                       .writeText(new URL(`/store/${username}`, import.meta.env.VITE_UI_URL).href)
                       .then(() => {
                           void message.success('已复制到剪切板')
@@ -59,7 +59,7 @@ const User = () => {
         setIsSubmitting(true)
         void message.loading({ content: '保存中', key: 'LOADING', duration: 0 })
 
-        void r_sys_user_info_update({ avatar, nickname: formValues.nickname })
+        r_sys_user_info_update({ avatar, nickname: formValues.nickname })
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
@@ -82,7 +82,7 @@ const User = () => {
             return
         }
         setIsGettingAvatar(true)
-        void r_api_avatar_random_base64()
+        r_api_avatar_random_base64()
             .then((res) => {
                 const response = res.data
                 if (response.success) {
@@ -164,7 +164,7 @@ const User = () => {
                 changePasswordForm.validateFields().then(
                     () => {
                         return new Promise<void>((resolve, reject) => {
-                            void r_sys_user_info_change_password({
+                            r_sys_user_info_change_password({
                                 originalPassword: changePasswordForm.getFieldValue(
                                     'originalPassword'
                                 ) as string,
@@ -278,7 +278,7 @@ const User = () => {
                                 twoFactorForm.validateFields().then(
                                     () => {
                                         return new Promise<void>((resolve) => {
-                                            void r_auth_two_factor_remove({
+                                            r_auth_two_factor_remove({
                                                 code: twoFactorForm.getFieldValue(
                                                     'twoFactorCode'
                                                 ) as string
@@ -312,7 +312,7 @@ const User = () => {
                 }
                 setIsLoading(true)
                 void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
-                void r_auth_two_factor_create()
+                r_auth_two_factor_create()
                     .then((res) => {
                         message.destroy('LOADING')
                         const response = res.data
@@ -377,7 +377,7 @@ const User = () => {
                                     twoFactorForm.validateFields().then(
                                         () => {
                                             return new Promise<void>((resolve) => {
-                                                void r_auth_two_factor_validate({
+                                                r_auth_two_factor_validate({
                                                     code: twoFactorForm.getFieldValue(
                                                         'twoFactorCode'
                                                     ) as string
@@ -425,7 +425,7 @@ const User = () => {
         }
         setIsLoading(true)
 
-        void getUserInfo(true)
+        getUserInfo(true)
             .then((userWithPowerInfoVo) => {
                 setAvatar(userWithPowerInfoVo.userInfo.avatar)
                 form.setFieldValue('nickname', userWithPowerInfoVo.userInfo.nickname)

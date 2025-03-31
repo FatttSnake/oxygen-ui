@@ -232,7 +232,7 @@ const Tools = () => {
                                         key: 'LOADING_TOOL',
                                         duration: 0
                                     })
-                                    void r_sys_tool_get_one(value.id)
+                                    r_sys_tool_get_one(value.id)
                                         .then((res) => {
                                             message.destroy('LOADING_TOOL')
                                             const response = res.data
@@ -251,7 +251,7 @@ const Tools = () => {
                                                         const importMap = JSON.parse(
                                                             files[IMPORT_MAP_FILE_NAME].value
                                                         ) as IImportMap
-                                                        void compiler
+                                                        compiler
                                                             .compile(
                                                                 files,
                                                                 importMap,
@@ -264,7 +264,7 @@ const Tools = () => {
                                                                     key: 'UPLOADING',
                                                                     duration: 0
                                                                 })
-                                                                void r_sys_tool_pass(value.id, {
+                                                                r_sys_tool_pass(value.id, {
                                                                     dist: strToBase64(
                                                                         result.outputFiles[0].text
                                                                     )
@@ -316,7 +316,7 @@ const Tools = () => {
                                         })
                                     break
                                 default:
-                                    void r_sys_tool_reject(value.id)
+                                    r_sys_tool_reject(value.id)
                                         .then((res) => {
                                             const response = res.data
                                             switch (response.code) {
@@ -357,7 +357,7 @@ const Tools = () => {
                         if (confirmed) {
                             setIsLoading(true)
 
-                            void r_sys_tool_off_shelve(value.id)
+                            r_sys_tool_off_shelve(value.id)
                                 .then((res) => {
                                     const response = res.data
                                     if (response.code === DATABASE_UPDATE_SUCCESS) {
@@ -393,7 +393,7 @@ const Tools = () => {
                         if (confirmed) {
                             setIsLoading(true)
 
-                            void r_sys_tool_delete(value.id)
+                            r_sys_tool_delete(value.id)
                                 .then((res) => {
                                     const response = res.data
                                     if (response.code === DATABASE_DELETE_SUCCESS) {
@@ -469,7 +469,7 @@ const Tools = () => {
         }
         setIsLoading(true)
 
-        void r_sys_tool_get({
+        r_sys_tool_get({
             currentPage: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize,
             sortField:

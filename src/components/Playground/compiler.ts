@@ -28,7 +28,7 @@ class Compiler {
 
     constructor() {
         try {
-            void esbuild
+            esbuild
                 .initialize({
                     worker: true,
                     wasmURL
@@ -173,8 +173,7 @@ class Compiler {
                 { namespace: 'oxygen', filter: /.*/ },
                 (args: OnLoadArgs): OnLoadResult | undefined => {
                     let file: IFile | undefined
-
-                    void ['', '.tsx', '.jsx', '.ts', '.js'].forEach((suffix) => {
+                    ;['', '.tsx', '.jsx', '.ts', '.js'].forEach((suffix) => {
                         file = file || files[`${args.path}${suffix}`]
                     })
                     if (file) {
