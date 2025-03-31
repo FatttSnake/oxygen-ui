@@ -1,4 +1,4 @@
-import ts from 'typescript'
+import typescript from 'typescript'
 import { ATABootstrapConfig, setupTypeAcquisition } from '@typescript/ata'
 
 type DelegateListener = Required<{
@@ -59,7 +59,7 @@ export const createATA = async (): Promise<TypeHelper> => {
 
     const ata = setupTypeAcquisition({
         projectName: 'monaco-ts',
-        typescript: ts,
+        typescript,
         logger: console,
         fetcher: async (
             input: RequestInfo | URL,
