@@ -70,7 +70,7 @@ const SignIn = () => {
             return
         }
 
-        void r_auth_login({
+        r_auth_login({
             account: loginParam.account,
             password: loginParam.password,
             captchaCode,
@@ -83,7 +83,7 @@ const SignIn = () => {
                     case PERMISSION_LOGIN_SUCCESS:
                         setAccessToken(data?.accessToken ?? '')
                         message.success('登录成功').then(() => {
-                            void getUserInfo().then((user) => {
+                            getUserInfo().then((user) => {
                                 refreshRouter()
                                 navigateToRedirect(navigate, searchParams, '/repository')
 

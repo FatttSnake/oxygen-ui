@@ -52,7 +52,7 @@ const View = () => {
                 const files = base64ToFiles(toolVo.source.data!)
                 const importMap = JSON.parse(files[IMPORT_MAP_FILE_NAME].value) as IImportMap
 
-                void compiler
+                compiler
                     .compile(files, importMap, toolVo.entryPoint)
                     .then((result) => {
                         const output = result.outputFiles[0].text
@@ -88,12 +88,7 @@ const View = () => {
         setIsLoading(true)
         void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
 
-        void r_tool_detail(
-            username!,
-            toolId!,
-            ver || 'latest',
-            searchParams.get('platform') as Platform
-        )
+        r_tool_detail(username!, toolId!, ver || 'latest', searchParams.get('platform') as Platform)
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
@@ -101,7 +96,7 @@ const View = () => {
                         render(response.data!)
                         break
                     case DATABASE_NO_RECORD_FOUND:
-                        void message.error('未找到指定工具').then(() => {
+                        message.error('未找到指定工具').then(() => {
                             navigateToRepository(navigate)
                         })
                         break
@@ -122,7 +117,7 @@ const View = () => {
             return
         }
         if (username === '!' && !getLoginStatus()) {
-            void message.error('未登录').then(() => {
+            message.error('未登录').then(() => {
                 navigateToRoot(navigate)
             })
             return
