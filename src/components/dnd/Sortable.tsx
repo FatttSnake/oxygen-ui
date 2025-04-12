@@ -4,7 +4,7 @@ import { Data } from '@dnd-kit/core'
 import { useSortable } from '@dnd-kit/sortable'
 import { HandleContext, HandleContextInst } from '@/components/dnd/HandleContext'
 
-interface SortableProps extends PropsWithChildren {
+interface SortableProps {
     id: string
     data?: Data
     isOver?: boolean
@@ -12,7 +12,14 @@ interface SortableProps extends PropsWithChildren {
     hasDragHandle?: boolean
 }
 
-const Sortable = ({ id, data, isOver, className, hasDragHandle, children }: SortableProps) => {
+const Sortable = ({
+    id,
+    data,
+    isOver,
+    className,
+    hasDragHandle,
+    children
+}: PropsWithChildren<SortableProps>) => {
     const {
         attributes,
         isDragging,
