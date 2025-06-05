@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash'
+import { AxiosResponse } from 'axios'
 import {
     STORAGE_ACCESS_TOKEN_KEY,
     STORAGE_USER_INFO_KEY,
@@ -9,54 +10,33 @@ import { getLocalStorage, removeLocalStorage, setLocalStorage } from '@/util/bro
 import { getFullTitle } from '@/util/route'
 import { r_sys_user_info_get } from '@/services/system'
 
-let getUserInfoPromise: Promise<UserWithPowerInfoVo> | null = null
+let requestUserInfoPromise: Promise<AxiosResponse<_Response<UserWithPowerInfoVo>>> | undefined
 
-export const getAccessToken = () => getLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
+export const getAccessToken = () => getLocalStorage(STORAGE_ACCESS_TOKEN_KEY) ?? undefined
 
 export const setAccessToken = (accessToken: string) =>
     setLocalStorage(STORAGE_ACCESS_TOKEN_KEY, accessToken)
 
 export const requestUserInfo = async () => {
-    let user: UserWithPowerInfoVo | undefined
+    if (!requestUserInfoPromise) {
+        requestUserInfoPromise = r_sys_user_info_get().finally(() => {
+            requestUserInfoPromise = undefined
+        })
+    }
 
-    await r_sys_user_info_get().then((value) => {
-        const response = value.data
-        if (response.code === DATABASE_SELECT_SUCCESS) {
-            user = response.data == null ? undefined : response.data
-            setUserInfo(user)
-        }
-    })
-
-    return new Promise<UserWithPowerInfoVo>((resolve, reject) => {
-        if (user) {
-            resolve(user)
-        }
-        reject(user)
-    })
+    const response = (await requestUserInfoPromise).data
+    if (response.code === DATABASE_SELECT_SUCCESS) {
+        setUserInfo(response.data!)
+        return response.data!
+    }
+    throw Error('获取用户信息失败')
 }
 
 export const getUserInfo = async (force = false): Promise<UserWithPowerInfoVo> => {
     if (getLocalStorage(STORAGE_USER_INFO_KEY) && !force) {
-        return new Promise((resolve) => {
-            resolve(
-                JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo
-            )
-        })
+        return JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo
     }
     return requestUserInfo()
-}
-
-export const getUserInfoQueue = async (): Promise<UserWithPowerInfoVo | undefined> => {
-    if (!getUserInfoPromise) {
-        getUserInfoPromise = getUserInfo().finally(() => {
-            getUserInfoPromise = null
-        })
-    }
-    await getUserInfoPromise
-
-    return getLocalStorage(STORAGE_USER_INFO_KEY)
-        ? (JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo)
-        : undefined
 }
 
 export const setUserInfo = (userInfo?: UserWithPowerInfoVo) =>
@@ -67,36 +47,26 @@ export const removeAllToken = () => {
     removeLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
 }
 
-export const getLoginStatus = () => getAccessToken() !== null
+export const getLoginStatus = () => !!getAccessToken()
 
-export const getVerifyStatus_async = () => {
-    if (getLocalStorage(STORAGE_USER_INFO_KEY) === null) {
-        return undefined
-    }
-    return (JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo)
-        .verified
-}
+export const getVerifyStatus = () =>
+    getLocalStorage(STORAGE_USER_INFO_KEY) === null ||
+    (JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo).verified
 
 export const getNickname = async () => {
-    const user = await getUserInfoQueue()
+    const user = await getUserInfo()
 
     return user?.userInfo.nickname
 }
 
 export const getAvatar = async () => {
-    const user = await getUserInfoQueue()
+    const user = await getUserInfo()
 
     return user?.userInfo.avatar
 }
 
-export const getUsername = async () => {
-    const user = await getUserInfoQueue()
-
-    return user?.username
-}
-
 export const getUserId = async () => {
-    const user = await getUserInfoQueue()
+    const user = await getUserInfo()
 
     return user?.id
 }

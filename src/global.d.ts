@@ -55,11 +55,6 @@ interface _Response<T> {
     data: T | null
 }
 
-interface Captcha {
-    value: string
-    base64Src: string
-}
-
 interface TokenVo {
     refreshToken: string
     accessToken: string

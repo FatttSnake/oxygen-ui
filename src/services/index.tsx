@@ -15,7 +15,7 @@ import { getCookie, setCookie } from '@/util/browser'
 import { getRedirectUrl } from '@/util/route'
 import { getAccessToken, setAccessToken, removeAllToken } from '@/util/auth'
 
-let refreshTokenPromise: Promise<void> | null = null
+let refreshTokenPromise: Promise<void> | undefined
 
 const checkTokenIsExpired = () => {
     const accessToken = getAccessToken()
@@ -26,7 +26,7 @@ const checkTokenIsExpired = () => {
     if (!jwt.exp) {
         return true
     }
-    return jwt.exp * 1000 - new Date().getTime() < 100000
+    return jwt.exp * 1e3 - new Date().getTime() < 1e5
 }
 
 const service: AxiosInstance = axios.create({
@@ -67,7 +67,7 @@ service.interceptors.request.use(
                             }
                         })
                         .finally(() => {
-                            refreshTokenPromise = null
+                            refreshTokenPromise = undefined
                         })
                 }
                 await refreshTokenPromise
@@ -91,7 +91,7 @@ service.interceptors.request.use(
                             }
                         })
                         .finally(() => {
-                            refreshTokenPromise = null
+                            refreshTokenPromise = undefined
                         })
                 }
                 await refreshTokenPromise

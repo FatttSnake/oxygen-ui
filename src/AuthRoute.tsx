@@ -1,7 +1,7 @@
 import { PRODUCTION_NAME } from '@/constants/common.constants'
 import { setPageTitle } from '@/util/common'
 import { getRedirectUrl } from '@/util/route'
-import { getLoginStatus, getVerifyStatus_async } from '@/util/auth'
+import { getLoginStatus, getVerifyStatus } from '@/util/auth'
 
 const AuthRoute = () => {
     const [searchParams] = useSearchParams()
@@ -11,7 +11,7 @@ const AuthRoute = () => {
     const location = useLocation()
     const outlet = useOutlet()
     const isLogin = getLoginStatus()
-    const isVerify = getVerifyStatus_async()
+    const isVerify = getVerifyStatus()
 
     return useMemo(() => {
         setPageTitle(
