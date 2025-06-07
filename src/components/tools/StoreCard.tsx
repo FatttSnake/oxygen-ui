@@ -198,7 +198,7 @@ const StoreCard = ({
                 toolName,
                 toolId,
                 authorUsername: author.username,
-                ver: '',
+                ver: 'latest',
                 platform
             }}
             hasDragHandle
