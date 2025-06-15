@@ -66,7 +66,7 @@ const RepositoryCard = ({
                 <FlexBox className={styles.root}>
                     <div className={styles.header}>
                         {children}
-                        <DragHandle />
+                        {platform === 'WEB' && <DragHandle />}
                     </div>
                     <div className={styles.icon}>
                         <img src={`data:image/svg+xml;base64,${icon}`} alt={''} />
