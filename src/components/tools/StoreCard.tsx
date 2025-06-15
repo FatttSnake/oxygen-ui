@@ -247,7 +247,9 @@ const StoreCard = ({
                                     />
                                 </AntdTooltip>
                             )}
-                            {platform === 'WEB' && <DragHandle />}
+                            {platform !== 'ANDROID' && (checkDesktop() || platform === 'WEB') && (
+                                <DragHandle />
+                            )}
                         </div>
                     </div>
                     <div className={styles.icon}>

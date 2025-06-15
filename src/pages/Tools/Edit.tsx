@@ -10,6 +10,7 @@ import {
 } from '@/constants/common.constants'
 import {
     addExtraCssVariables,
+    checkDesktop,
     generateThemeCssVariables,
     message,
     removeUselessAttributes
@@ -324,7 +325,7 @@ const Edit = () => {
     }, [formValues])
 
     useEffect(() => {
-        if (!['WEB'].includes(searchParams.get('platform')!)) {
+        if (!checkDesktop() && searchParams.get('platform') !== 'WEB') {
             navigateToRepository(navigate)
             return
         }
