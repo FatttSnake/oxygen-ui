@@ -324,7 +324,7 @@ const Edit = () => {
     }, [formValues])
 
     useEffect(() => {
-        if (!['WEB', 'DESKTOP', 'ANDROID'].includes(searchParams.get('platform')!)) {
+        if (!['WEB'].includes(searchParams.get('platform')!)) {
             navigateToRepository(navigate)
             return
         }
@@ -471,7 +471,6 @@ const Edit = () => {
                                 importMap={importMap!}
                                 entryPoint={entryPoint}
                                 postExpansionCode={baseDist}
-                                mobileMode={toolData?.platform === 'ANDROID'}
                                 globalJsVariables={{
                                     OxygenTheme: { ...removeUselessAttributes(theme), isDarkMode }
                                 }}

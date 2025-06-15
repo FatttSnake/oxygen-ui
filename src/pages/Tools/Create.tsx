@@ -279,12 +279,6 @@ const Create = () => {
                                             placeholder={'请选择平台'}
                                         >
                                             <AntdSelect.Option key={'WEB'}>Web</AntdSelect.Option>
-                                            <AntdSelect.Option key={'DESKTOP'}>
-                                                Desktop
-                                            </AntdSelect.Option>
-                                            <AntdSelect.Option key={'ANDROID'}>
-                                                Android
-                                            </AntdSelect.Option>
                                         </AntdSelect>
                                     </AntdForm.Item>
                                     <AntdForm.Item label={'简介'} name={'description'}>
@@ -381,7 +375,6 @@ const Create = () => {
                             <Playground.Output.Preview.Render
                                 iframeKey={previewTemplate}
                                 compiledCode={compiledCode}
-                                mobileMode={formValues.platform === 'ANDROID'}
                                 globalJsVariables={{
                                     OxygenTheme: { ...removeUselessAttributes(theme), isDarkMode }
                                 }}

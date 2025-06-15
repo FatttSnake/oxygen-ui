@@ -29,15 +29,12 @@ const View = () => {
     })
     const [isLoading, setIsLoading] = useState(false)
     const [compiledCode, setCompiledCode] = useState('')
-    const [isMobileMode, setIsMobileMode] = useState(false)
 
     const render = (toolVo: ToolVo) => {
         setPageFavicon(`data:image/svg+xml;base64,${toolVo.icon}`)
         setPageTitle(toolVo.name)
         switch (toolVo.platform) {
             case 'ANDROID':
-                setIsMobileMode(true)
-                break
             case 'DESKTOP':
                 if (!checkDesktop()) {
                     message.warning('此应用需要桌面端环境，请在桌面端打开').then(() => {
@@ -143,7 +140,6 @@ const View = () => {
                 <Playground.Output.Preview.Render
                     iframeKey={`${username}:${toolId}:${ver}`}
                     compiledCode={compiledCode}
-                    mobileMode={isMobileMode}
                     globalJsVariables={{
                         OxygenTheme: { ...removeUselessAttributes(theme), isDarkMode }
                     }}
