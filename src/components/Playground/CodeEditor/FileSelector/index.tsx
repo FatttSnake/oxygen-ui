@@ -1,4 +1,4 @@
-import useStyles from '@/components/Playground/CodeEditor/FileSelector/index.style'
+import useStyles from '@/assets/css/components/playground/code-editor/file-selector.style'
 import HideScrollbar, { HideScrollbarElement } from '@/components/common/HideScrollbar'
 import FlexBox from '@/components/common/FlexBox'
 import { IFiles } from '@/components/Playground/shared'
@@ -113,11 +113,11 @@ const FileSelector = ({
     const handleOnValidateTab = (newFileName: string, oldFileName: string) => {
         if (newFileName.length > 40) {
             onError?.('File name is too long, maximum 40 characters.')
+            return false
         }
 
         if (!/\.(jsx|tsx|js|ts|css|json)$/.test(newFileName)) {
             onError?.('Playground only supports *.jsx, *.tsx, *.js, *.ts, *.css, *.json files.')
-
             return false
         }
 
