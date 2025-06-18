@@ -1,5 +1,5 @@
 import useStyles from '@/assets/css/components/playground/output/preview-render.style'
-import iframeRaw from '@/assets/html/playground/iframe.html?raw'
+import iframeRaw from '@/assets/template/playground/iframe.html?raw'
 
 interface RenderProps {
     iframeKey: string
