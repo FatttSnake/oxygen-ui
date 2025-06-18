@@ -79,6 +79,11 @@ const Edit = () => {
         { capture: true }
     )
 
+    const handleOnFileListChange = (files: IFiles) => {
+        setHasEdited(true)
+        setFiles(files)
+    }
+
     const handleOnChangeFileContent = (content: string, fileName: string, files: IFiles) => {
         setHasEdited(true)
 
@@ -484,9 +489,11 @@ const Edit = () => {
                                         }}
                                         notRemovable={[entryPoint]}
                                         selectedFileName={selectedFileName}
-                                        onAddFile={(_, files) => setFiles(files)}
-                                        onRemoveFile={(_, files) => setFiles(files)}
-                                        onRenameFile={(_, __, files) => setFiles(files)}
+                                        onAddFile={(_, files) => handleOnFileListChange(files)}
+                                        onRemoveFile={(_, files) => handleOnFileListChange(files)}
+                                        onRenameFile={(_, __, files) =>
+                                            handleOnFileListChange(files)
+                                        }
                                         onChangeFileContent={handleOnChangeFileContent}
                                         onSelectedFileChange={setSelectedFileName}
                                         extraLibs={editorExtraLibs}
