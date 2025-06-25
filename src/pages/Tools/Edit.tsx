@@ -18,20 +18,14 @@ import {
 import { navigateToRepository } from '@/util/navigation'
 import editorExtraLibs from '@/util/editorExtraLibs'
 import { r_tool_category_get, r_tool_detail, r_tool_update } from '@/services/tool'
+import { AppContext } from '@/App'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 import LoadingMask from '@/components/common/LoadingMask'
 import Card from '@/components/common/Card'
 import Playground from '@/components/Playground'
-import { IFiles, IImportMap, ITsconfig } from '@/components/Playground/shared'
-import {
-    base64ToFiles,
-    base64ToStr,
-    filesToBase64,
-    IMPORT_MAP_FILE_NAME,
-    TS_CONFIG_FILE_NAME
-} from '@/components/Playground/files'
-import { AppContext } from '@/App'
+import { usePlaygroundState } from '@/hooks/usePlaygroundState'
+import { base64ToFiles, base64ToStr, filesToBase64 } from '@/components/Playground/files'
 
 const Edit = () => {
     const { styles, theme } = useStyles()
@@ -48,21 +42,29 @@ const Edit = () => {
     const dragStartPos = useRef({ x: 0, y: 0 })
     const [form] = AntdForm.useForm<ToolUpdateParam>()
     const formValues = AntdForm.useWatch([], form)
+    const {
+        init,
+        files,
+        selectedFileName,
+        entryPoint,
+        importMap,
+        tsconfig,
+        hasEdited,
+        setSelectedFileName,
+        updateFileContent,
+        addFile,
+        renameFile,
+        removeFile,
+        saveFiles,
+        listenOnError
+    } = usePlaygroundState()
     const [isLoading, setIsLoading] = useState(false)
     const [toolData, setToolData] = useState<ToolVo>()
-    const [files, setFiles] = useState<IFiles>({})
-    const [selectedFileName, setSelectedFileName] = useState('')
-    const [importMapRaw, setImportMapRaw] = useState<string>('')
-    const [importMap, setImportMap] = useState<IImportMap>()
-    const [tsconfigRaw, setTsconfigRaw] = useState<string>('')
-    const [tsconfig, setTsconfig] = useState<ITsconfig>()
-    const [entryPoint, setEntryPoint] = useState('')
     const [baseDist, setBaseDist] = useState('')
     const [isDragging, setIsDragging] = useState(false)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [isSubmittable, setIsSubmittable] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [hasEdited, setHasEdited] = useState(false)
     const [categoryData, setCategoryData] = useState<ToolCategoryVo[]>()
     const [isLoadingCategory, setIsLoadingCategory] = useState(false)
 
@@ -78,26 +80,6 @@ const Edit = () => {
         ),
         { capture: true }
     )
-
-    const handleOnFileListChange = (files: IFiles) => {
-        setHasEdited(true)
-        setFiles(files)
-    }
-
-    const handleOnChangeFileContent = (content: string, fileName: string, files: IFiles) => {
-        setHasEdited(true)
-
-        if (fileName === IMPORT_MAP_FILE_NAME) {
-            setImportMapRaw(content)
-            return
-        }
-        if (fileName === TS_CONFIG_FILE_NAME) {
-            setTsconfigRaw(content)
-            return
-        }
-
-        setFiles(files)
-    }
 
     const handleOnSetting = () => {
         if (isDragging) {
@@ -277,7 +259,7 @@ const Edit = () => {
                             case 'NONE':
                             case 'REJECT':
                                 setToolData(response.data!)
-                                setHasEdited(false)
+                                saveFiles()
                                 break
                             case 'PROCESSING':
                                 message.warning('工具审核中，请勿修改').then(() => {
@@ -306,37 +288,13 @@ const Edit = () => {
     }
 
     useEffect(() => {
-        try {
-            setImportMap(JSON.parse(importMapRaw) as IImportMap)
-        } catch (e) {
-            /* empty */
-        }
-    }, [importMapRaw])
-
-    useEffect(() => {
-        setTimeout(() => {
-            try {
-                setTsconfig(JSON.parse(tsconfigRaw) as ITsconfig)
-            } catch (e) {
-                /* empty */
-            }
-        }, 1000)
-    }, [tsconfigRaw])
-
-    useEffect(() => {
         if (!toolData) {
             return
         }
         try {
             setBaseDist(base64ToStr(toolData.base.dist.data!))
             const files = base64ToFiles(toolData.source.data!)
-            setFiles(files)
-            setImportMapRaw(files[IMPORT_MAP_FILE_NAME].value)
-            setTsconfigRaw(files[TS_CONFIG_FILE_NAME].value)
-            setEntryPoint(toolData.entryPoint)
-            setTimeout(() => {
-                setSelectedFileName(toolData.entryPoint)
-            }, 500)
+            init(files, toolData.entryPoint, toolData.entryPoint)
         } catch (e) {
             console.error(e)
             void message.error('载入工具失败')
@@ -474,32 +432,19 @@ const Edit = () => {
                                     <Playground.CodeEditor
                                         isDarkMode={isDarkMode}
                                         tsconfig={tsconfig}
-                                        files={{
-                                            ...files,
-                                            [IMPORT_MAP_FILE_NAME]: {
-                                                name: IMPORT_MAP_FILE_NAME,
-                                                language: 'json',
-                                                value: importMapRaw
-                                            },
-                                            [TS_CONFIG_FILE_NAME]: {
-                                                name: TS_CONFIG_FILE_NAME,
-                                                language: 'json',
-                                                value: tsconfigRaw
-                                            }
-                                        }}
-                                        notRemovable={[entryPoint]}
+                                        files={files}
                                         selectedFileName={selectedFileName}
-                                        onAddFile={(_, files) => handleOnFileListChange(files)}
-                                        onRemoveFile={(_, files) => handleOnFileListChange(files)}
-                                        onRenameFile={(_, __, files) =>
-                                            handleOnFileListChange(files)
-                                        }
-                                        onChangeFileContent={handleOnChangeFileContent}
-                                        onSelectedFileChange={setSelectedFileName}
+                                        notRemovableFiles={[entryPoint]}
                                         extraLibs={editorExtraLibs}
                                         onEditorDidMount={(_, monaco) =>
                                             addExtraCssVariables(monaco)
                                         }
+                                        onSelectedFileChange={setSelectedFileName}
+                                        onChangeFileContent={updateFileContent}
+                                        onAddFile={addFile}
+                                        onRenameFile={renameFile}
+                                        onRemoveFile={removeFile}
+                                        listenOnError={listenOnError}
                                     />
                                 </AntdSplitter.Panel>
                                 <AntdSplitter.Panel collapsible>
@@ -507,7 +452,7 @@ const Edit = () => {
                                         isDarkMode={isDarkMode}
                                         files={files}
                                         selectedFileName={selectedFileName}
-                                        importMap={importMap!}
+                                        importMap={importMap}
                                         entryPoint={entryPoint}
                                         postExpansionCode={baseDist}
                                         globalJsVariables={{
