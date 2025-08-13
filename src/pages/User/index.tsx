@@ -151,7 +151,7 @@ const User = () => {
                                     if (!value || getFieldValue('newPassword') === value) {
                                         return Promise.resolve()
                                     }
-                                    return Promise.reject(new Error('两次密码输入必须一致'))
+                                    return Promise.reject(Error('两次密码输入必须一致'))
                                 }
                             })
                         ]}
