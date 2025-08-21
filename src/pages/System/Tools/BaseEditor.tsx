@@ -19,6 +19,7 @@ import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import LoadingMask from '@/components/common/LoadingMask'
+import ToolBar from '@/components/tools/ToolBar'
 import Playground from '@/components/Playground'
 import { usePlaygroundState } from '@/hooks/usePlaygroundState'
 import compiler from '@/components/Playground/compiler'
@@ -29,7 +30,8 @@ import {
     strToBase64,
     TSCONFIG_FILE_NAME
 } from '@/components/Playground/files'
-import ToolBar from '@/components/tools/ToolBar.tsx'
+
+const { Text } = AntdTypography
 
 const BaseEditor = () => {
     const { styles } = useStyles()
@@ -301,7 +303,7 @@ const BaseEditor = () => {
                             onBack={() => navigateToToolBase(navigate)}
                         >
                             <span>
-                                版本：
+                                <Text strong>版本：</Text>
                                 {toolBaseData && formatToolBaseVersion(toolBaseData?.version)}
                             </span>
                             {toolBaseData && !toolBaseData.version && (

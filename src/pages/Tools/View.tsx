@@ -39,7 +39,7 @@ const View = () => {
         }
 
         try {
-            processBaseDist(toolVo.baseId, toolVo.baseVersion, {}).then(({ toolBaseVo }) => {
+            processBaseDist(toolVo.base.id, toolVo.base.version, {}).then(({ toolBaseVo }) => {
                 const baseDist = base64ToStr(toolBaseVo.dist.data!)
 
                 if (username === '!') {

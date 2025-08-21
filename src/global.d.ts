@@ -631,8 +631,7 @@ interface ToolVo {
     icon: string
     platform: Platform
     description: string
-    baseId: string
-    baseVersion: number
+    base: ToolBaseVo
     author: UserWithInfoVo
     ver: string
     keywords: string[]

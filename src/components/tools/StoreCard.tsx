@@ -97,7 +97,7 @@ const StoreCard = ({
 
     const handleOnSourceBtnClick = (e: MouseEvent<HTMLDivElement>) => {
         e.stopPropagation()
-        navigateToSource(navigate, author.username, toolId, platform)
+        navigateToSource(navigate, author.username, toolId, platform, undefined, '/store')
     }
 
     const handleOnStarBtnClick = (e: MouseEvent<HTMLDivElement>) => {

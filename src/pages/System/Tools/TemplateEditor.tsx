@@ -31,6 +31,8 @@ import Playground from '@/components/Playground'
 import { usePlaygroundState } from '@/hooks/usePlaygroundState'
 import { base64ToFiles, base64ToStr, filesToBase64 } from '@/components/Playground/files'
 
+const { Text } = AntdTypography
+
 const TemplateEditor = () => {
     const { styles, theme } = useStyles()
     const { isDarkMode } = useContext(AppContext)
@@ -228,7 +230,7 @@ const TemplateEditor = () => {
                             onBack={() => navigateToToolTemplate(navigate)}
                         >
                             <span>
-                                基板：
+                                <Text strong>基板：</Text>
                                 <AntdBadge dot={hasNewBaseVersion}>
                                     <AntdPopconfirm
                                         icon={<></>}

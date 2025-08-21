@@ -85,7 +85,8 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                     '!',
                     selectedTool.toolId,
                     selectedTool.platform,
-                    selectedTool.ver
+                    selectedTool.ver,
+                    '/repository'
                 )
             }
         }
