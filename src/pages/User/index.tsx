@@ -102,12 +102,6 @@ const User = () => {
             maskClosable: true,
             icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygenPassword} />,
             title: '修改密码',
-            footer: (_, { OkBtn, CancelBtn }) => (
-                <>
-                    <OkBtn />
-                    <CancelBtn />
-                </>
-            ),
             content: (
                 <AntdForm
                     form={changePasswordForm}
@@ -224,12 +218,6 @@ const User = () => {
                     focusTriggerAfterClose: false,
                     icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygen2fa} />,
                     title: '双因素',
-                    footer: (_, { OkBtn, CancelBtn }) => (
-                        <>
-                            <OkBtn />
-                            <CancelBtn />
-                        </>
-                    ),
                     content: '确定解除双因素？',
                     onOk: () => {
                         void modal.confirm({
@@ -242,12 +230,6 @@ const User = () => {
                                 />
                             ),
                             title: '解除双因素',
-                            footer: (_, { OkBtn, CancelBtn }) => (
-                                <>
-                                    <OkBtn />
-                                    <CancelBtn />
-                                </>
-                            ),
                             content: (
                                 <AntdForm
                                     form={twoFactorForm}
@@ -327,12 +309,6 @@ const User = () => {
                                     />
                                 ),
                                 title: '绑定双因素',
-                                footer: (_, { OkBtn, CancelBtn }) => (
-                                    <>
-                                        <OkBtn />
-                                        <CancelBtn />
-                                    </>
-                                ),
                                 content: (
                                     <>
                                         <div
