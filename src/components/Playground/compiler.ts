@@ -22,8 +22,8 @@ import {
 class Compiler {
     private init = false
 
-    fileCache = localforage.createInstance({
-        name: 'fileCache'
+    compileCache = localforage.createInstance({
+        name: 'compileCache'
     })
 
     constructor() {
@@ -193,7 +193,7 @@ class Compiler {
             )
 
             build.onLoad({ filter: /.*/ }, async (args: OnLoadArgs): Promise<OnLoadResult> => {
-                const cached = await this.fileCache.getItem<OnLoadResult>(args.path)
+                const cached = await this.compileCache.getItem<OnLoadResult>(args.path)
 
                 if (cached) {
                     return cached
@@ -234,7 +234,7 @@ class Compiler {
                     resolveDir: args.path
                 }
 
-                await this.fileCache.setItem(args.path, result)
+                await this.compileCache.setItem(args.path, result)
 
                 return result
             })
@@ -267,7 +267,7 @@ class Compiler {
                         resolveDir: basePath
                     }
                 }
-                const cached = await this.fileCache.getItem<OnLoadResult>(args.path)
+                const cached = await this.compileCache.getItem<OnLoadResult>(args.path)
 
                 if (cached) {
                     return cached
@@ -301,7 +301,7 @@ class Compiler {
                     resolveDir: args.path
                 }
 
-                await this.fileCache.setItem(args.path, result)
+                await this.compileCache.setItem(args.path, result)
 
                 return result
             })

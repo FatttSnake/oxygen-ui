@@ -111,6 +111,12 @@ const Forget = () => {
         }
         setIsChanging(true)
 
+        if (!retrieveCaptchaCode) {
+            void message.warning('请先通过验证')
+            setIsChanging(false)
+            return
+        }
+
         r_auth_retrieve({
             code: searchParams.get('code') ?? '',
             password: retrieveParam.password,
@@ -222,7 +228,7 @@ const Forget = () => {
                                             if (!value || getFieldValue('password') === value) {
                                                 return Promise.resolve()
                                             }
-                                            return Promise.reject(new Error('两次密码输入必须一致'))
+                                            return Promise.reject(Error('两次密码输入必须一致'))
                                         }
                                     })
                                 ]}

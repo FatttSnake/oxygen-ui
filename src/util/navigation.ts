@@ -54,12 +54,14 @@ export const navigateToSource = (
     toolId: string,
     platform: Platform,
     version?: string,
+    from?: string,
     options?: NavigateOptions
 ) => {
     const searchParams = new URLSearchParams()
     if (platform !== import.meta.env.VITE_PLATFORM) {
         searchParams.append('platform', platform)
     }
+    from && searchParams.append('from', from)
 
     navigate(
         `/source/${username}/${toolId}${version ? `/${version}` : ''}${searchParams.size ? `?${searchParams.toString()}` : ''}`,
@@ -128,6 +130,31 @@ export const navigateToUser = (navigate: NavigateFunction, options?: NavigateOpt
 
 export const navigateToTools = (navigate: NavigateFunction, options?: NavigateOptions) => {
     navigate('/system/tools', options)
+}
+
+export const navigateToToolTemplate = (navigate: NavigateFunction, options?: NavigateOptions) => {
+    navigate(`/system/tools/template`, options)
+}
+
+export const navigateToToolTemplateEditor = (
+    navigate: NavigateFunction,
+    toolTemplateId: string,
+    options?: NavigateOptions
+) => {
+    navigate(`/system/tools/template/${toolTemplateId}`, options)
+}
+
+export const navigateToToolBase = (navigate: NavigateFunction, options?: NavigateOptions) => {
+    navigate(`/system/tools/base`, options)
+}
+
+export const navigateToToolBaseEditor = (
+    navigate: NavigateFunction,
+    toolBaseId: string,
+    version?: string,
+    options?: NavigateOptions
+) => {
+    navigate(`/system/tools/base/${toolBaseId}${version ? `/${version}` : ''}`, options)
 }
 
 export const getViewPath = (

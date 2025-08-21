@@ -1,8 +1,14 @@
 import { createStyles } from 'antd-style'
 
-export default createStyles(() => ({
+export default createStyles(({ token }) => ({
     root: {
         padding: 20
+    },
+
+    layout: {
+        gap: token.sizeSM,
+        width: '100%',
+        height: '100%'
     },
 
     rootBox: {
@@ -14,23 +20,5 @@ export default createStyles(() => ({
         position: 'relative',
         width: '100%',
         height: '100%'
-    },
-
-    draggableMask: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%'
-    },
-
-    draggableContent: {
-        position: 'fixed',
-        insetInlineEnd: 48,
-        insetBlockEnd: 48,
-
-        '> *': {
-            position: 'relative',
-            insetInlineEnd: 0,
-            insetBlockEnd: 0
-        }
     }
 }))

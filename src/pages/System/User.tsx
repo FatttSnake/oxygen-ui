@@ -363,7 +363,7 @@ const User = () => {
                                         if (!value || getFieldValue('password') === value) {
                                             return Promise.resolve()
                                         }
-                                        return Promise.reject(new Error('两次密码输入不一致'))
+                                        return Promise.reject(Error('两次密码输入不一致'))
                                     }
                                 })
                             ]}
@@ -857,12 +857,7 @@ const User = () => {
                             date ? dayjsToUtc(date) : undefined
                         }
                     >
-                        <AntdDatePicker
-                            showTime
-                            allowClear
-                            changeOnBlur
-                            style={{ width: '100%' }}
-                        />
+                        <AntdDatePicker showTime allowClear style={{ width: '100%' }} />
                     </AntdForm.Item>
                     <AntdForm.Item
                         name={'credentialsExpiration'}
@@ -872,12 +867,7 @@ const User = () => {
                             date ? dayjsToUtc(date) : undefined
                         }
                     >
-                        <AntdDatePicker
-                            showTime
-                            allowClear
-                            changeOnBlur
-                            style={{ width: '100%' }}
-                        />
+                        <AntdDatePicker showTime allowClear style={{ width: '100%' }} />
                     </AntdForm.Item>
                     <AntdForm.Item name={'enable'} label={'启用'}>
                         <AntdSwitch checkedChildren={'启用'} unCheckedChildren={'禁用'} />

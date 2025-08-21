@@ -21,9 +21,9 @@ import {
     navigateToRoot
 } from '@/util/navigation'
 import { r_auth_login } from '@/services/auth'
+import { AppContext } from '@/App'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
-import { AppContext } from '@/App'
 
 const SignIn = () => {
     const { styles, theme } = useStyles()

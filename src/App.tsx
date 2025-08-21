@@ -3,7 +3,9 @@ import zh_CN from 'antd/locale/zh_CN'
 import BaseStyles from '@/assets/css/base.style'
 import CommonStyles from '@/assets/css/common.style'
 import {
-    COLOR_PRODUCTION,
+    COLOR_ACTIVE,
+    COLOR_HOVER,
+    COLOR_PRIMARY,
     THEME_DARK,
     THEME_FOLLOW_SYSTEM,
     THEME_LIGHT
@@ -63,8 +65,10 @@ const App = () => {
                 cssVar: true,
                 algorithm: getIsDark() ? theme.darkAlgorithm : theme.defaultAlgorithm,
                 token: {
-                    colorPrimary: COLOR_PRODUCTION,
-                    colorLinkHover: COLOR_PRODUCTION
+                    colorPrimary: COLOR_PRIMARY,
+                    colorLink: COLOR_PRIMARY,
+                    colorLinkHover: COLOR_HOVER,
+                    colorLinkActive: COLOR_ACTIVE
                 },
                 components: {
                     Tree: {

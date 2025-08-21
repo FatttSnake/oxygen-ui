@@ -11,9 +11,9 @@ import { getLoginStatus, getUserInfo, requestUserInfo } from '@/util/auth'
 import { navigateToLogin, navigateToRedirect, navigateToRepository } from '@/util/navigation'
 import { r_auth_resend, r_auth_verify } from '@/services/auth'
 import { r_api_avatar_random_base64 } from '@/services/api/avatar'
+import { AppContext } from '@/App'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
-import { AppContext } from '@/App'
 
 const Verify = () => {
     const { styles, theme } = useStyles()
