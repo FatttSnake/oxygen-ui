@@ -712,3 +712,10 @@ interface ToolMenuItem {
     ver: string
     platform: Platform
 }
+
+interface ToolInfo {
+    username: string
+    toolId: string
+    platform: Platform
+    version?: string
+}

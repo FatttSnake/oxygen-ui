@@ -12,6 +12,7 @@ import {
     navigateToStore,
     navigateToView
 } from '@/util/navigation'
+import { generateDesktopProtocolUrl } from '@/util/tool'
 import { r_tool_add_favorite, r_tool_remove_favorite } from '@/services/tool'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
@@ -156,7 +157,11 @@ const StoreCard = ({
         if (!checkDesktop()) {
             void message.loading({ content: '启动桌面端中……', key: 'LOADING', duration: 0 })
             protocolCheck(
-                `${import.meta.env.VITE_DESKTOP_PROTOCOL}://openurl/view/${author.username}/${toolId}`,
+                generateDesktopProtocolUrl({
+                    username: author.username,
+                    toolId,
+                    platform: 'DESKTOP'
+                }),
                 () => {
                     void message.warning('打开失败,此应用需要桌面端环境,请安装桌面端后重试')
                     void message.destroy('LOADING')
