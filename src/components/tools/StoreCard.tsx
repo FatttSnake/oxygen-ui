@@ -7,6 +7,7 @@ import { message, modal, checkDesktop, omitTextByByte } from '@/util/common'
 import { getLoginStatus, getUserId } from '@/util/auth'
 import {
     getAndroidUrl,
+    navigateToApp,
     navigateToLogin,
     navigateToSource,
     navigateToStore,
@@ -74,7 +75,7 @@ const StoreCard = ({
             return
         }
         if (platform === 'ANDROID') {
-            void modal.info({
+            void modal.confirm({
                 centered: true,
                 keyboard: false,
                 icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygenInfo} />,
@@ -84,7 +85,11 @@ const StoreCard = ({
                         <AntdQRCode value={getAndroidUrl(author.username, toolId)} size={300} />
                         <AntdTag>请使用手机端扫描上方二维码</AntdTag>
                     </FlexBox>
-                )
+                ),
+                cancelText: '获取应用',
+                onCancel: () => {
+                    navigateToApp()
+                }
             })
             return
         }
@@ -138,7 +143,7 @@ const StoreCard = ({
 
     const handleOnAndroidBtnClick = (e: MouseEvent<HTMLDivElement>) => {
         e.stopPropagation()
-        void modal.info({
+        void modal.confirm({
             centered: true,
             keyboard: false,
             icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygenInfo} />,
@@ -148,7 +153,11 @@ const StoreCard = ({
                     <AntdQRCode value={getAndroidUrl(author.username, toolId)} size={300} />
                     <AntdTag>请使用手机端扫描上方二维码</AntdTag>
                 </FlexBox>
-            )
+            ),
+            cancelText: '获取应用',
+            onCancel: () => {
+                navigateToApp()
+            }
         })
     }
 
