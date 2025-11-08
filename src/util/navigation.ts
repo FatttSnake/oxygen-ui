@@ -157,6 +157,10 @@ export const navigateToToolBaseEditor = (
     navigate(`/system/tools/base/${toolBaseId}${version ? `/${version}` : ''}`, options)
 }
 
+export const navigateToApp = () => {
+    window.open(import.meta.env.VITE_GET_ANDROID_APP_URL)
+}
+
 export const getViewPath = (
     username: string,
     toolId: string,
@@ -171,8 +175,13 @@ export const getViewPath = (
     return `/view/${username}/${toolId}${version ? `/${version}` : ''}${searchParams.size ? `?${searchParams.toString()}` : ''}`
 }
 
-export const getAndroidUrl = (username: string, toolId: string) =>
-    `${import.meta.env.VITE_APP_PROTOCOL}://opentool/${username}/${toolId}`
+export const getAndroidUrl = (username: string, toolId: string) => {
+    const url = new URL('/app', location.href)
+    url.searchParams.set('username', username)
+    url.searchParams.set('toolId', toolId)
+
+    return url.href
+}
 
 export const checkIsSamePathname = (a: string, b: string) => {
     const aPathname = a.substring(0, a.indexOf('?') === -1 ? a.length : a.indexOf('?'))
