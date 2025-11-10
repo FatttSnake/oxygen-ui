@@ -75,6 +75,14 @@ export const tools: RouteJsonObject[] = [
         auth: true
     },
     {
+        path: 'app',
+        absolutePath: '/app',
+        id: 'tools-app',
+        component: lazy(() => import('@/pages/Tools/App')),
+        name: 'App',
+        menu: false
+    },
+    {
         path: '*',
         absolutePath: '*',
         element: <Navigate to="/store" replace />

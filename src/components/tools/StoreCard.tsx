@@ -6,7 +6,7 @@ import useStyles from '@/assets/css/components/tools/store-card.style'
 import { message, modal, checkDesktop, omitTextByByte } from '@/util/common'
 import { getLoginStatus, getUserId } from '@/util/auth'
 import {
-    getAndroidUrl,
+    getAppUrl,
     navigateToApp,
     navigateToLogin,
     navigateToSource,
@@ -82,13 +82,13 @@ const StoreCard = ({
                 title: 'Android 端',
                 content: (
                     <FlexBox className={styles.androidQrcode}>
-                        <AntdQRCode value={getAndroidUrl(author.username, toolId)} size={300} />
+                        <AntdQRCode value={getAppUrl(author.username, toolId)} size={300} />
                         <AntdTag>请使用手机端扫描上方二维码</AntdTag>
                     </FlexBox>
                 ),
                 cancelText: '获取应用',
                 onCancel: () => {
-                    navigateToApp()
+                    navigateToApp(navigate, author.username, toolId)
                 }
             })
             return
@@ -150,13 +150,13 @@ const StoreCard = ({
             title: 'Android 端',
             content: (
                 <FlexBox className={styles.androidQrcode}>
-                    <AntdQRCode value={getAndroidUrl(author.username, toolId)} size={300} />
+                    <AntdQRCode value={getAppUrl(author.username, toolId)} size={300} />
                     <AntdTag>请使用手机端扫描上方二维码</AntdTag>
                 </FlexBox>
             ),
             cancelText: '获取应用',
             onCancel: () => {
-                navigateToApp()
+                navigateToApp(navigate, author.username, toolId)
             }
         })
     }

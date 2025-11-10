@@ -157,8 +157,13 @@ export const navigateToToolBaseEditor = (
     navigate(`/system/tools/base/${toolBaseId}${version ? `/${version}` : ''}`, options)
 }
 
-export const navigateToApp = () => {
-    window.open(import.meta.env.VITE_GET_ANDROID_APP_URL)
+export const navigateToApp = (
+    navigate: NavigateFunction,
+    username?: string,
+    toolId?: string,
+    options?: NavigateOptions
+) => {
+    navigate(username && toolId ? `/app?username=${username}&toolId=${toolId}` : '/app', options)
 }
 
 export const getViewPath = (
@@ -175,7 +180,7 @@ export const getViewPath = (
     return `/view/${username}/${toolId}${version ? `/${version}` : ''}${searchParams.size ? `?${searchParams.toString()}` : ''}`
 }
 
-export const getAndroidUrl = (username: string, toolId: string) => {
+export const getAppUrl = (username: string, toolId: string) => {
     const url = new URL('/app', location.href)
     url.searchParams.set('username', username)
     url.searchParams.set('toolId', toolId)
