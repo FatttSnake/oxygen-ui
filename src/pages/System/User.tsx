@@ -89,7 +89,7 @@ const User = () => {
                         <AntdImage
                             preview={{ mask: <Icon component={IconOxygenEye} /> }}
                             src={`data:image/png;base64,${value}`}
-                            alt={'Avatar'}
+                            alt={''}
                         />
                     }
                     style={{ background: theme.colorBgLayout }}
@@ -290,7 +290,7 @@ const User = () => {
                     if (confirmed) {
                         setIsLoadingUserData(true)
 
-                        void r_sys_user_delete_list(tableSelectedItem)
+                        r_sys_user_delete_list(tableSelectedItem)
                             .then((res) => {
                                 const response = res.data
 
@@ -324,22 +324,8 @@ const User = () => {
             void modal.confirm({
                 centered: true,
                 maskClosable: true,
-                icon: <></>,
-                title: (
-                    <>
-                        <Icon
-                            style={{ color: theme.colorPrimary, marginRight: 10 }}
-                            component={IconOxygenSetting}
-                        />
-                        修改用户 {value.username} 的密码
-                    </>
-                ),
-                footer: (_, { OkBtn, CancelBtn }) => (
-                    <>
-                        <OkBtn />
-                        <CancelBtn />
-                    </>
-                ),
+                icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygenPassword} />,
+                title: `修改用户 ${value.username} 的密码`,
                 content: (
                     <AntdForm
                         form={changePasswordForm}
@@ -348,7 +334,7 @@ const User = () => {
                         wrapperCol={{ span: 18 }}
                         ref={() => {
                             setTimeout(() => {
-                                changePasswordForm?.getFieldInstance('password').focus()
+                                changePasswordForm?.getFieldInstance('password')?.focus()
                             }, 50)
                         }}
                     >
@@ -371,7 +357,7 @@ const User = () => {
                                         if (!value || getFieldValue('password') === value) {
                                             return Promise.resolve()
                                         }
-                                        return Promise.reject(new Error('两次密码输入不一致'))
+                                        return Promise.reject(Error('两次密码输入不一致'))
                                     }
                                 })
                             ]}
@@ -396,7 +382,7 @@ const User = () => {
                         .then(
                             () => {
                                 return new Promise<void>((resolve, reject) => {
-                                    void r_sys_user_change_password({
+                                    r_sys_user_change_password({
                                         id: changePasswordForm.getFieldValue('id') as string,
                                         password: changePasswordForm.getFieldValue(
                                             'password'
@@ -478,7 +464,7 @@ const User = () => {
                         if (confirmed) {
                             setIsLoadingUserData(true)
 
-                            void r_sys_user_delete(value.id)
+                            r_sys_user_delete(value.id)
                                 .then((res) => {
                                     const response = res.data
                                     if (response.code === DATABASE_DELETE_SUCCESS) {
@@ -515,7 +501,7 @@ const User = () => {
         setIsDrawerSubmitting(true)
 
         if (isDrawerEdit) {
-            void r_sys_user_update({
+            r_sys_user_update({
                 ...formValues,
                 expiration: formValues.expiration
                     ? localTimeToUtc(formValues.expiration)
@@ -543,7 +529,7 @@ const User = () => {
                     setIsDrawerSubmitting(false)
                 })
         } else {
-            void r_sys_user_add({
+            r_sys_user_add({
                 ...formValues,
                 expiration: formValues.expiration
                     ? localTimeToUtc(formValues.expiration)
@@ -629,7 +615,7 @@ const User = () => {
 
         setIsLoadingUserData(true)
 
-        void r_sys_user_get({
+        r_sys_user_get({
             currentPage: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize,
             sortField:
@@ -678,7 +664,7 @@ const User = () => {
 
         setIsLoadingRole(true)
 
-        void r_sys_role_get_list()
+        r_sys_role_get_list()
             .then((res) => {
                 const response = res.data
 
@@ -700,7 +686,7 @@ const User = () => {
 
         setIsLoadingGroup(true)
 
-        void r_sys_group_get_list()
+        r_sys_group_get_list()
             .then((res) => {
                 const response = res.data
 
@@ -716,7 +702,7 @@ const User = () => {
     }
 
     const getAvatar = () => {
-        void r_api_avatar_random_base64().then((res) => {
+        r_api_avatar_random_base64().then((res) => {
             const response = res.data
             if (response.success) {
                 response.data && setAvatar(response.data.base64)
@@ -778,7 +764,7 @@ const User = () => {
                                 src={`data:image/png;base64,${
                                     isDrawerEdit ? formValues?.avatar : avatar
                                 }`}
-                                alt={'Avatar'}
+                                alt={''}
                             />
                         }
                         size={100}
@@ -865,12 +851,7 @@ const User = () => {
                             date ? dayjsToUtc(date) : undefined
                         }
                     >
-                        <AntdDatePicker
-                            showTime
-                            allowClear
-                            changeOnBlur
-                            style={{ width: '100%' }}
-                        />
+                        <AntdDatePicker showTime allowClear style={{ width: '100%' }} />
                     </AntdForm.Item>
                     <AntdForm.Item
                         name={'credentialsExpiration'}
@@ -880,12 +861,7 @@ const User = () => {
                             date ? dayjsToUtc(date) : undefined
                         }
                     >
-                        <AntdDatePicker
-                            showTime
-                            allowClear
-                            changeOnBlur
-                            style={{ width: '100%' }}
-                        />
+                        <AntdDatePicker showTime allowClear style={{ width: '100%' }} />
                     </AntdForm.Item>
                     <AntdForm.Item name={'enable'} label={'启用'}>
                         <AntdSwitch checkedChildren={'启用'} unCheckedChildren={'禁用'} />
@@ -961,9 +937,9 @@ const User = () => {
     const table = (
         <Card>
             <AntdTable
-                dataSource={userData}
-                columns={dataColumns}
                 rowKey={(record) => record.id}
+                columns={dataColumns}
+                dataSource={userData}
                 pagination={tableParams.pagination}
                 loading={isLoadingUserData}
                 scroll={{ x: true }}

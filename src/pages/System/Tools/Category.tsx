@@ -68,17 +68,16 @@ const Category = () => {
         },
         {
             title: (
-                <>
+                <AntdSpace>
                     操作
                     <Permission operationCode={['system:tool:add:category']}>
-                        {' '}
                         (
                         <a style={{ color: theme.colorPrimary }} onClick={handleOnAddBtnClick}>
                             新增
                         </a>
                         )
                     </Permission>
-                </>
+                </AntdSpace>
             ),
             width: '15em',
             align: 'center',
@@ -130,7 +129,7 @@ const Category = () => {
                         if (confirmed) {
                             setIsLoading(true)
 
-                            void r_sys_tool_category_delete(value.id)
+                            r_sys_tool_category_delete(value.id)
                                 .then((res) => {
                                     const response = res.data
                                     if (response.code === DATABASE_DELETE_SUCCESS) {
@@ -163,7 +162,7 @@ const Category = () => {
         setIsSubmitting(true)
 
         if (isDrawerEdit) {
-            void r_sys_tool_category_update(formValues)
+            r_sys_tool_category_update(formValues)
                 .then((res) => {
                     const response = res.data
                     switch (response.code) {
@@ -183,7 +182,7 @@ const Category = () => {
                     setIsSubmitting(false)
                 })
         } else {
-            void r_sys_tool_category_add(formValues)
+            r_sys_tool_category_add(formValues)
                 .then((res) => {
                     const response = res.data
                     switch (response.code) {
@@ -212,7 +211,7 @@ const Category = () => {
         }
         setIsLoading(true)
 
-        void r_sys_tool_category_get()
+        r_sys_tool_category_get()
             .then((res) => {
                 const response = res.data
                 if (response.code === DATABASE_SELECT_SUCCESS) {
@@ -292,9 +291,9 @@ const Category = () => {
                 >
                     <Card>
                         <AntdTable
-                            dataSource={categoryData}
-                            columns={categoryColumns}
                             rowKey={(record) => record.id}
+                            columns={categoryColumns}
+                            dataSource={categoryData}
                             loading={isLoading}
                             scroll={{ x: true }}
                             pagination={false}

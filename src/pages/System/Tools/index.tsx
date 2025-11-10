@@ -13,9 +13,11 @@ import {
     r_sys_tool_delete,
     r_sys_tool_get,
     r_sys_tool_get_one,
-    r_sys_tool_off_shelve,
+    r_sys_tool_delist,
     r_sys_tool_pass,
-    r_sys_tool_reject
+    r_sys_tool_reject,
+    r_sys_tool_delist_all,
+    r_sys_tool_relist
 } from '@/services/system'
 import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
@@ -40,13 +42,14 @@ const Tools = () => {
                 } 项 共 ${total} 项`
         }
     })
+    const [reviewForm] = AntdForm.useForm<{ pass: boolean }>()
+    const [delistForm] = AntdForm.useForm<{ scope: 'SINGLE' | 'ALL' }>()
     const [toolData, setToolData] = useState<ToolVo[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [searchType, setSearchType] = useState('ALL')
     const [searchValue, setSearchValue] = useState('')
     const [isUseRegex, setIsUseRegex] = useState(false)
     const [isRegexLegal, setIsRegexLegal] = useState(true)
-    const [form] = AntdForm.useForm<{ pass: boolean }>()
 
     const dataColumns: _ColumnsType<ToolVo> = [
         {
@@ -58,7 +61,7 @@ const Tools = () => {
                         <AntdImage
                             preview={{ mask: <Icon component={IconOxygenEye} /> }}
                             src={`data:image/svg+xml;base64,${value}`}
-                            alt={'Avatar'}
+                            alt={''}
                         />
                     }
                     style={{ background: theme.colorBgLayout }}
@@ -92,13 +95,13 @@ const Tools = () => {
         {
             dataIndex: 'keywords',
             title: '关键词',
-            render: (value: string[]) => value.map((item) => <AntdTag>{item}</AntdTag>)
+            render: (value: string[]) => value.map((item) => <AntdTag key={item}>{item}</AntdTag>)
         },
         {
             dataIndex: 'categories',
             title: '类别',
             render: (value: { name: string }[]) =>
-                value.map((item) => <AntdTag>{item.name}</AntdTag>)
+                value.map((item) => <AntdTag key={item.name}>{item.name}</AntdTag>)
         },
         {
             dataIndex: 'review',
@@ -111,7 +114,7 @@ const Tools = () => {
                     case 'PROCESSING':
                         return <AntdTag color={'purple'}>审核</AntdTag>
                     case 'REJECT':
-                        return <AntdTag color={'yellow'}>驳回</AntdTag>
+                        return <AntdTag color={'yellow'}>下架</AntdTag>
                     case 'PASS':
                         return <AntdTag color={'green'}>通过</AntdTag>
                 }
@@ -119,7 +122,7 @@ const Tools = () => {
             filters: [
                 { text: '编码', value: 'NONE' },
                 { text: '审核', value: 'PROCESSING' },
-                { text: '驳回', value: 'REJECT' },
+                { text: '下架', value: 'REJECT' },
                 { text: '通过', value: 'PASS' }
             ]
         },
@@ -144,9 +147,17 @@ const Tools = () => {
                         {record.review === 'PASS' && (
                             <a
                                 style={{ color: theme.colorPrimary }}
-                                onClick={handleOnOffShelveBtnClick(record)}
+                                onClick={handleOnDelistBtnClick(record)}
                             >
                                 下架
+                            </a>
+                        )}
+                        {record.review === 'REJECT' && (
+                            <a
+                                style={{ color: theme.colorPrimary }}
+                                onClick={handleOnRelistBtnClick(record)}
+                            >
+                                上架
                             </a>
                         )}
                     </Permission>
@@ -197,19 +208,13 @@ const Tools = () => {
 
     const handleOnReviewBtnClick = (value: ToolVo) => {
         return () => {
-            form.setFieldValue('pass', undefined)
+            reviewForm.setFieldValue('pass', undefined)
             void modal.confirm({
                 centered: true,
                 maskClosable: true,
                 title: '审核',
-                footer: (_, { OkBtn, CancelBtn }) => (
-                    <>
-                        <OkBtn />
-                        <CancelBtn />
-                    </>
-                ),
                 content: (
-                    <AntdForm form={form}>
+                    <AntdForm form={reviewForm}>
                         <AntdForm.Item
                             name={'pass'}
                             style={{ marginTop: 10 }}
@@ -223,16 +228,16 @@ const Tools = () => {
                     </AntdForm>
                 ),
                 onOk: () =>
-                    form.validateFields().then(() => {
+                    reviewForm.validateFields().then(() => {
                         return new Promise<void>((resolve) => {
-                            switch (form.getFieldValue('pass')) {
+                            switch (reviewForm.getFieldValue('pass')) {
                                 case true:
                                     void message.loading({
                                         content: '加载工具中……',
                                         key: 'LOADING_TOOL',
                                         duration: 0
                                     })
-                                    void r_sys_tool_get_one(value.id)
+                                    r_sys_tool_get_one(value.id)
                                         .then((res) => {
                                             message.destroy('LOADING_TOOL')
                                             const response = res.data
@@ -251,7 +256,7 @@ const Tools = () => {
                                                         const importMap = JSON.parse(
                                                             files[IMPORT_MAP_FILE_NAME].value
                                                         ) as IImportMap
-                                                        void compiler
+                                                        compiler
                                                             .compile(
                                                                 files,
                                                                 importMap,
@@ -264,7 +269,7 @@ const Tools = () => {
                                                                     key: 'UPLOADING',
                                                                     duration: 0
                                                                 })
-                                                                void r_sys_tool_pass(value.id, {
+                                                                r_sys_tool_pass(value.id, {
                                                                     dist: strToBase64(
                                                                         result.outputFiles[0].text
                                                                     )
@@ -316,7 +321,7 @@ const Tools = () => {
                                         })
                                     break
                                 default:
-                                    void r_sys_tool_reject(value.id)
+                                    r_sys_tool_reject(value.id)
                                         .then((res) => {
                                             const response = res.data
                                             switch (response.code) {
@@ -343,30 +348,93 @@ const Tools = () => {
         }
     }
 
-    const handleOnOffShelveBtnClick = (value: ToolVo) => {
+    const handleOnDelistBtnClick = (value: ToolVo) => {
+        return () => {
+            void modal.confirm({
+                centered: true,
+                maskClosable: true,
+                title: '确定下架',
+                content: (
+                    <>
+                        确定下架工具 {value.author.username}:{value.toolId}:{value.ver} 吗？
+                        <AntdForm form={delistForm}>
+                            <AntdForm.Item
+                                name={'scope'}
+                                style={{ marginTop: 10 }}
+                                rules={[{ required: true, message: '请选择范围' }]}
+                            >
+                                <AntdRadio.Group>
+                                    <AntdRadio value={'SINGLE'}>单个</AntdRadio>
+                                    <AntdRadio value={'ALL'}>全部</AntdRadio>
+                                </AntdRadio.Group>
+                            </AntdForm.Item>
+                        </AntdForm>
+                    </>
+                ),
+                onOk: () =>
+                    delistForm.validateFields().then(() => {
+                        return new Promise<void>((resolve) => {
+                            switch (delistForm.getFieldValue('scope')) {
+                                case 'SINGLE':
+                                    r_sys_tool_delist(value.id)
+                                        .then((res) => {
+                                            const response = res.data
+                                            if (response.success) {
+                                                void message.success('下架成功')
+                                                setTimeout(() => {
+                                                    getTool()
+                                                })
+                                            } else {
+                                                void message.error('下架失败，请稍后重试')
+                                            }
+                                        })
+                                        .finally(resolve)
+                                    break
+                                default:
+                                    r_sys_tool_delist_all(value.id)
+                                        .then((res) => {
+                                            const response = res.data
+                                            if (response.success) {
+                                                void message.success('下架成功')
+                                                setTimeout(() => {
+                                                    getTool()
+                                                })
+                                            } else {
+                                                void message.error('下架失败，请稍后重试')
+                                            }
+                                        })
+                                        .finally(resolve)
+                            }
+                        })
+                    })
+            })
+        }
+    }
+
+    const handleOnRelistBtnClick = (value: ToolVo) => {
         return () => {
             modal
                 .confirm({
                     centered: true,
                     maskClosable: true,
-                    title: '确定下架',
-                    content: `确定下架工具 ${value.author.username}:${value.toolId}:${value.ver} 吗？`
+                    title: '确定上架',
+                    content: `确定上架工具 ${value.author.username}:${value.toolId}:${value.ver} 吗？`
                 })
                 .then(
                     (confirmed) => {
                         if (confirmed) {
                             setIsLoading(true)
 
-                            void r_sys_tool_off_shelve(value.id)
+                            r_sys_tool_relist(value.id)
                                 .then((res) => {
                                     const response = res.data
-                                    if (response.code === DATABASE_UPDATE_SUCCESS) {
-                                        void message.success('下架成功')
+                                    if (response.success) {
+                                        void message.success('上架成功')
                                         setTimeout(() => {
                                             getTool()
                                         })
                                     } else {
-                                        void message.error('下架失败，请稍后重试')
+                                        void message.error('上架失败，请稍后重试')
                                     }
                                 })
                                 .finally(() => {
@@ -393,7 +461,7 @@ const Tools = () => {
                         if (confirmed) {
                             setIsLoading(true)
 
-                            void r_sys_tool_delete(value.id)
+                            r_sys_tool_delete(value.id)
                                 .then((res) => {
                                     const response = res.data
                                     if (response.code === DATABASE_DELETE_SUCCESS) {
@@ -469,7 +537,7 @@ const Tools = () => {
         }
         setIsLoading(true)
 
-        void r_sys_tool_get({
+        r_sys_tool_get({
             currentPage: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize,
             sortField:
@@ -563,8 +631,9 @@ const Tools = () => {
     const table = (
         <Card>
             <AntdTable
-                dataSource={toolData}
+                rowKey={(record) => record.id}
                 columns={dataColumns}
+                dataSource={toolData}
                 pagination={tableParams.pagination}
                 loading={isLoading}
                 scroll={{ x: true }}

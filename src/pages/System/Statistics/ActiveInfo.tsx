@@ -46,7 +46,7 @@ const ActiveInfo = () => {
 
         setIsLoading(true)
 
-        void r_sys_statistics_active({ scope: _scope }).then((res) => {
+        r_sys_statistics_active({ scope: _scope }).then((res) => {
             const response = res.data
             if (response.success) {
                 const data = response.data
@@ -167,8 +167,8 @@ const ActiveInfo = () => {
                     >
                         <AntdSelect.Option key={'WEEK'}>最近7天</AntdSelect.Option>
                         <AntdSelect.Option key={'MONTH'}>最近30天</AntdSelect.Option>
-                        <AntdSelect.Option key={'QUARTER'}>最近3个月</AntdSelect.Option>
-                        <AntdSelect.Option key={'YEAR'}>最近12个月</AntdSelect.Option>
+                        <AntdSelect.Option key={'QUARTER'}>最近3月</AntdSelect.Option>
+                        <AntdSelect.Option key={'YEAR'}>最近12月</AntdSelect.Option>
                         <AntdSelect.Option key={'TWO_YEARS'}>最近2年</AntdSelect.Option>
                         <AntdSelect.Option key={'THREE_YEARS'}>最近3年</AntdSelect.Option>
                         <AntdSelect.Option key={'FIVE_YEARS'}>最近5年</AntdSelect.Option>

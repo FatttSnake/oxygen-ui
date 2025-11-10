@@ -1,4 +1,3 @@
-import Draggable from 'react-draggable'
 import Icon from '@ant-design/icons'
 import useStyles from '@/assets/css/pages/tools/edit.style'
 import {
@@ -8,29 +7,35 @@ import {
     TOOL_HAS_BEEN_PUBLISHED,
     TOOL_UNDER_REVIEW
 } from '@/constants/common.constants'
-import {
-    addExtraCssVariables,
-    generateThemeCssVariables,
-    message,
-    removeUselessAttributes
-} from '@/util/common'
+import { checkDesktop, message, modal } from '@/util/common'
 import { navigateToRepository } from '@/util/navigation'
 import editorExtraLibs from '@/util/editorExtraLibs'
-import { r_tool_category_get, r_tool_detail, r_tool_update } from '@/services/tool'
+import {
+    addExtraCssVariables,
+    formatToolBaseVersion,
+    generateThemeCssVariables,
+    processBaseDist,
+    removeUselessAttributes
+} from '@/util/tool'
+import {
+    r_tool_base_get_latest_version,
+    r_tool_category_get,
+    r_tool_get_source,
+    r_tool_update,
+    r_tool_update_source,
+    r_tool_upgrade_base
+} from '@/services/tool'
+import { AppContext } from '@/App'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 import LoadingMask from '@/components/common/LoadingMask'
 import Card from '@/components/common/Card'
+import ToolBar from '@/components/tools/ToolBar'
 import Playground from '@/components/Playground'
-import { IFiles, IImportMap, ITsconfig } from '@/components/Playground/shared'
-import {
-    base64ToFiles,
-    base64ToStr,
-    filesToBase64,
-    IMPORT_MAP_FILE_NAME,
-    TS_CONFIG_FILE_NAME
-} from '@/components/Playground/files'
-import { AppContext } from '@/App'
+import { usePlaygroundState } from '@/hooks/usePlaygroundState'
+import { base64ToFiles, base64ToStr, filesToBase64 } from '@/components/Playground/files'
+
+const { Text } = AntdTypography
 
 const Edit = () => {
     const { styles, theme } = useStyles()
@@ -46,23 +51,33 @@ const Edit = () => {
     })
     const [form] = AntdForm.useForm<ToolUpdateParam>()
     const formValues = AntdForm.useWatch([], form)
+    const {
+        init,
+        files,
+        selectedFileName,
+        entryPoint,
+        importMap,
+        tsconfig,
+        hasEdited,
+        setSelectedFileName,
+        updateFileContent,
+        addFile,
+        renameFile,
+        removeFile,
+        saveFiles,
+        listenOnError
+    } = usePlaygroundState()
     const [isLoading, setIsLoading] = useState(false)
-    const [toolData, setToolData] = useState<ToolVo>()
-    const [files, setFiles] = useState<IFiles>({})
-    const [selectedFileName, setSelectedFileName] = useState('')
-    const [importMapRaw, setImportMapRaw] = useState<string>('')
-    const [importMap, setImportMap] = useState<IImportMap>()
-    const [tsconfigRaw, setTsconfigRaw] = useState<string>('')
-    const [tsconfig, setTsconfig] = useState<ITsconfig>()
-    const [entryPoint, setEntryPoint] = useState('')
+    const [toolData, setToolData] = useState<ToolWithSourceVo>()
     const [baseDist, setBaseDist] = useState('')
-    const [isShowDraggableMask, setIsShowDraggableMask] = useState(false)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [isSubmittable, setIsSubmittable] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [hasEdited, setHasEdited] = useState(false)
     const [categoryData, setCategoryData] = useState<ToolCategoryVo[]>()
     const [isLoadingCategory, setIsLoadingCategory] = useState(false)
+    const [baseLatestVersion, setBaseLatestVersion] = useState<number>()
+    const hasNewBaseVersion =
+        !!toolData && !!baseLatestVersion && baseLatestVersion > toolData.base.version
 
     useBeforeUnload(
         useCallback(
@@ -77,19 +92,42 @@ const Edit = () => {
         { capture: true }
     )
 
-    const handleOnChangeFileContent = (content: string, fileName: string, files: IFiles) => {
-        setHasEdited(true)
+    const handleOnUpgradeBase = () => {
+        modal
+            .confirm({
+                centered: true,
+                maskClosable: true,
+                title: '更新',
+                content: `基板将从 ${formatToolBaseVersion(toolData!.base.version)} 更新到 ${formatToolBaseVersion(baseLatestVersion!)}`
+            })
+            .then(
+                (confirmed) => {
+                    if (!confirmed || isSubmitting) {
+                        return
+                    }
+                    setIsSubmitting(true)
+                    void message.loading({ content: '更新中', key: 'UPGRADING', duration: 0 })
 
-        if (fileName === IMPORT_MAP_FILE_NAME) {
-            setImportMapRaw(content)
-            return
-        }
-        if (fileName === TS_CONFIG_FILE_NAME) {
-            setTsconfigRaw(content)
-            return
-        }
-
-        setFiles(files)
+                    r_tool_upgrade_base({
+                        id: toolData!.id,
+                        baseVersion: baseLatestVersion!
+                    })
+                        .then((res) => {
+                            const response = res.data
+                            if (response.success) {
+                                void message.success('更新成功')
+                                getTool()
+                            } else {
+                                void message.error('更新失败，请稍后重试')
+                            }
+                        })
+                        .finally(() => {
+                            setIsSubmitting(false)
+                            message.destroy('UPGRADING')
+                        })
+                },
+                () => {}
+            )
     }
 
     const handleOnSetting = () => {
@@ -115,7 +153,7 @@ const Edit = () => {
         setIsSubmitting(true)
         void message.loading({ content: '保存中', key: 'SAVING', duration: 0 })
 
-        void r_tool_update({
+        r_tool_update_source({
             id: toolData!.id,
             source: filesToBase64(files)
         })
@@ -177,7 +215,7 @@ const Edit = () => {
         }
         setIsSubmitting(true)
 
-        void r_tool_update({
+        r_tool_update({
             ...formValues,
             id: toolData!.id
         })
@@ -214,7 +252,7 @@ const Edit = () => {
         }
         setIsLoadingCategory(true)
 
-        void r_tool_category_get()
+        r_tool_category_get()
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
@@ -237,7 +275,7 @@ const Edit = () => {
         setIsLoading(true)
         void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
 
-        void r_tool_detail('!', toolId!, 'latest', searchParams.get('platform') as Platform)
+        r_tool_get_source('!', toolId!, 'latest', searchParams.get('platform') as Platform)
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
@@ -246,7 +284,7 @@ const Edit = () => {
                             case 'NONE':
                             case 'REJECT':
                                 setToolData(response.data!)
-                                setHasEdited(false)
+                                saveFiles()
                                 break
                             case 'PROCESSING':
                                 message.warning('工具审核中，请勿修改').then(() => {
@@ -275,37 +313,23 @@ const Edit = () => {
     }
 
     useEffect(() => {
-        try {
-            setImportMap(JSON.parse(importMapRaw) as IImportMap)
-        } catch (e) {
-            /* empty */
-        }
-    }, [importMapRaw])
-
-    useEffect(() => {
-        setTimeout(() => {
-            try {
-                setTsconfig(JSON.parse(tsconfigRaw) as ITsconfig)
-            } catch (e) {
-                /* empty */
-            }
-        }, 1000)
-    }, [tsconfigRaw])
-
-    useEffect(() => {
         if (!toolData) {
             return
         }
+
+        r_tool_base_get_latest_version(toolData.base.id).then((res) => {
+            const response = res.data
+            if (response.success) {
+                setBaseLatestVersion(response.data!)
+            }
+        })
+
         try {
-            setBaseDist(base64ToStr(toolData.base.dist.data!))
-            const files = base64ToFiles(toolData.source.data!)
-            setFiles(files)
-            setImportMapRaw(files[IMPORT_MAP_FILE_NAME].value)
-            setTsconfigRaw(files[TS_CONFIG_FILE_NAME].value)
-            setEntryPoint(toolData.entryPoint)
-            setTimeout(() => {
-                setSelectedFileName(toolData.entryPoint)
-            }, 500)
+            processBaseDist(toolData.base.id, toolData.base.version, {}).then(({ toolBaseVo }) => {
+                setBaseDist(base64ToStr(toolBaseVo.dist.data!))
+                const files = base64ToFiles(toolData.source.data!)
+                init(files, false, toolData.entryPoint, toolData.entryPoint)
+            })
         } catch (e) {
             console.error(e)
             void message.error('载入工具失败')
@@ -324,7 +348,7 @@ const Edit = () => {
     }, [formValues])
 
     useEffect(() => {
-        if (!['WEB', 'DESKTOP', 'ANDROID'].includes(searchParams.get('platform')!)) {
+        if (!checkDesktop() && searchParams.get('platform') !== 'WEB') {
             navigateToRepository(navigate)
             return
         }
@@ -361,7 +385,7 @@ const Edit = () => {
                     ({ getFieldValue }) => ({
                         validator() {
                             if (!getFieldValue('icon')) {
-                                return Promise.reject(new Error('请选择图标'))
+                                return Promise.reject(Error('请选择图标'))
                             }
                             return Promise.resolve()
                         }
@@ -378,7 +402,7 @@ const Edit = () => {
                     {formValues?.icon ? (
                         <img
                             src={`data:image/svg+xml;base64,${formValues.icon}`}
-                            alt={'icon'}
+                            alt={''}
                             style={{ width: '100%' }}
                         />
                     ) : (
@@ -435,72 +459,114 @@ const Edit = () => {
     return (
         <>
             <FitFullscreen className={styles.root}>
-                <Card className={styles.rootBox}>
-                    <FlexBox direction={'horizontal'} className={styles.content}>
-                        <LoadingMask hidden={!isLoading}>
-                            <Playground.CodeEditor
-                                isDarkMode={isDarkMode}
-                                tsconfig={tsconfig}
-                                files={{
-                                    ...files,
-                                    [IMPORT_MAP_FILE_NAME]: {
-                                        name: IMPORT_MAP_FILE_NAME,
-                                        language: 'json',
-                                        value: importMapRaw
-                                    },
-                                    [TS_CONFIG_FILE_NAME]: {
-                                        name: TS_CONFIG_FILE_NAME,
-                                        language: 'json',
-                                        value: tsconfigRaw
-                                    }
-                                }}
-                                notRemovable={[entryPoint]}
-                                selectedFileName={selectedFileName}
-                                onAddFile={(_, files) => setFiles(files)}
-                                onRemoveFile={(_, files) => setFiles(files)}
-                                onRenameFile={(_, __, files) => setFiles(files)}
-                                onChangeFileContent={handleOnChangeFileContent}
-                                onSelectedFileChange={setSelectedFileName}
-                                extraLibs={editorExtraLibs}
-                                onEditorDidMount={(_, monaco) => addExtraCssVariables(monaco)}
-                            />
-                            <Playground.Output
-                                isDarkMode={isDarkMode}
-                                files={files}
-                                selectedFileName={selectedFileName}
-                                importMap={importMap!}
-                                entryPoint={entryPoint}
-                                postExpansionCode={baseDist}
-                                mobileMode={toolData?.platform === 'ANDROID'}
-                                globalJsVariables={{
-                                    OxygenTheme: { ...removeUselessAttributes(theme), isDarkMode }
-                                }}
-                                globalCssVariables={generateThemeCssVariables(theme).styles}
-                            />
-                        </LoadingMask>
-                        {isShowDraggableMask && <div className={styles.draggableMask} />}
+                <LoadingMask hidden={!isLoading}>
+                    <FlexBox className={styles.layout} direction={'vertical'}>
+                        <ToolBar
+                            title={`${toolData?.name}${hasEdited ? '*' : ''}`}
+                            subtitle={
+                                <AntdTag color={'blue'}>
+                                    {`${toolData?.platform.slice(0, 1)}${toolData?.platform.slice(1).toLowerCase()}`}
+                                </AntdTag>
+                            }
+                            onBack={() => navigateToRepository(navigate)}
+                        >
+                            <AntdSpace>
+                                <span>
+                                    <Text strong>版本：</Text>
+                                    {toolData?.ver}
+                                </span>
+                                <span>
+                                    <Text strong>基板：</Text>
+                                    <AntdBadge dot={hasNewBaseVersion}>
+                                        <AntdPopconfirm
+                                            icon={<></>}
+                                            title={
+                                                hasNewBaseVersion &&
+                                                `新版本：${formatToolBaseVersion(baseLatestVersion)}`
+                                            }
+                                            okText={'更新'}
+                                            trigger={'hover'}
+                                            showCancel={false}
+                                            disabled={!hasNewBaseVersion}
+                                            onConfirm={handleOnUpgradeBase}
+                                        >
+                                            <AntdSpace>
+                                                {toolData?.base.name}
+                                                {toolData &&
+                                                    formatToolBaseVersion(toolData?.base.version)}
+                                            </AntdSpace>
+                                        </AntdPopconfirm>
+                                    </AntdBadge>
+                                </span>
+                                {toolData && (
+                                    <AntdSpace>
+                                        <AntdButton
+                                            size={'small'}
+                                            icon={<Icon component={IconOxygenSetting} />}
+                                            loading={isLoading || isSubmitting}
+                                            onClick={handleOnSetting}
+                                        >
+                                            配置
+                                        </AntdButton>
+                                        <AntdButton
+                                            size={'small'}
+                                            type={'primary'}
+                                            icon={<Icon component={IconOxygenSave} />}
+                                            loading={isLoading || isSubmitting}
+                                            onClick={handleOnSave}
+                                        >
+                                            保存
+                                        </AntdButton>
+                                    </AntdSpace>
+                                )}
+                            </AntdSpace>
+                        </ToolBar>
+                        <Card className={styles.rootBox}>
+                            <FlexBox direction={'horizontal'} className={styles.content}>
+                                <AntdSplitter>
+                                    <AntdSplitter.Panel collapsible>
+                                        <Playground.CodeEditor
+                                            isDarkMode={isDarkMode}
+                                            tsconfig={tsconfig}
+                                            files={files}
+                                            selectedFileName={selectedFileName}
+                                            notRemovableFiles={[entryPoint]}
+                                            extraLibs={editorExtraLibs}
+                                            onEditorDidMount={(_, monaco) =>
+                                                addExtraCssVariables(monaco)
+                                            }
+                                            onSelectedFileChange={setSelectedFileName}
+                                            onChangeFileContent={updateFileContent}
+                                            onAddFile={addFile}
+                                            onRenameFile={renameFile}
+                                            onRemoveFile={removeFile}
+                                            listenOnError={listenOnError}
+                                        />
+                                    </AntdSplitter.Panel>
+                                    <AntdSplitter.Panel collapsible>
+                                        <Playground.Output
+                                            isDarkMode={isDarkMode}
+                                            files={files}
+                                            selectedFileName={selectedFileName}
+                                            importMap={importMap}
+                                            entryPoint={entryPoint}
+                                            postExpansionCode={baseDist}
+                                            globalJsVariables={{
+                                                OxygenTheme: {
+                                                    ...removeUselessAttributes(theme),
+                                                    isDarkMode
+                                                }
+                                            }}
+                                            globalCssVariables={
+                                                generateThemeCssVariables(theme).styles
+                                            }
+                                        />
+                                    </AntdSplitter.Panel>
+                                </AntdSplitter>
+                            </FlexBox>
+                        </Card>
                     </FlexBox>
-                </Card>
-                <Draggable
-                    onStart={() => setIsShowDraggableMask(true)}
-                    onStop={() => setIsShowDraggableMask(false)}
-                    bounds={'#root'}
-                >
-                    <div className={styles.draggableContent}>
-                        {hasEdited ? (
-                            <AntdFloatButton
-                                type={'primary'}
-                                icon={<Icon component={IconOxygenSave} />}
-                                onClick={handleOnSave}
-                            />
-                        ) : (
-                            <AntdFloatButton
-                                icon={<Icon component={IconOxygenSetting} />}
-                                onClick={handleOnSetting}
-                            />
-                        )}
-                    </div>
-                </Draggable>
+                </LoadingMask>
             </FitFullscreen>
             <AntdDrawer
                 title={'配置工具'}
@@ -517,12 +583,6 @@ const Edit = () => {
                 title={'未保存'}
                 onOk={() => blocker.proceed?.()}
                 onCancel={() => blocker.reset?.()}
-                footer={(_, { OkBtn, CancelBtn }) => (
-                    <>
-                        <OkBtn />
-                        <CancelBtn />
-                    </>
-                )}
             >
                 离开此页面将丢失所有未保存数据，是否继续？
             </AntdModal>

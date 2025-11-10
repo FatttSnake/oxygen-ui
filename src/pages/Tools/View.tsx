@@ -1,23 +1,17 @@
 import useStyles from '@/assets/css/pages/tools/view.style'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
-import {
-    checkDesktop,
-    generateThemeCssVariables,
-    message,
-    removeUselessAttributes,
-    setPageFavicon,
-    setPageTitle
-} from '@/util/common'
+import { checkDesktop, message, setPageFavicon, setPageTitle } from '@/util/common'
 import { getLoginStatus } from '@/util/auth'
 import { navigateToRepository, navigateToRoot, navigateToView } from '@/util/navigation'
-import { r_tool_detail } from '@/services/tool'
+import { generateThemeCssVariables, processBaseDist, removeUselessAttributes } from '@/util/tool'
+import { r_tool_get_dist, r_tool_get_source } from '@/services/tool'
+import { AppContext } from '@/App'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
 import Playground from '@/components/Playground'
 import compiler from '@/components/Playground/compiler'
 import { IImportMap } from '@/components/Playground/shared'
 import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
-import { AppContext } from '@/App'
 
 const View = () => {
     const { styles, theme } = useStyles()
@@ -29,15 +23,12 @@ const View = () => {
     })
     const [isLoading, setIsLoading] = useState(false)
     const [compiledCode, setCompiledCode] = useState('')
-    const [isMobileMode, setIsMobileMode] = useState(false)
 
-    const render = (toolVo: ToolVo) => {
+    const render = (toolVo: ToolWithSourceVo | ToolWithDistVo) => {
         setPageFavicon(`data:image/svg+xml;base64,${toolVo.icon}`)
         setPageTitle(toolVo.name)
         switch (toolVo.platform) {
             case 'ANDROID':
-                setIsMobileMode(true)
-                break
             case 'DESKTOP':
                 if (!checkDesktop()) {
                     message.warning('此应用需要桌面端环境，请在桌面端打开').then(() => {
@@ -46,38 +37,37 @@ const View = () => {
                     return
                 }
         }
-        if (username === '!') {
-            try {
-                const baseDist = base64ToStr(toolVo.base.dist.data!)
-                const files = base64ToFiles(toolVo.source.data!)
-                const importMap = JSON.parse(files[IMPORT_MAP_FILE_NAME].value) as IImportMap
 
-                void compiler
-                    .compile(files, importMap, toolVo.entryPoint)
-                    .then((result) => {
-                        const output = result.outputFiles[0].text
-                        setCompiledCode('')
-                        setTimeout(() => {
-                            setCompiledCode(`(() => {${output}})();\n(() => {${baseDist}})();`)
-                        }, 100)
-                    })
-                    .catch((reason) => {
-                        void message.error(`编译失败：${reason}`)
-                    })
-            } catch (e) {
-                void message.error('载入工具失败')
-            }
-        } else {
-            try {
-                const baseDist = base64ToStr(toolVo.base.dist.data!)
-                const dist = base64ToStr(toolVo.dist.data!)
-                setCompiledCode('')
-                setTimeout(() => {
-                    setCompiledCode(`(() => {${dist}})();\n(() => {${baseDist}})();`)
-                }, 100)
-            } catch (e) {
-                void message.error('载入工具失败')
-            }
+        try {
+            processBaseDist(toolVo.base.id, toolVo.base.version, {}).then(({ toolBaseVo }) => {
+                const baseDist = base64ToStr(toolBaseVo.dist.data!)
+
+                if (username === '!') {
+                    const files = base64ToFiles((toolVo as ToolWithSourceVo).source.data!)
+                    const importMap = JSON.parse(files[IMPORT_MAP_FILE_NAME].value) as IImportMap
+
+                    compiler
+                        .compile(files, importMap, toolVo.entryPoint)
+                        .then((result) => {
+                            const output = result.outputFiles[0].text
+                            setCompiledCode('')
+                            setTimeout(() => {
+                                setCompiledCode(`(() => {${output}})();\n(() => {${baseDist}})();`)
+                            }, 100)
+                        })
+                        .catch((reason) => {
+                            void message.error(`编译失败：${reason}`)
+                        })
+                } else {
+                    const dist = base64ToStr((toolVo as ToolWithDistVo).dist.data!)
+                    setCompiledCode('')
+                    setTimeout(() => {
+                        setCompiledCode(`(() => {${dist}})();\n(() => {${baseDist}})();`)
+                    }, 100)
+                }
+            })
+        } catch (e) {
+            void message.error('载入工具失败')
         }
     }
 
@@ -87,8 +77,7 @@ const View = () => {
         }
         setIsLoading(true)
         void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
-
-        void r_tool_detail(
+        ;(username === '!' ? r_tool_get_source : r_tool_get_dist)(
             username!,
             toolId!,
             ver || 'latest',
@@ -101,7 +90,7 @@ const View = () => {
                         render(response.data!)
                         break
                     case DATABASE_NO_RECORD_FOUND:
-                        void message.error('未找到指定工具').then(() => {
+                        message.error('未找到指定工具').then(() => {
                             navigateToRepository(navigate)
                         })
                         break
@@ -122,7 +111,7 @@ const View = () => {
             return
         }
         if (username === '!' && !getLoginStatus()) {
-            void message.error('未登录').then(() => {
+            message.error('未登录').then(() => {
                 navigateToRoot(navigate)
             })
             return
@@ -148,7 +137,6 @@ const View = () => {
                 <Playground.Output.Preview.Render
                     iframeKey={`${username}:${toolId}:${ver}`}
                     compiledCode={compiledCode}
-                    mobileMode={isMobileMode}
                     globalJsVariables={{
                         OxygenTheme: { ...removeUselessAttributes(theme), isDarkMode }
                     }}

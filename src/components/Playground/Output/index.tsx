@@ -1,3 +1,4 @@
+import useStyles from '@/assets/css/components/playground/output/index.style'
 import FlexBox from '@/components/common/FlexBox'
 import { IFiles, IImportMap } from '@/components/Playground/shared'
 import Playground from '@/components/Playground'
@@ -12,7 +13,6 @@ interface OutputProps {
     entryPoint: string
     preExpansionCode?: string
     postExpansionCode?: string
-    mobileMode?: boolean
     globalJsVariables?: Record<string, unknown>
     globalCssVariables?: string
 }
@@ -25,21 +25,24 @@ const Output = ({
     entryPoint,
     preExpansionCode,
     postExpansionCode,
-    mobileMode = false,
     globalJsVariables,
     globalCssVariables
 }: OutputProps) => {
+    const { styles } = useStyles()
     const [selectedTab, setSelectedTab] = useState('Preview')
 
     return (
-        <FlexBox>
+        <FlexBox className={styles.root}>
             <Playground.CodeEditor.FileSelector
                 files={{
                     Preview: { name: 'Preview', language: 'json', value: '' },
                     Transform: { name: 'Transform', language: 'json', value: '' }
                 }}
                 selectedFileName={selectedTab}
-                onChange={(tabName) => setSelectedTab(tabName)}
+                onChange={(tabName) => {
+                    setSelectedTab(tabName)
+                    return true
+                }}
                 readonly
             />
             {selectedTab === 'Preview' && (
@@ -50,7 +53,6 @@ const Output = ({
                     entryPoint={entryPoint}
                     preExpansionCode={preExpansionCode}
                     postExpansionCode={postExpansionCode}
-                    mobileMode={mobileMode}
                     globalJsVariables={globalJsVariables}
                     globalCssVariables={globalCssVariables}
                 />

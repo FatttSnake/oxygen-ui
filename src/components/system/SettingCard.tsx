@@ -6,7 +6,7 @@ import FlexBox from '@/components/common/FlexBox'
 import Permission from '@/components/common/Permission'
 import LoadingMask from '@/components/common/LoadingMask'
 
-interface SettingsCardProps extends PropsWithChildren {
+interface SettingsCardProps {
     icon: IconComponent
     title: string
     loading?: boolean
@@ -15,7 +15,7 @@ interface SettingsCardProps extends PropsWithChildren {
     onReset?: () => void
     onSave?: () => void
 }
-export const SettingsCard = (props: SettingsCardProps) => {
+export const SettingsCard = (props: PropsWithChildren<SettingsCardProps>) => {
     const { styles } = useStyles()
 
     return (
@@ -28,7 +28,7 @@ export const SettingsCard = (props: SettingsCardProps) => {
                         <Permission operationCode={props.modifyOperationCode}>
                             {props.expand}
                             <AntdButton onClick={props.onReset} title={'重置'}>
-                                <Icon component={IconOxygenBack} />
+                                <Icon component={IconOxygenReset} />
                             </AntdButton>
                             <AntdButton
                                 className={styles.btSave}

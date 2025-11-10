@@ -1,21 +1,37 @@
 import axios, { type AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { jwtDecode, JwtPayload } from 'jwt-decode'
 import {
+    COOKIE_XSRF_TOKEN_KEY,
+    HEADER_X_XSRF_TOKEN_KEY,
     PERMISSION_ACCESS_DENIED,
     PERMISSION_TOKEN_HAS_EXPIRED,
     PERMISSION_TOKEN_ILLEGAL,
-    PERMISSION_TOKEN_RENEW_SUCCESS,
+    PERMISSION_TOKEN_REFRESH_SUCCESS,
     PERMISSION_UNAUTHORIZED,
     SYSTEM_REQUEST_TOO_FREQUENT
 } from '@/constants/common.constants'
 import { message } from '@/util/common'
+import { getCookie, setCookie } from '@/util/browser'
 import { getRedirectUrl } from '@/util/route'
-import { getToken, setToken, removeToken } from '@/util/auth'
+import { getAccessToken, setAccessToken, removeAllToken } from '@/util/auth'
+
+let refreshTokenPromise: Promise<void> | undefined
+
+const checkTokenIsExpired = () => {
+    const accessToken = getAccessToken()
+    if (!accessToken) {
+        return false
+    }
+    const jwt = jwtDecode<JwtPayload>(accessToken)
+    if (!jwt.exp) {
+        return true
+    }
+    return jwt.exp * 1e3 - new Date().getTime() < 1e5
+}
 
 const service: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
-    timeout: 30000,
-    withCredentials: false
+    timeout: 3e4
 })
 
 service.defaults.paramsSerializer = (params: Record<string, string>) => {
@@ -32,30 +48,60 @@ service.defaults.paramsSerializer = (params: Record<string, string>) => {
 
 service.interceptors.request.use(
     async (config) => {
-        let token = getToken()
-        if (token !== null) {
-            const jwt = jwtDecode<JwtPayload>(token)
-            if (!jwt.exp) {
-                return config
-            }
-            if (
-                jwt.exp * 1000 - new Date().getTime() < 1200000 &&
-                jwt.exp * 1000 - new Date().getTime() > 0
-            ) {
-                await axios
-                    .get(import.meta.env.VITE_API_TOKEN_URL, {
-                        headers: { Authorization: `Bearer ${token}` }
-                    })
-                    .then((value: AxiosResponse<_Response<TokenVo>>) => {
-                        const response = value.data
-                        if (response.code === PERMISSION_TOKEN_RENEW_SUCCESS) {
-                            setToken(response.data?.token ?? '')
-                        }
-                    })
-            }
+        if (config.url === '/login') {
+            config.withCredentials = true
+        }
 
-            token = getToken()
-            config.headers.set('Authorization', `Bearer ${token}`)
+        if (!getCookie(COOKIE_XSRF_TOKEN_KEY)) {
+            try {
+                if (!refreshTokenPromise) {
+                    refreshTokenPromise = axios
+                        .post(import.meta.env.VITE_API_TOKEN_URL, undefined, {
+                            withCredentials: true,
+                            withXSRFToken: true
+                        })
+                        .then((res: AxiosResponse<_Response<TokenVo>>) => {
+                            const xsrfToken = res.headers[HEADER_X_XSRF_TOKEN_KEY]
+                            if (xsrfToken) {
+                                setCookie(COOKIE_XSRF_TOKEN_KEY, xsrfToken)
+                            }
+                        })
+                        .finally(() => {
+                            refreshTokenPromise = undefined
+                        })
+                }
+                await refreshTokenPromise
+            } catch (error) {
+                return Promise.reject(error)
+            }
+        }
+
+        if (checkTokenIsExpired()) {
+            try {
+                if (!refreshTokenPromise) {
+                    refreshTokenPromise = axios
+                        .post(import.meta.env.VITE_API_TOKEN_URL, undefined, {
+                            withCredentials: true,
+                            withXSRFToken: true
+                        })
+                        .then((res: AxiosResponse<_Response<TokenVo>>) => {
+                            const response = res.data
+                            if (response.code === PERMISSION_TOKEN_REFRESH_SUCCESS) {
+                                setAccessToken(response.data?.accessToken ?? '')
+                            }
+                        })
+                        .finally(() => {
+                            refreshTokenPromise = undefined
+                        })
+                }
+                await refreshTokenPromise
+            } catch (error) {
+                return Promise.reject(error)
+            }
+        }
+        if (getAccessToken() && !checkTokenIsExpired()) {
+            const accessToken = getAccessToken()
+            config.headers.set('Authorization', `Bearer ${accessToken}`)
         }
         return config
     },
@@ -68,7 +114,7 @@ service.interceptors.response.use(
     (response: AxiosResponse<_Response<never>>) => {
         switch (response.data.code) {
             case PERMISSION_UNAUTHORIZED:
-                removeToken()
+                removeAllToken()
                 message
                     .error({
                         content: <strong>未登录</strong>,
@@ -80,7 +126,7 @@ service.interceptors.response.use(
                 throw response?.data
             case PERMISSION_TOKEN_ILLEGAL:
             case PERMISSION_TOKEN_HAS_EXPIRED:
-                removeToken()
+                removeAllToken()
                 message
                     .error({
                         content: <strong>登录已过期</strong>,

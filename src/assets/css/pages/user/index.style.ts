@@ -5,6 +5,15 @@ export default createStyles(({ token }) => ({
         padding: '80px 20px 20px 20px'
     },
 
+    qrCode: {
+        width: token.sizeXXL * 6.5,
+        height: token.sizeXXL * 6.5,
+        backgroundColor: token.colorText,
+        maskSize: 'contain',
+        maskRepeat: 'no-repeat',
+        maskPosition: 'center'
+    },
+
     content: {
         width: '100%',
         height: '100%',

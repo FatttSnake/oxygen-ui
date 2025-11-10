@@ -12,7 +12,7 @@ import {
     SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants'
 import { message, notification, modal } from '@/util/common'
-import { getUserInfo, setToken } from '@/util/auth'
+import { getUserInfo, setAccessToken } from '@/util/auth'
 import { utcToLocalTime } from '@/util/datetime'
 import {
     navigateToForget,
@@ -21,12 +21,12 @@ import {
     navigateToRoot
 } from '@/util/navigation'
 import { r_auth_login } from '@/services/auth'
+import { AppContext } from '@/App'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
-import { AppContext } from '@/App'
 
 const SignIn = () => {
-    const { styles } = useStyles()
+    const { styles, theme } = useStyles()
     const { refreshRouter, isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
@@ -70,7 +70,7 @@ const SignIn = () => {
             return
         }
 
-        void r_auth_login({
+        r_auth_login({
             account: loginParam.account,
             password: loginParam.password,
             captchaCode,
@@ -81,9 +81,9 @@ const SignIn = () => {
                 const { code, data } = response
                 switch (code) {
                     case PERMISSION_LOGIN_SUCCESS:
-                        setToken(data?.token ?? '')
+                        setAccessToken(data?.accessToken ?? '')
                         message.success('登录成功').then(() => {
-                            void getUserInfo().then((user) => {
+                            getUserInfo().then((user) => {
                                 refreshRouter()
                                 navigateToRedirect(navigate, searchParams, '/repository')
 
@@ -114,19 +114,19 @@ const SignIn = () => {
                         twoFactorForm.resetFields()
                         void modal.confirm({
                             centered: true,
-                            title: '双因素验证',
-                            footer: (_, { OkBtn, CancelBtn }) => (
-                                <>
-                                    <OkBtn />
-                                    <CancelBtn />
-                                </>
+                            icon: (
+                                <Icon
+                                    style={{ color: theme.colorPrimary }}
+                                    component={IconOxygen2fa}
+                                />
                             ),
+                            title: '双因素验证',
                             content: (
                                 <AntdForm
                                     form={twoFactorForm}
                                     ref={() => {
                                         setTimeout(() => {
-                                            twoFactorForm.getFieldInstance('twoFactorCode').focus()
+                                            twoFactorForm.getFieldInstance('twoFactorCode')?.focus()
                                         }, 50)
                                     }}
                                 >

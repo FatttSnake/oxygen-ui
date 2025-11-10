@@ -9,7 +9,7 @@ import {
     SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
 import { message } from '@/util/common'
-import { getLoginStatus, setToken } from '@/util/auth'
+import { getLoginStatus, setAccessToken } from '@/util/auth'
 import { navigateToLogin } from '@/util/navigation'
 import { r_auth_register, r_auth_resend } from '@/services/auth'
 import { AppContext } from '@/App'
@@ -71,7 +71,7 @@ const SignUp = () => {
             return
         }
 
-        void r_auth_register({
+        r_auth_register({
             username: registerParam.username,
             email: registerParam.email,
             password: registerParam.password,
@@ -81,7 +81,7 @@ const SignUp = () => {
                 const response = res.data
                 switch (response.code) {
                     case PERMISSION_REGISTER_SUCCESS:
-                        setToken(response.data?.token ?? '')
+                        setAccessToken(response.data?.accessToken ?? '')
                         void message.success('恭喜，您快要完成注册了')
                         setIsFinish(true)
                         break
@@ -113,7 +113,7 @@ const SignUp = () => {
         }
         setIsSending(true)
         void message.loading({ content: '发送中', key: 'SENDING', duration: 0 })
-        void r_auth_resend()
+        r_auth_resend()
             .then((res) => {
                 const response = res.data
                 if (response.success) {
@@ -197,7 +197,7 @@ const SignUp = () => {
                                             if (!value || getFieldValue('password') === value) {
                                                 return Promise.resolve()
                                             }
-                                            return Promise.reject(new Error('两次密码输入必须一致'))
+                                            return Promise.reject(Error('两次密码输入必须一致'))
                                         }
                                     })
                                 ]}

@@ -190,7 +190,7 @@ const Log = () => {
 
         setIsLoading(true)
 
-        void r_sys_log_get({
+        r_sys_log_get({
             currentPage: tableParams.pagination?.current,
             pageSize: tableParams.pagination?.pageSize,
             sortField:
@@ -260,7 +260,6 @@ const Log = () => {
                 <AntdDatePicker.RangePicker
                     showTime
                     allowClear
-                    changeOnBlur
                     onChange={handleOnDateRangeChange}
                 />
             </Card>
@@ -275,9 +274,9 @@ const Log = () => {
     const table = (
         <Card>
             <AntdTable
-                dataSource={logData}
-                columns={dataColumns}
                 rowKey={(record) => record.id}
+                columns={dataColumns}
+                dataSource={logData}
                 pagination={tableParams.pagination}
                 loading={isLoading}
                 onChange={handleOnTableChange}

@@ -78,7 +78,7 @@ const Forget = () => {
             return
         }
 
-        void r_auth_forget({ email: forgetParam.email, captchaCode })
+        r_auth_forget({ email: forgetParam.email, captchaCode })
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
@@ -111,7 +111,13 @@ const Forget = () => {
         }
         setIsChanging(true)
 
-        void r_auth_retrieve({
+        if (!retrieveCaptchaCode) {
+            void message.warning('请先通过验证')
+            setIsChanging(false)
+            return
+        }
+
+        r_auth_retrieve({
             code: searchParams.get('code') ?? '',
             password: retrieveParam.password,
             captchaCode: retrieveCaptchaCode
@@ -222,7 +228,7 @@ const Forget = () => {
                                             if (!value || getFieldValue('password') === value) {
                                                 return Promise.resolve()
                                             }
-                                            return Promise.reject(new Error('两次密码输入必须一致'))
+                                            return Promise.reject(Error('两次密码输入必须一致'))
                                         }
                                     })
                                 ]}
@@ -263,19 +269,20 @@ const Forget = () => {
                     ) : (
                         <div className={styles.success}>恭喜你，密码已更新，请重新登录。</div>
                     )}
-
-                    <div className={styles.footer}>
-                        找到了？
-                        <a
-                            onClick={() =>
-                                navigateToLogin(navigate, location.search, undefined, {
-                                    replace: true
-                                })
-                            }
-                        >
-                            登录
-                        </a>
-                    </div>
+                    <AntdForm>
+                        <div className={styles.footer}>
+                            找到了？
+                            <a
+                                onClick={() =>
+                                    navigateToLogin(navigate, location.search, undefined, {
+                                        replace: true
+                                    })
+                                }
+                            >
+                                登录
+                            </a>
+                        </div>
+                    </AntdForm>
                 </div>
             </FlexBox>
         </FitCenter>

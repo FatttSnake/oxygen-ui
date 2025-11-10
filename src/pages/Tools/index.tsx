@@ -1,3 +1,4 @@
+import { cloneElement, ReactElement, ReactNode } from 'react'
 import Icon from '@ant-design/icons'
 import useStyles from '@/assets/css/pages/tools/index.style'
 import {
@@ -31,6 +32,8 @@ import RepositoryCard from '@/components/tools/RepositoryCard'
 import LoadMoreCard from '@/components/tools/LoadMoreCard'
 import StoreCard from '@/components/tools/StoreCard'
 
+const { Text } = AntdTypography
+
 interface ToolCardProps {
     tools: ToolVo[]
     onDelete?: (tool: ToolVo) => void
@@ -48,7 +51,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
     }
 
     const handleOnOpenTool = () => {
-        if (checkDesktop() || selectedTool.platform !== 'DESKTOP') {
+        if (checkDesktop() || selectedTool.platform === 'WEB') {
             navigateToView(
                 navigate,
                 '!',
@@ -62,9 +65,9 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
     }
 
     const handleOnEditTool = () => {
-        if (['NONE', 'REJECT'].includes(selectedTool.review)) {
+        if (['NONE'].includes(selectedTool.review)) {
             return () => {
-                if (checkDesktop() || selectedTool.platform !== 'DESKTOP') {
+                if (checkDesktop() || selectedTool.platform === 'WEB') {
                     navigateToEdit(navigate, selectedTool.toolId, selectedTool.platform)
                 } else {
                     void message.warning('此应用需要桌面端环境，请在桌面端编辑')
@@ -75,14 +78,15 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
     }
 
     const handleOnSourceTool = () => {
-        if (selectedTool.review === 'PASS') {
+        if (selectedTool.review !== 'NONE') {
             return () => {
                 navigateToSource(
                     navigate,
                     '!',
                     selectedTool.toolId,
                     selectedTool.platform,
-                    selectedTool.ver
+                    selectedTool.ver,
+                    '/repository'
                 )
             }
         }
@@ -90,7 +94,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
     }
 
     const handleOnPublishTool = () => {
-        if (['NONE', 'REJECT'].includes(selectedTool.review)) {
+        if (['NONE'].includes(selectedTool.review)) {
             return () => {
                 onSubmit?.(selectedTool)
             }
@@ -117,7 +121,7 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
 
     const toolsGroupByPlatform = (tools: ToolVo[]) => {
         interface Node {
-            label: string
+            label: ReactNode
             value: string
             children?: Node[]
         }
@@ -129,7 +133,14 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                     value: value.platform,
                     children: [
                         {
-                            label: `${value.ver}${value.review !== 'PASS' ? '*' : ''}`,
+                            label: (
+                                <Text delete={value.review === 'REJECT'}>
+                                    {value.ver}
+                                    {value.review === 'NONE' || value.review === 'PROCESSING'
+                                        ? '*'
+                                        : ''}
+                                </Text>
+                            ),
                             value: value.id
                         }
                     ]
@@ -139,7 +150,14 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                     !temp.some((platform, platformIndex) => {
                         if (platform.value === value.platform) {
                             temp[platformIndex].children!.push({
-                                label: `${value.ver}${value.review !== 'PASS' ? '*' : ''}`,
+                                label: (
+                                    <Text delete={value.review === 'REJECT'}>
+                                        {value.ver}
+                                        {value.review === 'NONE' || value.review === 'PROCESSING'
+                                            ? '*'
+                                            : ''}
+                                    </Text>
+                                ),
                                 value: value.id
                             })
                             return true
@@ -152,7 +170,14 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                         value: value.platform,
                         children: [
                             {
-                                label: `${value.ver}${value.review !== 'PASS' ? '*' : ''}`,
+                                label: (
+                                    <Text delete={value.review === 'REJECT'}>
+                                        {value.ver}
+                                        {value.review === 'NONE' || value.review === 'PROCESSING'
+                                            ? '*'
+                                            : ''}
+                                    </Text>
+                                ),
                                 value: value.id
                             }
                         ]
@@ -186,13 +211,22 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
                     tools.find((value) => value.id === selectedTool.id)!.platform,
                     selectedTool.id
                 ]}
-                displayRender={(label: string[]) => `${label[0].slice(0, 1)}-${label[1]}`}
+                displayRender={(label: ReactNode[]) =>
+                    cloneElement(label[1] as ReactElement, {
+                        children: (
+                            <>
+                                {(label[0] as string).slice(0, 1)}-
+                                {(label[1] as ReactElement).props.children}
+                            </>
+                        )
+                    })
+                }
                 onChange={handleOnVersionChange}
                 options={toolsGroupByPlatform(tools)}
             />
             {tools
                 .filter((value) => value.platform === selectedTool.platform)
-                .every((value) => value.review === 'PASS') && (
+                .every((value) => value.review === 'PASS' || value.review === 'REJECT') && (
                 <AntdTooltip title={'更新'}>
                     <Icon component={IconOxygenUpgrade} onClick={handleOnUpgradeTool} />
                 </AntdTooltip>
@@ -226,7 +260,7 @@ const Tools = () => {
                     if (confirmed) {
                         setIsLoading(true)
 
-                        void r_tool_delete(tool.id)
+                        r_tool_delete(tool.id)
                             .then((res) => {
                                 const response = res.data
                                 if (response.code === DATABASE_DELETE_SUCCESS) {
@@ -250,18 +284,12 @@ const Tools = () => {
             centered: true,
             maskClosable: true,
             title: '更新工具',
-            footer: (_, { OkBtn, CancelBtn }) => (
-                <>
-                    <OkBtn />
-                    <CancelBtn />
-                </>
-            ),
             content: (
                 <AntdForm
                     form={upgradeForm}
                     ref={() => {
                         setTimeout(() => {
-                            upgradeForm?.getFieldInstance('toolId').focus()
+                            upgradeForm?.getFieldInstance('toolId')?.focus()
                         }, 50)
                     }}
                     labelCol={{ span: 4 }}
@@ -300,7 +328,7 @@ const Tools = () => {
                 upgradeForm.validateFields().then(
                     () => {
                         return new Promise<void>((resolve, reject) => {
-                            void r_tool_upgrade({
+                            r_tool_upgrade({
                                 toolId: tool.toolId,
                                 ver: upgradeForm.getFieldValue('ver') as string,
                                 platform: tool.platform
@@ -309,15 +337,8 @@ const Tools = () => {
                                 switch (response.code) {
                                     case DATABASE_UPDATE_SUCCESS:
                                         void message.success('创建新版本成功')
-                                        if (
-                                            checkDesktop() ||
-                                            response.data!.platform !== 'DESKTOP'
-                                        ) {
-                                            navigateToEdit(
-                                                navigate,
-                                                response.data!.toolId,
-                                                response.data!.platform
-                                            )
+                                        if (checkDesktop() || tool.platform === 'WEB') {
+                                            navigateToEdit(navigate, tool.toolId, tool.platform)
                                         }
                                         resolve()
                                         break
@@ -362,7 +383,7 @@ const Tools = () => {
                     if (confirmed) {
                         setIsLoading(true)
 
-                        void r_tool_submit(tool.id)
+                        r_tool_submit(tool.id)
                             .then((res) => {
                                 const response = res.data
                                 switch (response.code) {
@@ -402,7 +423,7 @@ const Tools = () => {
                     if (confirmed) {
                         setIsLoading(true)
 
-                        void r_tool_cancel(tool.id)
+                        r_tool_cancel(tool.id)
                             .then((res) => {
                                 const response = res.data
                                 switch (response.code) {
@@ -450,7 +471,7 @@ const Tools = () => {
         setIsLoading(true)
         void message.loading({ content: '加载工具列表中', key: 'LOADING', duration: 0 })
 
-        void r_tool_get({ currentPage: page })
+        r_tool_get({ currentPage: page })
             .then((res) => {
                 const response = res.data
 
@@ -491,7 +512,7 @@ const Tools = () => {
         setIsLoading(true)
         void message.loading({ content: '加载收藏列表中', key: 'LOADING', duration: 0 })
 
-        void r_tool_get_favorite({ currentPage: page })
+        r_tool_get_favorite({ currentPage: page })
             .then((res) => {
                 const response = res.data
 

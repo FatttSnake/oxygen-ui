@@ -3,7 +3,7 @@ import useStyles from '@/assets/css/components/common/sidebar/footer.style'
 import { THEME_DARK, THEME_FOLLOW_SYSTEM, THEME_LIGHT } from '@/constants/common.constants'
 import { getThemeMode, notification, setThemeMode, ThemeMode } from '@/util/common'
 import { getRedirectUrl } from '@/util/route'
-import { getAvatar, getLoginStatus, getNickname, removeToken } from '@/util/auth'
+import { getAvatar, getLoginStatus, getNickname, removeAllToken } from '@/util/auth'
 import { navigateToLogin, navigateToUser } from '@/util/navigation'
 import { r_auth_logout } from '@/services/auth'
 import { SidebarContext } from '@/components/common/Sidebar/index'
@@ -33,8 +33,8 @@ const Footer = () => {
         }
 
         setIsExiting(true)
-        void r_auth_logout().finally(() => {
-            removeToken()
+        r_auth_logout().finally(() => {
+            removeAllToken()
             notification.info({
                 message: '已退出登录',
                 icon: <Icon component={IconOxygenExit} style={{ color: theme.colorErrorText }} />
@@ -49,11 +49,11 @@ const Footer = () => {
 
     useEffect(() => {
         if (getLoginStatus()) {
-            void getNickname().then((nickname) => {
-                setNickname(nickname)
+            getNickname().then((nickname) => {
+                setNickname(nickname ?? '')
 
-                void getAvatar().then((avatar) => {
-                    setAvatar(`data:image/png;base64,${avatar}`)
+                getAvatar().then((avatar) => {
+                    setAvatar(avatar ? `data:image/png;base64,${avatar}` : '')
                 })
             })
         }
@@ -67,7 +67,7 @@ const Footer = () => {
                 title={getLoginStatus() ? '个人中心' : '登录'}
             >
                 {avatar ? (
-                    <img src={avatar} alt={'Avatar'} />
+                    <img src={avatar} alt={''} />
                 ) : (
                     <Icon viewBox={'-20 0 1024 1024'} component={IconOxygenUser} />
                 )}

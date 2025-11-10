@@ -1,142 +1,74 @@
-import _ from 'lodash'
+import { cloneDeep } from 'lodash'
+import { AxiosResponse } from 'axios'
 import {
-    STORAGE_TOKEN_KEY,
+    STORAGE_ACCESS_TOKEN_KEY,
     STORAGE_USER_INFO_KEY,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
-import { floorNumber, randomColor, randomFloat, randomInt } from '@/util/common'
+import { floorNumber } from '@/util/common'
 import { getLocalStorage, removeLocalStorage, setLocalStorage } from '@/util/browser'
 import { getFullTitle } from '@/util/route'
 import { r_sys_user_info_get } from '@/services/system'
 
-let captcha: Captcha
+let requestUserInfoPromise: Promise<AxiosResponse<_Response<UserWithPowerInfoVo>>> | undefined
 
-export const setToken = (token: string) => {
-    setLocalStorage(STORAGE_TOKEN_KEY, token)
-}
+export const getAccessToken = () => getLocalStorage(STORAGE_ACCESS_TOKEN_KEY) ?? undefined
 
-export const removeToken = () => {
-    removeLocalStorage(STORAGE_USER_INFO_KEY)
-    removeLocalStorage(STORAGE_TOKEN_KEY)
-}
+export const setAccessToken = (accessToken: string) =>
+    setLocalStorage(STORAGE_ACCESS_TOKEN_KEY, accessToken)
 
-export const getToken = () => {
-    return getLocalStorage(STORAGE_TOKEN_KEY)
-}
-
-export const getCaptcha = (width: number, high: number, num: number) => {
-    const CHARTS = '23456789ABCDEFGHJKLMNPRSTUVWXYZabcdefghijklmnpqrstuvwxyz'.split('')
-
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-
-    ctx.rect(0, 0, width, high)
-    ctx.clip()
-
-    ctx.fillStyle = randomColor(200, 250)
-    ctx.fillRect(0, 0, width, high)
-
-    for (let i = 0.05 * width * high; i > 0; i--) {
-        ctx.fillStyle = randomColor(0, 256)
-        ctx.fillRect(randomInt(0, width), randomInt(0, high), 1, 1)
+export const requestUserInfo = async () => {
+    if (!requestUserInfoPromise) {
+        requestUserInfoPromise = r_sys_user_info_get().finally(() => {
+            requestUserInfoPromise = undefined
+        })
     }
 
-    ctx.font = `${high - 4}px Consolas`
-    ctx.fillStyle = randomColor(160, 200)
-    let value = ''
-    for (let i = 0; i < num; i++) {
-        const x = ((width - 10) / num) * i + 5
-        const y = high - 12
-        const r = Math.PI * randomFloat(-0.12, 0.12)
-        const ch = CHARTS[randomInt(0, CHARTS.length)]
-        value += ch
-        ctx.translate(x, y)
-        ctx.rotate(r)
-        ctx.fillText(ch, 0, 0)
-        ctx.rotate(-r)
-        ctx.translate(-x, -y)
+    const response = (await requestUserInfoPromise).data
+    if (response.code === DATABASE_SELECT_SUCCESS) {
+        setUserInfo(response.data!)
+        return response.data!
     }
-
-    const base64Src = canvas.toDataURL('image/jpg')
-    return {
-        value,
-        base64Src
-    }
-}
-
-export const getLoginStatus = () => {
-    return getLocalStorage(STORAGE_TOKEN_KEY) !== null
-}
-
-export const getVerifyStatus_async = () => {
-    if (getLocalStorage(STORAGE_USER_INFO_KEY) === null) {
-        return undefined
-    }
-    return (JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo)
-        .verified
+    throw Error('获取用户信息失败')
 }
 
 export const getUserInfo = async (force = false): Promise<UserWithPowerInfoVo> => {
-    if (getLocalStorage(STORAGE_USER_INFO_KEY) !== null && !force) {
-        return new Promise((resolve) => {
-            resolve(
-                JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo
-            )
-        })
+    if (getLocalStorage(STORAGE_USER_INFO_KEY) && !force) {
+        return JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo
     }
     return requestUserInfo()
 }
 
-export const requestUserInfo = async () => {
-    let user: UserWithPowerInfoVo | null
+export const setUserInfo = (userInfo?: UserWithPowerInfoVo) =>
+    setLocalStorage(STORAGE_USER_INFO_KEY, JSON.stringify(userInfo))
 
-    await r_sys_user_info_get().then((value) => {
-        const response = value.data
-        if (response.code === DATABASE_SELECT_SUCCESS) {
-            user = response.data
-            setLocalStorage(STORAGE_USER_INFO_KEY, JSON.stringify(user))
-        }
-    })
-
-    return new Promise<UserWithPowerInfoVo>((resolve, reject) => {
-        if (user) {
-            resolve(user)
-        }
-        reject(user)
-    })
+export const removeAllToken = () => {
+    removeLocalStorage(STORAGE_USER_INFO_KEY)
+    removeLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
 }
+
+export const getLoginStatus = () => !!getAccessToken()
+
+export const getVerifyStatus = () =>
+    getLocalStorage(STORAGE_USER_INFO_KEY) === null ||
+    (JSON.parse(getLocalStorage(STORAGE_USER_INFO_KEY) as string) as UserWithPowerInfoVo).verified
 
 export const getNickname = async () => {
     const user = await getUserInfo()
 
-    return user.userInfo.nickname
+    return user?.userInfo.nickname
 }
 
 export const getAvatar = async () => {
     const user = await getUserInfo()
 
-    return user.userInfo.avatar
-}
-
-export const getUsername = async () => {
-    const user = await getUserInfo()
-
-    return user.username
+    return user?.userInfo.avatar
 }
 
 export const getUserId = async () => {
     const user = await getUserInfo()
 
-    return user.id
-}
-
-export const getCaptchaSrc = () => {
-    captcha = getCaptcha(300, 150, 4)
-    return captcha.base64Src
-}
-
-export const verifyCaptcha = (value: string) => {
-    return captcha.value.toLowerCase() === value.replace(/\s*/g, '').toLowerCase()
+    return user?.id
 }
 
 export const powerListToPowerTree = (
@@ -221,7 +153,7 @@ const parentToTree = (data: _DataNode[]): _DataNode[] => {
         parents.forEach((parent) => {
             children.forEach((current, index) => {
                 if (current.parentId === parent.key) {
-                    const temp = _.cloneDeep(children)
+                    const temp = cloneDeep(children)
                     temp.splice(index, 1)
                     translator([current], temp)
                     typeof parent.children !== 'undefined'
@@ -242,42 +174,22 @@ export const getPermissionPath = (): string[] => {
     if (s === null) {
         return []
     }
-
     const user = JSON.parse(s) as UserWithPowerInfoVo
-    const paths: string[] = []
-    user.menus.forEach((menu) => {
-        paths.push(menu.url)
-    })
 
-    return paths
+    return user.menus.map((menu) => menu.url)
 }
 
-export const hasPathPermission = (path: string) => {
-    let flag = false
-    getPermissionPath().forEach((value) => {
-        if (RegExp(value).test(path)) {
-            flag = true
-            return
-        }
-    })
-    return flag
-}
+export const hasPathPermission = (path: string) =>
+    getPermissionPath().some((value) => RegExp(value).test(path))
 
 export const getPermission = (): string[] => {
     const s = getLocalStorage(STORAGE_USER_INFO_KEY)
     if (s === null) {
         return []
     }
-
     const user = JSON.parse(s) as UserWithPowerInfoVo
-    const operationCodes: string[] = []
-    user.operations.forEach((operation) => {
-        operationCodes.push(operation.code)
-    })
 
-    return operationCodes
+    return user.operations.map((operation) => operation.code)
 }
 
-export const hasPermission = (operationCode: string) => {
-    return getPermission().indexOf(operationCode) !== -1
-}
+export const hasPermission = (operationCode: string) => getPermission().includes(operationCode)

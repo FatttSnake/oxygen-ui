@@ -1,12 +1,8 @@
 import useStyles from '@/assets/css/pages/system/tools/execute.style'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
-import {
-    checkDesktop,
-    generateThemeCssVariables,
-    message,
-    removeUselessAttributes
-} from '@/util/common'
+import { checkDesktop, message } from '@/util/common'
 import { navigateToTools } from '@/util/navigation'
+import { generateThemeCssVariables, processBaseDist, removeUselessAttributes } from '@/util/tool'
 import { r_sys_tool_get_one } from '@/services/system'
 import { AppContext } from '@/App'
 import FitFullscreen from '@/components/common/FitFullscreen'
@@ -23,14 +19,11 @@ const Execute = () => {
     const { id } = useParams()
     const [isLoading, setIsLoading] = useState(false)
     const [compiledCode, setCompiledCode] = useState('')
-    const [isMobileMode, setIsMobileMode] = useState(false)
 
-    const render = (toolVo: ToolVo) => {
+    const render = (toolVo: ToolWithSourceVo, toolBaseVo: ToolBaseWithDistVo) => {
         try {
             switch (toolVo.platform) {
                 case 'ANDROID':
-                    setIsMobileMode(true)
-                    break
                 case 'DESKTOP':
                     if (!checkDesktop()) {
                         message.warning('此应用需要桌面端环境，请在桌面端打开').then(() => {
@@ -40,11 +33,11 @@ const Execute = () => {
                     }
             }
 
-            const baseDist = base64ToStr(toolVo.base.dist.data!)
+            const baseDist = base64ToStr(toolBaseVo.dist.data!)
             const files = base64ToFiles(toolVo.source.data!)
             const importMap = JSON.parse(files[IMPORT_MAP_FILE_NAME].value) as IImportMap
 
-            void compiler
+            compiler
                 .compile(files, importMap, toolVo.entryPoint)
                 .then((result) => {
                     const output = result.outputFiles[0].text
@@ -68,21 +61,27 @@ const Execute = () => {
         setIsLoading(true)
         void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
 
-        void r_sys_tool_get_one(id!)
+        r_sys_tool_get_one(id!)
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
                     case DATABASE_SELECT_SUCCESS:
-                        render(response.data!)
-                        break
+                        return response.data!
                     case DATABASE_NO_RECORD_FOUND:
                         message.error('未找到指定工具').then(() => {
                             navigateToTools(navigate)
                         })
-                        break
+                        throw Error()
                     default:
-                        void message.error('获取工具信息失败，请稍后重试')
+                        throw Error('获取工具信息失败，请稍后重试')
                 }
+            })
+            .then((toolVo) => processBaseDist(toolVo.base.id, toolVo.base.version, { toolVo }))
+            .then(({ toolVo, toolBaseVo }) => {
+                render(toolVo, toolBaseVo)
+            })
+            .catch((reason) => {
+                reason && message.error(reason)
             })
             .finally(() => {
                 setIsLoading(false)
@@ -100,7 +99,6 @@ const Execute = () => {
                 <Playground.Output.Preview.Render
                     iframeKey={`${id}`}
                     compiledCode={compiledCode}
-                    mobileMode={isMobileMode}
                     globalJsVariables={{
                         OxygenTheme: { ...removeUselessAttributes(theme), isDarkMode }
                     }}

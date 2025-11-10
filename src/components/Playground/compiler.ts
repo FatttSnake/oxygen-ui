@@ -7,6 +7,7 @@ import esbuild, {
     Plugin,
     PluginBuild
 } from 'esbuild-wasm'
+import wasmURL from 'esbuild-wasm/esbuild.wasm?url'
 import localforage from 'localforage'
 import axios from 'axios'
 import { IFile, IFiles, IImportMap } from '@/components/Playground/shared'
@@ -21,16 +22,16 @@ import {
 class Compiler {
     private init = false
 
-    fileCache = localforage.createInstance({
-        name: 'fileCache'
+    compileCache = localforage.createInstance({
+        name: 'compileCache'
     })
 
     constructor() {
         try {
-            void esbuild
+            esbuild
                 .initialize({
                     worker: true,
-                    wasmURL: 'https://esm.sh/esbuild-wasm@0.24.0/esbuild.wasm'
+                    wasmURL
                 })
                 .finally(() => {
                     this.init = true
@@ -172,8 +173,7 @@ class Compiler {
                 { namespace: 'oxygen', filter: /.*/ },
                 (args: OnLoadArgs): OnLoadResult | undefined => {
                     let file: IFile | undefined
-
-                    void ['', '.tsx', '.jsx', '.ts', '.js'].forEach((suffix) => {
+                    ;['', '.tsx', '.jsx', '.ts', '.js'].forEach((suffix) => {
                         file = file || files[`${args.path}${suffix}`]
                     })
                     if (file) {
@@ -193,7 +193,7 @@ class Compiler {
             )
 
             build.onLoad({ filter: /.*/ }, async (args: OnLoadArgs): Promise<OnLoadResult> => {
-                const cached = await this.fileCache.getItem<OnLoadResult>(args.path)
+                const cached = await this.compileCache.getItem<OnLoadResult>(args.path)
 
                 if (cached) {
                     return cached
@@ -234,7 +234,7 @@ class Compiler {
                     resolveDir: args.path
                 }
 
-                await this.fileCache.setItem(args.path, result)
+                await this.compileCache.setItem(args.path, result)
 
                 return result
             })
@@ -267,7 +267,7 @@ class Compiler {
                         resolveDir: basePath
                     }
                 }
-                const cached = await this.fileCache.getItem<OnLoadResult>(args.path)
+                const cached = await this.compileCache.getItem<OnLoadResult>(args.path)
 
                 if (cached) {
                     return cached
@@ -301,7 +301,7 @@ class Compiler {
                     resolveDir: args.path
                 }
 
-                await this.fileCache.setItem(args.path, result)
+                await this.compileCache.setItem(args.path, result)
 
                 return result
             })

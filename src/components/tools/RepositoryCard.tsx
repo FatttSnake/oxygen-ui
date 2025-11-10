@@ -1,7 +1,7 @@
 import { DetailedHTMLProps, HTMLAttributes } from 'react'
 import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import useStyles from '@/assets/css/components/tools/repository-card.style'
-import { omitTextByByte } from '@/util/common'
+import { checkDesktop, omitTextByByte } from '@/util/common'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import Draggable from '@/components/dnd/Draggable'
@@ -66,10 +66,12 @@ const RepositoryCard = ({
                 <FlexBox className={styles.root}>
                     <div className={styles.header}>
                         {children}
-                        <DragHandle />
+                        {platform !== 'ANDROID' && (checkDesktop() || platform === 'WEB') && (
+                            <DragHandle />
+                        )}
                     </div>
                     <div className={styles.icon}>
-                        <img src={`data:image/svg+xml;base64,${icon}`} alt={'Icon'} />
+                        <img src={`data:image/svg+xml;base64,${icon}`} alt={''} />
                     </div>
                     <div className={styles.info}>
                         <div className={styles.toolName} title={toolName}>
@@ -87,22 +89,28 @@ const RepositoryCard = ({
                             </AntdButton>
                         )}
                         {onEdit && onPublish && (
-                            <div className={styles.edit}>
+                            <div className={styles.buttonGroup}>
                                 <AntdButton.Group size={'small'}>
                                     <AntdButton onClick={onEdit}>编辑</AntdButton>
                                     <AntdButton onClick={onPublish}>发布</AntdButton>
                                 </AntdButton.Group>
                             </div>
                         )}
-                        {onSource && (
-                            <AntdButton size={'small'} onClick={onSource}>
-                                源码
-                            </AntdButton>
-                        )}
-                        {onCancelReview && (
-                            <AntdButton size={'small'} onClick={onCancelReview}>
-                                取消审核
-                            </AntdButton>
+                        {(onSource || onCancelReview) && (
+                            <div className={styles.buttonGroup}>
+                                <AntdButton.Group size={'small'}>
+                                    {onSource && (
+                                        <AntdButton size={'small'} onClick={onSource}>
+                                            源码
+                                        </AntdButton>
+                                    )}
+                                    {onCancelReview && (
+                                        <AntdButton size={'small'} onClick={onCancelReview}>
+                                            取消审核
+                                        </AntdButton>
+                                    )}
+                                </AntdButton.Group>
+                            </div>
                         )}
                         {onDelete && (
                             <AntdButton size={'small'} danger onClick={onDelete}>

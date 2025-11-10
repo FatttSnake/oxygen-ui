@@ -1,30 +1,34 @@
-import Draggable from 'react-draggable'
 import Icon from '@ant-design/icons'
 import useStyles from '@/assets/css/pages/system/tools/code.style'
 import { DATABASE_NO_RECORD_FOUND, DATABASE_SELECT_SUCCESS } from '@/constants/common.constants'
-import { message, modal, checkDesktop, addExtraCssVariables } from '@/util/common'
-import { navigateToExecute, navigateToRepository } from '@/util/navigation'
+import { message, modal, checkDesktop } from '@/util/common'
+import { navigateToExecute, navigateToRepository, navigateToTools } from '@/util/navigation'
+import { addExtraCssVariables, formatToolBaseVersion } from '@/util/tool'
 import editorExtraLibs from '@/util/editorExtraLibs'
 import { r_sys_tool_get_one } from '@/services/system'
+import { AppContext } from '@/App'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
-import { AppContext } from '@/App'
-import { IFiles } from '@/components/Playground/shared'
-import { base64ToFiles } from '@/components/Playground/files'
+import FlexBox from '@/components/common/FlexBox'
+import LoadingMask from '@/components/common/LoadingMask'
+import ToolBar from '@/components/tools/ToolBar'
 import Playground from '@/components/Playground'
+import { usePlaygroundState } from '@/hooks/usePlaygroundState'
+import { base64ToFiles } from '@/components/Playground/files'
+
+const { Text } = AntdTypography
 
 const Code = () => {
     const { styles } = useStyles()
     const { isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
     const { id } = useParams()
+    const { init, tsconfig, files, selectedFileName, setSelectedFileName } = usePlaygroundState()
+    const [toolData, setToolData] = useState<ToolWithSourceVo>()
     const [isLoading, setIsLoading] = useState(false)
-    const [files, setFiles] = useState<IFiles>({})
-    const [selectedFileName, setSelectedFileName] = useState('')
-    const [platform, setPlatform] = useState<Platform>('WEB')
 
     const handleOnRunTool = () => {
-        if (checkDesktop() || platform !== 'DESKTOP') {
+        if (checkDesktop() || toolData!.platform === 'WEB') {
             void modal.confirm({
                 centered: true,
                 maskClosable: true,
@@ -39,16 +43,6 @@ const Code = () => {
         }
     }
 
-    const render = (toolVo: ToolVo) => {
-        try {
-            setFiles(base64ToFiles(toolVo.source.data!))
-            setSelectedFileName(toolVo.entryPoint)
-            setPlatform(toolVo.platform)
-        } catch (e) {
-            void message.error('载入工具失败')
-        }
-    }
-
     const getTool = () => {
         if (isLoading) {
             return
@@ -56,13 +50,25 @@ const Code = () => {
         setIsLoading(true)
         void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
 
-        void r_sys_tool_get_one(id!)
+        r_sys_tool_get_one(id!)
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
-                    case DATABASE_SELECT_SUCCESS:
-                        render(response.data!)
+                    case DATABASE_SELECT_SUCCESS: {
+                        const toolVo = response.data!
+                        setToolData(toolVo)
+                        try {
+                            init(
+                                base64ToFiles(toolVo.source.data!),
+                                true,
+                                toolVo.entryPoint,
+                                toolVo.entryPoint
+                            )
+                        } catch (e) {
+                            void message.error('载入工具失败')
+                        }
                         break
+                    }
                     case DATABASE_NO_RECORD_FOUND:
                         message.error('未找到指定工具').then(() => {
                             navigateToRepository(navigate)
@@ -84,27 +90,53 @@ const Code = () => {
 
     return (
         <FitFullscreen className={styles.root}>
-            <Card className={styles.rootBox}>
-                <Playground.CodeEditor
-                    isDarkMode={isDarkMode}
-                    readonly
-                    files={files}
-                    selectedFileName={selectedFileName}
-                    onSelectedFileChange={setSelectedFileName}
-                    extraLibs={editorExtraLibs}
-                    onEditorDidMount={(_, monaco) => addExtraCssVariables(monaco)}
-                />
-            </Card>
-
-            <Draggable bounds={'#root'}>
-                <div className={styles.draggableContent}>
-                    <AntdFloatButton
-                        type={'primary'}
-                        icon={<Icon component={IconOxygenExecute} />}
-                        onClick={handleOnRunTool}
-                    />
-                </div>
-            </Draggable>
+            <LoadingMask hidden={!isLoading}>
+                <FlexBox className={styles.layout} direction={'vertical'}>
+                    <ToolBar
+                        title={toolData?.name}
+                        subtitle={
+                            <AntdTag color={'blue'}>
+                                {`${toolData?.platform.slice(0, 1)}${toolData?.platform.slice(1).toLowerCase()}`}
+                            </AntdTag>
+                        }
+                        onBack={() => navigateToTools(navigate)}
+                    >
+                        <span>
+                            <Text strong>版本：</Text>
+                            {toolData && toolData.ver}
+                        </span>
+                        <span>
+                            <Text strong>基板：</Text>
+                            <AntdSpace>
+                                {toolData?.base.name}
+                                {toolData && formatToolBaseVersion(toolData?.base.version)}
+                            </AntdSpace>
+                        </span>
+                        {toolData && (
+                            <AntdButton
+                                size={'small'}
+                                type={'primary'}
+                                icon={<Icon component={IconOxygenExecute} />}
+                                onClick={handleOnRunTool}
+                            >
+                                运行
+                            </AntdButton>
+                        )}
+                    </ToolBar>
+                    <Card>
+                        <Playground.CodeEditor
+                            isDarkMode={isDarkMode}
+                            tsconfig={tsconfig}
+                            files={files}
+                            selectedFileName={selectedFileName}
+                            readonly
+                            extraLibs={editorExtraLibs}
+                            onEditorDidMount={(_, monaco) => addExtraCssVariables(monaco)}
+                            onSelectedFileChange={setSelectedFileName}
+                        />
+                    </Card>
+                </FlexBox>
+            </LoadingMask>
         </FitFullscreen>
     )
 }

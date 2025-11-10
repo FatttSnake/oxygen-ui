@@ -1,4 +1,4 @@
-import useStyles from '@/components/Playground/Output/Preview/index.style'
+import useStyles from '@/assets/css/components/playground/output/preview.style'
 import { IFiles, IImportMap } from '@/components/Playground/shared'
 import Compiler from '@/components/Playground/compiler'
 import Render from '@/components/Playground/Output/Preview/Render'
@@ -10,7 +10,6 @@ interface PreviewProps {
     entryPoint: string
     preExpansionCode?: string
     postExpansionCode?: string
-    mobileMode?: boolean
     globalJsVariables?: Record<string, unknown>
     globalCssVariables?: string
 }
@@ -22,7 +21,6 @@ const Preview = ({
     entryPoint,
     preExpansionCode = '',
     postExpansionCode = '',
-    mobileMode = false,
     globalJsVariables,
     globalCssVariables
 }: PreviewProps) => {
@@ -51,7 +49,6 @@ const Preview = ({
             <Render
                 iframeKey={iframeKey}
                 compiledCode={compiledCode}
-                mobileMode={mobileMode}
                 globalJsVariables={globalJsVariables}
                 globalCssVariables={globalCssVariables}
             />

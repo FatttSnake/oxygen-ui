@@ -11,14 +11,14 @@ import Footer from '@/components/common/Sidebar/Footer'
 
 export const SidebarContext = createContext({ isCollapse: false })
 
-interface SidebarProps extends PropsWithChildren {
+interface SidebarProps {
     title: string
     width?: string
     onSidebarSwitch?: (hidden: boolean) => void
     bottomFixed?: ReactNode
 }
 
-const Sidebar = (props: SidebarProps) => {
+const Sidebar = (props: PropsWithChildren<SidebarProps>) => {
     const { styles, cx } = useStyles()
     const [isCollapse, setIsCollapse] = useState(getSidebarCollapse())
 

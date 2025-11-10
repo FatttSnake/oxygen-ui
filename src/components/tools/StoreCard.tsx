@@ -6,12 +6,14 @@ import useStyles from '@/assets/css/components/tools/store-card.style'
 import { message, modal, checkDesktop, omitTextByByte } from '@/util/common'
 import { getLoginStatus, getUserId } from '@/util/auth'
 import {
-    getAndroidUrl,
+    getAppUrl,
+    navigateToApp,
     navigateToLogin,
     navigateToSource,
     navigateToStore,
     navigateToView
 } from '@/util/navigation'
+import { generateDesktopProtocolUrl } from '@/util/tool'
 import { r_tool_add_favorite, r_tool_remove_favorite } from '@/services/tool'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
@@ -63,7 +65,7 @@ const StoreCard = ({
     useEffect(() => {
         cardRef.current && VanillaTilt.init(cardRef.current, options)
         if (getLoginStatus()) {
-            void getUserId().then((value) => setUserId(value))
+            getUserId().then((value) => setUserId(value ?? ''))
         }
     }, [options])
 
@@ -80,14 +82,13 @@ const StoreCard = ({
                 title: 'Android 端',
                 content: (
                     <FlexBox className={styles.androidQrcode}>
-                        <AntdQRCode value={getAndroidUrl(author.username, toolId)} size={300} />
+                        <AntdQRCode value={getAppUrl(author.username, toolId)} size={300} />
                         <AntdTag>请使用手机端扫描上方二维码</AntdTag>
                     </FlexBox>
                 ),
-                okText: '确定',
-                cancelText: '模拟器',
-                onCancel() {
-                    navigateToView(navigate, author.username, toolId, platform)
+                cancelText: '获取应用',
+                onCancel: () => {
+                    navigateToApp(navigate, author.username, toolId)
                 }
             })
             return
@@ -102,7 +103,7 @@ const StoreCard = ({
 
     const handleOnSourceBtnClick = (e: MouseEvent<HTMLDivElement>) => {
         e.stopPropagation()
-        navigateToSource(navigate, author.username, toolId, platform)
+        navigateToSource(navigate, author.username, toolId, platform, undefined, '/store')
     }
 
     const handleOnStarBtnClick = (e: MouseEvent<HTMLDivElement>) => {
@@ -112,7 +113,7 @@ const StoreCard = ({
             return
         }
         if (favorite_) {
-            void r_tool_remove_favorite({
+            r_tool_remove_favorite({
                 authorId: author.id,
                 toolId,
                 platform
@@ -125,7 +126,7 @@ const StoreCard = ({
                 }
             })
         } else {
-            void r_tool_add_favorite({
+            r_tool_add_favorite({
                 authorId: author.id,
                 toolId,
                 platform
@@ -149,14 +150,13 @@ const StoreCard = ({
             title: 'Android 端',
             content: (
                 <FlexBox className={styles.androidQrcode}>
-                    <AntdQRCode value={getAndroidUrl(author.username, toolId)} size={300} />
+                    <AntdQRCode value={getAppUrl(author.username, toolId)} size={300} />
                     <AntdTag>请使用手机端扫描上方二维码</AntdTag>
                 </FlexBox>
             ),
-            okText: '确定',
-            cancelText: '模拟器',
-            onCancel() {
-                navigateToView(navigate, author.username, toolId, 'ANDROID')
+            cancelText: '获取应用',
+            onCancel: () => {
+                navigateToApp(navigate, author.username, toolId)
             }
         })
     }
@@ -166,7 +166,11 @@ const StoreCard = ({
         if (!checkDesktop()) {
             void message.loading({ content: '启动桌面端中……', key: 'LOADING', duration: 0 })
             protocolCheck(
-                `${import.meta.env.VITE_DESKTOP_PROTOCOL}://openurl/view/${author.username}/${toolId}`,
+                generateDesktopProtocolUrl({
+                    username: author.username,
+                    toolId,
+                    platform: 'DESKTOP'
+                }),
                 () => {
                     void message.warning('打开失败,此应用需要桌面端环境,请安装桌面端后重试')
                     void message.destroy('LOADING')
@@ -198,7 +202,7 @@ const StoreCard = ({
                 toolName,
                 toolId,
                 authorUsername: author.username,
-                ver: '',
+                ver: 'latest',
                 platform
             }}
             hasDragHandle
@@ -257,11 +261,13 @@ const StoreCard = ({
                                     />
                                 </AntdTooltip>
                             )}
-                            <DragHandle />
+                            {platform !== 'ANDROID' && (checkDesktop() || platform === 'WEB') && (
+                                <DragHandle />
+                            )}
                         </div>
                     </div>
                     <div className={styles.icon}>
-                        <img src={`data:image/svg+xml;base64,${icon}`} alt={'Icon'} />
+                        <img src={`data:image/svg+xml;base64,${icon}`} alt={''} />
                     </div>
                     <div className={styles.info}>
                         <div className={styles.toolName} title={toolName}>
@@ -282,7 +288,7 @@ const StoreCard = ({
                                         <AntdImage
                                             preview={false}
                                             src={`data:image/png;base64,${author.userInfo.avatar}`}
-                                            alt={'Avatar'}
+                                            alt={''}
                                         />
                                     }
                                     style={{ background: theme.colorBgLayout }}

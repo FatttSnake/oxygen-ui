@@ -54,12 +54,14 @@ export const navigateToSource = (
     toolId: string,
     platform: Platform,
     version?: string,
+    from?: string,
     options?: NavigateOptions
 ) => {
     const searchParams = new URLSearchParams()
     if (platform !== import.meta.env.VITE_PLATFORM) {
         searchParams.append('platform', platform)
     }
+    from && searchParams.append('from', from)
 
     navigate(
         `/source/${username}/${toolId}${version ? `/${version}` : ''}${searchParams.size ? `?${searchParams.toString()}` : ''}`,
@@ -130,6 +132,40 @@ export const navigateToTools = (navigate: NavigateFunction, options?: NavigateOp
     navigate('/system/tools', options)
 }
 
+export const navigateToToolTemplate = (navigate: NavigateFunction, options?: NavigateOptions) => {
+    navigate(`/system/tools/template`, options)
+}
+
+export const navigateToToolTemplateEditor = (
+    navigate: NavigateFunction,
+    toolTemplateId: string,
+    options?: NavigateOptions
+) => {
+    navigate(`/system/tools/template/${toolTemplateId}`, options)
+}
+
+export const navigateToToolBase = (navigate: NavigateFunction, options?: NavigateOptions) => {
+    navigate(`/system/tools/base`, options)
+}
+
+export const navigateToToolBaseEditor = (
+    navigate: NavigateFunction,
+    toolBaseId: string,
+    version?: string,
+    options?: NavigateOptions
+) => {
+    navigate(`/system/tools/base/${toolBaseId}${version ? `/${version}` : ''}`, options)
+}
+
+export const navigateToApp = (
+    navigate: NavigateFunction,
+    username?: string,
+    toolId?: string,
+    options?: NavigateOptions
+) => {
+    navigate(username && toolId ? `/app?username=${username}&toolId=${toolId}` : '/app', options)
+}
+
 export const getViewPath = (
     username: string,
     toolId: string,
@@ -144,8 +180,13 @@ export const getViewPath = (
     return `/view/${username}/${toolId}${version ? `/${version}` : ''}${searchParams.size ? `?${searchParams.toString()}` : ''}`
 }
 
-export const getAndroidUrl = (username: string, toolId: string) =>
-    `${import.meta.env.VITE_APP_PROTOCOL}://opentool/${username}/${toolId}`
+export const getAppUrl = (username: string, toolId: string) => {
+    const url = new URL('/app', location.href)
+    url.searchParams.set('username', username)
+    url.searchParams.set('toolId', toolId)
+
+    return url.href
+}
 
 export const checkIsSamePathname = (a: string, b: string) => {
     const aPathname = a.substring(0, a.indexOf('?') === -1 ? a.length : a.indexOf('?'))

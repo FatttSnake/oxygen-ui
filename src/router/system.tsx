@@ -17,8 +17,7 @@ const system: RouteJsonObject[] = [
         component: lazy(() => import('@/pages/System/Statistics')),
         name: '系统概况',
         icon: lazy(() => import('~icons/oxygen/chart')),
-        menu: true,
-        autoHide: true
+        menu: true
     },
     {
         path: 'settings',
@@ -27,8 +26,7 @@ const system: RouteJsonObject[] = [
         component: lazy(() => import('@/pages/System/Settings')),
         name: '系统设置',
         icon: lazy(() => import('~icons/oxygen/option')),
-        menu: true,
-        autoHide: true
+        menu: true
     },
     {
         path: 'tools',
@@ -37,7 +35,6 @@ const system: RouteJsonObject[] = [
         name: '工具配置',
         icon: lazy(() => import('~icons/oxygen/tool')),
         menu: true,
-        autoHide: true,
         children: [
             {
                 path: '',
@@ -46,8 +43,7 @@ const system: RouteJsonObject[] = [
                 component: lazy(() => import('@/pages/System/Tools')),
                 name: '工具管理',
                 operationCode: 'system:tool:query:tool',
-                menu: true,
-                autoHide: true
+                menu: true
             },
             {
                 path: 'code/:id',
@@ -72,8 +68,15 @@ const system: RouteJsonObject[] = [
                 component: lazy(() => import('@/pages/System/Tools/Template')),
                 name: '模板管理',
                 operationCode: 'system:tool:query:template',
-                menu: true,
-                autoHide: true
+                menu: true
+            },
+            {
+                path: 'template/:id',
+                absolutePath: '/system/tools/template',
+                id: 'system-tools-template-editor',
+                component: lazy(() => import('@/pages/System/Tools/TemplateEditor')),
+                name: '模板编辑器',
+                operationCode: 'system:tool:query:template'
             },
             {
                 path: 'base',
@@ -82,8 +85,15 @@ const system: RouteJsonObject[] = [
                 component: lazy(() => import('@/pages/System/Tools/Base')),
                 name: '基板管理',
                 operationCode: 'system:tool:query:base',
-                menu: true,
-                autoHide: true
+                menu: true
+            },
+            {
+                path: 'base/:id/:version?',
+                absolutePath: '/system/tools/base',
+                id: 'system-tools-base-editor',
+                component: lazy(() => import('@/pages/System/Tools/BaseEditor')),
+                name: '基板编辑器',
+                operationCode: 'system:tool:query:base'
             },
             {
                 path: 'category',
@@ -92,8 +102,7 @@ const system: RouteJsonObject[] = [
                 component: lazy(() => import('@/pages/System/Tools/Category')),
                 name: '类别管理',
                 operationCode: 'system:tool:query:category',
-                menu: true,
-                autoHide: true
+                menu: true
             }
         ]
     },
@@ -104,8 +113,7 @@ const system: RouteJsonObject[] = [
         component: lazy(() => import('@/pages/System/User')),
         name: '用户管理',
         icon: lazy(() => import('~icons/oxygen/user')),
-        menu: true,
-        autoHide: true
+        menu: true
     },
     {
         path: 'role',
@@ -114,8 +122,7 @@ const system: RouteJsonObject[] = [
         component: lazy(() => import('@/pages/System/Role')),
         name: '角色管理',
         icon: lazy(() => import('~icons/oxygen/role')),
-        menu: true,
-        autoHide: true
+        menu: true
     },
     {
         path: 'group',
@@ -124,8 +131,7 @@ const system: RouteJsonObject[] = [
         component: lazy(() => import('@/pages/System/Group')),
         name: '群组管理',
         icon: lazy(() => import('~icons/oxygen/group')),
-        menu: true,
-        autoHide: true
+        menu: true
     },
     {
         path: 'log',
@@ -134,8 +140,7 @@ const system: RouteJsonObject[] = [
         component: lazy(() => import('@/pages/System/Log')),
         name: '系统日志',
         icon: lazy(() => import('~icons/oxygen/log')),
-        menu: true,
-        autoHide: true
+        menu: true
     },
     {
         path: '*',

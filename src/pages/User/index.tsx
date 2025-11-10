@@ -10,7 +10,7 @@ import {
 } from '@/constants/common.constants'
 import { message, notification, modal, getThemeMode, ThemeMode, setThemeMode } from '@/util/common'
 import { utcToLocalTime } from '@/util/datetime'
-import { getUserInfo, removeToken } from '@/util/auth'
+import { getUserInfo, removeAllToken } from '@/util/auth'
 import { r_sys_user_info_change_password, r_sys_user_info_update } from '@/services/system'
 import {
     r_auth_two_factor_create,
@@ -39,7 +39,7 @@ const User = () => {
     const handleOnCopyToClipboard = (username?: string) => {
         return username
             ? () => {
-                  void navigator.clipboard
+                  navigator.clipboard
                       .writeText(new URL(`/store/${username}`, import.meta.env.VITE_UI_URL).href)
                       .then(() => {
                           void message.success('已复制到剪切板')
@@ -59,7 +59,7 @@ const User = () => {
         setIsSubmitting(true)
         void message.loading({ content: '保存中', key: 'LOADING', duration: 0 })
 
-        void r_sys_user_info_update({ avatar, nickname: formValues.nickname })
+        r_sys_user_info_update({ avatar, nickname: formValues.nickname })
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
@@ -82,7 +82,7 @@ const User = () => {
             return
         }
         setIsGettingAvatar(true)
-        void r_api_avatar_random_base64()
+        r_api_avatar_random_base64()
             .then((res) => {
                 const response = res.data
                 if (response.success) {
@@ -100,22 +100,8 @@ const User = () => {
         void modal.confirm({
             centered: true,
             maskClosable: true,
-            icon: <></>,
-            title: (
-                <>
-                    <Icon
-                        style={{ color: theme.colorPrimary, marginRight: 10 }}
-                        component={IconOxygenSetting}
-                    />
-                    修改密码
-                </>
-            ),
-            footer: (_, { OkBtn, CancelBtn }) => (
-                <>
-                    <OkBtn />
-                    <CancelBtn />
-                </>
-            ),
+            icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygenPassword} />,
+            title: '修改密码',
             content: (
                 <AntdForm
                     form={changePasswordForm}
@@ -124,7 +110,7 @@ const User = () => {
                     wrapperCol={{ span: 18 }}
                     ref={() => {
                         setTimeout(() => {
-                            changePasswordForm?.getFieldInstance('originalPassword').focus()
+                            changePasswordForm?.getFieldInstance('originalPassword')?.focus()
                         }, 50)
                     }}
                 >
@@ -159,7 +145,7 @@ const User = () => {
                                     if (!value || getFieldValue('newPassword') === value) {
                                         return Promise.resolve()
                                     }
-                                    return Promise.reject(new Error('两次密码输入必须一致'))
+                                    return Promise.reject(Error('两次密码输入必须一致'))
                                 }
                             })
                         ]}
@@ -172,7 +158,7 @@ const User = () => {
                 changePasswordForm.validateFields().then(
                     () => {
                         return new Promise<void>((resolve, reject) => {
-                            void r_sys_user_info_change_password({
+                            r_sys_user_info_change_password({
                                 originalPassword: changePasswordForm.getFieldValue(
                                     'originalPassword'
                                 ) as string,
@@ -183,7 +169,7 @@ const User = () => {
                                 const response = res.data
                                 switch (response.code) {
                                     case DATABASE_UPDATE_SUCCESS:
-                                        removeToken()
+                                        removeAllToken()
                                         notification.info({
                                             message: '已退出登录',
                                             icon: (
@@ -230,31 +216,28 @@ const User = () => {
                     centered: true,
                     maskClosable: true,
                     focusTriggerAfterClose: false,
+                    icon: <Icon style={{ color: theme.colorPrimary }} component={IconOxygen2fa} />,
                     title: '双因素',
-                    footer: (_, { OkBtn, CancelBtn }) => (
-                        <>
-                            <OkBtn />
-                            <CancelBtn />
-                        </>
-                    ),
                     content: '确定解除双因素？',
                     onOk: () => {
                         void modal.confirm({
                             centered: true,
                             maskClosable: true,
-                            title: '解除双因素',
-                            footer: (_, { OkBtn, CancelBtn }) => (
-                                <>
-                                    <OkBtn />
-                                    <CancelBtn />
-                                </>
+                            icon: (
+                                <Icon
+                                    style={{ color: theme.colorPrimary }}
+                                    component={IconOxygen2fa}
+                                />
                             ),
+                            title: '解除双因素',
                             content: (
                                 <AntdForm
                                     form={twoFactorForm}
                                     ref={() => {
                                         setTimeout(() => {
-                                            twoFactorForm?.getFieldInstance('twoFactorCode').focus()
+                                            twoFactorForm
+                                                ?.getFieldInstance('twoFactorCode')
+                                                ?.focus()
                                         }, 50)
                                     }}
                                 >
@@ -277,7 +260,7 @@ const User = () => {
                                 twoFactorForm.validateFields().then(
                                     () => {
                                         return new Promise<void>((resolve) => {
-                                            void r_auth_two_factor_remove({
+                                            r_auth_two_factor_remove({
                                                 code: twoFactorForm.getFieldValue(
                                                     'twoFactorCode'
                                                 ) as string
@@ -311,7 +294,7 @@ const User = () => {
                 }
                 setIsLoading(true)
                 void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
-                void r_auth_two_factor_create()
+                r_auth_two_factor_create()
                     .then((res) => {
                         message.destroy('LOADING')
                         const response = res.data
@@ -319,19 +302,20 @@ const User = () => {
                             void modal.confirm({
                                 centered: true,
                                 maskClosable: true,
-                                title: '绑定双因素',
-                                footer: (_, { OkBtn, CancelBtn }) => (
-                                    <>
-                                        <OkBtn />
-                                        <CancelBtn />
-                                    </>
+                                icon: (
+                                    <Icon
+                                        style={{ color: theme.colorPrimary }}
+                                        component={IconOxygen2fa}
+                                    />
                                 ),
+                                title: '绑定双因素',
                                 content: (
                                     <>
-                                        <AntdImage
-                                            src={`data:image/svg+xml;base64,${response.data?.qrCodeSVGBase64}`}
-                                            alt={'Two-factor'}
-                                            preview={false}
+                                        <div
+                                            className={styles.qrCode}
+                                            style={{
+                                                maskImage: `url(data:image/svg+xml;base64,${response.data?.qrCodeSVGBase64})`
+                                            }}
                                         />
                                         <AntdTag style={{ whiteSpace: 'normal' }}>
                                             请使用身份验证器APP（eg. Microsoft Authenticator, Google
@@ -343,7 +327,7 @@ const User = () => {
                                                 setTimeout(() => {
                                                     twoFactorForm
                                                         ?.getFieldInstance('twoFactorCode')
-                                                        .focus()
+                                                        ?.focus()
                                                 }, 50)
                                             }}
                                         >
@@ -369,7 +353,7 @@ const User = () => {
                                     twoFactorForm.validateFields().then(
                                         () => {
                                             return new Promise<void>((resolve) => {
-                                                void r_auth_two_factor_validate({
+                                                r_auth_two_factor_validate({
                                                     code: twoFactorForm.getFieldValue(
                                                         'twoFactorCode'
                                                     ) as string
@@ -417,7 +401,7 @@ const User = () => {
         }
         setIsLoading(true)
 
-        void getUserInfo(true)
+        getUserInfo(true)
             .then((userWithPowerInfoVo) => {
                 setAvatar(userWithPowerInfoVo.userInfo.avatar)
                 form.setFieldValue('nickname', userWithPowerInfoVo.userInfo.nickname)
@@ -456,12 +440,7 @@ const User = () => {
                         <AntdTooltip title={'点击获取新头像'}>
                             <div className={styles.avatarBox}>
                                 <AntdAvatar
-                                    src={
-                                        <img
-                                            src={`data:image/png;base64,${avatar}`}
-                                            alt={'Avatar'}
-                                        />
-                                    }
+                                    src={<img src={`data:image/png;base64,${avatar}`} alt={''} />}
                                     size={144}
                                     style={{
                                         background: theme.colorBgLayout,
