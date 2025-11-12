@@ -157,13 +157,11 @@ export const navigateToToolBaseEditor = (
     navigate(`/system/tools/base/${toolBaseId}${version ? `/${version}` : ''}`, options)
 }
 
-export const navigateToApp = (
-    navigate: NavigateFunction,
-    username?: string,
-    toolId?: string,
-    options?: NavigateOptions
-) => {
-    navigate(username && toolId ? `/app?username=${username}&toolId=${toolId}` : '/app', options)
+export const navigateToApp = (username?: string, toolId?: string) => {
+    window.open(
+        username && toolId ? `/app?username=${username}&toolId=${toolId}` : '/app',
+        '_blank'
+    )
 }
 
 export const getViewPath = (

@@ -2,9 +2,22 @@ import GetItOnGooglePlay from '@/assets/svg/GetItOnGooglePlay.svg'
 import useStyles from '@/assets/css/pages/tools/app.style'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
+import protocolCheck from 'custom-protocol-check'
+import { generateAppProtocolUrl } from '@/util/tool.ts'
 
 const App = () => {
     const { styles } = useStyles()
+    const [searchParams] = useSearchParams()
+
+    useEffect(() => {
+        const username = searchParams.get('username')
+        const toolId = searchParams.get('toolId')
+        if (!username || !toolId) {
+            return
+        }
+
+        protocolCheck(generateAppProtocolUrl(username, toolId))
+    }, [searchParams])
 
     return (
         <FitFullscreen>

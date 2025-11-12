@@ -88,7 +88,7 @@ const StoreCard = ({
                 ),
                 cancelText: '获取应用',
                 onCancel: () => {
-                    navigateToApp(navigate, author.username, toolId)
+                    navigateToApp(author.username, toolId)
                 }
             })
             return
@@ -156,7 +156,7 @@ const StoreCard = ({
             ),
             cancelText: '获取应用',
             onCancel: () => {
-                navigateToApp(navigate, author.username, toolId)
+                navigateToApp(author.username, toolId)
             }
         })
     }
