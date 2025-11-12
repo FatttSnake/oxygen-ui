@@ -1,9 +1,8 @@
 import GetItOnGooglePlay from '@/assets/svg/GetItOnGooglePlay.svg'
 import useStyles from '@/assets/css/pages/tools/app.style'
+import { generateAppProtocolUrl } from '@/util/tool'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
-import protocolCheck from 'custom-protocol-check'
-import { generateAppProtocolUrl } from '@/util/tool.ts'
 
 const App = () => {
     const { styles } = useStyles()
@@ -16,7 +15,7 @@ const App = () => {
             return
         }
 
-        protocolCheck(generateAppProtocolUrl(username, toolId))
+        window.open(generateAppProtocolUrl(username, toolId), '_self')
     }, [searchParams])
 
     return (
