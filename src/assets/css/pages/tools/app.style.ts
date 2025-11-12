@@ -7,6 +7,7 @@ export default createStyles(() => ({
     },
 
     getItOnGooglePlay: {
-        width: 400
+        width: '50vw',
+        maxWidth: 400
     }
 }))
