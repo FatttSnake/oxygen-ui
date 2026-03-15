@@ -1,6 +1,8 @@
 /// <reference types="vite/client" />
 /// <reference types="./ant-design" />
 
+declare const __APP_VERSION__: string
+
 type Platform = 'WEB' | 'DESKTOP' | 'ANDROID'
 
 interface ImportMetaEnv {
@@ -431,13 +433,12 @@ interface TwoFactorSettingsParam {
 }
 
 interface SoftwareInfoVo {
+    serviceVersion: string
     os: string
     bitness: number
     javaVersion: string
     javaVersionDate: string
     javaVendor: string
-    javaRuntime: string
-    javaRuntimeVersion: string
     jvm: string
     jvmVersion: string
     jvmInfo: string
