@@ -22,7 +22,11 @@ import {
     r_tool_category_get,
     r_tool_get_source,
     r_tool_update,
-    r_tool_update_source,
+    r_tool_update_source_add,
+    r_tool_update_source_content,
+    r_tool_update_source_move,
+    r_tool_update_source_remove,
+    r_tool_update_source_rename,
     r_tool_upgrade_base
 } from '@/services/tool'
 import { AppContext } from '@/App'
@@ -31,9 +35,15 @@ import FlexBox from '@/components/common/FlexBox'
 import LoadingMask from '@/components/common/LoadingMask'
 import Card from '@/components/common/Card'
 import ToolBar from '@/components/tools/ToolBar'
-import Playground from '@/components/Playground'
-import { usePlaygroundState } from '@/hooks/usePlaygroundState'
-import { base64ToFiles, base64ToStr, filesToBase64 } from '@/components/Playground/files'
+import { sourceListToFileTree } from '@/components/Playground/files'
+import CodeEditor from '@/components/Playground/CodeEditor'
+import Output from '@/components/Playground/Output'
+import {
+    computeTreeDiff,
+    convertDiffToStepTitle,
+    TreeDiffOperation,
+    usePlaygroundState
+} from '@/hooks/usePlaygroundState'
 
 const { Text } = AntdTypography
 
@@ -42,7 +52,7 @@ const Edit = () => {
     const { isDarkMode } = useContext(AppContext)
     const blocker = useBlocker(
         ({ currentLocation, nextLocation }) =>
-            currentLocation.pathname !== nextLocation.pathname && hasEdited
+            currentLocation.pathname !== nextLocation.pathname && hasUnsavedChanges
     )
     const navigate = useNavigate()
     const { toolId } = useParams()
@@ -53,20 +63,25 @@ const Edit = () => {
     const formValues = AntdForm.useWatch([], form)
     const {
         init,
-        files,
-        selectedFileName,
-        entryPoint,
-        importMap,
-        tsconfig,
-        hasEdited,
-        setSelectedFileName,
+        fileTree,
+        originalFileTree,
+        selectedFileKey,
+        entryPointPath,
+        hasUnsavedChanges,
+        setSelectedFileKey,
         updateFileContent,
         addFile,
         renameFile,
+        moveFile,
         removeFile,
-        saveFiles,
+        markAsSaved,
         listenOnError
     } = usePlaygroundState()
+    const diffRef = useRef<TreeDiffOperation[]>([])
+    const nodeIdMapRef = useRef<Map<string, string>>(new Map())
+    const [layout, setLayout] = useState<'horizontal' | 'vertical'>(
+        window.innerWidth > window.innerHeight ? 'horizontal' : 'vertical'
+    )
     const [isLoading, setIsLoading] = useState(false)
     const [toolData, setToolData] = useState<ToolWithSourceVo>()
     const [baseDist, setBaseDist] = useState('')
@@ -76,18 +91,22 @@ const Edit = () => {
     const [categoryData, setCategoryData] = useState<ToolCategoryVo[]>()
     const [isLoadingCategory, setIsLoadingCategory] = useState(false)
     const [baseLatestVersion, setBaseLatestVersion] = useState<number>()
+    const [updateSourceSteps, setUpdateSourceSteps] = useState<_StepProps[]>([])
+    const [updateSourceCurrentStep, setUpdateSourceCurrentStep] = useState(0)
+    const [isShowSavingModal, setIsShowSavingModal] = useState(false)
+    const [savingStatus, setSavingStatus] = useState<'process' | 'error'>('process')
     const hasNewBaseVersion =
         !!toolData && !!baseLatestVersion && baseLatestVersion > toolData.base.version
 
     useBeforeUnload(
         useCallback(
             (event) => {
-                if (hasEdited) {
+                if (hasUnsavedChanges) {
                     event.preventDefault()
                     event.returnValue = ''
                 }
             },
-            [hasEdited]
+            [hasUnsavedChanges]
         ),
         { capture: true }
     )
@@ -151,37 +170,35 @@ const Edit = () => {
             return
         }
         setIsSubmitting(true)
-        void message.loading({ content: '保存中', key: 'SAVING', duration: 0 })
 
-        r_tool_update_source({
-            id: toolData!.id,
-            source: filesToBase64(files)
-        })
-            .then((res) => {
-                const response = res.data
-                switch (response.code) {
-                    case DATABASE_UPDATE_SUCCESS:
-                        void message.success('保存成功')
-                        getTool()
-                        break
-                    case TOOL_UNDER_REVIEW:
-                        message.error('保存失败：工具审核中').then(() => {
-                            navigateToRepository(navigate)
-                        })
-                        break
-                    case TOOL_HAS_BEEN_PUBLISHED:
-                        message.error('保存失败：工具已发布').then(() => {
-                            navigateToRepository(navigate)
-                        })
-                        break
-                    default:
-                        void message.error('保存失败，请稍后重试')
-                }
-            })
-            .finally(() => {
-                setIsSubmitting(false)
-                message.destroy('SAVING')
-            })
+        diffRef.current = computeTreeDiff(fileTree, originalFileTree)
+        if (diffRef.current.length === 0) {
+            markAsSaved()
+            void message.success('保存成功')
+            setIsSubmitting(false)
+            return
+        }
+
+        nodeIdMapRef.current.clear()
+        setUpdateSourceSteps(
+            diffRef.current.map((item) => ({ title: convertDiffToStepTitle(item) }))
+        )
+        setSavingStatus('process')
+        setUpdateSourceCurrentStep(0)
+        setIsShowSavingModal(true)
+
+        void sequenceProcessingSave()
+    }
+
+    const handleOnReload = () => {
+        getTool()
+        setIsSubmitting(false)
+        setIsShowSavingModal(false)
+    }
+
+    const handleOnRetry = () => {
+        setSavingStatus('process')
+        void sequenceProcessingSave(updateSourceCurrentStep)
     }
 
     const handleOnDrawerClose = () => {
@@ -282,29 +299,45 @@ const Edit = () => {
                     case DATABASE_SELECT_SUCCESS:
                         switch (response.data!.review) {
                             case 'NONE':
-                            case 'REJECT':
-                                setToolData(response.data!)
-                                saveFiles()
-                                break
+                            case 'REJECT': {
+                                return response.data!
+                            }
                             case 'PROCESSING':
                                 message.warning('工具审核中，请勿修改').then(() => {
                                     navigateToRepository(navigate)
                                 })
-                                break
+                                throw Error()
                             default:
                                 message.warning('请先创建新版本后编辑工具').then(() => {
                                     navigateToRepository(navigate)
                                 })
+                                throw Error()
                         }
-                        break
                     case DATABASE_NO_RECORD_FOUND:
                         message.error('未找到指定工具').then(() => {
                             navigateToRepository(navigate)
                         })
-                        break
+                        throw Error()
                     default:
-                        void message.error('获取工具信息失败，请稍后重试')
+                        throw Error('载入工具失败，请稍后重试')
                 }
+            })
+            .then((toolVo) => processBaseDist(toolVo.base.id, toolVo.base.version, { toolVo }))
+            .then(({ toolVo, toolBaseVo }) => {
+                setToolData(toolVo)
+                setBaseDist(toolBaseVo.dist.fileContent)
+                const fileTree = sourceListToFileTree(toolVo.sources)
+                init(fileTree, false, toolVo.entryPoint, selectedFileKey)
+                r_tool_base_get_latest_version(toolVo.base.id).then((res) => {
+                    const response = res.data
+                    if (response.success) {
+                        setBaseLatestVersion(response.data!)
+                    }
+                })
+            })
+            .catch((e: Error) => {
+                console.error(e)
+                e?.message && message.error(e.message)
             })
             .finally(() => {
                 setIsLoading(false)
@@ -312,29 +345,115 @@ const Edit = () => {
             })
     }
 
-    useEffect(() => {
-        if (!toolData) {
-            return
-        }
-
-        r_tool_base_get_latest_version(toolData.base.id).then((res) => {
-            const response = res.data
-            if (response.success) {
-                setBaseLatestVersion(response.data!)
+    const sequenceProcessingSave = async (start: number = 0) => {
+        const handleSaveError = (code: number) => {
+            switch (code) {
+                case TOOL_UNDER_REVIEW:
+                    markAsSaved()
+                    message.error('保存失败：工具审核中').then(() => {
+                        navigateToRepository(navigate)
+                    })
+                    break
+                case TOOL_HAS_BEEN_PUBLISHED:
+                    markAsSaved()
+                    message.error('保存失败：工具已发布').then(() => {
+                        navigateToRepository(navigate)
+                    })
+                    break
+                default:
+                    setSavingStatus('error')
             }
-        })
-
-        try {
-            processBaseDist(toolData.base.id, toolData.base.version, {}).then(({ toolBaseVo }) => {
-                setBaseDist(base64ToStr(toolBaseVo.dist.data!))
-                const files = base64ToFiles(toolData.source.data!)
-                init(files, false, toolData.entryPoint, toolData.entryPoint)
-            })
-        } catch (e) {
-            console.error(e)
-            void message.error('载入工具失败')
         }
-    }, [toolData])
+
+        for (let i = start; i < diffRef.current.length; i++) {
+            setUpdateSourceCurrentStep(i)
+            const operation = diffRef.current[i]
+            const { type, fileName, nodeId, dirNode, payload } = operation
+
+            try {
+                switch (type) {
+                    case 'add': {
+                        const parentNode = payload.parentNode as string
+                        const resolvedParentNode =
+                            nodeIdMapRef.current.get(parentNode) || parentNode
+                        const response = await r_tool_update_source_add(toolData!.id, {
+                            parentNode: resolvedParentNode,
+                            fileName,
+                            dirNode: dirNode
+                        })
+                        const res = response.data
+                        if (res.code !== DATABASE_UPDATE_SUCCESS) {
+                            handleSaveError(res.code)
+                            return
+                        }
+                        nodeIdMapRef.current.set(nodeId, res.data!)
+                        break
+                    }
+                    case 'content': {
+                        const resolvedNodeId = nodeIdMapRef.current.get(nodeId) || nodeId
+                        const response = await r_tool_update_source_content(
+                            toolData!.id,
+                            resolvedNodeId,
+                            payload.content as string
+                        )
+                        const res = response.data
+                        if (res.code !== DATABASE_UPDATE_SUCCESS) {
+                            handleSaveError(res.code)
+                            return
+                        }
+                        break
+                    }
+                    case 'rename': {
+                        const resolvedNodeId = nodeIdMapRef.current.get(nodeId) || nodeId
+                        const response = await r_tool_update_source_rename(
+                            toolData!.id,
+                            resolvedNodeId,
+                            fileName
+                        )
+                        const res = response.data
+                        if (res.code !== DATABASE_UPDATE_SUCCESS) {
+                            handleSaveError(res.code)
+                            return
+                        }
+                        break
+                    }
+                    case 'move': {
+                        const newParentId = payload.newParentId as string
+                        const resolvedNewParentId =
+                            nodeIdMapRef.current.get(newParentId) || newParentId
+                        const response = await r_tool_update_source_move(
+                            toolData!.id,
+                            nodeId,
+                            resolvedNewParentId
+                        )
+                        const res = response.data
+                        if (res.code !== DATABASE_UPDATE_SUCCESS) {
+                            handleSaveError(res.code)
+                            return
+                        }
+                        break
+                    }
+                    case 'remove': {
+                        const response = await r_tool_update_source_remove(toolData!.id, nodeId)
+                        const res = response.data
+                        if (res.code !== DATABASE_UPDATE_SUCCESS) {
+                            handleSaveError(res.code)
+                            return
+                        }
+                        break
+                    }
+                }
+            } catch (e) {
+                console.error(e)
+                handleSaveError(0)
+                return
+            }
+        }
+        void message.success('保存成功')
+        getTool()
+        setIsSubmitting(false)
+        setIsShowSavingModal(false)
+    }
 
     useEffect(() => {
         form.validateFields({ validateOnly: true }).then(
@@ -354,6 +473,17 @@ const Edit = () => {
         }
         getTool()
     }, [toolId, searchParams])
+
+    useEffect(() => {
+        const resizeListener = () => {
+            setLayout(window.innerWidth > window.innerHeight ? 'horizontal' : 'vertical')
+        }
+        window.addEventListener('resize', resizeListener)
+
+        return () => {
+            window.removeEventListener('resize', resizeListener)
+        }
+    }, [])
 
     const drawerToolbar = (
         <AntdSpace>
@@ -462,7 +592,7 @@ const Edit = () => {
                 <LoadingMask hidden={!isLoading}>
                     <FlexBox className={styles.layout} direction={'vertical'}>
                         <ToolBar
-                            title={`${toolData?.name}${hasEdited ? '*' : ''}`}
+                            title={`${toolData?.name}${hasUnsavedChanges ? '*' : ''}`}
                             subtitle={
                                 <AntdTag color={'blue'}>
                                     {`${toolData?.platform.slice(0, 1)}${toolData?.platform.slice(1).toLowerCase()}`}
@@ -512,6 +642,7 @@ const Edit = () => {
                                             size={'small'}
                                             type={'primary'}
                                             icon={<Icon component={IconOxygenSave} />}
+                                            disabled={!hasUnsavedChanges}
                                             loading={isLoading || isSubmitting}
                                             onClick={handleOnSave}
                                         >
@@ -521,49 +652,43 @@ const Edit = () => {
                                 )}
                             </AntdSpace>
                         </ToolBar>
-                        <Card className={styles.rootBox}>
-                            <FlexBox direction={'horizontal'} className={styles.content}>
-                                <AntdSplitter>
-                                    <AntdSplitter.Panel collapsible>
-                                        <Playground.CodeEditor
-                                            isDarkMode={isDarkMode}
-                                            tsconfig={tsconfig}
-                                            files={files}
-                                            selectedFileName={selectedFileName}
-                                            notRemovableFiles={[entryPoint]}
-                                            extraLibs={editorExtraLibs}
-                                            onEditorDidMount={(_, monaco) =>
-                                                addExtraCssVariables(monaco)
+                        <Card>
+                            <AntdSplitter layout={layout}>
+                                <AntdSplitter.Panel collapsible>
+                                    <CodeEditor
+                                        isDarkMode={isDarkMode}
+                                        fileTree={fileTree}
+                                        selectedFileKey={selectedFileKey}
+                                        extraLibs={editorExtraLibs}
+                                        onEditorDidMount={(_, monaco) =>
+                                            addExtraCssVariables(monaco)
+                                        }
+                                        onSelectedFileChange={setSelectedFileKey}
+                                        onChangeFileContent={updateFileContent}
+                                        onAddFile={addFile}
+                                        onRenameFile={renameFile}
+                                        onMoveFile={moveFile}
+                                        onRemoveFile={removeFile}
+                                        listenOnError={listenOnError}
+                                    />
+                                </AntdSplitter.Panel>
+                                <AntdSplitter.Panel collapsible>
+                                    <Output
+                                        isDarkMode={isDarkMode}
+                                        fileTree={fileTree}
+                                        selectedFileKey={selectedFileKey}
+                                        entryPointPath={entryPointPath}
+                                        postExpansionCode={baseDist}
+                                        globalJsVariables={{
+                                            OxygenTheme: {
+                                                ...removeUselessAttributes(theme),
+                                                isDarkMode
                                             }
-                                            onSelectedFileChange={setSelectedFileName}
-                                            onChangeFileContent={updateFileContent}
-                                            onAddFile={addFile}
-                                            onRenameFile={renameFile}
-                                            onRemoveFile={removeFile}
-                                            listenOnError={listenOnError}
-                                        />
-                                    </AntdSplitter.Panel>
-                                    <AntdSplitter.Panel collapsible>
-                                        <Playground.Output
-                                            isDarkMode={isDarkMode}
-                                            files={files}
-                                            selectedFileName={selectedFileName}
-                                            importMap={importMap}
-                                            entryPoint={entryPoint}
-                                            postExpansionCode={baseDist}
-                                            globalJsVariables={{
-                                                OxygenTheme: {
-                                                    ...removeUselessAttributes(theme),
-                                                    isDarkMode
-                                                }
-                                            }}
-                                            globalCssVariables={
-                                                generateThemeCssVariables(theme).styles
-                                            }
-                                        />
-                                    </AntdSplitter.Panel>
-                                </AntdSplitter>
-                            </FlexBox>
+                                        }}
+                                        globalCssVariables={generateThemeCssVariables(theme).styles}
+                                    />
+                                </AntdSplitter.Panel>
+                            </AntdSplitter>
                         </Card>
                     </FlexBox>
                 </LoadingMask>
@@ -578,6 +703,39 @@ const Edit = () => {
             >
                 {editForm}
             </AntdDrawer>
+            <AntdModal
+                title={
+                    <AntdSpace>
+                        <Icon component={IconOxygenSave} />
+                        {savingStatus === 'process' ? '保存中' : '保存失败'}
+                    </AntdSpace>
+                }
+                footer={
+                    savingStatus === 'process' ? (
+                        <></>
+                    ) : (
+                        <AntdSpace>
+                            <AntdButton onClick={handleOnReload}>重新加载</AntdButton>
+                            <AntdButton type={'primary'} onClick={handleOnRetry}>
+                                重试
+                            </AntdButton>
+                        </AntdSpace>
+                    )
+                }
+                closable={false}
+                open={isShowSavingModal}
+            >
+                <AntdSteps
+                    direction={'vertical'}
+                    size={'small'}
+                    progressDot={(iconDot, { status }) =>
+                        status === 'process' ? <Icon component={IconOxygenLoading} spin /> : iconDot
+                    }
+                    items={updateSourceSteps}
+                    current={updateSourceCurrentStep}
+                    status={savingStatus}
+                />
+            </AntdModal>
             <AntdModal
                 open={blocker.state === 'blocked'}
                 title={'未保存'}

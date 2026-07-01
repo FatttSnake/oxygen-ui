@@ -536,11 +536,40 @@ interface ToolCategoryAddEditParam {
     enable: string
 }
 
-interface ToolDataVo {
+interface ToolFileVersionVo {
     id: string
-    data?: string
-    createTime?: string
-    updateTime?: string
+    nodeId: string
+    ver: number
+    fileContent: string
+    fileSize: string
+    createTime: string
+    updateTime: string
+}
+
+interface ToolSourceVo {
+    id: string
+    rootId: string
+    parentId: string
+    fileName: string
+    rootNode: boolean
+    dirNode: boolean
+    createTime: string
+    updateTime: string
+    latestFileVersion: ToolFileVersionVo
+}
+
+interface ToolDistVo {
+    id: string
+    fileContent: string
+    fileSize: string
+    createTime: string
+    updateTime: string
+}
+
+interface ToolCommonUpdateSourceAddParam {
+    parentNode: string
+    fileName: string
+    dirNode: boolean
 }
 
 interface ToolBaseVo {
@@ -553,11 +582,11 @@ interface ToolBaseVo {
 }
 
 interface ToolBaseWithDistVo extends ToolBaseVo {
-    dist: ToolDataVo
+    dist: ToolDistVo
 }
 
 interface ToolBaseWithSourceVo extends ToolBaseVo {
-    source: ToolDataVo
+    sources: ToolSourceVo[]
 }
 
 interface ToolBaseWithVersionsVo extends Omit<ToolBaseVo, 'version'> {
@@ -574,18 +603,6 @@ interface ToolBaseUpdateParam {
     name: string
 }
 
-interface ToolBaseUpdateSourceParam {
-    id: string
-    version: number
-    source: string
-}
-
-interface ToolBaseUpdateDistParam {
-    id: string
-    version: number
-    dist: string
-}
-
 interface ToolTemplateVo {
     id: string
     name: string
@@ -598,7 +615,7 @@ interface ToolTemplateVo {
 }
 
 interface ToolTemplateWithSourceVo extends ToolTemplateVo {
-    source: ToolDataVo
+    sources: ToolSourceVo[]
 }
 
 interface ToolTemplateAddParam {
@@ -614,11 +631,6 @@ interface ToolTemplateUpdateParam {
     name: string
     entryPoint: string
     enable?: boolean
-}
-
-interface ToolTemplateUpdateSourceParam {
-    id: string
-    source: string
 }
 
 interface ToolOrTemplateUpgradeBaseParam {
@@ -647,11 +659,11 @@ interface ToolVo {
 }
 
 interface ToolWithDistVo extends ToolVo {
-    dist: ToolDataVo
+    dist: ToolDistVo
 }
 
 interface ToolWithSourceVo extends ToolVo {
-    source: ToolDataVo
+    sources: ToolSourceVo[]
 }
 
 interface ToolCreateParam {
@@ -681,19 +693,10 @@ interface ToolUpdateParam {
     categories?: string[]
 }
 
-interface ToolUpdateSourceParam {
-    id: string
-    source: string
-}
-
 interface ToolManagementGetParam extends PageParam {
     searchType?: string
     searchValue?: string
     searchRegex?: boolean
-}
-
-interface ToolManagementPassParam {
-    dist: string
 }
 
 interface ToolStoreGetParam extends PageParam {

@@ -37,18 +37,18 @@ export const tools: RouteJsonObject[] = [
         auth: true
     },
     {
-        path: 'view/:username/:toolId/:ver',
-        absolutePath: '/view',
-        id: 'tools-view-ver',
-        component: lazy(() => import('@/pages/Tools/View')),
-        name: '查看'
-    },
-    {
         path: 'view/:username/:toolId',
         absolutePath: '/view',
         id: 'tools-view',
         component: lazy(() => import('@/pages/Tools/View')),
         name: '查看'
+    },
+    {
+        path: 'preview/:toolId/:ver',
+        absolutePath: '/preview',
+        id: 'tools-preview',
+        component: lazy(() => import('@/pages/Tools/Preview')),
+        name: '预览'
     },
     {
         path: 'edit/:toolId',

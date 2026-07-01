@@ -34,7 +34,6 @@ export const navigateToView = (
     username: string,
     toolId: string,
     platform: Platform,
-    version?: string,
     options?: NavigateOptions
 ) => {
     const searchParams = new URLSearchParams()
@@ -43,7 +42,24 @@ export const navigateToView = (
     }
 
     navigate(
-        `/view/${username}/${toolId}${version ? `/${version}` : ''}${searchParams.size ? `?${searchParams.toString()}` : ''}`,
+        `/view/${username}/${toolId}${searchParams.size ? `?${searchParams.toString()}` : ''}`,
+        options
+    )
+}
+
+export const navigateToPreview = (
+    navigate: NavigateFunction,
+    toolId: string,
+    platform: Platform,
+    version: string = 'latest',
+    options?: NavigateOptions
+) => {
+    const searchParams = new URLSearchParams()
+    if (platform !== import.meta.env.VITE_PLATFORM) {
+        searchParams.append('platform', platform)
+    }
+    navigate(
+        `/preview/${toolId}/${version}${searchParams.size ? `?${searchParams.toString()}` : ''}`,
         options
     )
 }
