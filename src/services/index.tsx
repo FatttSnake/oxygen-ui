@@ -1,8 +1,7 @@
 import axios, { type AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { jwtDecode, JwtPayload } from 'jwt-decode'
 import {
-    COOKIE_XSRF_TOKEN_KEY,
-    HEADER_X_XSRF_TOKEN_KEY,
+    HEADER_CSRF_TOKEN_KEY,
     PERMISSION_ACCESS_DENIED,
     PERMISSION_TOKEN_HAS_EXPIRED,
     PERMISSION_TOKEN_ILLEGAL,
@@ -11,9 +10,14 @@ import {
     SYSTEM_REQUEST_TOO_FREQUENT
 } from '@/constants/common.constants'
 import { message } from '@/util/common'
-import { getCookie, setCookie } from '@/util/browser'
 import { getRedirectUrl } from '@/util/route'
-import { getAccessToken, setAccessToken, removeAllToken } from '@/util/auth'
+import {
+    getAccessToken,
+    setAccessToken,
+    getCsrfToken,
+    setCsrfToken,
+    removeAllToken
+} from '@/util/auth'
 
 let refreshTokenPromise: Promise<void> | undefined
 
@@ -26,7 +30,7 @@ const checkTokenIsExpired = () => {
     if (!jwt.exp) {
         return true
     }
-    return jwt.exp * 1e3 - new Date().getTime() < 1e5
+    return jwt.exp * 1e3 - new Date().getTime() < 3e4
 }
 
 const service: AxiosInstance = axios.create({
@@ -46,62 +50,54 @@ service.defaults.paramsSerializer = (params: Record<string, string>) => {
         }, '')
 }
 
+const refreshAccessToken = async (): Promise<void> => {
+    if (refreshTokenPromise) {
+        return refreshTokenPromise
+    }
+
+    refreshTokenPromise = (async () => {
+        const csrfToken = getCsrfToken()
+        const headers: Record<string, string> = {}
+        if (csrfToken) {
+            headers[HEADER_CSRF_TOKEN_KEY] = csrfToken
+        }
+        headers['X-Requested-With'] = 'XMLHttpRequest'
+
+        const res = await axios.post<_Response<TokenVo>>(
+            import.meta.env.VITE_API_TOKEN_URL,
+            undefined,
+            {
+                withCredentials: true,
+                headers
+            }
+        )
+        const response = res.data
+        if (response.code === PERMISSION_TOKEN_REFRESH_SUCCESS && response.data) {
+            setAccessToken(response.data.accessToken)
+            if (response.data.csrfToken) {
+                setCsrfToken(response.data.csrfToken)
+            }
+        }
+    })().finally(() => {
+        refreshTokenPromise = undefined
+    })
+
+    return refreshTokenPromise
+}
+
 service.interceptors.request.use(
     async (config) => {
         if (config.url === '/login') {
             config.withCredentials = true
         }
 
-        if (!getCookie(COOKIE_XSRF_TOKEN_KEY)) {
-            try {
-                if (!refreshTokenPromise) {
-                    refreshTokenPromise = axios
-                        .post(import.meta.env.VITE_API_TOKEN_URL, undefined, {
-                            withCredentials: true,
-                            withXSRFToken: true
-                        })
-                        .then((res: AxiosResponse<_Response<TokenVo>>) => {
-                            const xsrfToken = res.headers[HEADER_X_XSRF_TOKEN_KEY]
-                            if (xsrfToken) {
-                                setCookie(COOKIE_XSRF_TOKEN_KEY, xsrfToken)
-                            }
-                        })
-                        .finally(() => {
-                            refreshTokenPromise = undefined
-                        })
-                }
-                await refreshTokenPromise
-            } catch (error) {
-                return Promise.reject(error)
-            }
+        if (checkTokenIsExpired()) {
+            await refreshAccessToken()
         }
 
-        if (checkTokenIsExpired()) {
-            try {
-                if (!refreshTokenPromise) {
-                    refreshTokenPromise = axios
-                        .post(import.meta.env.VITE_API_TOKEN_URL, undefined, {
-                            withCredentials: true,
-                            withXSRFToken: true
-                        })
-                        .then((res: AxiosResponse<_Response<TokenVo>>) => {
-                            const response = res.data
-                            if (response.code === PERMISSION_TOKEN_REFRESH_SUCCESS) {
-                                setAccessToken(response.data?.accessToken ?? '')
-                            }
-                        })
-                        .finally(() => {
-                            refreshTokenPromise = undefined
-                        })
-                }
-                await refreshTokenPromise
-            } catch (error) {
-                return Promise.reject(error)
-            }
-        }
-        if (getAccessToken() && !checkTokenIsExpired()) {
-            const accessToken = getAccessToken()
-            config.headers.set('Authorization', `Bearer ${accessToken}`)
+        const token = getAccessToken()
+        if (token) {
+            config.headers.set('Authorization', `Bearer ${token}`)
         }
         return config
     },
@@ -178,7 +174,7 @@ service.interceptors.response.use(
                 key: 'SERVER_ERROR'
             })
         }
-        return await Promise.reject(error?.response?.data)
+        throw error?.response?.data
     }
 )
 

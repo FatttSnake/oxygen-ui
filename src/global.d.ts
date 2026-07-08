@@ -12,6 +12,8 @@ interface ImportMetaEnv {
     readonly VITE_UI_URL: string
     readonly VITE_API_URL: string
     readonly VITE_API_TOKEN_URL: string
+    readonly VITE_TOKEN_EXPIRY_BUFFER_MS: number
+    readonly VITE_TOKEN_EXPIRY_CHECK_INTERVAL_MS: number
     readonly VITE_TURNSTILE_SITE_KEY: string
     readonly VITE_GET_ANDROID_APP_URL: string
 }
@@ -61,6 +63,7 @@ interface _Response<T> {
 interface TokenVo {
     refreshToken: string
     accessToken: string
+    csrfToken: string
 }
 
 interface UserInfoUpdateParam {

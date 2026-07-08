@@ -12,6 +12,7 @@ import {
 } from '@/constants/common.constants'
 import { getThemeMode, init } from '@/util/common'
 import { getRouter } from '@/router'
+import useTokenRefresh from '@/hooks/useTokenRefresh'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 export const AppContext = createContext({
@@ -37,6 +38,8 @@ const App = () => {
                 return true
         }
     }
+
+    useTokenRefresh()
 
     useEffect(() => {
         init(messageInstance, notificationInstance, modalInstance)

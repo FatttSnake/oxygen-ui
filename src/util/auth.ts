@@ -2,6 +2,7 @@ import { cloneDeep } from 'lodash'
 import { AxiosResponse } from 'axios'
 import {
     STORAGE_ACCESS_TOKEN_KEY,
+    STORAGE_CSRF_TOKEN_KEY,
     STORAGE_USER_INFO_KEY,
     DATABASE_SELECT_SUCCESS
 } from '@/constants/common.constants'
@@ -16,6 +17,11 @@ export const getAccessToken = () => getLocalStorage(STORAGE_ACCESS_TOKEN_KEY) ??
 
 export const setAccessToken = (accessToken: string) =>
     setLocalStorage(STORAGE_ACCESS_TOKEN_KEY, accessToken)
+
+export const getCsrfToken = () => getLocalStorage(STORAGE_CSRF_TOKEN_KEY) ?? undefined
+
+export const setCsrfToken = (csrfToken: string) =>
+    setLocalStorage(STORAGE_CSRF_TOKEN_KEY, csrfToken)
 
 export const requestUserInfo = async () => {
     if (!requestUserInfoPromise) {
@@ -45,6 +51,7 @@ export const setUserInfo = (userInfo?: UserWithPowerInfoVo) =>
 export const removeAllToken = () => {
     removeLocalStorage(STORAGE_USER_INFO_KEY)
     removeLocalStorage(STORAGE_ACCESS_TOKEN_KEY)
+    removeLocalStorage(STORAGE_CSRF_TOKEN_KEY)
 }
 
 export const getLoginStatus = () => !!getAccessToken()
