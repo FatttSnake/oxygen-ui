@@ -12,7 +12,7 @@ import {
     SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants'
 import { message, notification, modal } from '@/util/common'
-import { getUserInfo, setAccessToken } from '@/util/auth'
+import { getUserInfo, setAccessToken, setCsrfToken } from '@/util/auth'
 import { utcToLocalTime } from '@/util/datetime'
 import {
     navigateToForget,
@@ -82,6 +82,9 @@ const SignIn = () => {
                 switch (code) {
                     case PERMISSION_LOGIN_SUCCESS:
                         setAccessToken(data?.accessToken ?? '')
+                        if (data?.csrfToken) {
+                            setCsrfToken(data.csrfToken)
+                        }
                         message.success('登录成功').then(() => {
                             getUserInfo().then((user) => {
                                 refreshRouter()

@@ -25,8 +25,7 @@ import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import Permission from '@/components/common/Permission'
 import compiler from '@/components/Playground/compiler'
-import { IImportMap } from '@/components/Playground/shared'
-import { base64ToFiles, IMPORT_MAP_FILE_NAME, strToBase64 } from '@/components/Playground/files'
+import { getImportMap, sourceListToFileTree } from '@/components/Playground/files'
 
 const Tools = () => {
     const theme = useTheme()
@@ -250,15 +249,13 @@ const Tools = () => {
                                                     })
                                                     try {
                                                         const toolVo = response.data!
-                                                        const files = base64ToFiles(
-                                                            toolVo.source.data!
+                                                        const fileTree = sourceListToFileTree(
+                                                            toolVo.sources
                                                         )
-                                                        const importMap = JSON.parse(
-                                                            files[IMPORT_MAP_FILE_NAME].value
-                                                        ) as IImportMap
+                                                        const importMap = getImportMap(fileTree)
                                                         compiler
                                                             .compile(
-                                                                files,
+                                                                fileTree,
                                                                 importMap,
                                                                 toolVo.entryPoint
                                                             )
@@ -269,11 +266,10 @@ const Tools = () => {
                                                                     key: 'UPLOADING',
                                                                     duration: 0
                                                                 })
-                                                                r_sys_tool_pass(value.id, {
-                                                                    dist: strToBase64(
-                                                                        result.outputFiles[0].text
-                                                                    )
-                                                                })
+                                                                r_sys_tool_pass(
+                                                                    value.id,
+                                                                    result.outputFiles[0].text
+                                                                )
                                                                     .then((res) => {
                                                                         message.destroy('UPLOADING')
                                                                         const response = res.data

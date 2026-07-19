@@ -1,13 +1,13 @@
 import useStyles from '@/assets/css/components/playground/output/preview.style'
-import { IFiles, IImportMap } from '@/components/Playground/shared'
-import Compiler from '@/components/Playground/compiler'
+import { IFileTree } from '@/components/Playground/shared'
+import { getImportMap } from '@/components/Playground/files'
+import compiler from '@/components/Playground/compiler'
 import Render from '@/components/Playground/Output/Preview/Render'
 
 interface PreviewProps {
     iframeKey: string
-    files: IFiles
-    importMap: IImportMap
-    entryPoint: string
+    fileTree: IFileTree
+    entryPointPath?: string
     preExpansionCode?: string
     postExpansionCode?: string
     globalJsVariables?: Record<string, unknown>
@@ -16,9 +16,8 @@ interface PreviewProps {
 
 const Preview = ({
     iframeKey,
-    files,
-    importMap,
-    entryPoint,
+    fileTree,
+    entryPointPath,
     preExpansionCode = '',
     postExpansionCode = '',
     globalJsVariables,
@@ -29,20 +28,29 @@ const Preview = ({
     const [compiledCode, setCompiledCode] = useState('')
 
     useEffect(() => {
-        if (!Object.keys(files).length || !importMap || !entryPoint.length) {
+        if (!entryPointPath) {
+            setErrorMsg('未配置 Entry Point')
             return
         }
-        Compiler.compile(files, importMap, entryPoint)
-            .then((result) => {
-                setCompiledCode(
-                    `(()=>{${preExpansionCode}})();\n(()=>{${result.outputFiles[0].text}})();\n(()=>{${postExpansionCode}})();`
-                )
-                setErrorMsg('')
-            })
-            .catch((e: Error) => {
-                setErrorMsg(`编译失败：${e.message}`)
-            })
-    }, [files, Compiler, importMap, entryPoint])
+
+        try {
+            const importMap = getImportMap(fileTree)
+            compiler
+                .compile(fileTree, importMap, entryPointPath)
+                .then((result) => {
+                    setCompiledCode(
+                        `(()=>{${preExpansionCode}})();\n(()=>{${result.outputFiles[0].text}})();\n(()=>{${postExpansionCode}})();`
+                    )
+                    setErrorMsg('')
+                })
+                .catch((e: Error) => {
+                    console.error(e)
+                    setErrorMsg(`编译失败：${e.message}`)
+                })
+        } catch (e) {
+            setErrorMsg('非法 Import Map')
+        }
+    }, [compiler, fileTree, entryPointPath])
 
     return (
         <div className={styles.root}>
