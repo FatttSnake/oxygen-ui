@@ -25,6 +25,7 @@ const Preview = ({
 }: PreviewProps) => {
     const { styles } = useStyles()
     const [errorMsg, setErrorMsg] = useState('')
+    const [processMsg, setProcessMsg] = useState('')
     const [compiledCode, setCompiledCode] = useState('')
 
     useEffect(() => {
@@ -36,7 +37,9 @@ const Preview = ({
         try {
             const importMap = getImportMap(fileTree)
             compiler
-                .compile(fileTree, importMap, entryPointPath)
+                .compile(fileTree, importMap, entryPointPath, (state, message) =>
+                    setProcessMsg(state === 'processing' ? message : '')
+                )
                 .then((result) => {
                     setCompiledCode(
                         `(()=>{${preExpansionCode}})();\n(()=>{${result.outputFiles[0].text}})();\n(()=>{${postExpansionCode}})();`
@@ -60,6 +63,7 @@ const Preview = ({
                 globalJsVariables={globalJsVariables}
                 globalCssVariables={globalCssVariables}
             />
+            {processMsg && <div className={styles.processMessage}>{processMsg}</div>}
             {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
         </div>
     )
