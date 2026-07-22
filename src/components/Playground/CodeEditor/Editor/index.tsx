@@ -8,6 +8,7 @@ import {
     findNodeByKey,
     findNodeByPath,
     flattenFileTree,
+    getImportMap,
     getPathByKey,
     getTsconfig,
     TSCONFIG_FILE_NAME,
@@ -63,6 +64,7 @@ const Editor = ({
         language: 'none'
     }
     const selectedFilePath = getPathByKey(fileTree, selectedFileKey)
+    const importMap = useMemo(() => getImportMap(fileTree), [fileTree])
 
     const handleOnEditorWillMount = (monaco: Monaco) => {
         loadModel(monaco)
@@ -103,7 +105,7 @@ const Editor = ({
 
         onEditorDidMount?.(editor, monaco)
 
-        void autoLoadExtraLib(editor, monaco, file.content, onWatch)
+        void autoLoadExtraLib(editor, monaco, file.content, onWatch, importMap)
     }
 
     const loadModel = (monaco: Monaco) => {
