@@ -46,7 +46,7 @@ const Output = ({
             />
             {selectedTabKey === 'Preview' && (
                 <Preview
-                    iframeKey={fileTree.key}
+                    iframeKey={fileTree.key + entryPointPath}
                     fileTree={fileTree}
                     entryPointPath={entryPointPath}
                     preExpansionCode={preExpansionCode}

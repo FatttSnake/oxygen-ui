@@ -486,7 +486,6 @@ const BaseEditor = () => {
                                 </AntdSplitter.Panel>
                                 <AntdSplitter.Panel collapsible>
                                     <Output
-                                        key={entryPoint}
                                         isDarkMode={isDarkMode}
                                         fileTree={fileTree}
                                         selectedFileKey={selectedFileKey}
