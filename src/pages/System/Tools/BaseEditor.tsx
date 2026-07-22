@@ -8,7 +8,12 @@ import {
 import { message, modal } from '@/util/common'
 import { navigateToToolBase, navigateToToolBaseEditor } from '@/util/navigation'
 import editorExtraLibs from '@/util/editorExtraLibs'
-import { addExtraCssVariables, formatToolBaseVersion } from '@/util/tool'
+import {
+    addExtraCssVariables,
+    formatToolBaseVersion,
+    generateThemeCssVariables,
+    removeUselessAttributes
+} from '@/util/tool'
 import {
     r_sys_tool_base_get_one,
     r_sys_tool_base_update_dist,
@@ -28,6 +33,7 @@ import compiler from '@/components/Playground/compiler'
 import { IFileTree } from '@/components/Playground/shared'
 import { getImportMap, sourceListToFileTree } from '@/components/Playground/files'
 import CodeEditor from '@/components/Playground/CodeEditor'
+import Output from '@/components/Playground/Output'
 import {
     computeTreeDiff,
     convertDiffToStepTitle,
@@ -38,7 +44,7 @@ import {
 const { Text } = AntdTypography
 
 const BaseEditor = () => {
-    const { styles } = useStyles()
+    const { styles, theme } = useStyles()
     const { isDarkMode } = useContext(AppContext)
     const blocker = useBlocker(
         ({ currentLocation, nextLocation }) =>
@@ -52,9 +58,12 @@ const BaseEditor = () => {
         fileTree,
         originalFileTree,
         selectedFileKey,
+        entryPoint,
+        entryPointPath,
         isReadonly,
         hasUnsavedChanges,
         setSelectedFileKey,
+        setEntryPoint,
         updateFileContent,
         addFile,
         renameFile,
@@ -65,6 +74,9 @@ const BaseEditor = () => {
     } = usePlaygroundState()
     const diffRef = useRef<TreeDiffOperation[]>([])
     const nodeIdMapRef = useRef<Map<string, string>>(new Map())
+    const [layout, setLayout] = useState<'horizontal' | 'vertical'>(
+        window.innerWidth > window.innerHeight ? 'horizontal' : 'vertical'
+    )
     const [isLoading, setIsLoading] = useState(false)
     const [toolBaseData, setToolBaseData] = useState<ToolBaseWithSourceVo>()
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -122,8 +134,8 @@ const BaseEditor = () => {
                 return null
             }
             return {
-                key: currentPath,
-                value: currentPath,
+                key: tree.key,
+                value: tree.key,
                 title: tree.fileName,
                 selectable: true
             }
@@ -138,8 +150,8 @@ const BaseEditor = () => {
         }
 
         return {
-            key: currentPath,
-            value: currentPath,
+            key: tree.key,
+            value: tree.key,
             title: tree.fileName || '/',
             children: filteredChildren,
             selectable: false
@@ -384,6 +396,17 @@ const BaseEditor = () => {
         getToolBase()
     }, [id, version])
 
+    useEffect(() => {
+        const resizeListener = () => {
+            setLayout(window.innerWidth > window.innerHeight ? 'horizontal' : 'vertical')
+        }
+        window.addEventListener('resize', resizeListener)
+
+        return () => {
+            window.removeEventListener('resize', resizeListener)
+        }
+    }, [])
+
     return (
         <>
             <FitFullscreen className={styles.root}>
@@ -392,9 +415,23 @@ const BaseEditor = () => {
                         <ToolBar
                             title={`${toolBaseData?.name}${hasUnsavedChanges ? '*' : ''}`}
                             subtitle={
-                                <AntdTag color={'blue'}>
-                                    {`${toolBaseData?.platform.slice(0, 1)}${toolBaseData?.platform.slice(1).toLowerCase()}`}
-                                </AntdTag>
+                                <>
+                                    <AntdTag color={'blue'}>
+                                        {`${toolBaseData?.platform.slice(0, 1)}${toolBaseData?.platform.slice(1).toLowerCase()}`}
+                                    </AntdTag>
+                                    <AntdTreeSelect
+                                        treeData={
+                                            [toTreeDataNode(fileTree)].filter(
+                                                Boolean
+                                            ) as _DataNode[]
+                                        }
+                                        value={entryPoint?.length ? entryPoint : undefined}
+                                        showSearch
+                                        placeholder={'请选择入口文件进行预览'}
+                                        style={{ minWidth: 200 }}
+                                        onSelect={setEntryPoint}
+                                    />
+                                </>
                             }
                             onBack={() => navigateToToolBase(navigate)}
                         >
@@ -427,21 +464,42 @@ const BaseEditor = () => {
                             )}
                         </ToolBar>
                         <Card>
-                            <CodeEditor
-                                isDarkMode={isDarkMode}
-                                fileTree={fileTree}
-                                selectedFileKey={selectedFileKey}
-                                readonly={isReadonly}
-                                extraLibs={editorExtraLibs}
-                                onEditorDidMount={(_, monaco) => addExtraCssVariables(monaco)}
-                                onSelectedFileChange={setSelectedFileKey}
-                                onChangeFileContent={updateFileContent}
-                                onAddFile={addFile}
-                                onRenameFile={renameFile}
-                                onMoveFile={moveFile}
-                                onRemoveFile={removeFile}
-                                listenOnError={listenOnError}
-                            />
+                            <AntdSplitter layout={layout}>
+                                <AntdSplitter.Panel collapsible>
+                                    <CodeEditor
+                                        isDarkMode={isDarkMode}
+                                        fileTree={fileTree}
+                                        selectedFileKey={selectedFileKey}
+                                        readonly={isReadonly}
+                                        extraLibs={editorExtraLibs}
+                                        onEditorDidMount={(_, monaco) =>
+                                            addExtraCssVariables(monaco)
+                                        }
+                                        onSelectedFileChange={setSelectedFileKey}
+                                        onChangeFileContent={updateFileContent}
+                                        onAddFile={addFile}
+                                        onRenameFile={renameFile}
+                                        onMoveFile={moveFile}
+                                        onRemoveFile={removeFile}
+                                        listenOnError={listenOnError}
+                                    />
+                                </AntdSplitter.Panel>
+                                <AntdSplitter.Panel collapsible>
+                                    <Output
+                                        isDarkMode={isDarkMode}
+                                        fileTree={fileTree}
+                                        selectedFileKey={selectedFileKey}
+                                        entryPointPath={entryPointPath}
+                                        globalJsVariables={{
+                                            OxygenTheme: {
+                                                ...removeUselessAttributes(theme),
+                                                isDarkMode
+                                            }
+                                        }}
+                                        globalCssVariables={generateThemeCssVariables(theme).styles}
+                                    />
+                                </AntdSplitter.Panel>
+                            </AntdSplitter>
                         </Card>
                     </FlexBox>
                 </LoadingMask>
