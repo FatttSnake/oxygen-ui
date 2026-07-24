@@ -31,7 +31,7 @@ import LoadingMask from '@/components/common/LoadingMask'
 import ToolBar from '@/components/tools/ToolBar'
 import compiler from '@/components/Playground/compiler'
 import { IFileTree } from '@/components/Playground/shared'
-import { getImportMap, sourceListToFileTree } from '@/components/Playground/files'
+import { getImportMap, getPathByKey, sourceListToFileTree } from '@/components/Playground/files'
 import CodeEditor from '@/components/Playground/CodeEditor'
 import Output from '@/components/Playground/Output'
 import {
@@ -51,8 +51,8 @@ const BaseEditor = () => {
             currentLocation.pathname !== nextLocation.pathname && hasUnsavedChanges
     )
     const navigate = useNavigate()
-    const { id, version } = useParams()
-    const [compileForm] = AntdForm.useForm<{ entryFilePath: string }>()
+    const { id } = useParams()
+    const [compileForm] = AntdForm.useForm<{ entryFile: string }>()
     const {
         init,
         fileTree,
@@ -124,11 +124,8 @@ const BaseEditor = () => {
 
     const SUPPORTED_EXTENSIONS = ['.tsx', '.ts', '.jsx', '.js']
 
-    const toTreeDataNode = (tree: IFileTree, parentPath = ''): _DataNode | null => {
-        const currentPath = parentPath ? `${parentPath}/${tree.fileName}` : tree.fileName || '/'
-        const isLeaf = tree.children === undefined
-
-        if (isLeaf) {
+    const toTreeDataNode = (tree: IFileTree): _DataNode | null => {
+        if (tree.children === undefined) {
             const ext = tree.fileName.slice(tree.fileName.lastIndexOf('.'))
             if (!SUPPORTED_EXTENSIONS.includes(ext)) {
                 return null
@@ -142,7 +139,7 @@ const BaseEditor = () => {
         }
 
         const filteredChildren = tree
-            .children!.map((child) => toTreeDataNode(child, currentPath))
+            .children!.map((child) => toTreeDataNode(child))
             .filter(Boolean) as _DataNode[]
 
         if (filteredChildren.length === 0) {
@@ -174,7 +171,7 @@ const BaseEditor = () => {
             content: (
                 <AntdForm form={compileForm}>
                     <AntdForm.Item
-                        name={'entryFilePath'}
+                        name={'entryFile'}
                         label={'入口文件'}
                         style={{ marginTop: 10 }}
                         rules={[{ required: true }]}
@@ -198,8 +195,12 @@ const BaseEditor = () => {
                             setSubmitCurrentStep(0)
                             setSubmitStatus('process')
                             setIsShowSubmittingModal(true)
-                            const entryFilePath: string = compileForm.getFieldValue('entryFilePath')
-                            const entryPointPath = entryFilePath.replace(/^\/+/, '')
+                            const entryFile: string = compileForm.getFieldValue('entryFile')
+                            const entryPointPath = getPathByKey(fileTree, entryFile)
+                            if (!entryPointPath) {
+                                void message.error(`Entry point not found: ${entryFile}`)
+                                return
+                            }
                             const importMap = getImportMap(fileTree)
                             compiler
                                 .compile(fileTree, importMap, entryPointPath)
@@ -266,7 +267,7 @@ const BaseEditor = () => {
         setIsLoading(true)
         void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
 
-        r_sys_tool_base_get_one(id!, version ?? '0')
+        r_sys_tool_base_get_one(id!, 0)
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
@@ -284,7 +285,7 @@ const BaseEditor = () => {
             .then((toolBaseVo) => {
                 setToolBaseData(toolBaseVo)
                 const fileTree = sourceListToFileTree(toolBaseVo.sources)
-                init(fileTree, !!version, undefined, selectedFileKey)
+                init(fileTree, false, undefined, selectedFileKey)
             })
             .catch((e: Error) => {
                 console.error(e)
@@ -394,7 +395,7 @@ const BaseEditor = () => {
 
     useEffect(() => {
         getToolBase()
-    }, [id, version])
+    }, [id])
 
     useEffect(() => {
         const resizeListener = () => {
@@ -419,27 +420,29 @@ const BaseEditor = () => {
                                     <AntdTag color={'blue'}>
                                         {`${toolBaseData?.platform.slice(0, 1)}${toolBaseData?.platform.slice(1).toLowerCase()}`}
                                     </AntdTag>
-                                    <AntdTreeSelect
-                                        treeData={
-                                            [toTreeDataNode(fileTree)].filter(
-                                                Boolean
-                                            ) as _DataNode[]
-                                        }
-                                        value={entryPoint?.length ? entryPoint : undefined}
-                                        showSearch
-                                        placeholder={'请选择入口文件进行预览'}
-                                        style={{ minWidth: 200 }}
-                                        onSelect={setEntryPoint}
-                                    />
+                                    {toolBaseData && (
+                                        <AntdTreeSelect
+                                            treeData={
+                                                [toTreeDataNode(fileTree)].filter(
+                                                    Boolean
+                                                ) as _DataNode[]
+                                            }
+                                            value={entryPoint?.length ? entryPoint : undefined}
+                                            showSearch
+                                            placeholder={'请选择入口文件进行预览'}
+                                            style={{ minWidth: 200 }}
+                                            onSelect={setEntryPoint}
+                                        />
+                                    )}
                                 </>
                             }
                             onBack={() => navigateToToolBase(navigate)}
                         >
                             <span>
                                 <Text strong>版本：</Text>
-                                {toolBaseData && formatToolBaseVersion(toolBaseData?.version)}
+                                {toolBaseData && formatToolBaseVersion(toolBaseData.version)}
                             </span>
-                            {toolBaseData && !toolBaseData.version && (
+                            {toolBaseData && (
                                 <AntdSpace>
                                     <AntdButton
                                         size={'small'}
@@ -485,19 +488,23 @@ const BaseEditor = () => {
                                     />
                                 </AntdSplitter.Panel>
                                 <AntdSplitter.Panel collapsible>
-                                    <Output
-                                        isDarkMode={isDarkMode}
-                                        fileTree={fileTree}
-                                        selectedFileKey={selectedFileKey}
-                                        entryPointPath={entryPointPath}
-                                        globalJsVariables={{
-                                            OxygenTheme: {
-                                                ...removeUselessAttributes(theme),
-                                                isDarkMode
+                                    {toolBaseData && (
+                                        <Output
+                                            isDarkMode={isDarkMode}
+                                            fileTree={fileTree}
+                                            selectedFileKey={selectedFileKey}
+                                            entryPointPath={entryPointPath}
+                                            globalJsVariables={{
+                                                OxygenTheme: {
+                                                    ...removeUselessAttributes(theme),
+                                                    isDarkMode
+                                                }
+                                            }}
+                                            globalCssVariables={
+                                                generateThemeCssVariables(theme).styles
                                             }
-                                        }}
-                                        globalCssVariables={generateThemeCssVariables(theme).styles}
-                                    />
+                                        />
+                                    )}
                                 </AntdSplitter.Panel>
                             </AntdSplitter>
                         </Card>
