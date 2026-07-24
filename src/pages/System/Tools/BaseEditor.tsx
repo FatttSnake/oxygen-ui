@@ -51,7 +51,7 @@ const BaseEditor = () => {
             currentLocation.pathname !== nextLocation.pathname && hasUnsavedChanges
     )
     const navigate = useNavigate()
-    const { id, version } = useParams()
+    const { id } = useParams()
     const [compileForm] = AntdForm.useForm<{ entryFile: string }>()
     const {
         init,
@@ -267,7 +267,7 @@ const BaseEditor = () => {
         setIsLoading(true)
         void message.loading({ content: '加载中……', key: 'LOADING', duration: 0 })
 
-        r_sys_tool_base_get_one(id!, version ?? '0')
+        r_sys_tool_base_get_one(id!, 0)
             .then((res) => {
                 const response = res.data
                 switch (response.code) {
@@ -285,7 +285,7 @@ const BaseEditor = () => {
             .then((toolBaseVo) => {
                 setToolBaseData(toolBaseVo)
                 const fileTree = sourceListToFileTree(toolBaseVo.sources)
-                init(fileTree, !!version, undefined, selectedFileKey)
+                init(fileTree, false, undefined, selectedFileKey)
             })
             .catch((e: Error) => {
                 console.error(e)
@@ -395,7 +395,7 @@ const BaseEditor = () => {
 
     useEffect(() => {
         getToolBase()
-    }, [id, version])
+    }, [id])
 
     useEffect(() => {
         const resizeListener = () => {
@@ -420,27 +420,29 @@ const BaseEditor = () => {
                                     <AntdTag color={'blue'}>
                                         {`${toolBaseData?.platform.slice(0, 1)}${toolBaseData?.platform.slice(1).toLowerCase()}`}
                                     </AntdTag>
-                                    <AntdTreeSelect
-                                        treeData={
-                                            [toTreeDataNode(fileTree)].filter(
-                                                Boolean
-                                            ) as _DataNode[]
-                                        }
-                                        value={entryPoint?.length ? entryPoint : undefined}
-                                        showSearch
-                                        placeholder={'请选择入口文件进行预览'}
-                                        style={{ minWidth: 200 }}
-                                        onSelect={setEntryPoint}
-                                    />
+                                    {toolBaseData && (
+                                        <AntdTreeSelect
+                                            treeData={
+                                                [toTreeDataNode(fileTree)].filter(
+                                                    Boolean
+                                                ) as _DataNode[]
+                                            }
+                                            value={entryPoint?.length ? entryPoint : undefined}
+                                            showSearch
+                                            placeholder={'请选择入口文件进行预览'}
+                                            style={{ minWidth: 200 }}
+                                            onSelect={setEntryPoint}
+                                        />
+                                    )}
                                 </>
                             }
                             onBack={() => navigateToToolBase(navigate)}
                         >
                             <span>
                                 <Text strong>版本：</Text>
-                                {toolBaseData && formatToolBaseVersion(toolBaseData?.version)}
+                                {toolBaseData && formatToolBaseVersion(toolBaseData.version)}
                             </span>
-                            {toolBaseData && !toolBaseData.version && (
+                            {toolBaseData && (
                                 <AntdSpace>
                                     <AntdButton
                                         size={'small'}
@@ -486,19 +488,23 @@ const BaseEditor = () => {
                                     />
                                 </AntdSplitter.Panel>
                                 <AntdSplitter.Panel collapsible>
-                                    <Output
-                                        isDarkMode={isDarkMode}
-                                        fileTree={fileTree}
-                                        selectedFileKey={selectedFileKey}
-                                        entryPointPath={entryPointPath}
-                                        globalJsVariables={{
-                                            OxygenTheme: {
-                                                ...removeUselessAttributes(theme),
-                                                isDarkMode
+                                    {toolBaseData && (
+                                        <Output
+                                            isDarkMode={isDarkMode}
+                                            fileTree={fileTree}
+                                            selectedFileKey={selectedFileKey}
+                                            entryPointPath={entryPointPath}
+                                            globalJsVariables={{
+                                                OxygenTheme: {
+                                                    ...removeUselessAttributes(theme),
+                                                    isDarkMode
+                                                }
+                                            }}
+                                            globalCssVariables={
+                                                generateThemeCssVariables(theme).styles
                                             }
-                                        }}
-                                        globalCssVariables={generateThemeCssVariables(theme).styles}
-                                    />
+                                        />
+                                    )}
                                 </AntdSplitter.Panel>
                             </AntdSplitter>
                         </Card>
