@@ -57,9 +57,7 @@ export function useTokenRefresh() {
                     )
                     if (res.data.code === PERMISSION_TOKEN_REFRESH_SUCCESS && res.data.data) {
                         setAccessToken(res.data.data.accessToken)
-                        if (res.data.data.csrfToken) {
-                            setCsrfToken(res.data.data.csrfToken)
-                        }
+                        setCsrfToken(res.data.data.csrfToken)
                     } else {
                         removeAllToken()
                     }

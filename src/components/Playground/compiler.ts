@@ -259,6 +259,7 @@ class Compiler {
                 { namespace: NAMESPACE_OXYGEN, filter: /.*\.css$/ },
                 (args: OnLoadArgs): OnLoadResult | undefined => {
                     signal?.throwIfAborted()
+
                     const found = findFileEntry(fileMap, args.path)
                     if (found) {
                         onStatus?.('processing', `Compile ${found.fullPath}`)
@@ -268,6 +269,7 @@ class Compiler {
                             resolveDir: dirname(found.fullPath)
                         }
                     }
+                    return undefined
                 }
             )
             // JSON files: wrap in export default
@@ -275,6 +277,7 @@ class Compiler {
                 { namespace: NAMESPACE_OXYGEN, filter: /.*\.json$/ },
                 (args: OnLoadArgs): OnLoadResult | undefined => {
                     signal?.throwIfAborted()
+
                     const found = findFileEntry(fileMap, args.path)
                     if (found) {
                         onStatus?.('processing', `Compile ${found.fullPath}`)
@@ -284,6 +287,7 @@ class Compiler {
                             resolveDir: dirname(found.fullPath)
                         }
                     }
+                    return undefined
                 }
             )
             // TSX / JSX / TS / JS files: inject React import if missing
@@ -291,6 +295,7 @@ class Compiler {
                 { namespace: NAMESPACE_OXYGEN, filter: /.*/ },
                 (args: OnLoadArgs): OnLoadResult | undefined => {
                     signal?.throwIfAborted()
+
                     const found = findFileEntry(fileMap, args.path)
                     if (found) {
                         onStatus?.('processing', `Compile ${found.fullPath}`)
@@ -300,6 +305,7 @@ class Compiler {
                             resolveDir: dirname(found.fullPath)
                         }
                     }
+                    return undefined
                 }
             )
 

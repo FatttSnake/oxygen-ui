@@ -1,7 +1,7 @@
 import useStyles from '@/assets/css/components/playground/output/preview.style'
 import { IFileTree } from '@/components/Playground/shared'
 import { getImportMap } from '@/components/Playground/files'
-import compiler from '@/components/Playground/compiler'
+import Compiler from '@/components/Playground/compiler'
 import Render from '@/components/Playground/Output/Preview/Render'
 
 interface PreviewProps {
@@ -42,14 +42,13 @@ const Preview = ({
         const timer = setTimeout(() => {
             try {
                 const importMap = getImportMap(fileTree)
-                compiler
-                    .compile(
-                        fileTree,
-                        importMap,
-                        entryPointPath,
-                        (state, message) => setProcessMsg(state === 'processing' ? message : ''),
-                        controller.signal
-                    )
+                Compiler.compile(
+                    fileTree,
+                    importMap,
+                    entryPointPath,
+                    (state, message) => setProcessMsg(state === 'processing' ? message : ''),
+                    controller.signal
+                )
                     .then((result) => {
                         if (controller.signal.aborted) {
                             return
@@ -77,7 +76,7 @@ const Preview = ({
             clearTimeout(timer)
             controller.abort()
         }
-    }, [compiler, fileTree, entryPointPath])
+    }, [Compiler, fileTree, entryPointPath])
 
     return (
         <div className={styles.root}>

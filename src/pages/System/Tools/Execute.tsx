@@ -15,7 +15,7 @@ import Card from '@/components/common/Card'
 import LoadingMask from '@/components/common/LoadingMask'
 import FlexBox from '@/components/common/FlexBox'
 import ToolBar from '@/components/tools/ToolBar'
-import compiler from '@/components/Playground/compiler'
+import Compiler from '@/components/Playground/compiler'
 import { getImportMap, sourceListToFileTree } from '@/components/Playground/files'
 import Render from '@/components/Playground/Output/Preview/Render'
 
@@ -48,8 +48,7 @@ const Execute = () => {
             const fileTree = sourceListToFileTree(toolVo.sources)
             const importMap = getImportMap(fileTree)
 
-            compiler
-                .compile(fileTree, importMap, toolVo.entryPoint)
+            Compiler.compile(fileTree, importMap, toolVo.entryPoint)
                 .then((result) => {
                     const output = result.outputFiles[0].text
                     setCompiledCode('')

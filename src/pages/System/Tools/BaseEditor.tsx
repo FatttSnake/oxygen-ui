@@ -29,7 +29,7 @@ import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import LoadingMask from '@/components/common/LoadingMask'
 import ToolBar from '@/components/tools/ToolBar'
-import compiler from '@/components/Playground/compiler'
+import Compiler from '@/components/Playground/compiler'
 import { IFileTree } from '@/components/Playground/shared'
 import { getImportMap, getPathByKey, sourceListToFileTree } from '@/components/Playground/files'
 import CodeEditor from '@/components/Playground/CodeEditor'
@@ -202,8 +202,7 @@ const BaseEditor = () => {
                                 return
                             }
                             const importMap = getImportMap(fileTree)
-                            compiler
-                                .compile(fileTree, importMap, entryPointPath)
+                            Compiler.compile(fileTree, importMap, entryPointPath)
                                 .then((result) => {
                                     setSubmitCurrentStep(1)
                                     return r_sys_tool_base_update_dist(
