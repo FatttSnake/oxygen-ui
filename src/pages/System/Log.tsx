@@ -158,7 +158,7 @@ const Log = () => {
         setSearchTraceId(e.target.value)
     }
 
-    const handleOnSearcTraceIdKeyDown = (e: KeyboardEvent) => {
+    const handleOnSearchTraceIdKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             getLog()
         }
@@ -256,7 +256,7 @@ const Log = () => {
                     allowClear
                     value={searchTraceId}
                     onChange={handleOnSearchTraceIdChange}
-                    onKeyDown={handleOnSearcTraceIdKeyDown}
+                    onKeyDown={handleOnSearchTraceIdKeyDown}
                     placeholder={'请输入搜索内容'}
                 />
             </Card>

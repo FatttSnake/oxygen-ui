@@ -81,10 +81,8 @@ const SignUp = () => {
                 const response = res.data
                 switch (response.code) {
                     case PERMISSION_REGISTER_SUCCESS:
-                        setAccessToken(response.data?.accessToken ?? '')
-                        if (response.data?.csrfToken) {
-                            setCsrfToken(response.data.csrfToken)
-                        }
+                        setAccessToken(response.data!.accessToken)
+                        setCsrfToken(response.data!.csrfToken)
                         void message.success('恭喜，您快要完成注册了')
                         setIsFinish(true)
                         break

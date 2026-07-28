@@ -298,9 +298,8 @@ const Edit = () => {
                     case DATABASE_SELECT_SUCCESS:
                         switch (response.data!.review) {
                             case 'NONE':
-                            case 'REJECT': {
+                            case 'REJECT':
                                 return response.data!
-                            }
                             case 'PROCESSING':
                                 message.warning('工具审核中，请勿修改').then(() => {
                                     navigateToRepository(navigate)

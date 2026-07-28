@@ -8,7 +8,7 @@ import { r_tool_get_source } from '@/services/tool'
 import { AppContext } from '@/App'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import Card from '@/components/common/Card'
-import compiler from '@/components/Playground/compiler'
+import Compiler from '@/components/Playground/compiler'
 import { getImportMap, sourceListToFileTree } from '@/components/Playground/files'
 import Render from '@/components/Playground/Output/Preview/Render'
 
@@ -43,8 +43,7 @@ const PreView = () => {
             const fileTree = sourceListToFileTree(toolVo.sources)
             const importMap = getImportMap(fileTree)
 
-            compiler
-                .compile(fileTree, importMap, toolVo.entryPoint)
+            Compiler.compile(fileTree, importMap, toolVo.entryPoint)
                 .then((result) => {
                     const output = result.outputFiles[0].text
                     setCompiledCode('')

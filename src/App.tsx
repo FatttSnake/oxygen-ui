@@ -42,8 +42,6 @@ const App = () => {
     useTokenRefresh()
 
     useEffect(() => {
-        init(messageInstance, notificationInstance, modalInstance)
-
         const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)')
         setIsSystemDarkMode(darkThemeMq.matches)
         const darkThemeMqChangeListener = (ev: MediaQueryListEvent) => {
@@ -55,6 +53,8 @@ const App = () => {
             setThemeMode(getThemeMode())
         }
         window.addEventListener('localStorageChange', themeModeChangeListener)
+
+        init(messageInstance, notificationInstance, modalInstance)
 
         return () => {
             darkThemeMq.removeEventListener('change', darkThemeMqChangeListener)

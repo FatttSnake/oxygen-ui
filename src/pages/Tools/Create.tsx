@@ -19,7 +19,7 @@ import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
-import compiler from '@/components/Playground/compiler'
+import Compiler from '@/components/Playground/compiler'
 import { getImportMap, sourceListToFileTree } from '@/components/Playground/files'
 import Render from '@/components/Playground/Output/Preview/Render'
 
@@ -147,8 +147,7 @@ const Create = () => {
                 const fileTree = sourceListToFileTree(template.sources)
                 const importMap = getImportMap(fileTree)
 
-                compiler
-                    .compile(fileTree, importMap, template.entryPoint)
+                Compiler.compile(fileTree, importMap, template.entryPoint)
                     .then((result) => {
                         const output = result.outputFiles[0].text
                         setCompiledCode(`(() => {${output}})();\n(() => {${baseDist}})();`)

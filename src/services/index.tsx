@@ -57,11 +57,12 @@ const refreshAccessToken = async (): Promise<void> => {
 
     refreshTokenPromise = (async () => {
         const csrfToken = getCsrfToken()
-        const headers: Record<string, string> = {}
+        const headers: Record<string, string> = {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
         if (csrfToken) {
             headers[HEADER_CSRF_TOKEN_KEY] = csrfToken
         }
-        headers['X-Requested-With'] = 'XMLHttpRequest'
 
         const res = await axios.post<_Response<TokenVo>>(
             import.meta.env.VITE_API_TOKEN_URL,
@@ -74,9 +75,7 @@ const refreshAccessToken = async (): Promise<void> => {
         const response = res.data
         if (response.code === PERMISSION_TOKEN_REFRESH_SUCCESS && response.data) {
             setAccessToken(response.data.accessToken)
-            if (response.data.csrfToken) {
-                setCsrfToken(response.data.csrfToken)
-            }
+            setCsrfToken(response.data.csrfToken)
         }
     })().finally(() => {
         refreshTokenPromise = undefined
@@ -99,6 +98,7 @@ service.interceptors.request.use(
         if (token) {
             config.headers.set('Authorization', `Bearer ${token}`)
         }
+
         return config
     },
     async (error) => {

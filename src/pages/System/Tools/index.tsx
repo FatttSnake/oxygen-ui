@@ -24,7 +24,7 @@ import Card from '@/components/common/Card'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
 import Permission from '@/components/common/Permission'
-import compiler from '@/components/Playground/compiler'
+import Compiler from '@/components/Playground/compiler'
 import { getImportMap, sourceListToFileTree } from '@/components/Playground/files'
 
 const Tools = () => {
@@ -253,51 +253,49 @@ const Tools = () => {
                                                             toolVo.sources
                                                         )
                                                         const importMap = getImportMap(fileTree)
-                                                        compiler
-                                                            .compile(
-                                                                fileTree,
-                                                                importMap,
-                                                                toolVo.entryPoint
-                                                            )
-                                                            .then((result) => {
-                                                                message.destroy('COMPILING')
-                                                                void message.loading({
-                                                                    content: '发布中……',
-                                                                    key: 'UPLOADING',
-                                                                    duration: 0
-                                                                })
-                                                                r_sys_tool_pass(
-                                                                    value.id,
-                                                                    result.outputFiles[0].text
-                                                                )
-                                                                    .then((res) => {
-                                                                        message.destroy('UPLOADING')
-                                                                        const response = res.data
-                                                                        switch (response.code) {
-                                                                            case DATABASE_UPDATE_SUCCESS:
-                                                                                void message.success(
-                                                                                    '发布成功'
-                                                                                )
-                                                                                getTool()
-                                                                                break
-                                                                            case TOOL_NOT_UNDER_REVIEW:
-                                                                                void message.warning(
-                                                                                    '工具处于非审核状态'
-                                                                                )
-                                                                                break
-                                                                            default:
-                                                                                void message.error(
-                                                                                    '发布失败，请稍后重试'
-                                                                                )
-                                                                        }
-                                                                    })
-                                                                    .catch(() => {
-                                                                        message.destroy('UPLOADING')
-                                                                    })
-                                                                    .finally(() => {
-                                                                        resolve()
-                                                                    })
+                                                        Compiler.compile(
+                                                            fileTree,
+                                                            importMap,
+                                                            toolVo.entryPoint
+                                                        ).then((result) => {
+                                                            message.destroy('COMPILING')
+                                                            void message.loading({
+                                                                content: '发布中……',
+                                                                key: 'UPLOADING',
+                                                                duration: 0
                                                             })
+                                                            r_sys_tool_pass(
+                                                                value.id,
+                                                                result.outputFiles[0].text
+                                                            )
+                                                                .then((res) => {
+                                                                    message.destroy('UPLOADING')
+                                                                    const response = res.data
+                                                                    switch (response.code) {
+                                                                        case DATABASE_UPDATE_SUCCESS:
+                                                                            void message.success(
+                                                                                '发布成功'
+                                                                            )
+                                                                            getTool()
+                                                                            break
+                                                                        case TOOL_NOT_UNDER_REVIEW:
+                                                                            void message.warning(
+                                                                                '工具处于非审核状态'
+                                                                            )
+                                                                            break
+                                                                        default:
+                                                                            void message.error(
+                                                                                '发布失败，请稍后重试'
+                                                                            )
+                                                                    }
+                                                                })
+                                                                .catch(() => {
+                                                                    message.destroy('UPLOADING')
+                                                                })
+                                                                .finally(() => {
+                                                                    resolve()
+                                                                })
+                                                        })
                                                     } catch (e) {
                                                         resolve()
                                                         message.destroy('COMPILING')

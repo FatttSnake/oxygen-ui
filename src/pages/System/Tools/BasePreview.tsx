@@ -24,39 +24,18 @@ import { usePlaygroundState } from '@/hooks/usePlaygroundState'
 
 const { Text } = AntdTypography
 
-const BaseEditor = () => {
+const BasePreview = () => {
     const { styles, theme } = useStyles()
     const { isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
     const { id, version } = useParams()
-    const {
-        init,
-        fileTree,
-        selectedFileKey,
-        isReadonly,
-        hasUnsavedChanges,
-        setSelectedFileKey,
-        listenOnError
-    } = usePlaygroundState()
+    const { init, fileTree, selectedFileKey, setSelectedFileKey } = usePlaygroundState()
     const [layout, setLayout] = useState<'horizontal' | 'vertical'>(
         window.innerWidth > window.innerHeight ? 'horizontal' : 'vertical'
     )
     const [isLoading, setIsLoading] = useState(false)
     const [toolBaseData, setToolBaseData] = useState<ToolBaseWithSourceVo>()
     const [toolBaseWithDistData, setToolBaseWithDistData] = useState<ToolBaseWithDistVo>()
-
-    useBeforeUnload(
-        useCallback(
-            (event) => {
-                if (hasUnsavedChanges) {
-                    event.preventDefault()
-                    event.returnValue = ''
-                }
-            },
-            [hasUnsavedChanges]
-        ),
-        { capture: true }
-    )
 
     const getToolBase = () => {
         if (isLoading) {
@@ -142,7 +121,7 @@ const BaseEditor = () => {
                 <LoadingMask hidden={!isLoading}>
                     <FlexBox className={styles.layout} direction={'vertical'}>
                         <ToolBar
-                            title={`${toolBaseData?.name}${hasUnsavedChanges ? '*' : ''}`}
+                            title={toolBaseData?.name}
                             subtitle={
                                 <>
                                     <AntdTag color={'blue'}>
@@ -164,13 +143,12 @@ const BaseEditor = () => {
                                         isDarkMode={isDarkMode}
                                         fileTree={fileTree}
                                         selectedFileKey={selectedFileKey}
-                                        readonly={isReadonly}
+                                        readonly
                                         extraLibs={editorExtraLibs}
                                         onEditorDidMount={(_, monaco) =>
                                             addExtraCssVariables(monaco)
                                         }
                                         onSelectedFileChange={setSelectedFileKey}
-                                        listenOnError={listenOnError}
                                     />
                                 </AntdSplitter.Panel>
                                 <AntdSplitter.Panel collapsible>
@@ -201,4 +179,4 @@ const BaseEditor = () => {
     )
 }
 
-export default BaseEditor
+export default BasePreview

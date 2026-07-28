@@ -81,10 +81,8 @@ const SignIn = () => {
                 const { code, data } = response
                 switch (code) {
                     case PERMISSION_LOGIN_SUCCESS:
-                        setAccessToken(data?.accessToken ?? '')
-                        if (data?.csrfToken) {
-                            setCsrfToken(data.csrfToken)
-                        }
+                        setAccessToken(data!.accessToken)
+                        setCsrfToken(data!.csrfToken)
                         message.success('登录成功').then(() => {
                             getUserInfo().then((user) => {
                                 refreshRouter()
