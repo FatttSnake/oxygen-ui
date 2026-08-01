@@ -3,6 +3,7 @@ import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import protocolCheck from 'custom-protocol-check'
 import Icon from '@ant-design/icons'
 import useStyles from '@/assets/css/components/tools/store-card.style'
+import { useConfigValue } from '@/components/config/ConfigContext'
 import { message, modal, checkDesktop, omitTextByByte } from '@/util/common'
 import { getLoginStatus, getUserId } from '@/util/auth'
 import {
@@ -61,6 +62,7 @@ const StoreCard = ({
     const cardRef = useRef<HTMLDivElement>(null)
     const [favorite_, setFavorite_] = useState<boolean>(favorite)
     const [userId, setUserId] = useState('')
+    const desktopProtocol = useConfigValue('desktopProtocol')
 
     useEffect(() => {
         cardRef.current && VanillaTilt.init(cardRef.current, options)
@@ -166,7 +168,7 @@ const StoreCard = ({
         if (!checkDesktop()) {
             void message.loading({ content: '启动桌面端中……', key: 'LOADING', duration: 0 })
             protocolCheck(
-                generateDesktopProtocolUrl({
+                generateDesktopProtocolUrl(desktopProtocol, {
                     username: author.username,
                     toolId,
                     platform: 'DESKTOP'

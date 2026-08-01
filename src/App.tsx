@@ -10,9 +10,9 @@ import {
     THEME_FOLLOW_SYSTEM,
     THEME_LIGHT
 } from '@/constants/common.constants'
+import { ConfigProvider } from '@/components/config/ConfigContext'
 import { getThemeMode, init } from '@/util/common'
 import { getRouter } from '@/router'
-import useTokenRefresh from '@/hooks/useTokenRefresh'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
 
 export const AppContext = createContext({
@@ -38,8 +38,6 @@ const App = () => {
                 return true
         }
     }
-
-    useTokenRefresh()
 
     useEffect(() => {
         const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)')
@@ -84,21 +82,24 @@ const App = () => {
         >
             <BaseStyles />
             <CommonStyles />
-            <AppContext.Provider
-                value={{
-                    refreshRouter: () => {
-                        setRouterState(getRouter())
-                    },
-                    isDarkMode: getIsDark()
-                }}
-            >
-                <Suspense fallback={<FullscreenLoadingMask />}>
-                    <RouterProvider router={routerState} />
-                </Suspense>
-            </AppContext.Provider>
-            {messageHolder}
-            {notificationHolder}
-            {modalHolder}
+            <ConfigProvider>
+                <AppContext.Provider
+                    value={{
+                        refreshRouter: () => {
+                            setRouterState(getRouter())
+                        },
+                        isDarkMode: getIsDark()
+                    }}
+                >
+                    <Suspense fallback={<FullscreenLoadingMask />}>
+                        <RouterProvider router={routerState} />
+                    </Suspense>
+                </AppContext.Provider>
+                {messageHolder}
+                {notificationHolder}
+                {modalHolder}
+            </ConfigProvider>
+            {import.meta.env.VITE_PLATFORM}
         </AntdConfigProvider>
     )
 }

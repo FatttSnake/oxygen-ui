@@ -2,7 +2,6 @@ import Icon from '@ant-design/icons'
 import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import useStyles from '@/assets/css/pages/sign/sign-in.style'
 import {
-    H_CAPTCHA_SITE_KEY,
     PERMISSION_LOGIN_SUCCESS,
     PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR,
     PERMISSION_NEED_TWO_FACTOR,
@@ -11,6 +10,7 @@ import {
     PERMISSION_USERNAME_NOT_FOUND,
     SYSTEM_INVALID_CAPTCHA_CODE
 } from '@/constants/common.constants'
+import { useConfigValue } from '@/components/config/ConfigContext'
 import { message, notification, modal } from '@/util/common'
 import { getUserInfo, setAccessToken, setCsrfToken } from '@/util/auth'
 import { utcToLocalTime } from '@/util/datetime'
@@ -35,6 +35,7 @@ const SignIn = () => {
     const [twoFactorForm] = AntdForm.useForm<{ twoFactorCode: string }>()
     const [isSigningIn, setIsSigningIn] = useState(false)
     const [captchaCode, setCaptchaCode] = useState('')
+    const turnstileSiteKey = useConfigValue('turnstileSiteKey')
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -238,7 +239,7 @@ const SignIn = () => {
                         <Turnstile
                             id={'sign-in-turnstile'}
                             ref={turnstileRef}
-                            siteKey={H_CAPTCHA_SITE_KEY}
+                            siteKey={turnstileSiteKey}
                             options={{
                                 theme: isDarkMode ? 'dark' : 'light',
                                 execution: 'execute',
