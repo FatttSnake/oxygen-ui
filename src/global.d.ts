@@ -7,19 +7,34 @@ type Platform = 'WEB' | 'DESKTOP' | 'ANDROID'
 
 interface ImportMetaEnv {
     readonly VITE_PLATFORM: Platform
-    readonly VITE_DESKTOP_PROTOCOL: string
-    readonly VITE_APP_PROTOCOL: string
-    readonly VITE_UI_URL: string
-    readonly VITE_API_URL: string
-    readonly VITE_API_TOKEN_URL: string
-    readonly VITE_TOKEN_EXPIRY_BUFFER_MS: number
-    readonly VITE_TOKEN_EXPIRY_CHECK_INTERVAL_MS: number
-    readonly VITE_TURNSTILE_SITE_KEY: string
-    readonly VITE_GET_ANDROID_APP_URL: string
 }
 
 interface ImportMeta {
     readonly env: ImportMetaEnv
+}
+
+interface LocalConfig {
+    apiUrl: string
+}
+
+interface RemoteConfig {
+    systemName: string
+    desktopProtocol: string
+    applicationProtocol: string
+    tokenExpiryBufferMs: number
+    tokenExpiryCheckIntervalMs: number
+    turnstileSiteKey: string
+    homeUrl: string
+    getAndroidAppUrl: string
+}
+
+interface SystemConfig extends LocalConfig, RemoteConfig {}
+
+interface ConfigState {
+    config: SystemConfig | null
+    isLoading: boolean
+    error: Error | null
+    isMaintenance: boolean
 }
 
 interface RouteJsonObject {
@@ -377,13 +392,27 @@ interface AvatarBase64Vo {
 }
 
 interface BaseSettingsVo {
-    appName?: string
-    appUrl?: string
+    systemName?: string
+    desktopProtocol?: string
+    applicationProtocol?: string
+    tokenExpiryBufferMs?: number
+    tokenExpiryCheckIntervalMs?: number
+    turnstileSiteKey?: string
+    turnstileSecretKey?: string
+    homeUrl?: string
+    getAndroidAppUrl?: string
 }
 
 interface BaseSettingsParam {
-    appName: string
-    appUrl: string
+    systemName: string
+    desktopProtocol: string
+    applicationProtocol: string
+    tokenExpiryBufferMs: number
+    tokenExpiryCheckIntervalMs: number
+    turnstileSiteKey: string
+    turnstileSecretKey: string
+    homeUrl: string
+    getAndroidAppUrl: string
 }
 
 interface MailSettingsVo {

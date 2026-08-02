@@ -40,7 +40,9 @@
 
 **2. 将文件 `oxygen-ui-*.tar.gz` 或 `oxygen-ui-*.zip` 上传到 Web 服务器并解压**
 
-**3. 配置伪静态**
+**3. 将根目录中的文件 `config.sample.json` 复制到 `config.json`，并且修改其内容以配置 API URL**
+
+**4. 配置伪静态**
 
 Nginx:
 

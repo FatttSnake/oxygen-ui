@@ -8,6 +8,7 @@ import {
     PERMISSION_ACCESS_DENIED,
     PERMISSION_LOGIN_USERNAME_PASSWORD_ERROR
 } from '@/constants/common.constants'
+import { useConfigValue } from '@/components/config/ConfigContext'
 import { message, notification, modal, getThemeMode, ThemeMode, setThemeMode } from '@/util/common'
 import { utcToLocalTime } from '@/util/datetime'
 import { getUserInfo, removeAllToken } from '@/util/auth'
@@ -35,12 +36,13 @@ const User = () => {
     const [avatar, setAvatar] = useState('')
     const [userWithPowerInfoVo, setUserWithPowerInfoVo] = useState<UserWithPowerInfoVo>()
     const [changePasswordForm] = AntdForm.useForm<UserChangePasswordParam>()
+    const homeUrl = useConfigValue('homeUrl')
 
     const handleOnCopyToClipboard = (username?: string) => {
         return username
             ? () => {
                   navigator.clipboard
-                      .writeText(new URL(`/store/${username}`, import.meta.env.VITE_UI_URL).href)
+                      .writeText(new URL(`/store/${username}`, homeUrl).href)
                       .then(() => {
                           void message.success('已复制到剪切板')
                       })
@@ -460,10 +462,7 @@ const User = () => {
                                 onClick={handleOnCopyToClipboard(userWithPowerInfoVo?.username)}
                             >
                                 {userWithPowerInfoVo?.username &&
-                                    new URL(
-                                        `/store/${userWithPowerInfoVo.username}`,
-                                        import.meta.env.VITE_UI_URL
-                                    ).href}
+                                    new URL(`/store/${userWithPowerInfoVo.username}`, homeUrl).href}
                                 <Icon component={IconOxygenCopy} />
                             </a>
                         </FlexBox>
