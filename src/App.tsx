@@ -99,7 +99,6 @@ const App = () => {
                 {notificationHolder}
                 {modalHolder}
             </ConfigProvider>
-            {import.meta.env.VITE_PLATFORM}
         </AntdConfigProvider>
     )
 }
