@@ -25,10 +25,9 @@ const MaintenancePage = () => {
 }
 
 const ConfigContext = createContext<ConfigState>({
+    mode: 'loading',
     config: null,
-    isLoading: true,
-    error: null,
-    isMaintenance: false
+    error: null
 })
 
 interface ConfigProviderProps {
@@ -45,10 +44,9 @@ export const ConfigProvider = ({
     retryDelay = 2e3
 }: ConfigProviderProps) => {
     const [state, setState] = useState<ConfigState>({
+        mode: 'loading',
         config: null,
-        isLoading: true,
-        error: null,
-        isMaintenance: false
+        error: null
     })
 
     useEffect(() => {
@@ -62,10 +60,9 @@ export const ConfigProvider = ({
 
                 if (mounted) {
                     setState({
+                        mode: 'online',
                         config,
-                        isLoading: false,
-                        error: null,
-                        isMaintenance: false
+                        error: null
                     })
                 }
             } catch (error) {
@@ -86,10 +83,9 @@ export const ConfigProvider = ({
 
                 if (mounted) {
                     setState({
+                        mode: 'offline',
                         config: null,
-                        isLoading: false,
-                        error: error as Error,
-                        isMaintenance: true
+                        error: error as Error
                     })
                 }
             }
@@ -102,11 +98,11 @@ export const ConfigProvider = ({
         }
     }, [retryCount, retryDelay])
 
-    if (state.isLoading) {
+    if (state.mode === 'loading') {
         return fallback ? fallback : <FullscreenLoadingMask />
     }
 
-    if (state.isMaintenance) {
+    if (state.mode === 'offline') {
         return <MaintenancePage />
     }
 
@@ -123,8 +119,8 @@ export const useConfig = () => {
 }
 
 export const useIsConfigLoaded = (): boolean => {
-    const { config, isLoading } = useConfig()
-    return config !== null && !isLoading
+    const { mode, config } = useConfig()
+    return mode !== 'loading' && config !== null
 }
 
 export const useReloadConfig = () => {

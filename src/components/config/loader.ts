@@ -45,7 +45,7 @@ class ConfigLoader {
         return this.config !== null
     }
 
-    onConfigLoaded(callback: (config: LocalConfig) => void): () => void {
+    onConfigLoaded(callback: (config: SystemConfig) => void): () => void {
         if (this.config) {
             callback(this.config)
             return () => {}
@@ -102,7 +102,7 @@ class ConfigLoader {
 
     private async loadRemoteConfig(apiUrl: string): Promise<RemoteConfig> {
         try {
-            const remoteUrl = `${apiUrl}/config`
+            const remoteUrl = new URL('/config', apiUrl)
 
             const controller = new AbortController()
             const timeoutId = setTimeout(() => controller.abort(), 3e4)

@@ -21,13 +21,13 @@ import {
     removeAllToken
 } from '@/util/auth'
 
-let appConfig: SystemConfig | null = null
-let refreshTokenPromise: Promise<void> | undefined
+let systemConfig: SystemConfig | null = null
 let service: AxiosInstance | null = null
+let refreshTokenPromise: Promise<void> | undefined
 
 export const initRequestConfig = async (): Promise<void> => {
     try {
-        appConfig = await ConfigLoader.loadConfig()
+        systemConfig = await ConfigLoader.loadConfig()
         console.log('Request config initialized successfully')
     } catch (error) {
         console.error('Failed to initialize request config:', error)
@@ -36,10 +36,10 @@ export const initRequestConfig = async (): Promise<void> => {
 }
 
 const getConfig = (): SystemConfig => {
-    if (!appConfig) {
+    if (!systemConfig) {
         throw new Error('Request config not initialized. Call initRequestConfig first.')
     }
-    return appConfig
+    return systemConfig
 }
 
 const createAxiosInstance = (apiUrl: string): AxiosInstance => {

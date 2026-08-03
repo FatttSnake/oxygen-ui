@@ -365,15 +365,3 @@ export const formatToolBaseVersion = (version: number) =>
               .toString(16)
               .toUpperCase()}`
         : '草稿'
-
-export const generateDesktopProtocolUrl = (desktopProtocol: string, toolInfo: ToolInfo) => {
-    return `${desktopProtocol}://open-tool/${btoa(JSON.stringify(toolInfo))}`
-}
-
-export const generateAppProtocolUrl = (
-    applicationProtocol: string,
-    username: string,
-    toolId: string
-) => {
-    return `${applicationProtocol}://open-tool?username=${username}&toolId=${toolId}`
-}
