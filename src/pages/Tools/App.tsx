@@ -1,7 +1,7 @@
 import GetItOnGooglePlay from '@/assets/svg/GetItOnGooglePlay.svg'
 import useStyles from '@/assets/css/pages/tools/app.style'
 import { useConfigValues } from '@/components/config/ConfigContext'
-import { generateAppProtocolUrl } from '@/util/tool'
+import { generateAppProtocolUrl } from '@/util/navigation'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 

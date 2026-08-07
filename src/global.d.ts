@@ -30,11 +30,12 @@ interface RemoteConfig {
 
 interface SystemConfig extends LocalConfig, RemoteConfig {}
 
+type ConnectivityMode = 'loading' | 'online' | 'offline'
+
 interface ConfigState {
+    mode: ConnectivityMode
     config: SystemConfig | null
-    isLoading: boolean
     error: Error | null
-    isMaintenance: boolean
 }
 
 interface RouteJsonObject {

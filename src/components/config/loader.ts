@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 class ConfigLoader {
     private static instance: ConfigLoader
     private config: SystemConfig | null = null
@@ -45,7 +47,7 @@ class ConfigLoader {
         return this.config !== null
     }
 
-    onConfigLoaded(callback: (config: LocalConfig) => void): () => void {
+    onConfigLoaded(callback: (config: SystemConfig) => void): () => void {
         if (this.config) {
             callback(this.config)
             return () => {}
@@ -79,21 +81,14 @@ class ConfigLoader {
 
     private async loadLocalConfig(): Promise<LocalConfig> {
         try {
-            const response = await fetch('/config.json', {
-                cache: 'no-cache',
+            const { data: config } = await axios.get<LocalConfig>('/config.json', {
                 headers: {
                     'Cache-Control': 'no-cache'
                 }
             })
-
-            if (!response.ok) {
-                throw new Error(`Failed to load local config: ${response.status}`)
-            }
-
-            const config = await response.json()
             this.validateLocalConfig(config)
 
-            return config as LocalConfig
+            return config
         } catch (error) {
             console.error('Failed to load local config:', error)
             throw error
@@ -102,33 +97,23 @@ class ConfigLoader {
 
     private async loadRemoteConfig(apiUrl: string): Promise<RemoteConfig> {
         try {
-            const remoteUrl = `${apiUrl}/config`
-
-            const controller = new AbortController()
-            const timeoutId = setTimeout(() => controller.abort(), 3e4)
-
-            const response = await fetch(remoteUrl, {
-                signal: controller.signal,
-                cache: 'no-cache'
+            const { data: config } = await axios.get<RemoteConfig>('/config', {
+                baseURL: apiUrl,
+                timeout: 3e4,
+                headers: {
+                    'Cache-Control': 'no-cache'
+                }
             })
-            clearTimeout(timeoutId)
-
-            if (!response.ok) {
-                throw new Error(`Failed to load remote config: ${response.status}`)
-            }
-
-            const config = await response.json()
             this.validateRemoteConfig(config)
 
-            return config as RemoteConfig
+            return config
         } catch (error) {
             console.error('Failed to load remote config:', error)
             throw error
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private validateLocalConfig(config: any): asserts config is LocalConfig {
+    private validateLocalConfig(config: LocalConfig): asserts config is LocalConfig {
         const requiredFields: (keyof LocalConfig)[] = ['apiUrl']
 
         for (const field of requiredFields) {
@@ -138,8 +123,7 @@ class ConfigLoader {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private validateRemoteConfig(config: any): asserts config is RemoteConfig {
+    private validateRemoteConfig(config: RemoteConfig): asserts config is RemoteConfig {
         const requiredFields: (keyof RemoteConfig)[] = [
             'systemName',
             'desktopProtocol',

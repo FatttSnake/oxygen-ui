@@ -173,6 +173,18 @@ export const navigateToToolBaseEditor = (
     navigate(`/system/tools/base/${toolBaseId}${version ? `/${version}` : ''}`, options)
 }
 
+export const generateDesktopProtocolUrl = (desktopProtocol: string, toolInfo: ToolInfo) => {
+    return `${desktopProtocol}://open-tool/${btoa(JSON.stringify(toolInfo))}`
+}
+
+export const generateAppProtocolUrl = (
+    applicationProtocol: string,
+    username: string,
+    toolId: string
+) => {
+    return `${applicationProtocol}://open-tool?username=${username}&toolId=${toolId}`
+}
+
 export const navigateToApp = (username?: string, toolId?: string) => {
     window.open(
         username && toolId ? `/app?username=${username}&toolId=${toolId}` : '/app',
@@ -194,8 +206,8 @@ export const getViewPath = (
     return `/view/${username}/${toolId}${version ? `/${version}` : ''}${searchParams.size ? `?${searchParams.toString()}` : ''}`
 }
 
-export const getAppUrl = (username: string, toolId: string) => {
-    const url = new URL('/app', location.href)
+export const getAppUrl = (homeUrl: string, username: string, toolId: string) => {
+    const url = new URL('/app', homeUrl)
     url.searchParams.set('username', username)
     url.searchParams.set('toolId', toolId)
 
