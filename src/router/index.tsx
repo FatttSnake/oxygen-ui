@@ -74,5 +74,5 @@ export const getRouter = () => {
         }
     ]
 
-    createBrowserRouter(mapJsonToRoute(getAuthRoute(cloneDeep(root))))
+    return createBrowserRouter(mapJsonToRoute(getAuthRoute(cloneDeep(root))))
 }
