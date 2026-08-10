@@ -1,7 +1,8 @@
+import { ReactNode } from 'react'
 import useStyles from '@/assets/css/components/playground/output/preview.style'
 import { IFileTree } from '@/components/Playground/shared'
 import { getImportMap } from '@/components/Playground/files'
-import Compiler from '@/components/Playground/compiler'
+import Compiler, { handleBuildError } from '@/components/Playground/compiler'
 import Render from '@/components/Playground/Output/Preview/Render'
 
 interface PreviewProps {
@@ -24,7 +25,7 @@ const Preview = ({
     globalCssVariables
 }: PreviewProps) => {
     const { styles } = useStyles()
-    const [errorMsg, setErrorMsg] = useState('')
+    const [errorMsg, setErrorMsg] = useState<ReactNode>(undefined)
     const [processMsg, setProcessMsg] = useState('')
     const [compiledCode, setCompiledCode] = useState('')
     const abortRef = useRef<AbortController | null>(null)
@@ -57,15 +58,16 @@ const Preview = ({
                         setCompiledCode(
                             `(()=>{${preExpansionCode}})();\n(()=>{${result.outputFiles[0].text}})();\n(()=>{${postExpansionCode}})();`
                         )
-                        setErrorMsg('')
+                        setErrorMsg(undefined)
                     })
                     .catch((e: Error) => {
                         if (controller.signal.aborted) {
                             return
                         }
 
-                        console.error(e)
-                        setErrorMsg(`编译失败：${e.message}`)
+                        const formattedError = handleBuildError(e)
+                        console.error(formattedError)
+                        setErrorMsg(`编译失败：${formattedError}`)
                     })
             } catch (e) {
                 setErrorMsg('非法 Import Map')
