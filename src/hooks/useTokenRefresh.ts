@@ -15,7 +15,7 @@ import {
     removeAllToken
 } from '@/util/auth'
 
-export function useTokenRefresh() {
+export const useTokenRefresh = () => {
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
     const [apiUrl, tokenExpiryBufferMs, tokenExpiryCheckIntervalMs] = useConfigValues([
         'apiUrl',

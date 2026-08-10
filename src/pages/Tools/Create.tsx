@@ -19,7 +19,7 @@ import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
-import Compiler from '@/components/Playground/compiler'
+import Compiler, { handleBuildError } from '@/components/Playground/compiler'
 import { getImportMap, sourceListToFileTree } from '@/components/Playground/files'
 import Render from '@/components/Playground/Output/Preview/Render'
 
@@ -152,9 +152,26 @@ const Create = () => {
                         const output = result.outputFiles[0].text
                         setCompiledCode(`(() => {${output}})();\n(() => {${baseDist}})();`)
                     })
-                    .catch((reason) => {
-                        void message.error(`编译失败：${reason}`)
-                        setCompiledCode(baseDist)
+                    .catch((e) => {
+                        const formattedError = handleBuildError(e)
+                        setCompiledCode(`(() => {
+                            const errorText = ${JSON.stringify(formattedError)};
+                            const element = document.createElement('div');
+                            element.style.cssText = \`
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                color: #dc4446;
+                                font-family: monospace;
+                                padding: 20px;
+                                white-space: pre-wrap;
+                                word-break: break-word;
+                                max-width: 100%;
+                                overflow: auto;
+                            \`;
+                            element.textContent = errorText;
+                            document.getElementById('root')?.replaceChildren(element);
+                        })();`)
                     })
             })
         } catch (e) {

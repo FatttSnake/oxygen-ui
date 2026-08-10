@@ -29,7 +29,7 @@ import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import LoadingMask from '@/components/common/LoadingMask'
 import ToolBar from '@/components/tools/ToolBar'
-import Compiler from '@/components/Playground/compiler'
+import Compiler, { handleBuildError } from '@/components/Playground/compiler'
 import { IFileTree } from '@/components/Playground/shared'
 import { getImportMap, getPathByKey, sourceListToFileTree } from '@/components/Playground/files'
 import CodeEditor from '@/components/Playground/CodeEditor'
@@ -229,7 +229,13 @@ const BaseEditor = () => {
                                 })
                                 .catch((e) => {
                                     setIsShowSubmittingModal(false)
-                                    void message.error(`编译失败：${e.message ? e.message : e}`)
+                                    void message.error({
+                                        style: {
+                                            whiteSpace: 'pre-wrap',
+                                            wordBreak: 'break-word'
+                                        },
+                                        content: `编译失败：${handleBuildError(e)}`
+                                    })
                                 })
                                 .finally(() => {
                                     setIsSubmitting(false)

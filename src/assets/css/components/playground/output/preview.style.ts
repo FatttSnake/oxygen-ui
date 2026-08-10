@@ -15,7 +15,10 @@ export default createStyles(({ token }) => ({
         backgroundColor: token.colorBgBlur,
         padding: '5px 10px',
         fontSize: token.fontSize,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+        opacity: 0.8
     },
 
     errorMessage: {
@@ -26,6 +29,9 @@ export default createStyles(({ token }) => ({
         backgroundColor: token.colorErrorBg,
         padding: '5px 10px',
         fontSize: token.fontSize,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+        opacity: 0.8
     }
 }))
