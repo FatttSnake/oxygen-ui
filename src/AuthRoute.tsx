@@ -1,4 +1,5 @@
 import { PRODUCTION_NAME } from '@/constants/common.constants'
+import useTokenRefresh from '@/hooks/useTokenRefresh'
 import { setPageTitle } from '@/util/common'
 import { getRedirectUrl } from '@/util/route'
 import { getLoginStatus, getVerifyStatus } from '@/util/auth'
@@ -12,6 +13,8 @@ const AuthRoute = () => {
     const outlet = useOutlet()
     const isLogin = getLoginStatus()
     const isVerify = getVerifyStatus()
+
+    useTokenRefresh()
 
     return useMemo(() => {
         setPageTitle(
@@ -29,7 +32,7 @@ const AuthRoute = () => {
                     />
                 )
             }
-            if (isVerify === false && lastMatch.pathname !== '/verify') {
+            if (!isVerify && lastMatch.pathname !== '/verify') {
                 return <Navigate to={'/verify'} />
             }
         }

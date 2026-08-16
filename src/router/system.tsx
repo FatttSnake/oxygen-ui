@@ -88,11 +88,19 @@ const system: RouteJsonObject[] = [
                 menu: true
             },
             {
-                path: 'base/:id/:version?',
+                path: 'base/:id',
                 absolutePath: '/system/tools/base',
                 id: 'system-tools-base-editor',
                 component: lazy(() => import('@/pages/System/Tools/BaseEditor')),
                 name: '基板编辑器',
+                operationCode: 'system:tool:query:base'
+            },
+            {
+                path: 'base/:id/:version',
+                absolutePath: '/system/tools/base',
+                id: 'system-tools-base-preview',
+                component: lazy(() => import('@/pages/System/Tools/BasePreview')),
+                name: '基板预览',
                 operationCode: 'system:tool:query:base'
             },
             {

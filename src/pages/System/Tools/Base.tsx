@@ -7,7 +7,7 @@ import {
     DATABASE_SELECT_SUCCESS,
     DATABASE_UPDATE_SUCCESS
 } from '@/constants/common.constants'
-import { message, modal } from '@/util/common'
+import { checkDesktop, message, modal } from '@/util/common'
 import { utcToLocalTime } from '@/util/datetime'
 import { navigateToToolBaseEditor } from '@/util/navigation'
 import { formatToolBaseVersion } from '@/util/tool'
@@ -78,6 +78,11 @@ const Base = () => {
 
     const handleOnRowClick = (id: string) => {
         return () => {
+            if (!checkDesktop() && baseData.find((item) => item.id === id)?.platform !== 'WEB') {
+                void message.warning('此基板需要桌面端环境，请在桌面端编辑')
+                return
+            }
+
             navigateToToolBaseEditor(navigate, id)
         }
     }
@@ -113,7 +118,7 @@ const Base = () => {
             dataIndex: 'versions',
             width: '10em',
             align: 'center',
-            render: (versions: number[], { id }) =>
+            render: (versions: number[], { id, platform }) =>
                 versions.length ? (
                     <AntdDropdown
                         menu={{
@@ -132,6 +137,10 @@ const Base = () => {
                             })),
                             onClick: ({ key, domEvent }) => {
                                 domEvent.stopPropagation()
+                                if (!checkDesktop() && platform !== 'WEB') {
+                                    void message.warning('此基板需要桌面端环境，请在桌面端编辑')
+                                    return
+                                }
                                 handleOnVersionClick(id, key)
                             }
                         }}

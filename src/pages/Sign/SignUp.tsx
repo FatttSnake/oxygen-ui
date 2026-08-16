@@ -1,52 +1,37 @@
 import Icon from '@ant-design/icons'
-import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import useStyles from '@/assets/css/pages/sign/sign-up.style'
 import {
     DATABASE_DUPLICATE_KEY,
-    H_CAPTCHA_SITE_KEY,
     PERMISSION_REGISTER_SUCCESS,
     SYSTEM_INVALID_CAPTCHA_CODE,
     SYSTEM_MATCH_SENSITIVE_WORD
 } from '@/constants/common.constants'
+import { useConfigValue } from '@/components/config/ConfigContext'
 import { message } from '@/util/common'
-import { getLoginStatus, setAccessToken } from '@/util/auth'
+import { getLoginStatus, setAccessToken, setCsrfToken } from '@/util/auth'
 import { navigateToLogin } from '@/util/navigation'
 import { r_auth_register, r_auth_resend } from '@/services/auth'
 import { AppContext } from '@/App'
 import FitCenter from '@/components/common/FitCenter'
 import FlexBox from '@/components/common/FlexBox'
+import Captcha, { CaptchaElement } from '@/components/common/Captcha'
 
 const SignUp = () => {
     const { styles } = useStyles()
     const { isDarkMode } = useContext(AppContext)
     const location = useLocation()
     const navigate = useNavigate()
-    const turnstileRef = useRef<TurnstileInstance>()
-    const [refreshTime, setRefreshTime] = useState(0)
+    const captchaRef = useRef<CaptchaElement>(null)
     const [isSigningUp, setIsSigningUp] = useState(false)
     const [isFinish, setIsFinish] = useState(false)
     const [isSending, setIsSending] = useState(false)
     const [captchaCode, setCaptchaCode] = useState('')
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            if (window.turnstile) {
-                clearInterval(timer)
-                setRefreshTime(Date.now())
-                if (location.pathname === '/register') {
-                    setTimeout(() => {
-                        turnstileRef.current?.execute()
-                    }, 500)
-                }
-            }
-        })
-    }, [location.pathname])
+    const turnstileSiteKey = useConfigValue('turnstileSiteKey')
 
     useEffect(() => {
         if (!isSigningUp) {
             setCaptchaCode('')
-            turnstileRef.current?.reset()
-            turnstileRef.current?.execute()
+            captchaRef.current?.refresh()
         }
     }, [isSigningUp])
 
@@ -65,7 +50,7 @@ const SignUp = () => {
         }
         setIsSigningUp(true)
 
-        if (!captchaCode) {
+        if (turnstileSiteKey && !captchaCode) {
             void message.warning('请先通过验证')
             setIsSigningUp(false)
             return
@@ -81,7 +66,8 @@ const SignUp = () => {
                 const response = res.data
                 switch (response.code) {
                     case PERMISSION_REGISTER_SUCCESS:
-                        setAccessToken(response.data?.accessToken ?? '')
+                        setAccessToken(response.data!.accessToken)
+                        setCsrfToken(response.data!.csrfToken)
                         void message.success('恭喜，您快要完成注册了')
                         setIsFinish(true)
                         break
@@ -209,20 +195,17 @@ const SignUp = () => {
                                     placeholder={'确认密码'}
                                 />
                             </AntdForm.Item>
-                            <AntdForm.Item>
-                                <Turnstile
-                                    id={'sign-up-turnstile'}
-                                    ref={turnstileRef}
-                                    siteKey={H_CAPTCHA_SITE_KEY}
-                                    options={{
-                                        theme: isDarkMode ? 'dark' : 'light',
-                                        execution: 'execute',
-                                        appearance: 'execute'
-                                    }}
-                                    onSuccess={setCaptchaCode}
-                                    data-refresh={refreshTime}
-                                />
-                            </AntdForm.Item>
+                            {location.pathname === '/register' && turnstileSiteKey && (
+                                <AntdForm.Item>
+                                    <Captcha
+                                        ref={captchaRef}
+                                        turnstileSiteKey={turnstileSiteKey}
+                                        isDarkMode={isDarkMode}
+                                        action={'register'}
+                                        onSuccess={setCaptchaCode}
+                                    />
+                                </AntdForm.Item>
+                            )}
                             <AntdForm.Item>
                                 <AntdButton
                                     style={{ width: '100%' }}

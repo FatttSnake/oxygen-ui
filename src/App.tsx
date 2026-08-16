@@ -10,6 +10,7 @@ import {
     THEME_FOLLOW_SYSTEM,
     THEME_LIGHT
 } from '@/constants/common.constants'
+import { ConfigProvider } from '@/components/config/ConfigContext'
 import { getThemeMode, init } from '@/util/common'
 import { getRouter } from '@/router'
 import FullscreenLoadingMask from '@/components/common/FullscreenLoadingMask'
@@ -39,8 +40,6 @@ const App = () => {
     }
 
     useEffect(() => {
-        init(messageInstance, notificationInstance, modalInstance)
-
         const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)')
         setIsSystemDarkMode(darkThemeMq.matches)
         const darkThemeMqChangeListener = (ev: MediaQueryListEvent) => {
@@ -52,6 +51,8 @@ const App = () => {
             setThemeMode(getThemeMode())
         }
         window.addEventListener('localStorageChange', themeModeChangeListener)
+
+        init(messageInstance, notificationInstance, modalInstance)
 
         return () => {
             darkThemeMq.removeEventListener('change', darkThemeMqChangeListener)
@@ -68,7 +69,8 @@ const App = () => {
                     colorPrimary: COLOR_PRIMARY,
                     colorLink: COLOR_PRIMARY,
                     colorLinkHover: COLOR_HOVER,
-                    colorLinkActive: COLOR_ACTIVE
+                    colorLinkActive: COLOR_ACTIVE,
+                    colorInfo: COLOR_PRIMARY
                 },
                 components: {
                     Tree: {
@@ -80,21 +82,23 @@ const App = () => {
         >
             <BaseStyles />
             <CommonStyles />
-            <AppContext.Provider
-                value={{
-                    refreshRouter: () => {
-                        setRouterState(getRouter())
-                    },
-                    isDarkMode: getIsDark()
-                }}
-            >
-                <Suspense fallback={<FullscreenLoadingMask />}>
-                    <RouterProvider router={routerState} />
-                </Suspense>
-            </AppContext.Provider>
-            {messageHolder}
-            {notificationHolder}
-            {modalHolder}
+            <ConfigProvider>
+                <AppContext.Provider
+                    value={{
+                        refreshRouter: () => {
+                            setRouterState(getRouter())
+                        },
+                        isDarkMode: getIsDark()
+                    }}
+                >
+                    <Suspense fallback={<FullscreenLoadingMask />}>
+                        <RouterProvider router={routerState} />
+                    </Suspense>
+                </AppContext.Provider>
+                {messageHolder}
+                {notificationHolder}
+                {modalHolder}
+            </ConfigProvider>
         </AntdConfigProvider>
     )
 }

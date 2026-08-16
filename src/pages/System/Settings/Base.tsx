@@ -5,23 +5,34 @@ import SettingsCard from '@/components/system/SettingCard'
 
 const Base = () => {
     const [baseForm] = AntdForm.useForm<BaseSettingsParam>()
-    const baseFormValues = AntdForm.useWatch([], baseForm)
     const [isLoading, setIsLoading] = useState(false)
+    const [requireCaptcha, setRequireCaptcha] = useState<boolean>(false)
 
     const handleOnReset = () => {
         getBaseSettings()
     }
 
     const handleOnSave = () => {
-        r_sys_settings_base_update(baseFormValues).then((res) => {
-            const response = res.data
-            if (response.success) {
-                void message.success('保存设置成功')
-                getBaseSettings()
-            } else {
-                void message.error('保存设置失败，请稍后重试')
-            }
-        })
+        baseForm.validateFields().then(
+            (values) => {
+                r_sys_settings_base_update(values).then((res) => {
+                    const response = res.data
+                    if (response.success) {
+                        void message.success('保存设置成功')
+                        getBaseSettings()
+                    } else {
+                        void message.error('保存设置失败，请稍后重试')
+                    }
+                })
+            },
+            () => {}
+        )
+    }
+
+    const handleOnFormChange = () => {
+        const turnstileSiteKey = baseForm.getFieldValue('turnstileSiteKey')
+        const turnstileSecretKey = baseForm.getFieldValue('turnstileSecretKey')
+        setRequireCaptcha(turnstileSiteKey || turnstileSecretKey)
     }
 
     const getBaseSettings = () => {
@@ -35,6 +46,7 @@ const Base = () => {
             if (response.success) {
                 const data = response.data
                 data && baseForm.setFieldsValue(data)
+                handleOnFormChange()
                 setIsLoading(false)
             }
         })
@@ -55,22 +67,80 @@ const Base = () => {
         >
             <AntdForm
                 form={baseForm}
-                labelCol={{ flex: '7em' }}
                 disabled={!hasPermission('system:settings:modify:base')}
+                layout={'vertical'}
+                onChange={handleOnFormChange}
             >
-                <AntdForm.Item label={'应用名称'} name={'appName'}>
-                    <AntdInput placeholder={'请输入应用名称'} />
+                <AntdForm.Item
+                    label={'系统名称'}
+                    name={'systemName'}
+                    rules={[{ required: true, whitespace: true }]}
+                >
+                    <AntdInput placeholder={'请输入系统名称'} />
                 </AntdForm.Item>
-                <AntdForm.Item label={'应用 URL'} name={'appUrl'}>
-                    <AntdInput placeholder={'请输入应用 URL'} />
+                <AntdForm.Item
+                    label={'桌面端协议'}
+                    name={'desktopProtocol'}
+                    rules={[{ required: true, whitespace: true }]}
+                >
+                    <AntdInput placeholder={'请输入桌面端协议'} />
                 </AntdForm.Item>
-                <AntdForm.Item label={'验证邮箱 URL'} name={'verifyUrl'}>
-                    <AntdInput placeholder={'请输入验证邮箱 URL，验证码使用 ${verifyCode} 代替'} />
+                <AntdForm.Item
+                    label={'移动端协议'}
+                    name={'applicationProtocol'}
+                    rules={[{ required: true, whitespace: true }]}
+                >
+                    <AntdInput placeholder={'请输入移动端协议'} />
                 </AntdForm.Item>
-                <AntdForm.Item label={'找回密码 URL'} name={'retrieveUrl'}>
-                    <AntdInput
-                        placeholder={'请输入找回密码 URL，验证码使用 ${retrieveCode} 代替'}
+                <AntdForm.Item
+                    label={'Token 缓冲时间'}
+                    name={'tokenExpiryBufferMs'}
+                    rules={[{ required: true }]}
+                >
+                    <AntdInputNumber
+                        style={{ width: '100%' }}
+                        min={0}
+                        placeholder={'请输入 Token 缓冲时间（毫秒）'}
                     />
+                </AntdForm.Item>
+                <AntdForm.Item
+                    label={'Token 检查周期'}
+                    name={'tokenExpiryCheckIntervalMs'}
+                    rules={[{ required: true }]}
+                >
+                    <AntdInputNumber
+                        style={{ width: '100%' }}
+                        min={0}
+                        placeholder={'请输入 Token 检查周期（毫秒）'}
+                    />
+                </AntdForm.Item>
+                <AntdForm.Item
+                    label={'Turnstile 站点标识'}
+                    name={'turnstileSiteKey'}
+                    rules={[{ required: requireCaptcha }]}
+                >
+                    <AntdInput placeholder={'留空禁用'} />
+                </AntdForm.Item>
+                <AntdForm.Item
+                    label={'Turnstile 密钥'}
+                    name={'turnstileSecretKey'}
+                    rules={[{ required: requireCaptcha }]}
+                >
+                    <AntdInput.Password placeholder={'留空禁用'} />
+                </AntdForm.Item>
+                <AntdForm.Item
+                    label={'主页 URL'}
+                    name={'homeUrl'}
+                    rules={[{ required: true, type: 'url' }]}
+                >
+                    <AntdInput placeholder={'请输入主页 URL'} />
+                </AntdForm.Item>
+                <AntdForm.Item
+                    label={'获取安卓端 URL'}
+                    name={'getAndroidAppUrl'}
+                    rules={[{ required: true, type: 'url' }]}
+                >
+                    <AntdInput placeholder={'请输入获取安卓端 URL'} />
                 </AntdForm.Item>
             </AntdForm>
         </SettingsCard>

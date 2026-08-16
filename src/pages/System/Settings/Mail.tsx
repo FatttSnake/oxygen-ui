@@ -10,7 +10,6 @@ import SettingsCard from '@/components/system/SettingCard'
 
 const Mail = () => {
     const [mailForm] = AntdForm.useForm<MailSettingsParam>()
-    const mailFormValues = AntdForm.useWatch([], mailForm)
     const [isLoading, setIsLoading] = useState(false)
     const [mailSendForm] = AntdForm.useForm<MailSendParam>()
 
@@ -76,15 +75,20 @@ const Mail = () => {
     }
 
     const handleOnSave = () => {
-        r_sys_settings_mail_update(mailFormValues).then((res) => {
-            const response = res.data
-            if (response.success) {
-                void message.success('保存设置成功')
-                getMailSettings()
-            } else {
-                void message.error('保存设置失败，请稍后重试')
-            }
-        })
+        mailForm.validateFields().then(
+            (values) => {
+                r_sys_settings_mail_update(values).then((res) => {
+                    const response = res.data
+                    if (response.success) {
+                        void message.success('保存设置成功')
+                        getMailSettings()
+                    } else {
+                        void message.error('保存设置失败，请稍后重试')
+                    }
+                })
+            },
+            () => {}
+        )
     }
 
     const getMailSettings = () => {
@@ -123,13 +127,17 @@ const Mail = () => {
         >
             <AntdForm
                 form={mailForm}
-                labelCol={{ flex: '8em' }}
                 disabled={!hasPermission('system:settings:modify:mail')}
+                layout={'vertical'}
             >
-                <AntdForm.Item label={'SMTP 服务器'} name={'host'}>
+                <AntdForm.Item
+                    label={'SMTP 服务器'}
+                    name={'host'}
+                    rules={[{ required: true, whitespace: true }]}
+                >
                     <AntdInput placeholder={'请输入 SMTP 服务器'} />
                 </AntdForm.Item>
-                <AntdForm.Item label={'端口号'} name={'port'}>
+                <AntdForm.Item label={'端口号'} name={'port'} rules={[{ required: true }]}>
                     <AntdInputNumber
                         min={0}
                         max={65535}
@@ -137,23 +145,43 @@ const Mail = () => {
                         placeholder={'请输入端口号'}
                     />
                 </AntdForm.Item>
-                <AntdForm.Item label={'安全类型'} name={'securityType'}>
+                <AntdForm.Item
+                    label={'安全类型'}
+                    name={'securityType'}
+                    rules={[{ required: true }]}
+                >
                     <AntdSelect placeholder={'请选择安全类型'}>
                         <AntdSelect.Option key={'None'}>None</AntdSelect.Option>
                         <AntdSelect.Option key={'SSL/TLS'}>SSL/TLS</AntdSelect.Option>
                         <AntdSelect.Option key={'StartTls'}>StartTls</AntdSelect.Option>
                     </AntdSelect>
                 </AntdForm.Item>
-                <AntdForm.Item label={'用户名'} name={'username'}>
+                <AntdForm.Item
+                    label={'用户名'}
+                    name={'username'}
+                    rules={[{ required: true, whitespace: true }]}
+                >
                     <AntdInput placeholder={'请输入用户名'} />
                 </AntdForm.Item>
-                <AntdForm.Item label={'密码'} name={'password'}>
+                <AntdForm.Item
+                    label={'密码'}
+                    name={'password'}
+                    rules={[{ required: true, whitespace: true }]}
+                >
                     <AntdInput.Password placeholder={'请输入密码'} />
                 </AntdForm.Item>
-                <AntdForm.Item label={'发送者'} name={'from'}>
+                <AntdForm.Item
+                    label={'发送者'}
+                    name={'from'}
+                    rules={[{ required: true, whitespace: true }]}
+                >
                     <AntdInput placeholder={'请输入发送者'} />
                 </AntdForm.Item>
-                <AntdForm.Item label={'发送者名称'} name={'fromName'}>
+                <AntdForm.Item
+                    label={'发送者名称'}
+                    name={'fromName'}
+                    rules={[{ required: true, whitespace: true }]}
+                >
                     <AntdInput placeholder={'请输入发送者名称'} />
                 </AntdForm.Item>
             </AntdForm>

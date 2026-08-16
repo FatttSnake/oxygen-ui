@@ -24,7 +24,7 @@
 # 环境要求
 
 - Web 服务器（如 Nginx, Apache httpd）
-- [API of Oxygen Toolbox](https://github.com/FatttSnake/oxygen-api) (v1.1.0 或更高版本)
+- [API of Oxygen Toolbox](https://github.com/FatttSnake/oxygen-api) (v1.3.0 或更高版本)
 
 # 关联项目
 
@@ -40,7 +40,9 @@
 
 **2. 将文件 `oxygen-ui-*.tar.gz` 或 `oxygen-ui-*.zip` 上传到 Web 服务器并解压**
 
-**3. 配置伪静态**
+**3. 将根目录中的文件 `config.sample.json` 复制到 `config.json`，并且修改其内容以配置 API URL**
+
+**4. 配置伪静态**
 
 Nginx:
 

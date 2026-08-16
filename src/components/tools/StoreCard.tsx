@@ -3,9 +3,11 @@ import VanillaTilt, { TiltOptions } from 'vanilla-tilt'
 import protocolCheck from 'custom-protocol-check'
 import Icon from '@ant-design/icons'
 import useStyles from '@/assets/css/components/tools/store-card.style'
+import { useConfigValues } from '@/components/config/ConfigContext'
 import { message, modal, checkDesktop, omitTextByByte } from '@/util/common'
 import { getLoginStatus, getUserId } from '@/util/auth'
 import {
+    generateDesktopProtocolUrl,
     getAppUrl,
     navigateToApp,
     navigateToLogin,
@@ -13,7 +15,6 @@ import {
     navigateToStore,
     navigateToView
 } from '@/util/navigation'
-import { generateDesktopProtocolUrl } from '@/util/tool'
 import { r_tool_add_favorite, r_tool_remove_favorite } from '@/services/tool'
 import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
@@ -61,6 +62,7 @@ const StoreCard = ({
     const cardRef = useRef<HTMLDivElement>(null)
     const [favorite_, setFavorite_] = useState<boolean>(favorite)
     const [userId, setUserId] = useState('')
+    const [desktopProtocol, homeUrl] = useConfigValues(['desktopProtocol', 'homeUrl'])
 
     useEffect(() => {
         cardRef.current && VanillaTilt.init(cardRef.current, options)
@@ -82,7 +84,10 @@ const StoreCard = ({
                 title: 'Android 端',
                 content: (
                     <FlexBox className={styles.androidQrcode}>
-                        <AntdQRCode value={getAppUrl(author.username, toolId)} size={300} />
+                        <AntdQRCode
+                            value={getAppUrl(homeUrl, author.username, toolId)}
+                            size={300}
+                        />
                         <AntdTag>请使用手机端扫描上方二维码</AntdTag>
                     </FlexBox>
                 ),
@@ -150,7 +155,7 @@ const StoreCard = ({
             title: 'Android 端',
             content: (
                 <FlexBox className={styles.androidQrcode}>
-                    <AntdQRCode value={getAppUrl(author.username, toolId)} size={300} />
+                    <AntdQRCode value={getAppUrl(homeUrl, author.username, toolId)} size={300} />
                     <AntdTag>请使用手机端扫描上方二维码</AntdTag>
                 </FlexBox>
             ),
@@ -166,7 +171,7 @@ const StoreCard = ({
         if (!checkDesktop()) {
             void message.loading({ content: '启动桌面端中……', key: 'LOADING', duration: 0 })
             protocolCheck(
-                generateDesktopProtocolUrl({
+                generateDesktopProtocolUrl(desktopProtocol, {
                     username: author.username,
                     toolId,
                     platform: 'DESKTOP'

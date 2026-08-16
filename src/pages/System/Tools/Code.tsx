@@ -12,9 +12,9 @@ import Card from '@/components/common/Card'
 import FlexBox from '@/components/common/FlexBox'
 import LoadingMask from '@/components/common/LoadingMask'
 import ToolBar from '@/components/tools/ToolBar'
-import Playground from '@/components/Playground'
+import { sourceListToFileTree } from '@/components/Playground/files'
+import CodeEditor from '@/components/Playground/CodeEditor'
 import { usePlaygroundState } from '@/hooks/usePlaygroundState'
-import { base64ToFiles } from '@/components/Playground/files'
 
 const { Text } = AntdTypography
 
@@ -23,7 +23,7 @@ const Code = () => {
     const { isDarkMode } = useContext(AppContext)
     const navigate = useNavigate()
     const { id } = useParams()
-    const { init, tsconfig, files, selectedFileName, setSelectedFileName } = usePlaygroundState()
+    const { init, fileTree, selectedFileKey, setSelectedFileKey } = usePlaygroundState()
     const [toolData, setToolData] = useState<ToolWithSourceVo>()
     const [isLoading, setIsLoading] = useState(false)
 
@@ -58,12 +58,8 @@ const Code = () => {
                         const toolVo = response.data!
                         setToolData(toolVo)
                         try {
-                            init(
-                                base64ToFiles(toolVo.source.data!),
-                                true,
-                                toolVo.entryPoint,
-                                toolVo.entryPoint
-                            )
+                            const fileTree = sourceListToFileTree(toolVo.sources)
+                            init(fileTree, true, toolVo.entryPoint)
                         } catch (e) {
                             void message.error('载入工具失败')
                         }
@@ -124,15 +120,14 @@ const Code = () => {
                         )}
                     </ToolBar>
                     <Card>
-                        <Playground.CodeEditor
+                        <CodeEditor
                             isDarkMode={isDarkMode}
-                            tsconfig={tsconfig}
-                            files={files}
-                            selectedFileName={selectedFileName}
+                            fileTree={fileTree}
+                            selectedFileKey={selectedFileKey}
                             readonly
                             extraLibs={editorExtraLibs}
                             onEditorDidMount={(_, monaco) => addExtraCssVariables(monaco)}
-                            onSelectedFileChange={setSelectedFileName}
+                            onSelectedFileChange={setSelectedFileKey}
                         />
                     </Card>
                 </FlexBox>

@@ -24,7 +24,7 @@ This project is a front-end web UI of Oxygen Toolbox and needs to be used with t
 # Requires
 
 - Web Server (e.g. Nginx, Apache httpd)
-- [API of Oxygen Toolbox](https://github.com/FatttSnake/oxygen-api) (v1.1.2 or later versions)
+- [API of Oxygen Toolbox](https://github.com/FatttSnake/oxygen-api) (v1.3.0 or later versions)
 
 # Related projects
 
@@ -40,7 +40,9 @@ This project is a front-end web UI of Oxygen Toolbox and needs to be used with t
 
 **2. Upload the file `oxygen-ui-*.tar.gz` or `oxygen-ui-*.zip` to the web server and unzip it**
 
-**3. Configure pseudo-static**
+**3. Copy the file `config.sample.json` in the root directory to `config.json` and modify it to configure the API URL**
+
+**4. Configure pseudo-static**
 
 Nginx:
 

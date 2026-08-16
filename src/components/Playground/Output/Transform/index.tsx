@@ -1,9 +1,10 @@
+import { ReactNode } from 'react'
 import MonacoEditor from '@monaco-editor/react'
 import { Loader } from 'esbuild-wasm'
 import useStyles from '@/assets/css/components/playground/output/transform.style'
 import { IFile } from '@/components/Playground/shared'
-import { cssToJsFromFile, jsonToJsFromFile } from '@/components/Playground/files'
-import Compiler from '@/components/Playground/compiler'
+import { cssToJs, jsonToJs } from '@/components/Playground/files'
+import Compiler, { handleBuildError } from '@/components/Playground/compiler'
 import { MonacoEditorConfig } from '@/components/Playground/CodeEditor/Editor/monacoConfig'
 
 interface OutputProps {
@@ -14,23 +15,25 @@ interface OutputProps {
 const Transform = ({ isDarkMode, file }: OutputProps) => {
     const { styles } = useStyles()
     const [compiledCode, setCompiledCode] = useState('')
-    const [errorMsg, setErrorMsg] = useState('')
+    const [errorMsg, setErrorMsg] = useState<ReactNode>(undefined)
 
     const compile = (code: string, loader: Loader) => {
         Compiler?.transform(code, loader)
             .then((value) => {
                 setCompiledCode(value.code)
-                setErrorMsg('')
+                setErrorMsg(undefined)
             })
-            .catch((e: Error) => {
-                setErrorMsg(`编译失败：${e.message}`)
+            .catch((e) => {
+                const formattedError = handleBuildError(e)
+                console.error(formattedError)
+                setErrorMsg(`编译失败：${formattedError}`)
             })
     }
 
     useEffect(() => {
         if (file) {
             try {
-                const code = file.value
+                const code = file.content
 
                 switch (file.language) {
                     case 'typescript':
@@ -40,13 +43,11 @@ const Transform = ({ isDarkMode, file }: OutputProps) => {
                         compile(code, 'jsx')
                         break
                     case 'css':
-                        setCompiledCode(cssToJsFromFile(file))
+                        setCompiledCode(cssToJs(file.content))
                         break
                     case 'json':
-                        setCompiledCode(jsonToJsFromFile(file))
+                        setCompiledCode(jsonToJs(file.content))
                         break
-                    case 'xml':
-                        setCompiledCode(code)
                 }
             } catch (e) {
                 console.error(e)

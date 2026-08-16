@@ -19,10 +19,9 @@ import FlexBox from '@/components/common/FlexBox'
 import Card from '@/components/common/Card'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import HideScrollbar from '@/components/common/HideScrollbar'
-import Playground from '@/components/Playground'
-import compiler from '@/components/Playground/compiler'
-import { IImportMap } from '@/components/Playground/shared'
-import { base64ToFiles, base64ToStr, IMPORT_MAP_FILE_NAME } from '@/components/Playground/files'
+import Compiler, { handleBuildError } from '@/components/Playground/compiler'
+import { getImportMap, sourceListToFileTree } from '@/components/Playground/files'
+import Render from '@/components/Playground/Output/Preview/Render'
 
 const Create = () => {
     const { styles, theme } = useStyles()
@@ -144,19 +143,35 @@ const Create = () => {
         setCompiledCode('')
         try {
             processBaseDist(template.base.id, template.base.version, {}).then(({ toolBaseVo }) => {
-                const baseDist = base64ToStr(toolBaseVo.dist.data!)
-                const files = base64ToFiles(template.source.data!)
-                const importMap = JSON.parse(files[IMPORT_MAP_FILE_NAME].value) as IImportMap
+                const baseDist = toolBaseVo.dist.fileContent
+                const fileTree = sourceListToFileTree(template.sources)
+                const importMap = getImportMap(fileTree)
 
-                compiler
-                    .compile(files, importMap, template.entryPoint)
+                Compiler.compile(fileTree, importMap, template.entryPoint)
                     .then((result) => {
                         const output = result.outputFiles[0].text
                         setCompiledCode(`(() => {${output}})();\n(() => {${baseDist}})();`)
                     })
-                    .catch((reason) => {
-                        void message.error(`编译失败：${reason}`)
-                        setCompiledCode(baseDist)
+                    .catch((e) => {
+                        const formattedError = handleBuildError(e)
+                        setCompiledCode(`(() => {
+                            const errorText = ${JSON.stringify(formattedError)};
+                            const element = document.createElement('div');
+                            element.style.cssText = \`
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                color: #dc4446;
+                                font-family: monospace;
+                                padding: 20px;
+                                white-space: pre-wrap;
+                                word-break: break-word;
+                                max-width: 100%;
+                                overflow: auto;
+                            \`;
+                            element.textContent = errorText;
+                            document.getElementById('root')?.replaceChildren(element);
+                        })();`)
                     })
             })
         } catch (e) {
@@ -375,7 +390,7 @@ const Create = () => {
                     </Card>
                     <Card className={styles.preview}>
                         {compiledCode ? (
-                            <Playground.Output.Preview.Render
+                            <Render
                                 iframeKey={previewTemplate}
                                 compiledCode={compiledCode}
                                 globalJsVariables={{

@@ -5,7 +5,6 @@ import SettingsCard from '@/components/system/SettingCard'
 
 const TwoFactor = () => {
     const [twoFactorForm] = AntdForm.useForm<TwoFactorSettingsParam>()
-    const twoFactorFormValues = AntdForm.useWatch([], twoFactorForm)
     const [isLoading, setIsLoading] = useState(false)
 
     const handleOnReset = () => {
@@ -13,15 +12,20 @@ const TwoFactor = () => {
     }
 
     const handleOnSave = () => {
-        r_sys_settings_two_factor_update(twoFactorFormValues).then((res) => {
-            const response = res.data
-            if (response.success) {
-                void message.success('保存设置成功')
-                getTwoFactorSettings()
-            } else {
-                void message.error('保存设置失败，请稍后重试')
-            }
-        })
+        twoFactorForm.validateFields().then(
+            (values) => {
+                r_sys_settings_two_factor_update(values).then((res) => {
+                    const response = res.data
+                    if (response.success) {
+                        void message.success('保存设置成功')
+                        getTwoFactorSettings()
+                    } else {
+                        void message.error('保存设置失败，请稍后重试')
+                    }
+                })
+            },
+            () => {}
+        )
     }
 
     const getTwoFactorSettings = () => {
@@ -55,13 +59,21 @@ const TwoFactor = () => {
         >
             <AntdForm
                 form={twoFactorForm}
-                labelCol={{ flex: '7em' }}
                 disabled={!hasPermission('system:settings:modify:two-factor')}
+                layout={'vertical'}
             >
-                <AntdForm.Item label={'提供者'} name={'issuer'}>
+                <AntdForm.Item
+                    label={'提供者'}
+                    name={'issuer'}
+                    rules={[{ required: true, whitespace: true }]}
+                >
                     <AntdInput placeholder={'请输入提供者'} />
                 </AntdForm.Item>
-                <AntdForm.Item label={'密钥长度'} name={'secretKeyLength'}>
+                <AntdForm.Item
+                    label={'密钥长度'}
+                    name={'secretKeyLength'}
+                    rules={[{ required: true }]}
+                >
                     <AntdInputNumber
                         min={3}
                         max={64}

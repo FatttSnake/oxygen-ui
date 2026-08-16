@@ -15,7 +15,7 @@ import {
 } from '@/constants/common.constants'
 import { message, modal, checkDesktop } from '@/util/common'
 import { getLoginStatus } from '@/util/auth'
-import { navigateToEdit, navigateToSource, navigateToView } from '@/util/navigation'
+import { navigateToEdit, navigateToPreview, navigateToSource } from '@/util/navigation'
 import {
     r_tool_cancel,
     r_tool_delete,
@@ -52,9 +52,8 @@ const ToolCard = ({ tools, onDelete, onUpgrade, onSubmit, onCancel }: ToolCardPr
 
     const handleOnOpenTool = () => {
         if (checkDesktop() || selectedTool.platform === 'WEB') {
-            navigateToView(
+            navigateToPreview(
                 navigate,
-                '!',
                 selectedTool.toolId,
                 selectedTool.platform,
                 selectedTool.ver

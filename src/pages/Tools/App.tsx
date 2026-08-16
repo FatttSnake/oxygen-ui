@@ -1,12 +1,17 @@
 import GetItOnGooglePlay from '@/assets/svg/GetItOnGooglePlay.svg'
 import useStyles from '@/assets/css/pages/tools/app.style'
-import { generateAppProtocolUrl } from '@/util/tool'
+import { useConfigValues } from '@/components/config/ConfigContext'
+import { generateAppProtocolUrl } from '@/util/navigation'
 import FitFullscreen from '@/components/common/FitFullscreen'
 import FlexBox from '@/components/common/FlexBox'
 
 const App = () => {
     const { styles } = useStyles()
     const [searchParams] = useSearchParams()
+    const [applicationProtocol, getAndroidAppUrl] = useConfigValues([
+        'applicationProtocol',
+        'getAndroidAppUrl'
+    ])
 
     useEffect(() => {
         const username = searchParams.get('username')
@@ -15,13 +20,13 @@ const App = () => {
             return
         }
 
-        window.open(generateAppProtocolUrl(username, toolId), '_self')
+        window.open(generateAppProtocolUrl(applicationProtocol, username, toolId), '_self')
     }, [searchParams])
 
     return (
         <FitFullscreen>
             <FlexBox className={styles.root}>
-                <a href={import.meta.env.VITE_GET_ANDROID_APP_URL} target={'_blank'}>
+                <a href={getAndroidAppUrl} target={'_blank'}>
                     <img
                         className={styles.getItOnGooglePlay}
                         src={GetItOnGooglePlay}

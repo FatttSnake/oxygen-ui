@@ -1,11 +1,11 @@
 export const PRODUCTION_NAME = 'Oxygen Toolbox'
 export const STORAGE_ACCESS_TOKEN_KEY = 'ACCESS_TOKEN'
+export const STORAGE_CSRF_TOKEN_KEY = 'CSRF_TOKEN'
 export const STORAGE_USER_INFO_KEY = 'USER_INFO'
 export const STORAGE_TOOL_MENU_ITEM_KEY = 'TOOL_MENU_ITEM'
 export const STORAGE_COLLAPSE_SIDEBAR_KEY = 'COLLAPSE_SIDEBAR'
 export const STORAGE_THEME_MODE_KEY = 'THEME_MODE'
-export const COOKIE_XSRF_TOKEN_KEY = 'XSRF-TOKEN'
-export const HEADER_X_XSRF_TOKEN_KEY = 'x-xsrf-token'
+export const HEADER_CSRF_TOKEN_KEY = 'X-CSRF-TOKEN'
 export const COLOR_PRODUCTION = '#4E47BB'
 export const COLOR_PRIMARY = COLOR_PRODUCTION
 export const COLOR_HOVER = '#635DC8'
@@ -93,5 +93,3 @@ export const TOOL_CANCEL_ERROR = 40061
 
 export const API_AVATAR_SUCCESS = 50100
 export const API_AVATAR_ERROR = 50150
-
-export const H_CAPTCHA_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY

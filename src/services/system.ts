@@ -162,7 +162,7 @@ export const r_sys_tool_base_get = (param: PageParam) =>
 
 export const r_sys_tool_base_get_list = () => request.get<ToolBaseVo[]>(URL_SYS_TOOL_BASE_LIST)
 
-export const r_sys_tool_base_get_one = (id: string, version: string) =>
+export const r_sys_tool_base_get_one = (id: string, version: number) =>
     request.get<ToolBaseWithSourceVo>(`${URL_SYS_TOOL_BASE}/${id}/${version}`)
 
 export const r_sys_tool_base_add = (param: ToolBaseAddParam) =>
@@ -171,11 +171,62 @@ export const r_sys_tool_base_add = (param: ToolBaseAddParam) =>
 export const r_sys_tool_base_update = (param: ToolBaseUpdateParam) =>
     request.put(URL_SYS_TOOL_BASE, param)
 
-export const r_sys_tool_base_update_source = (param: ToolBaseUpdateSourceParam) =>
-    request.patch(URL_SYS_TOOL_BASE_SOURCE, param)
+export const r_sys_tool_base_update_source_add = (
+    id: string,
+    param: ToolCommonUpdateSourceAddParam
+) => request.patch<string>(`${URL_SYS_TOOL_BASE_SOURCE}/${id}/add`, param)
 
-export const r_sys_tool_base_update_dist = (param: ToolBaseUpdateDistParam) =>
-    request.patch<number>(URL_SYS_TOOL_BASE_DIST, param)
+export const r_sys_tool_base_update_source_rename = (
+    id: string,
+    nodeId: string,
+    fileName: string
+) =>
+    request.patch(`${URL_SYS_TOOL_BASE_SOURCE}/${id}/rename/${nodeId}`, fileName, {
+        headers: { 'Content-Type': 'text/plain' }
+    })
+
+export const r_sys_tool_base_update_source_move = (
+    id: string,
+    nodeId: string,
+    newParentId: string
+) =>
+    request.patch(`${URL_SYS_TOOL_BASE_SOURCE}/${id}/move/${nodeId}`, newParentId, {
+        headers: { 'Content-Type': 'application/json' }
+    })
+
+export const r_sys_tool_base_update_source_content = (
+    id: string,
+    nodeId: string,
+    content: string,
+    onProgress?: (percent: number) => void
+) =>
+    request.patch(`${URL_SYS_TOOL_BASE_SOURCE}/${id}/content/${nodeId}`, content, {
+        headers: { 'Content-Type': 'text/plain' },
+        timeout: 6e5,
+        onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+                onProgress?.(Math.round((progressEvent.loaded / progressEvent.total) * 100))
+            }
+        }
+    })
+
+export const r_sys_tool_base_update_source_remove = (id: string, nodeId: string) =>
+    request.patch(`${URL_SYS_TOOL_BASE_SOURCE}/${id}/remove/${nodeId}`)
+
+export const r_sys_tool_base_update_dist = (
+    id: string,
+    dist: string,
+    onProgress?: (percent: number) => void
+) =>
+    request.patch<number>(`${URL_SYS_TOOL_BASE_DIST}/${id}`, dist, {
+        headers: { 'Content-Type': 'text/plain' },
+        timeout: 6e5,
+        onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+                onProgress?.(Math.round((progressEvent.loaded / progressEvent.total) * 100))
+            }
+        }
+    })
 
 export const r_sys_tool_base_delete = (id: string) => request.delete(`${URL_SYS_TOOL_BASE}/${id}`)
 
@@ -191,8 +242,47 @@ export const r_sys_tool_template_add = (param: ToolTemplateAddParam) =>
 export const r_sys_tool_template_update = (param: ToolTemplateUpdateParam) =>
     request.put(URL_SYS_TOOL_TEMPLATE, param)
 
-export const r_sys_tool_template_update_source = (param: ToolTemplateUpdateSourceParam) =>
-    request.patch(URL_SYS_TOOL_TEMPLATE_SOURCE, param)
+export const r_sys_tool_template_update_source_add = (
+    id: string,
+    param: ToolCommonUpdateSourceAddParam
+) => request.patch<string>(`${URL_SYS_TOOL_TEMPLATE_SOURCE}/${id}/add`, param)
+
+export const r_sys_tool_template_update_source_rename = (
+    id: string,
+    nodeId: string,
+    fileName: string
+) =>
+    request.patch(`${URL_SYS_TOOL_TEMPLATE_SOURCE}/${id}/rename/${nodeId}`, fileName, {
+        headers: { 'Content-Type': 'text/plain' }
+    })
+
+export const r_sys_tool_template_update_source_move = (
+    id: string,
+    nodeId: string,
+    newParentId: string
+) =>
+    request.patch(`${URL_SYS_TOOL_TEMPLATE_SOURCE}/${id}/move/${nodeId}`, newParentId, {
+        headers: { 'Content-Type': 'application/json' }
+    })
+
+export const r_sys_tool_template_update_source_content = (
+    id: string,
+    nodeId: string,
+    content: string,
+    onProgress?: (percent: number) => void
+) =>
+    request.patch(`${URL_SYS_TOOL_TEMPLATE_SOURCE}/${id}/content/${nodeId}`, content, {
+        headers: { 'Content-Type': 'text/plain' },
+        timeout: 6e5,
+        onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+                onProgress?.(Math.round((progressEvent.loaded / progressEvent.total) * 100))
+            }
+        }
+    })
+
+export const r_sys_tool_template_update_source_remove = (id: string, nodeId: string) =>
+    request.patch(`${URL_SYS_TOOL_TEMPLATE_SOURCE}/${id}/remove/${nodeId}`)
 
 export const r_sys_tool_template_upgrade_base = (param: ToolOrTemplateUpgradeBaseParam) =>
     request.patch(URL_SYS_TOOL_TEMPLATE_UPGRADE, param)
@@ -206,8 +296,16 @@ export const r_sys_tool_get = (param: ToolManagementGetParam) =>
 export const r_sys_tool_get_one = (id: string) =>
     request.get<ToolWithSourceVo>(`${URL_SYS_TOOL}/${id}`)
 
-export const r_sys_tool_pass = (id: string, param: ToolManagementPassParam) =>
-    request.post(`${URL_SYS_TOOL}/${id}`, param)
+export const r_sys_tool_pass = (id: string, dist: string, onProgress?: (percent: number) => void) =>
+    request.post(`${URL_SYS_TOOL}/${id}`, dist, {
+        headers: { 'Content-Type': 'text/plain' },
+        timeout: 6e5,
+        onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+                onProgress?.(Math.round((progressEvent.loaded / progressEvent.total) * 100))
+            }
+        }
+    })
 
 export const r_sys_tool_reject = (id: string) => request.patch(`${URL_SYS_TOOL}/${id}/reject`)
 

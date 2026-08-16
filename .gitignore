@@ -10,7 +10,6 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
 
 # Editor directories and files
 .vscode/*
@@ -26,3 +25,7 @@ dist-ssr
 # Auto generated
 /auto-imports.d.ts
 /.eslintrc-auto-import.json
+
+# Configuration
+/public/config.json
+*.local
